@@ -1,0 +1,210 @@
+[
+ {
+  "id": "5567",
+  "parent": "0",
+  "date": "2017-05-18T12:24:37+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "有个问题想请教一下：\r\nboot time具体是指什么时间到什么时间？系统加电-->boot finished?还是什么？"
+ },
+ {
+  "id": "5568",
+  "parent": "5567",
+  "date": "2017-05-18T15:16:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@felix：我们这里讨论的都是clock，boottime clock不是从A到B的概念，而是一条time line，原点就是系统启动的那个时间点，然后在任何时间点，针对该clock id，调用clock_gettime都可以获取当前时间到原点的距离（即系统启动那个时间点到当前时间点的时间长度）。"
+ },
+ {
+  "id": "5569",
+  "parent": "5568",
+  "date": "2017-05-18T15:29:11+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "@linuxer：Got it!!!\r\n另外想请教你另外一个问题，关于动态时钟机制：\r\n针对高精度模式：一旦CPU idle就会启动动态始终机制，这时候cpu会停到周期性tick，选择time wheel中最先到期的timer的到期时间作为下次触发周期性tick的时机。问题是：这里为什么不考虑红黑树中高精度timer的最早到期的timer的到期时间呢？按道理不是应该比较time wheel 和 高精度timer，寻找这两种timer下最早到期的timer吗？为什么忽略掉了高精度tiimer?"
+ },
+ {
+  "id": "5570",
+  "parent": "5569",
+  "date": "2017-05-18T16:49:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@felix：你问的应该是dynamic tick的问题吧，动态时钟是dynamic clock。\r\n\r\n你是如何得到进入idle，停掉tick的时候只考虑低精度timer，而没有考虑高精度timer这个结论的？"
+ },
+ {
+  "id": "5571",
+  "parent": "5570",
+  "date": "2017-05-18T17:30:22+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "@linuxer：发邮件给你了，不知道你能收到不？"
+ },
+ {
+  "id": "5572",
+  "parent": "5570",
+  "date": "2017-05-18T17:31:23+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "@linuxer：（1）切换到高精度模式，过程如下：\r\n                  run_timer_softirq\r\n                          hrtimer_run_pending\r\n                                   hrtimer_switch_to_hres\r\n1>\tbase->hres_active = 1 这个标志会在进入tickless时，判断是否要查找红黑树中最近到期的hrtimer；\r\n2>\ttick_setup_sched_timer() 这里用一个hrtiemr实现了以一个HZ为间隔的周期性tick，假设当前时间为now，一个HZ的时间间隔为tick_period：a)初始，该hrtimer会以now+tick_period为到期时间，并挂到红黑树中；b)系统一旦检测到该hrtimer到期，就会将其从红黑树中删除，调用该hrtimer的回调函数tick_sched_timer（该回调函数主要完成jiffies的更新、时间的更新等，并且将该hrtiemr的下次触发时间设置为now+tick_period），之后再次将该hrtiemr挂到红黑树中；重复b)，模拟出一个以HZ为间隔的周期性tick。\r\n（2）进入tickless，过程如下：\r\n                  cpu_idle_loop\r\n                          tick_nohz_idle_enter\r\n                                   __tick_nohz_idle_enter\r\n                                            tick_nohz_stop_sched_tick\r\n1>\tget_next_timer_interrupt，低精度模式下，该函数实现了从高精度timer和低精度timer中寻找最近到期的timer;但在高精度模式下，只在低精度timer中寻找最近到期的timer，过程如下：\r\na>__next_timer_interrupt，该函数实现从time wheel中找到最近到期的低精度timer\r\nb>cmp_next_hrtimer_event\r\nhrtimer_get_next_event，这里会根据hrtimer_hres_active()判断系统是否处于高精度模式，如果系统没有处于高精度模式，则从红黑树中寻找最近到期的timer，之后再与最近到期的低精度timer比较，哪个最早到期；但是目前系统处于高精度模式（标志base->hres_active = 1），就不会从红黑树中寻最近到期的高精度timer。\r\n2>\thrtimer_start，这里将1>找到的最近到期timer的到期时间设置到（1）模拟出周期tick的hrtimer上，用于停止周期性tick。\r\n问题：高精度模式下，进入tickless之后，只从time wheel中寻找最早到期的低精度timer，没有去寻找最近到期的高精度timer，这里是为什么？最近到期的高精度timer如果早于最近到期的低精度timer，该怎么处理？"
+ },
+ {
+  "id": "5573",
+  "parent": "5572",
+  "date": "2017-05-19T10:47:42+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@felix：多谢你的解释，我也按照你的思路走读了一遍代码，我是这样考虑的：hrtimer本身是不依赖于tick的，因此它的逻辑很简单，hrtimer到期后执行callback，然后就是从红黑树中摘下最近的那个hrtimer，设定下一次触发的时间点，如此周而复始。因此，hw timer的中断触发时间是和红黑树中的hrtimer有关，如果红黑树是空的，那么hw timer就静默了。\r\n\r\n当然，实际情况没有那么简单，因为目前内核运行了高精度和低精度timer两套系统，而低精度timer是基于tick的（具体为何如此，这说来话长，网上资料也很多，这里就不赘述了）。在这样的情况下，内核用一个hrtiemr实现了以一个HZ为间隔的周期性tick，而这个tick又推动了低精度timer的运作。\r\n\r\nOK，说道tickless，其实就是停掉没有必要的tick，实际上只有低精度timer是依赖于tick的，因此也就不难理解为何在tick_nohz_stop_sched_tick函数中，只从time wheel中寻找最早到期的低精度timer来决定是否stop模拟tick的那个hrtimer。\r\n\r\n假设time wheel中寻找最早到期的低精度timer是10秒，那么模拟tick的那个sched_timer就会被停止运作10秒，当然，在10秒内可能有非常多的hr timer在红黑树中，他们怎么办？没有什么怎么办，该触发的还是触发，hrtimer仍然按照其既定的规律运作，hw timer中断仍然按照hrtimer模块设定的规律触发。停掉tick并不是意味着停到hw timer的interrupt。"
+ },
+ {
+  "id": "5574",
+  "parent": "5573",
+  "date": "2017-05-19T11:17:29+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "@linuxer：十分感谢你的回复，昨天到现在一直等待你的回复，终于等到了！！\r\n低精度timer依赖周期性tick，而hrtimer不依赖周期性tick，这个对我帮助很大！！\r\n另外，对这段话：<<假设time wheel中寻找最早到期的低精度timer是10秒，那么模拟tick的那个sched_timer就会被停止运作10秒，当然，在10秒内可能有非常多的hr timer在红黑树中，他们怎么办？没有什么怎么办，该触发的还是触发，hrtimer仍然按照其既定的规律运作，hw timer中断仍然按照hrtimer模块设定的规律触发。停掉tick并不是意味着停到hw timer的interrupt。>>\r\n我还存在疑问，tickless的初衷是为了节能的考虑，所以停止没有必要的周期性tick。如果10s内有很多hrtimer不断的打断cpu睡眠，这个就和系统节能的本意不符合了。tickless就只是考虑周期性tick，对于杂乱的hrtimer的中断不予考虑？另外，想请教您一点，周期性tick存在的必要性是什么？"
+ },
+ {
+  "id": "5576",
+  "parent": "0",
+  "date": "2017-05-19T15:04:26+08:00",
+  "author": "wpch",
+  "site": "",
+  "text": "@felix\r\n插两句，CPU是因为无事可做才进入idle状态的，既然有hrtimer到期了自然就要唤醒处理，感觉你有点本末倒置了；系统的调度、时间的更新这些都依赖于周期性tick，你看一下tick中的处理应该就理解了"
+ },
+ {
+  "id": "5577",
+  "parent": "5576",
+  "date": "2017-05-19T15:12:16+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wpch：多谢wpch网友的回复，技术问题越多人讨论越清晰。\r\n\r\n由于工作和家庭的原因，其实我很难做到快速回复的，见谅！felix同学，我非常喜欢你的问题，很有意思，我是这么想的：如果你要自己设计一个OS，那么你是考虑如何设计时间子系统呢？其实是可以完全抛弃tick的概念，让整个系统的计时都是以ns为单位的，timer也都是基于ns的。内核的各个模块以及userspace的posix timer请求（最终也是内核的hrtimer）都最终被统一挂入一个数据结构中（也许是红黑树），在这样的思路指导下，调度模块自己设定自己的hrtimer，来处理各个进程的时间统计和调度，kernel profiling模块设定自己的hrtimer，来完成profile_tick函数中的各种任务。总之，就是各个模块设定自己的hrtimer，没有什么tick的东西，原来在tick中处理的所有的事情可以推回给各个模块，让他们自己不断的设定周期性timer来解决，这样的系统好不好呢？当然好，简洁而美丽。\r\n\r\n虽然软件结构好了，但是，这样实现导致的一个问题就是hw timer的中断太多了，一方面，在系统运行状态，很多模块可能都有每10ms需要处理日常性事务的需求（例如timekeeping模块需要更新系统时间、调度模块需要统计进程时间等），如果各自为政，那么各个模块的这种10ms的hrtimer都会各自触发中断（因为初始相位是不一样的），如果有tick的话，那么一次tick，可以统一为这些模块处理这些housekeeping task。另外一方面，实际上timer的需求还是有两种情况：一种是需要精确的时间（例如多媒体应用），另外一种就是简单的超时处理1S之后检查某种设备的状态，但是1.01秒之后检查也没有什么关系。如果对第二种场景也使用hrtimer来应对，那么也会造成过多timer中断，使用tick来推动第二种timer需求会更好一些。\r\n\r\nTimer中太多有什么坏处呢？一方面，timer interrupt handler消耗了额外的cpu处理时间，另外，更重要的是会造成processor cache thrashing的问题。这些都会造成性能和功耗方面的问题。"
+ },
+ {
+  "id": "5585",
+  "parent": "0",
+  "date": "2017-05-22T18:54:02+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "tickless就只是考虑周期性tick，对于杂乱的hrtimer的中断不予考虑\r\n==========\r\n当然考虑啊，linuxer 已经回答了，合并归一后取最近要到期的timer set到clockevent device中。但是如果系统确实很多时间段接近的timer， idle 系统可能就不会进no hz 状态了， 因为进出一次开销也是比较大的。繁忙的服务器系统很少进no hz状态。看看手机系统，插入usb 后灭屏，cpu 上很少有任务running，这时候基本都进入 C3stop状态，使用broadcast clock。\r\n\r\n周期性tick存在的必要性是什么？\r\n====================================\r\n启动的时候，hrtimer 没准备好，用 periodic 模式工作（但是，原始支持hrtimer 也可以在启动时跑起来，linux 没这样做）\r\n\r\n周期tick到了，给系统某些模块提供一个仲裁的时机， 比如性能剖析， 进程计时，任务调度等等"
+ },
+ {
+  "id": "5587",
+  "parent": "5577",
+  "date": "2017-05-23T07:09:03+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "@linuxer：感谢linuxer能够在百忙之中关注我的问题，并深入回答。对您这段话的理解如下：\r\n加入内核中有N个模块，N个模块有个共同的需求或者说规律：10ms需要一次动作（timekeeping的时间更新，进程调度以及某种设备状态的查询），如果没有统一的tick作为准则，这N个模块就会在自己的领域里以10ms间隔更新，这样显得杂乱无章，也不利于内核的稳定和性能，因此设计出周期性tick，定义了一个准则，这N个模块就在这个统一的tick中做自己想要做的事情。\r\n深深的感觉出您对内核的认识程度之深，顶礼膜拜~~~"
+ },
+ {
+  "id": "5588",
+  "parent": "5587",
+  "date": "2017-05-23T07:09:35+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "@felix：假如，刚才手误"
+ },
+ {
+  "id": "5589",
+  "parent": "5573",
+  "date": "2017-05-23T07:22:27+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "@linuxer：Dear linuxer，\r\n还是对这段还有一些疑问，还请您多指教\r\n《假设time wheel中寻找最早到期的低精度timer是10秒，那么模拟tick的那个sched_timer就会被停止运作10秒，当然，在10秒内可能有非常多的hr timer在红黑树中，他们怎么办？没有什么怎么办，该触发的还是触发，hrtimer仍然按照其既定的规律运作，hw timer中断仍然按照hrtimer模块设定的规律触发。停掉tick并不是意味着停到hw timer的interrupt。》\r\ncpu进入idle状态后（未进入C3+state），会将Time Wheel中最先到期的timer的到期时间设定为sched_timer的到期时间，假设是10s，在这10s中可能有很多hrtimer在红黑树中，这些hrtimer到期后均会触发cpu处理，那这时候，cpu退出了idle，处理了hrtimer的中断，在中断退出的时候再次进入tickless，这样理解是否准确？"
+ },
+ {
+  "id": "5590",
+  "parent": "5585",
+  "date": "2017-05-23T07:27:35+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "@schedule：感谢你的回答\r\n对cpu idle框架了解的不多，对cpu在何种情况下会进入idle不是很清楚。这也是引起我对时间子系统理解瓶颈的原因"
+ },
+ {
+  "id": "5591",
+  "parent": "5576",
+  "date": "2017-05-23T07:33:04+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "@wpch：谢谢的回答！！！我需要学习的东西还很多，希望多指教"
+ },
+ {
+  "id": "5595",
+  "parent": "5573",
+  "date": "2017-05-23T16:58:42+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：假设目前cpu上的hrtimer的情况如下（按时间顺序）：\r\n1、hrtimer A （2ms）\r\n2、hrtimer B （5ms ）\r\n3、sched hrtimer （10ms ）－－－假设HZ=100\r\n4、hrtimer C （100ms ）\r\n........\r\n\r\n当CPU上没有任务执行，进入idle loop的时候，会根据time wheel中的情况来更新sched hrtimer超期时间，假设是7S，因此，这时候，cpu上的hrtimer的情况如下（按时间顺序）：\r\n1、hrtimer A （2ms）\r\n2、hrtimer B （5ms ）\r\n3、hrtimer C （100ms ）\r\n........\r\nx、sched hrtimer （7s ）\r\n........\r\n\r\n2ms后，hrtimer A到期触发，唤醒CPU，这时候有两种情况：其一是这个hrtimer A没有唤醒任何进程，这时候，系统保持tickless状态，cpu上的hrtimer的情况如下（按时间顺序）：\r\n1、hrtimer B （5ms ）\r\n2、hrtimer C （100ms ）\r\n........\r\nx、sched hrtimer （7s ）\r\n........\r\n5ms后，hrtimer B触发，这时候我们假设是情况二、该hrtimer的handler中唤醒了某个进程P，从而使得该cpu退出tickless状态（tick_nohz_idle_exit），重置sched timer的超期时间为10ms，这时候，cpu上的hrtimer的情况如下（按时间顺序）：\r\n1、sched hrtimer （10ms ）\r\n2、hrtimer C （100ms ）\r\n........\r\n\r\n也许进程P执行非常快，1ms之后系统又重回idle进程，这时候会调用tick_nohz_idle_enter函数，sched hrtimer的行为同上。"
+ },
+ {
+  "id": "5602",
+  "parent": "0",
+  "date": "2017-05-25T13:42:20+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "刚上网站，看到你的回复，再次对你详尽的回答表示致敬~\r\n问题1：对于SMP系统，每个cpu上是不是都会有周期性tick，而只有一个CPU负责更新时间和jiffies？\r\n问题2：负责更新时间的cpu是否能够进入睡眠，甚至C3+state？\r\n问题3：SMP系统中，所有的CPU在处理时间任务上是否都一样？有没有区别对待？"
+ },
+ {
+  "id": "5603",
+  "parent": "5602",
+  "date": "2017-05-25T19:13:31+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@felix：问题一：是的\r\n问题二：可以，当该cpu进入idle之后，其他的cpu会在tick handler中接管global tick的任务。这个和C3STOP无关，有C3STOP的话，需要broadcast tick device来协助处理。\r\n问题三：我觉得是一样的。"
+ },
+ {
+  "id": "5604",
+  "parent": "5603",
+  "date": "2017-05-25T19:22:53+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "@linuxer：Dear linuxer\r\n今天在看时间子系统的时候，又想到一个问题，一直困惑\r\n之前您回答了我高精度模式下tickless的工作过程，只会从Timer Wheel中选择最先到期的Timer的到期时间设置clockevent，而不会从红黑树中选择，这个我收获很大；\r\n现在，我想问的是，在低精度模式下，进入tickless的时候，会从Timer Wheel和红黑树中选择最先到期的Timer的到期时间作为Clockevent的触发时间，这里也为什么也会考虑红黑树呢？"
+ },
+ {
+  "id": "5605",
+  "parent": "5604",
+  "date": "2017-05-25T19:34:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@felix：在高精度模式下，底层运作机制是hrtimer，Timer Wheel是基于hrtimer的。在低精度模式下，hrtimer仍然可以运作，但是精度无法达到ns的精度，和Timer Wheel的精度是一样的，即hrtimer也是频率是HZ的tick来推动的（这时候Timer Wheel和hrtimer是平级的），因此这时候也需要考虑hrtimer的设定情况。"
+ },
+ {
+  "id": "5768",
+  "parent": "0",
+  "date": "2017-07-03T17:53:11+08:00",
+  "author": "mouse",
+  "site": "",
+  "text": "地球自转一圈才是一天，绕太阳是一年。:D"
+ },
+ {
+  "id": "5769",
+  "parent": "5768",
+  "date": "2017-07-04T09:18:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@mouse：多谢指正，哈哈，犯了一个低级错误。"
+ },
+ {
+  "id": "7116",
+  "parent": "0",
+  "date": "2018-12-29T11:16:02+08:00",
+  "author": "dkfdhrsn",
+  "site": "",
+  "text": "@linuxer,有个问题请教下，最近发现了个add_timer无法执行的问题，感觉和dynamic tick有关：\r\n--------------\r\n1.high res mode下，clockevent的handler是hrtimer_interrupt,里面会执行expires到达的hrtimer_callback\r\n2.higg_res里面会构建一个特殊的hrtimer:sched_timer来模拟periodic tick，expires会reprogram来模拟\r\n3.当进入tickless mode时，比如是通过idle进入，里面会停掉periodic tick,当然这里会遍历time wheel来设置最近一次的trigger event时间点，不过这里会设置tick_sched->is_stopped=1，表示stop periodic tick\r\n4.假设现在已经停掉了periodic tick，最近一次的event也到来了，那么会执行hrtimer_interrupt,一些关键的flow如下：\r\nhrtimer_interrupt->__hrtimer_run_queues->__run_hrtimer->这里遍历执行hrtimer的callback，以sched_timer为例，那么执行的是tick_sched_timer\r\n这里面有个判断如下：\r\nif(ts->tick_stopped) return HRTIMER_NORESTART, 也就是前面提到的因为进入了tickless，这个不需要再次trigger了\r\n\r\n但是在hrtimer执行的过程中：\r\n__run_hrtimer\r\n    __remove_hrtimer\r\n    rlt = hrtimer->function()\r\n    if (rlt != HRTIMER_NORESTART) \r\n        __enqueue_hrtimer\r\n这就是说一旦进入了tickless，sched_timer就被从hrtimer_list里面remove掉了，当然再退出idle的时候会再次加进来\r\n\r\n但是问题就在于此，假如idle持续一段时间，add_timer这种形式添加的low resolution岂不是无法执行了？\r\n虽然oneshot还在更新time wheel的trigger时间点，但是add_timer这种是属于SOFTIRQ_TIMER类型的软中断，执行时机是在irq_exit的时候判断对应type的pending状态位，\r\n而对于high res mode，这个raise_softirq(SOFTIRQ_TIMER)的地方是在如下地方：\r\ntick_sched_timer->tick_sched_handle->update_process_times->run_local_timers->raise_softirq(SOFTIRQ_TIMER)，\r\n而在tickless模式，这个sched_timer已经被拿掉了，也就是说没有地方进行raise设置pending了，所以就无法执行了？\r\n\r\n不知道上面的逻辑有问题没，因为加log看到的现象差不多就是如此，如果理解没有问题的话，那么这是个bug吗？还是说在high res mode下这种是预期的，现在这边产品是利用add_timer来进行喂狗操作[先不管是否合理]，有时候会出现咬狗复位，感觉就是这个问题导致的\r\n\r\nPS:现在论坛注册被关闭了，不知道放在这里大神还能看见不，求解答啊 0.0"
+ },
+ {
+  "id": "7117",
+  "parent": "7116",
+  "date": "2018-12-29T15:33:29+08:00",
+  "author": "dkfdhrsn",
+  "site": "",
+  "text": "@dkfdhrsn：又跟了下代码，在irq_exit里面会执行这个流程：\r\ntick_irq_exit->tick_nohz_irq_exit\r\n如果还是idle，里面会检测是否有新的timer，然后将sched_timer加进去~\r\n估计还是要加log看到底跑哪去了，从之前debug的表象来看，timer是add进去，但就是没执行到，不知道哪里流程出问题了"
+ },
+ {
+  "id": "8309",
+  "parent": "0",
+  "date": "2021-09-11T17:07:09+08:00",
+  "author": "Joy",
+  "site": "",
+  "text": "蜗窝科技这个论坛的内容质量，我觉得应该算是论坛界的天花板了。"
+ }
+]

@@ -1,0 +1,34 @@
+[
+ {
+  "id": "6844",
+  "parent": "0",
+  "date": "2018-07-13T16:28:22+08:00",
+  "author": "cong",
+  "site": "",
+  "text": "大神可以列一下参考的书或者资料吗？应该不止csapp那本吧，怎么可以扣的这么细！"
+ },
+ {
+  "id": "8164",
+  "parent": "0",
+  "date": "2020-12-22T19:35:09+08:00",
+  "author": "hong",
+  "site": "",
+  "text": "窝哥,请教一下.\r\n$ readelf -r main.o\r\n00000008  00000b1c R_ARM_CALL        00000000   get_data\r\n$ readelf -s a.out\r\n14: 000100bc    36 FUNC    GLOBAL DEFAULT    1 get_data\r\n$ arm-himix200-linux-objdump -d main.o\r\n8:\tebfffffe \tbl\t0 <get_data>\r\n$objdump -d a.out:\r\n100c0:\tebfffff3 \tbl\t10094 <get_data>\r\n\r\nS= 000100bc,P = 000100c0, 这里A要怎么计算呢?(A=feffff00?) (S+A-P)怎么算都得不到fffff3"
+ },
+ {
+  "id": "8165",
+  "parent": "0",
+  "date": "2020-12-22T19:45:53+08:00",
+  "author": "hong",
+  "site": "",
+  "text": "修正一下\r\nreadelf -s a.out:\r\n14: 00010094    36 FUNC    GLOBAL DEFAULT    1 get_data"
+ },
+ {
+  "id": "8166",
+  "parent": "0",
+  "date": "2020-12-23T17:38:39+08:00",
+  "author": "hooong",
+  "site": "",
+  "text": "献丑了-_-\r\nSpecifies the address to branch to. The branch target address is calculated by:\r\n1. Sign-extending the 24-bit signed (two's complement) immediate to 30 bits.\r\n2. Shifting the result left two bits to form a 32-bit value.\r\n3. Adding this to the contents of the PC, which contains the address of the branch\r\ninstruction plus 8 bytes.\r\nPC = PC + (SignExtend_30(signed_immed_24) << 2)\r\nfffff3拓展为30bit,这个是负数,所以高位全置1,再左移2位,==>FFFFFFCC,即-52.\r\noffset = 100c0 + (-52) + 8 = 10094"
+ }
+]

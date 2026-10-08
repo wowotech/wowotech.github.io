@@ -1,0 +1,450 @@
+[
+ {
+  "id": "500",
+  "parent": "0",
+  "date": "2014-10-09T10:57:01+08:00",
+  "author": "海",
+  "site": "",
+  "text": "不知道蜗蜗具体做什么开发的？\r\n我是做手机开发的，runtime目前使用比较好的就是qualcomm。给你分享个链接，以前我搜集runtime时找的：\r\nhttp://pan.baidu.com/s/1o6v7wgi"
+ },
+ {
+  "id": "501",
+  "parent": "500",
+  "date": "2014-10-09T12:18:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@海：多谢分享，我会仔细看看。还希望能多向您请教。\r\n我的工作是芯片开发，不过没有qualcomm那么牛逼。"
+ },
+ {
+  "id": "502",
+  "parent": "501",
+  "date": "2014-10-09T12:22:33+08:00",
+  "author": "海",
+  "site": "",
+  "text": "@wowo：芯片开发国内有数的这几家，共同学习吧。技术不讨论的话不叫技术。"
+ },
+ {
+  "id": "503",
+  "parent": "502",
+  "date": "2014-10-09T12:25:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@海：说的好。有时候很羡慕国外技术论坛上的讨论氛围，哪一天国内也能这样，平心静气的讨论技术，就好了"
+ },
+ {
+  "id": "578",
+  "parent": "0",
+  "date": "2014-10-27T18:19:08+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "作者写的相当好，我还有一个疑问，在使用autosleep之前的系统suspend的时候，有个earlysuspend。在内核转到autosleep的时候，earlysuspend就被取消了。实际上autosleep里面并没有实现earlysuspend的功能，所以我认为runtime在一定程度上实现了earlysuspend的功能。不知道这样理解正确不正确？\r\n\r\n谢谢！"
+ },
+ {
+  "id": "579",
+  "parent": "578",
+  "date": "2014-10-27T18:36:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@heziq：earlysuspend也是Android发明的一个机制，顾名思义，就是比较早的suspend，以及比较晚的resume。它出现的背景是：\r\n系统显示相关的设备，如LCD和背光，是非常耗电的，需要在没有UI操作时时，尽快关闭。但有些时候又不能suspend，比如在听网络音乐，codec、网络等设备都要正常工作。\r\n为了解决这个问题，Android在suspend机制之外，添加一个earlysuspend，它在suspend之前触发。\r\n其实earlysuspend的使用场景非常有限，替代方案，可以从两个角度看：第一就是你提到，使用runtime PM，每个driver管好自己的事情，自然就不需要earlysuspend；第二是在显示子系统，linux framebuffer提供了FB blank/unblank的ioctl，就是用于替代显示设备的earlysuspend。"
+ },
+ {
+  "id": "669",
+  "parent": "0",
+  "date": "2014-11-06T10:33:58+08:00",
+  "author": "741342765",
+  "site": "",
+  "text": "博大精深，@wowo加油"
+ },
+ {
+  "id": "876",
+  "parent": "0",
+  "date": "2014-12-10T15:25:18+08:00",
+  "author": "luckywang",
+  "site": "",
+  "text": "学习了，总结的挺好的"
+ },
+ {
+  "id": "878",
+  "parent": "876",
+  "date": "2014-12-10T18:22:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@luckywang：谢谢~"
+ },
+ {
+  "id": "963",
+  "parent": "501",
+  "date": "2014-12-26T13:54:31+08:00",
+  "author": "CHIYUNG",
+  "site": "",
+  "text": "@wowo：哈哈，哥们全志的是吧"
+ },
+ {
+  "id": "964",
+  "parent": "963",
+  "date": "2014-12-26T15:03:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@CHIYUNG：不要问我从哪里来，我们的目标是星辰大海"
+ },
+ {
+  "id": "965",
+  "parent": "963",
+  "date": "2014-12-26T17:18:37+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@CHIYUNG：我只能告诉你，不是全志。"
+ },
+ {
+  "id": "1150",
+  "parent": "0",
+  "date": "2015-02-03T08:38:31+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "感谢楼主分享"
+ },
+ {
+  "id": "1151",
+  "parent": "579",
+  "date": "2015-02-03T09:00:04+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@wowo：FB blank 时有notifier 去通知注册在此链上的callback，经典的就是TP的callback"
+ },
+ {
+  "id": "1152",
+  "parent": "964",
+  "date": "2015-02-03T09:00:57+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@linuxer：这语气像xiaomi的"
+ },
+ {
+  "id": "1153",
+  "parent": "0",
+  "date": "2015-02-03T09:04:27+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "我觉得，wakeup source 本质上是用户控制的，每次休眠都是用户期望的。\r\n而rpm最终是基于 “预测机制” 不是每次都是正确的，类似 cpuidle cpufreq子系统"
+ },
+ {
+  "id": "1155",
+  "parent": "1153",
+  "date": "2015-02-03T10:59:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@schedule：个人意见，就电源管理而言，机器控制会比用户控制智能的多，因为用户是不知道什么时候该省电的。只要能解决“如果控制错误怎么办？”这个问题。如果错误对用户使用的影响是有限或者不可感知的，就没有问题。"
+ },
+ {
+  "id": "1156",
+  "parent": "1151",
+  "date": "2015-02-03T11:11:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@schedule：是的，其实FB notifier是单独出来的，不受CONFIG_FB控制，因此除显示相关的driver，其它driver也可以使用。"
+ },
+ {
+  "id": "1157",
+  "parent": "0",
+  "date": "2015-02-03T11:52:32+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "rpm 和 system level 的suspend 流程之间的协调期待wowo"
+ },
+ {
+  "id": "1282",
+  "parent": "0",
+  "date": "2015-03-04T14:53:14+08:00",
+  "author": "qkhhyga",
+  "site": "",
+  "text": "＠wowo：我有一个问题想请教一下：在runtime　pm中，在设计driver时，如果在外设处于suspend状态，突然外设有事件上报，即产生中断，在中断处理函数中去异步地get引用计数，那么此时runtime_resume有可能会比读取外设数据的执行程序要晚，这样的问题如何解决？即使resume在此之前，也会带来一定的延时，影响中断的响应时间"
+ },
+ {
+  "id": "1284",
+  "parent": "1282",
+  "date": "2015-03-04T15:43:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@qkhhyga：这取决于runtime_resume和“读取外设数据的执行程序”需要做哪些事情。\r\n首先有一点是要保证的，设备必须正确resume后，才能读取数据。那么执行流就应该这样：pm_runtime_get-->runtime_resume-->读取数据。因此我们的设计应该保证，在runtime_resume之后，才能读取数据。或者，读取数据的程序，就是runtime_resume触发执行的。因此，不会存在runtime_resume执行较晚的可能（要在设计上杜绝）。\r\n至于所担心的影响中断响应，则完全不必，pm_runtime_get是异步的，因此会在中断结束后，起一个线程执行runtime_resume，不会影响中断。"
+ },
+ {
+  "id": "1292",
+  "parent": "0",
+  "date": "2015-03-05T09:28:34+08:00",
+  "author": "xuchu",
+  "site": "",
+  "text": "学习了，帮助挺大的，多谢楼主分享。"
+ },
+ {
+  "id": "1293",
+  "parent": "1284",
+  "date": "2015-03-05T10:24:43+08:00",
+  "author": "qkhhyga",
+  "site": "",
+  "text": "@wowo：＠wowo：非常感谢你的解答，另外，如果在外设suspend的时候，来了一个中断，而这个中断是要求cpu读取外设数据，那么，因为pm_runtime_get是异步的，所以resume是在workqueue中执行（需要调度），而读取外设数据又要保证在resume之后再读，这样的话就会影响应用程序的响应时间了。这是否也是在设计上应该注意的呢？比如把异步的改为同步的get"
+ },
+ {
+  "id": "1294",
+  "parent": "1293",
+  "date": "2015-03-05T10:38:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@qkhhyga：是的，这就是PM的代价，也是PM QOS framework的目的所在。如果应用程序对这个延迟很在意，那么，系统设计者就要想办法，以其它代价去减小这个延迟。\r\n所以，首先要确定的是：应用的延迟容忍是多少（request），driver的延迟是多少（constraint）？\r\n最后，用同步get不是好方法，这样的话这个应用是爽了，可其它模块就悲剧了（中断延迟过大，同时需要保证你的runtime_resume可以在中断上下文执行）。"
+ },
+ {
+  "id": "1295",
+  "parent": "1292",
+  "date": "2015-03-05T10:44:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xuchu：不客气，感谢支持~~~"
+ },
+ {
+  "id": "1745",
+  "parent": "0",
+  "date": "2015-05-08T13:37:13+08:00",
+  "author": "gerrie",
+  "site": "",
+  "text": "lz 文章有高深..正在理解中\r\n新版驱动和sysfs结合比较多.\r\n我想问有没办法通过sysfs在用户空间主动挂起一个设备呢??\r\n例如我的某个驱动 在sys的power接口中有\r\nautosuspend_delay_ms\r\ncontrol\r\nruntime_active_time\r\nruntime_status\r\nruntime_suspended_time\r\nwakeup\r\nwakeup_abort_count\r\nwakeup_active\r\nwakeup_active_count\r\nwakeup_count\r\nwakeup_expire_count\r\nwakeup_last_time_ms\r\nwakeup_max_time_ms\r\nwakeup_prevent_sleep_time_ms\r\nwakeup_total_time_ms\r\n这些东西,我尝试过.\r\n#echo disabled > control \r\n#cat control \r\ndisabled \r\n但是设备仍在供电.\r\n或者 这样.\r\nroot@A0001:/sys/bus/platform/drivers/msm-dwc3 # echo -n \"msm_dwc3\">unbind\r\n这样做可以.但是设备被系统resume时,系统会宕机重启..\r\n其实原理上能实现么?通过sysfs在用户空间主动挂起一个设备"
+ },
+ {
+  "id": "1746",
+  "parent": "1745",
+  "date": "2015-05-08T15:00:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@gerrie：我相信kernel不会提供这样的接口的，driver的suspend，由kernel统一调度了。如果需要特列，open、close也就行啊，或者提供一个ioctl，或者driver自行提供一个sysfs节点，等等。总之不需要这样的标准接口。"
+ },
+ {
+  "id": "1924",
+  "parent": "0",
+  "date": "2015-06-03T16:31:15+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@bear20081015:\r\n我把您的问题贴到了这里，我们在这里讨论。\r\n================================================================================\r\n1.一个设备在系统suspend之前处于RPM_SUSPENDED状态；此时dev->power.usage_count=0，dev->power.runtime_state = RPM_SUSPENDED； \r\n2.在dev->prepare函数， system suspend框架会调用pm_runtime_get_noresume，此时dev->power.usage_count=1， runtime_state仍然是RPM_SUSPENEDED； \r\n3.接着，system suspend会调用device_suspend_late，这个函数中调用了__pm_runtime_disable()。如果恰好在此之前，有人希望通过pm_runtime_get来resume这个设备，那么就会把一个pending的resume request放到pm runtime work queue上；此时usage_count=2， runtime_state = RPM_SUSPENDED； \r\n4. 在__pm_runtime_disable中，函数会调用__pm_runtime_barrier，这会取消step3中的pending resume请求。 但不会将usage_count减1。此时usage_count=2， runtime_state = RPM_SUSPENDED。 \r\n5. 当系统resume回来的时候，它会调用pm_runtime_put来将usage_count减1。 此时usage_count=1， runtime_state = RPM_SUSPENDED。 \r\n\r\n可以看到，经过这几个步骤后，device的runtime_state和usage_count出现了不匹配的情况，runtime_state=RPM_SUSPENDED的时候usage_count应该是0，但现在变成了1。我做的实验也是这样。不知道这算不算runtime的bug呢？还是我上面哪一步有问题？请指教，谢谢！"
+ },
+ {
+  "id": "1925",
+  "parent": "1924",
+  "date": "2015-06-03T16:38:07+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@蜗蜗：我觉得问题的关键是：\r\n“如果恰好在此之前，有人希望通过pm_runtime_get来resume这个设备，那么就会把一个pending的resume request放到pm runtime work queue上；此时usage_count=2， runtime_state = RPM_SUSPENDED； ”\r\n上面的步骤执行后，系统suspend就应该abort了，后续的__pm_runtime_disable就不应该接着执行。"
+ },
+ {
+  "id": "1926",
+  "parent": "1925",
+  "date": "2015-06-03T17:11:19+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@蜗蜗：wowo，哪里的代码体现了这一点？我看到的代码是如果在device_suspend_late里面， __pm_runtime_disable之前有人调用了pm_runtime_abort的话，系统是不会从suspend中abort的。如果是在device_suspend的pm_runtimer_barrier之前的话则系统会abort。不知道我理解的对不对？"
+ },
+ {
+  "id": "1927",
+  "parent": "1926",
+  "date": "2015-06-03T17:29:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：dpm_suspend_start-->dpm_suspend-->device_suspend-->__device_suspend-->pm_runtime_barrier\r\n        直到这个地方，device的resume请求都是可被处理的。\r\n然后在pm_runtime_barrier之后，会suspend设备。\r\n设备suspend了，也就意味着不会再产生resume事件了，也就不应该再对其执行pm_rutime_put操作了（这是由设备的suspend代码保证的）。\r\n因此在随后的device_suspend_late里面，已经假设设备不会再有resume请求，这也是suspend、suspend_late的设计初衷。\r\n因此suspend_late时，不应该出现我们讨论的这种情况。"
+ },
+ {
+  "id": "1928",
+  "parent": "1927",
+  "date": "2015-06-03T17:30:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wowo：错了，应该是“也就不应该再对其执行pm_rutime_get操作了”"
+ },
+ {
+  "id": "1929",
+  "parent": "1928",
+  "date": "2015-06-03T17:44:13+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：\"设备suspend了，也就意味着不会再产生resume事件了，也就不应该再对其执行pm_rutime_put操作了（这是由设备的suspend代码保证的）。\"如果有这个假设的话，那么是没有问题的。\r\n\r\n还是有点疑问，既然有这样的假设，\r\n1.为什么还要在suspend_late中调用pm_runtime_disable呢，反正这时候也不会有pm runtime的操作了吧？ \r\n2. 为啥不干脆在__device_suspend->pm_runtime_barrier之后就直接将pm_runtime_disable了呢？是让device在suspend函数中还能调用pm runtime么？\r\n\r\n问题比较多，见谅！"
+ },
+ {
+  "id": "1930",
+  "parent": "1929",
+  "date": "2015-06-03T18:43:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：不用客气，也不要再说“请教”之类的话了，我们是在讨论，愈辩愈明嘛。\r\n关于suspend后device的行为，可以参考“include/linux/pm.h”中的注释（我在“/pm_subsystem/suspend_and_resume.html”中也有强调）：\r\n* @suspend: Executed before putting the system into a sleep state in which the\r\n *      contents of main memory are preserved.  The exact action to perform\r\n *      depends on the device's subsystem (PM domain, device type, class or bus\r\n *      type), but generally the device must be quiescent after subsystem-level\r\n *      @suspend() has returned, so that it doesn't do any I/O or DMA.\r\n *      Subsystem-level @suspend() is executed for all devices after invoking\r\n *      subsystem-level @prepare() for all of them.\r\n\r\n至于你的两个疑问，其实是一个，我猜原因是这样的：\r\n对系统的suspend而言，操作对象不是单一设备，所以suspend或者suspend_late是针对系统中的所有设备的。suspend对应pm_runtime_barrier，suspend_late对应pm_runtime_disable，有两个好处：\r\n1. 结构上是清晰的（suspend之后调用pm_runtime_disable也有可能是可以的）。\r\n2. 设备之间可能有依存关系，所以先barrier所有设备的runtime请求，然后再disable所有设备的runtime功能，是比较合符逻辑。\r\n\r\n嗯，其实这两个好处也可以归结为一个，就是结构清晰，至于功能上，可能没有特别深层次的考虑（毕竟，设备已经suspend了，什么时候pm_runtime_disable，都无伤大雅了）。"
+ },
+ {
+  "id": "1933",
+  "parent": "1929",
+  "date": "2015-06-03T19:44:06+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@bear20081015：为啥不能在最下面回复了？？？长度限制么？\r\n\r\nwowo，不好意思，关于pm runtime在suspend中的设计还是觉得有点奇怪：\r\n我看到pm runtime的documents说对于某些设备来说，有可能它在系统suspend和pm runtime suspend下的实现会不一样，比如在系统suspend的时候可能需要先把设备从 pm runtime suspend中resume回来，然后再放到系统suspend希望的硬件状态中去。如果是这样的话，假如下面的情形：\r\n1. 系统suspend之前设备处于pm runtime suspend状态；\r\n2. 在device->suspend callback function中，先调用pm_runtime_put将设备唤醒，再把它放到某些更低功耗的状态中。\r\n\r\n这种用法是不是会有下面的问题：\r\n1. 执行pm runtime是在workqueue中，而这个workqueue在suspend比较早的阶段就被freeze了， 也就是说pm_runtime_put并不会真正打开设备？\r\n2. 因为pm_runtime_barrier是在device->suspend之前调用的，如果这个resume的请求被pending在wq上的话，等执行到suspend_late的pm_runtime_disable时还是会产生我最早说的问题吧？"
+ },
+ {
+  "id": "1934",
+  "parent": "0",
+  "date": "2015-06-03T20:07:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015:回复的层数有限制，不然都挤在右边不美观。\r\n“比如在系统suspend的时候可能需要先把设备从 pm runtime suspend中resume回来，然后再放到系统suspend希望的硬件状态中去”，这意味driver需要在suspend回调中resume device，那么driver要很清楚的知道自己在做什么，因而不能调用“pm_runtime_get”因为它是异步的，是不起作用的。\r\ndriver可以这么做：\r\n1. 调用pm_runtime_get_sync。\r\n2. 不要使用runtime接口了，反正resume后，需要根据实际情况重置runtime状态。\r\n因此不会存在你最早所说的问题吧？"
+ },
+ {
+  "id": "1935",
+  "parent": "1934",
+  "date": "2015-06-03T20:08:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wowo：然后还有一种方法，driver可以在prepare中get并resume设备。"
+ },
+ {
+  "id": "1938",
+  "parent": "1935",
+  "date": "2015-06-03T23:30:27+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：谢谢wowo耐心的回答，这样基本上就没问题了。\r\n\r\n总觉得PM RUNTIME设计的不太好啊，比如driver owner认为在PM_RUNTIME_DISABLE之前都可以调用PM RUNTIME的API，但实际上只有sync的PM RUNTIME API才会生效。当PM runtime和suspend，power domain搅在一起的时候，驱动工程师需要了解的限制就比较多了。我们最近就碰到了一个驱动错误使用PM RUNTIME导致的问题。\r\n\r\n另外问点题外话，\r\n1. 除了评论区交流外，能否考虑点其他的交流方式，比如邮件列表或者qq交流群啥的？感觉评论区这种方式效率不太高啊。\r\n2. 这里接受别人的文章么？需要啥流程么？我平时也比较喜欢作笔记记录自己的学习过程，但没人review所以都是记录在自己的笔记本中，希望能有更多的机会和你们交流。"
+ },
+ {
+  "id": "1939",
+  "parent": "1938",
+  "date": "2015-06-04T08:50:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：我也有同感，runtime PM设计的有点啰嗦，不优雅易用。看看最终会进化成什么样子吧。\r\n\r\n关于评论交流的问题，我们之间也讨论过很多次，主要目的是想把大家的交流留存下来。其实很多时候，评论的帮助很大，有时会比正文还大。确实，这样效率不是很高。最好的方法是，每一条评论，都可以通过邮件、QQ、微信等方式及时通知到相关人员。可我对网页相关的东西懂得太少，没法自由的定制。\r\n\r\n蜗窝接受其它文章的，原则是原创、有自己的思考在里面。至于其它的流程，都不需要，只要注册个账号就行了。不过后台编辑器不太好用，要写很多东西的话，可能需要Windows Live Writer等类似的PC软件。\r\n目前主要是我和Linuxer在维护，我写power management有关的东西，Linuxer写中断、timer、同步有关的东西。由于业余时间太少，涉及到的点不多，还是希望有志同道合的人一起维护的。说不定哪天可以出本书呢。"
+ },
+ {
+  "id": "2328",
+  "parent": "0",
+  "date": "2015-07-28T10:04:56+08:00",
+  "author": "yokingwang",
+  "site": "",
+  "text": "为作者点个赞， 文章写的很好，最近看电源管理，帮助很大！\r\n谢谢了！"
+ },
+ {
+  "id": "2332",
+  "parent": "2328",
+  "date": "2015-07-28T12:15:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yokingwang：不用客气。"
+ },
+ {
+  "id": "2717",
+  "parent": "1935",
+  "date": "2015-10-06T11:27:48+08:00",
+  "author": "cy",
+  "site": "",
+  "text": "@wowo：system wide的suspend过程中，在device的prepare回调，如果发现设备已经被runtime suspend了，就直接绕过这个设备的suspend流程，接着处理下一个设备。至少一些pci设备的驱动是按照上面的方式来直接跳过device suspend的。\r\n我看不出有必要resume这个设备？"
+ },
+ {
+  "id": "2721",
+  "parent": "2717",
+  "date": "2015-10-08T09:05:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cy：还是有的：\r\n例如某一个设备，正常工作时为S0状态，Runtime suspend时为S1状态，Suspend时为S2状态。但是，S1状态不能直接切换到S2状态，必须通过S0状态切换（如在S0状态时写寄存器）。\r\n这时，suspend的时候，就需要runtime resume。"
+ },
+ {
+  "id": "2728",
+  "parent": "2721",
+  "date": "2015-10-08T18:57:25+08:00",
+  "author": "cy",
+  "site": "",
+  "text": "@wowo：你指的是D0,D1...etc?"
+ },
+ {
+  "id": "2729",
+  "parent": "2728",
+  "date": "2015-10-08T19:05:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cy：呵呵，那些名字是我随便说的，只是为了说明其中的意义。"
+ },
+ {
+  "id": "2730",
+  "parent": "2729",
+  "date": "2015-10-08T20:24:15+08:00",
+  "author": "cy",
+  "site": "",
+  "text": "@wowo：看到一个commit id， 如果driver认为没有必要resume，那就跳过了，\r\n还是跟driver的实现有关，就算system wide的suspend想把device放到D3，如果runtime suspend的设备是D2，并且设备的driver告诉pm core说，我在D2也没关系，那么pm core就会让设备留在D2。\r\n\r\ncommit aae4518b3124b29f8dc81c829c704fd2df72e98b\r\nAuthor: Rafael J. Wysocki <rafael.j.wysocki@intel.com>\r\nDate:   Fri May 16 02:46:50 2014 +0200\r\n\r\n    PM / sleep: Mechanism to avoid resuming runtime-suspended devices unnecessarily"
+ },
+ {
+  "id": "4838",
+  "parent": "0",
+  "date": "2016-11-02T17:50:23+08:00",
+  "author": "笨小孩",
+  "site": "",
+  "text": "蜗蜗，你好，问一下pm_runtime_last_busy_and_autosuspend(device)这个函数的功能是什么？一般在什么情况下执行呢？"
+ },
+ {
+  "id": "4841",
+  "parent": "4838",
+  "date": "2016-11-03T21:59:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@笨小孩：你看的哪个版本的kernel呢？为什么我没见过这个函数？"
+ },
+ {
+  "id": "5943",
+  "parent": "0",
+  "date": "2017-08-24T08:53:59+08:00",
+  "author": "小亮",
+  "site": "",
+  "text": "hi wowo __pm_runtime_set_status 函数中有一段代码如下：\r\n     if (parent) {\r\n         spin_lock_nested(&parent->power.lock, SINGLE_DEPTH_NESTING);\r\n   \r\n         /*\r\n          * It is invalid to put an active child under a parent that is\r\n          * not active, has runtime PM enabled and the\r\n          * 'power.ignore_children' flag unset.\r\n          */\r\n         if (!parent->power.disable_depth\r\n             && !parent->power.ignore_children \r\n             && parent->power.runtime_status != RPM_ACTIVE)\r\n             error = -EBUSY;\r\n         else if (dev->power.runtime_status == RPM_SUSPENDED)\r\n             atomic_inc(&parent->power.child_count);\r\n为什么dev->power.runtime_status为RPM_SUSPENDED了，反而要增加dev父设备中的活动的child_count的个数呢，而不是减少呢？"
+ },
+ {
+  "id": "5945",
+  "parent": "5943",
+  "date": "2017-08-24T09:44:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@小亮：没毛病，此时就是从RPM_SUSPENDED（runtime_status)切换到RPM_ACTIVE(status)啊。"
+ },
+ {
+  "id": "5946",
+  "parent": "5945",
+  "date": "2017-08-24T10:13:50+08:00",
+  "author": "小亮",
+  "site": "",
+  "text": "@wowo：明白了，还是代码阅读的不够认真，如果到达了if (parent) {}时，此时的status是RPM_ACTIVE.如果dev->power.runtime_status 为RPM_SUSPENDED，，就是以此状态的变化。"
+ },
+ {
+  "id": "7611",
+  "parent": "0",
+  "date": "2019-08-23T11:14:05+08:00",
+  "author": "mating",
+  "site": "",
+  "text": "文中“设备驱动代码可在进程和中断两种上下文执行，因此put和get等接口，要么是由用户进程调用，要么是由中断处理函数调用。由于这些接口可能会执行device的.runtime_xxx回调函数，而这些接口的执行时间是不确定的，有些可能还会睡眠等待。这对用户进程或者中断处理函数来说，是不能接受的”\r\n\r\nrpm_suspend有可能会睡眠，而代码中，用了spin_lock,不是有问题啦？\r\n\tmight_sleep_if(!(rpmflags & RPM_ASYNC) && !dev->power.irq_safe);\r\n1008\r\n1009\tspin_lock_irqsave(&dev->power.lock, flags);\r\n1010\tretval = rpm_suspend(dev, rpmflags);\r\n1011\tspin_unlock_irqrestore(&dev->power.lock, flags);"
+ },
+ {
+  "id": "7612",
+  "parent": "7611",
+  "date": "2019-08-23T11:47:35+08:00",
+  "author": "mating",
+  "site": "",
+  "text": "@mating：__pm_runtime_suspend用的spin_lock_irqsave(&dev->power.lock   上锁，调用rpm_suspend里面是spin_unlock(&dev->power.lock); 解锁，这个接口不对称不影响的吗？"
+ },
+ {
+  "id": "7751",
+  "parent": "500",
+  "date": "2019-11-15T15:33:55+08:00",
+  "author": "wall.e",
+  "site": "",
+  "text": "@海：hi 海：\r\n高通的earlysuspend 是用runtime替换的吗？显示相关的都换成runtime 了吗"
+ },
+ {
+  "id": "8214",
+  "parent": "0",
+  "date": "2021-03-31T10:44:56+08:00",
+  "author": "goodog",
+  "site": "",
+  "text": "@wowo：RPM和内核的devfreq子系统冲突吗，两者有交叉功能吗，还是两者是依赖关系？"
+ },
+ {
+  "id": "8631",
+  "parent": "500",
+  "date": "2022-06-24T09:54:02+08:00",
+  "author": "solar",
+  "site": "",
+  "text": "@海：您好，请问这个资料还在吗，百度盘的链接失效了"
+ }
+]

@@ -1,0 +1,74 @@
+[
+ {
+  "id": "150",
+  "parent": "0",
+  "date": "2014-05-20T17:14:03+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "注册了账号了，博主做没做过Android方面的东西呢？"
+ },
+ {
+  "id": "151",
+  "parent": "150",
+  "date": "2014-05-20T17:33:14+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@Daniel Shieh：欢迎Daniel。\r\n做过一点点，但不是很深入。"
+ },
+ {
+  "id": "231",
+  "parent": "0",
+  "date": "2014-07-11T11:56:46+08:00",
+  "author": "小清新头像吧",
+  "site": "http://www.lfqie.com",
+  "text": "值得关注下哈！！"
+ },
+ {
+  "id": "6437",
+  "parent": "0",
+  "date": "2017-12-30T13:05:55+08:00",
+  "author": "AAC_Decoder",
+  "site": "http://No",
+  "text": "关于LQI (Link Quality Indication)的解释，不太敢完全赞同\r\n或者说，这段话很有可能只适用于TI芯片及其自有协议栈\r\n请看Core Spec（V5.0）原始定义\r\nThis command returns the value for the Link_Quality for the specified Handle.\r\nThe Handle shall be a Handle for an ACL connection. This command shall\r\nreturn a Link_Quality value from 0-255, which represents the quality of the link\r\nbetween two BR/EDR Controllers. The higher the value, the better the link\r\nquality is. Each Bluetooth module vendor will determine how to measure the\r\nlink quality.\r\nThe Read_Link_Quality command is provided by AMPs. The meaning of the\r\nlink quality metric is AMP type specific and defined in the AMP PALs (see\r\nVolume 5, Core System Package [AMP Controller volume].\r\n\r\n首先，spec里定义是，值越高，链路质量越好。我觉着博主翻译的这一段，也有可能是TI协议栈里进行了换算\r\n其次，具体的计算方法每个芯片产商可能会有差别，Spec里并没有给出具体的计算方法。不过我相信大概原理可能差别不大\r\n\r\n另外，LQI似乎被限定于AMP这个前提。所以，我们大部分情况下，传统的BR/EDR可能并不会涉及.\r\n如有错误，欢迎指正:)"
+ },
+ {
+  "id": "6443",
+  "parent": "6437",
+  "date": "2018-01-01T22:13:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@AAC_Decoder：等我去找找LQI的背景再和你讨论。这篇文章只是翻译TI的，因为LQI的资料（尤其是怎么计算的太少了），通常比较熟悉的是RSSI。"
+ },
+ {
+  "id": "6470",
+  "parent": "6443",
+  "date": "2018-01-15T19:17:46+08:00",
+  "author": "tkkkk",
+  "site": "",
+  "text": "@wowo：LQI 类似于 蜂窝网络的CQI，都是对信道质量进行估计，再反馈给对端，以助于对端进行调制/编码/时频资源的分配。 估计算法基本是在信道估计完成后，对信道的特征进行提取。"
+ },
+ {
+  "id": "6960",
+  "parent": "0",
+  "date": "2018-09-22T22:52:24+08:00",
+  "author": "kong",
+  "site": "",
+  "text": "从第一篇蓝牙文章，到现在已过去四年，在这四年，每每遇到蓝牙的难题，都回来翻看wowo的文章，每一次都有新的收获，越看越是钦佩，隐隐约约感觉到wowo已经把接近3000页的speci浓缩在这十几篇文章里。"
+ },
+ {
+  "id": "6961",
+  "parent": "6960",
+  "date": "2018-09-25T11:34:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@kong：多谢关注和陪伴~~~"
+ },
+ {
+  "id": "6968",
+  "parent": "6960",
+  "date": "2018-10-02T23:25:54+08:00",
+  "author": "Jagger",
+  "site": "",
+  "text": "@kong：我也想这么说， 感觉3000页的英文标准 wowo是不是都看过一遍了？"
+ }
+]

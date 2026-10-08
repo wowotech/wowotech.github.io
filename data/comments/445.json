@@ -1,0 +1,202 @@
+[
+ {
+  "id": "6792",
+  "parent": "0",
+  "date": "2018-06-09T19:28:51+08:00",
+  "author": "xtzt",
+  "site": "",
+  "text": "写的非常不错！！！"
+ },
+ {
+  "id": "6807",
+  "parent": "0",
+  "date": "2018-06-15T16:45:02+08:00",
+  "author": "wwwww",
+  "site": "",
+  "text": "写的很好啊"
+ },
+ {
+  "id": "6820",
+  "parent": "0",
+  "date": "2018-06-26T22:12:52+08:00",
+  "author": "primer",
+  "site": "",
+  "text": "除了 spinlock之外  \r\n线程在其余的锁的保护区内会发生中断 引起抢占么？"
+ },
+ {
+  "id": "6828",
+  "parent": "6820",
+  "date": "2018-06-29T22:44:41+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@primer：只要是非原子上下文使用的锁一般都是可以睡眠的，如何无法获取锁，一般就主动放弃CPU使用权"
+ },
+ {
+  "id": "6864",
+  "parent": "0",
+  "date": "2018-08-03T10:15:28+08:00",
+  "author": "hai",
+  "site": "",
+  "text": "请问一下，信号量的count值代表着多少个临界区资源，只要count不为0，进程来了就可以访问，这是不是意味着有多个临界区，因为临界区一次只能一个进程或线程访问"
+ },
+ {
+  "id": "6867",
+  "parent": "6864",
+  "date": "2018-08-04T13:01:38+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hai：你说说的情况应该是信号量的count为1（二进制信号量）的情况，也就是只有一个临界区。但是信号量的count同样可以用来表示资源的数量。例如，银行办事大厅有5个服务台，那么这个count就可以是5，同时可以有5个顾客办理业务。第6个人就只能等待。"
+ },
+ {
+  "id": "6876",
+  "parent": "0",
+  "date": "2018-08-09T17:23:06+08:00",
+  "author": "bingchuan",
+  "site": "",
+  "text": "read_write lock的write进程被饿死常见吗？感觉read_write lock和RCU的原理是一样的。另外，这节的最后一句话有个错别字，推->退，强迫症，没办法-v-"
+ },
+ {
+  "id": "6879",
+  "parent": "6876",
+  "date": "2018-08-09T22:55:59+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@bingchuan：感谢指出，错别字已经修改。\r\nread_write lock的write进程被饿死常见吗？\r\n其实会不会饿死，取决于你的应用场景。及其频繁read穿插write的话，是可能饿死的。保洁阿姨在厕所门口站着，陆陆续续有人进厕所，你说这位阿姨是不是一直在等待呢？"
+ },
+ {
+  "id": "6885",
+  "parent": "0",
+  "date": "2018-08-14T17:41:03+08:00",
+  "author": "lcm",
+  "site": "",
+  "text": "大神，看过你以前专门写spinlock文章。最新的内核的spin_lock机制有改变吗？非SMP原来的机制都是1.如果临界区只是在进程里，那么就是spin_lock,即关闭cpu抢占。2.如果是中断中含有临界区，就需要关中断。现在的机制看是加入了排队，取号步骤，如果取不到号让cpu进入低功耗自旋模式。现在这种机制是不是只是针对SMP的呢？"
+ },
+ {
+  "id": "6886",
+  "parent": "6885",
+  "date": "2018-08-14T22:13:22+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@lcm：文章写的就是针对linux4.13代码。针对UP系统，spin_lock只需要preempt_disable即可。SMP系统除了preempt_disable之外，还需要申请锁。"
+ },
+ {
+  "id": "6904",
+  "parent": "0",
+  "date": "2018-08-21T15:40:59+08:00",
+  "author": "hai",
+  "site": "",
+  "text": "大神，看到你说，mutex和二值信号量的区别在于mutex必须是同一个进程来释放，文章里也是很清楚的通过对比ower和current表现出来，其实网上也有很多这种说法，但是我具体去看代码的时候找了很久，也没有找到哪里有对比ower和current的地方，你帖的代码应该是你总结出来的吧，请问你这里是在哪里看到的内核代码从而总结出来的？"
+ },
+ {
+  "id": "6906",
+  "parent": "6904",
+  "date": "2018-08-22T13:50:17+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hai：文章开头说明了mutex部分是我自己理解写出的，给你造成的困惑，实在抱歉。如果你想看些简单的实现可以参考RTOS的实现，例如rt-thread。如果你想探究linux的实现，我看了一下mutex_unlock函数（linux-4.15）。在使能CONFIG_DEBUG_MUTEXES之后，会有下面一句代码：\r\nDEBUG_LOCKS_WARN_ON(__owner_task(owner) != current);\r\n说明linux认为这是一种不正常的行为。"
+ },
+ {
+  "id": "6928",
+  "parent": "0",
+  "date": "2018-09-04T14:29:29+08:00",
+  "author": "aa",
+  "site": "",
+  "text": "好好好!看湿了"
+ },
+ {
+  "id": "6929",
+  "parent": "0",
+  "date": "2018-09-04T16:39:20+08:00",
+  "author": "1",
+  "site": "",
+  "text": "大佬 写写顺序锁和RCU..."
+ },
+ {
+  "id": "6940",
+  "parent": "0",
+  "date": "2018-09-10T12:31:18+08:00",
+  "author": "linux爱好者",
+  "site": "",
+  "text": "弱弱的问下，struct semaphore_waiter waiter;这样写在函数体内，函数down结束后生命周期结束，会不会有问题？"
+ },
+ {
+  "id": "6943",
+  "parent": "6940",
+  "date": "2018-09-10T18:02:42+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@linux爱好者：不会有问题，如果无法获取semaphore ，down函数根本没有返回，而是调用schedule()函数让出cpu使用权了。等到down函数结束生命周期后，其实已经获取semaphore 了。"
+ },
+ {
+  "id": "7030",
+  "parent": "0",
+  "date": "2018-11-14T09:11:23+08:00",
+  "author": "crash",
+  "site": "",
+  "text": "wowo,初学者有两点疑问：\r\n1、spinlock对自身ticket,owner变量是不是也遵循read/modify/write的规则，具体还是通过ldrex\\strex实现？\r\n2、semaphore的down方法实现中用了raw_spin_lock_irqsave来保护count，为什么要加上禁中断，semaphore不会用在中断的啊"
+ },
+ {
+  "id": "7031",
+  "parent": "7030",
+  "date": "2018-11-14T09:27:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@crash：1、当然，对（ticket，owner）的访问也需要时原子操作，是不是ldrex/strex需要进一步看底层实现，ARMV8之前是ldrex/strex，ARMV8.1之后，ARM平台提供了原子指令，底层也许可以有不同的实现，但是我还没有时间跟踪\r\n2、中断上下文可以调用down_trylock"
+ },
+ {
+  "id": "7032",
+  "parent": "7031",
+  "date": "2018-11-14T09:51:45+08:00",
+  "author": "crash",
+  "site": "",
+  "text": "@linuxer：回复神速，感谢。\r\n问个题外话，armv8这些ldrex/strex指令，包括您提到的V8.1原子指令，这些arm资讯你们是从哪个网站获取或是订阅了什么推送的吗?"
+ },
+ {
+  "id": "7419",
+  "parent": "6904",
+  "date": "2019-05-14T21:09:44+08:00",
+  "author": "zero",
+  "site": "",
+  "text": "@hai：哪些情况下需要一个线程加down，另外一个线程up？"
+ },
+ {
+  "id": "7598",
+  "parent": "0",
+  "date": "2019-08-20T09:37:09+08:00",
+  "author": "crash",
+  "site": "",
+  "text": "spin_lock获取不到锁资源spin等待期间会被中断切走吗"
+ },
+ {
+  "id": "7607",
+  "parent": "7598",
+  "date": "2019-08-21T19:55:54+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@crash：spin lock 会关闭抢占，所以当前进程不会被切换。但是中断是打开的，所以可以响应中断，中断退出后继续返回这里 spin。"
+ },
+ {
+  "id": "7610",
+  "parent": "7607",
+  "date": "2019-08-22T08:25:37+08:00",
+  "author": "crash",
+  "site": "",
+  "text": "@smcdef：那spin期间被中断切走了，借助上面形象的例子，下一个等待的顾客来了个电话中断了，正好这时候窗口的业务办好释放了锁，那排在后面的也得等他？"
+ },
+ {
+  "id": "7814",
+  "parent": "7610",
+  "date": "2020-01-04T18:08:23+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@crash：那是自然"
+ },
+ {
+  "id": "8074",
+  "parent": "0",
+  "date": "2020-07-30T10:33:25+08:00",
+  "author": "wangxingxing",
+  "site": "",
+  "text": "void __sched mutex_lock(struct mutex *lock)\r\n{\r\n\tmight_sleep();\r\n\r\n\tif (!__mutex_trylock_fast(lock))\r\n\t\t__mutex_lock_slowpath(lock);\r\n}\r\n调用__mutex_lock_slowpath申请锁之前会调用__mutex_trylock_fast检查所是否可以被快速获取，能否解释一下__mutex_trylock_fast的实现原理，谢谢。"
+ }
+]

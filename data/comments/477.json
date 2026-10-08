@@ -1,0 +1,58 @@
+[
+ {
+  "id": "7923",
+  "parent": "0",
+  "date": "2020-03-19T17:17:27+08:00",
+  "author": "hyde",
+  "site": "",
+  "text": "请问下微信是多少，我想加你了解下"
+ },
+ {
+  "id": "7961",
+  "parent": "0",
+  "date": "2020-04-17T15:08:40+08:00",
+  "author": "BoomMINote",
+  "site": "",
+  "text": "感谢"
+ },
+ {
+  "id": "8140",
+  "parent": "0",
+  "date": "2020-11-19T11:43:29+08:00",
+  "author": "遥望西伯利亚",
+  "site": "",
+  "text": "我想修改ZRAM的大小和算法，但是怎么测试该更后的性能呢？\r\n希望能答疑解惑，感谢！"
+ },
+ {
+  "id": "8264",
+  "parent": "0",
+  "date": "2021-08-03T16:50:40+08:00",
+  "author": "jzp0409",
+  "site": "",
+  "text": "write-back，能否介绍一下？"
+ },
+ {
+  "id": "8728",
+  "parent": "0",
+  "date": "2023-01-04T17:19:05+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "内存压缩的调用路径中，add_to_swap并不会直接call pageout，add_to_swap只是将page变成SwapPage并和swap_entry建立对应关系；\r\n并且，add_to_swap时，page对应的mapping还未unmap；\r\n流程大致是：先add_to_swap，后try_to_unmap，再去call pageout；\r\n以上基于kernel-5.4;"
+ },
+ {
+  "id": "8744",
+  "parent": "8728",
+  "date": "2023-02-17T15:20:26+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@bsp：swap & page fault流程\r\n1:将待swap的page 加入到swapcache中；\r\n2:解除task和该page的映射关系；\r\n3:通过pageout 进行zram压缩，并将此page压到某个buffer中；\r\n4:压缩完成后，选择性从swapcache中free该page（比如swapcache满了）；\r\n\r\n第2步之后，task如果访问该page，则会触发pagefault；\r\n如果该page还在swapcache中，则将task和该page重新建立映射关系即可，即minor fault；\r\n如果该page不在swapcache中，则会重申请一个新的page，并通过zram解压缩、将之前压缩后的buffer解压到此page中，即major fault；"
+ },
+ {
+  "id": "8820",
+  "parent": "8744",
+  "date": "2023-09-13T22:18:56+08:00",
+  "author": "ziliang",
+  "site": "",
+  "text": "@bsp：大佬讲的好详细呀"
+ }
+]

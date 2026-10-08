@@ -1,0 +1,410 @@
+[
+ {
+  "id": "3730",
+  "parent": "0",
+  "date": "2016-03-27T10:35:27+08:00",
+  "author": "jalon",
+  "site": "",
+  "text": "窝窝你是干嘛的啊，好像各种技术你都很精通啊，大牛！"
+ },
+ {
+  "id": "3733",
+  "parent": "3730",
+  "date": "2016-03-27T11:38:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jalon：您过奖了，只是做过的东西有点杂而已，呵呵~"
+ },
+ {
+  "id": "3877",
+  "parent": "0",
+  "date": "2016-05-02T01:41:11+08:00",
+  "author": "Gute",
+  "site": "",
+  "text": "您写的这篇分析太棒了，逻辑特别清楚。我看书看得云里雾里，读了您的这篇感觉一下子懂了，谢谢您的分享。"
+ },
+ {
+  "id": "3882",
+  "parent": "3877",
+  "date": "2016-05-03T21:43:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Gute：我对BLE也是边理解边记录，大家可以多交流~"
+ },
+ {
+  "id": "4034",
+  "parent": "0",
+  "date": "2016-06-03T01:28:11+08:00",
+  "author": "zhaopanpan",
+  "site": "",
+  "text": "技术牛人!我熬夜翻你的博客,太完美了."
+ },
+ {
+  "id": "4035",
+  "parent": "4034",
+  "date": "2016-06-03T08:53:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zhaopanpan：多谢鼓励~"
+ },
+ {
+  "id": "4042",
+  "parent": "4035",
+  "date": "2016-06-05T14:58:08+08:00",
+  "author": "zhaopanpan",
+  "site": "",
+  "text": "@wowo：我觉得你可以出书，我一定会买"
+ },
+ {
+  "id": "4043",
+  "parent": "4042",
+  "date": "2016-06-05T22:19:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zhaopanpan：出书是一件很花精力和时间的事情，在我们时间不够的情况下，还是想先集中精力在内容上面。\r\n不过还是多谢你的热心和支持，有机会出书的话，一定送你:-)"
+ },
+ {
+  "id": "4174",
+  "parent": "0",
+  "date": "2016-07-02T16:44:43+08:00",
+  "author": "wuwu",
+  "site": "",
+  "text": "我好爱你啊"
+ },
+ {
+  "id": "4175",
+  "parent": "4174",
+  "date": "2016-07-02T21:05:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wuwu：这可不能乱说啊，哈哈~~"
+ },
+ {
+  "id": "4178",
+  "parent": "4175",
+  "date": "2016-07-04T10:01:26+08:00",
+  "author": "wuwu",
+  "site": "",
+  "text": "@wowo：我立志找个和你一样博学的男朋友"
+ },
+ {
+  "id": "4183",
+  "parent": "4178",
+  "date": "2016-07-04T14:34:35+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wuwu：哈哈哈，终于看到示爱的了。两年多了吧，不容易啊！"
+ },
+ {
+  "id": "4185",
+  "parent": "4183",
+  "date": "2016-07-04T15:53:41+08:00",
+  "author": "wuwu",
+  "site": "",
+  "text": "@tigger：怎么了嘛，确实很有才华呀。"
+ },
+ {
+  "id": "4186",
+  "parent": "4185",
+  "date": "2016-07-04T16:23:01+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wuwu：没怎么，很好很好。\r\n努力就会有好结果。"
+ },
+ {
+  "id": "4188",
+  "parent": "4186",
+  "date": "2016-07-04T17:20:25+08:00",
+  "author": "wuwu",
+  "site": "",
+  "text": "@tigger：嗯，一起加油"
+ },
+ {
+  "id": "4204",
+  "parent": "0",
+  "date": "2016-07-07T14:23:54+08:00",
+  "author": "sian",
+  "site": "",
+  "text": "啊啊啊我也好喜欢你啊！！！\r\n\r\n这个表白够真挚吗"
+ },
+ {
+  "id": "4206",
+  "parent": "4204",
+  "date": "2016-07-07T15:01:23+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@sian：我也非常喜欢wowo\r\n萨朗黑"
+ },
+ {
+  "id": "4210",
+  "parent": "4206",
+  "date": "2016-07-07T15:13:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：囧~"
+ },
+ {
+  "id": "4215",
+  "parent": "4204",
+  "date": "2016-07-07T17:30:48+08:00",
+  "author": "laosan",
+  "site": "",
+  "text": "@sian：没想到示爱的人还挺多哈，立志当个技术牛人，加油加油"
+ },
+ {
+  "id": "4216",
+  "parent": "4204",
+  "date": "2016-07-07T18:03:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@sian：友情提示：wowo的夫人也在这个网站游荡，表白的人请注意用语和火候......哈哈"
+ },
+ {
+  "id": "4944",
+  "parent": "0",
+  "date": "2016-12-01T17:43:20+08:00",
+  "author": "misaka",
+  "site": "",
+  "text": "我手上有个蓝牙产品 ssid是随机生成的 就是主机进行discoery request时  得到GAP_INFORMATION_EVENT 并且eventtype为scan respone时携带的信息  但是uuid 0x2A00下也有个device name  那个name我读出来是不变的\r\n我发现iphone下lightble软件居然扫描的时候就直接读出了这个uuid下的device name(不确定是否进行了连接) 而并不是显示广播包中的ssid 难道这个app都是扫到连接完读到attribute value后断开连接 这么设计的？"
+ },
+ {
+  "id": "4946",
+  "parent": "4944",
+  "date": "2016-12-02T10:31:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@misaka：“我发现iphone下lightble软件居然扫描的时候就直接读出了这个uuid下的device name(不确定是否进行了连接) 而并不是显示广播包中的ssid 难道这个app都是扫到连接完读到attribute value后断开连接 这么设计的？”，如果要读某一个attribute的信息，不连接时不可能的……"
+ },
+ {
+  "id": "5100",
+  "parent": "0",
+  "date": "2017-01-04T17:26:08+08:00",
+  "author": "shinyathena",
+  "site": "",
+  "text": "终于理解分层的意义了，2k页的spec看得支离破碎的，感谢wowo!!"
+ },
+ {
+  "id": "5289",
+  "parent": "0",
+  "date": "2017-03-07T18:09:21+08:00",
+  "author": "潇潇雨歇",
+  "site": "",
+  "text": "想请问一下，advertiser如果建立连接后，是否一定会成为slave？有没有什么情况是advertiser在连接后做master的？"
+ },
+ {
+  "id": "5290",
+  "parent": "5289",
+  "date": "2017-03-07T19:29:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@潇潇雨歇：BLE暂时不支持role switch（或者说，就BLE的应用场景来说，没有role switch的必要）。"
+ },
+ {
+  "id": "5291",
+  "parent": "5290",
+  "date": "2017-03-08T10:13:45+08:00",
+  "author": "潇潇雨歇",
+  "site": "",
+  "text": "@wowo：多谢啦，讲的很清晰。\r\n这么快就回复了，果然是能力越高，回复越快:-D"
+ },
+ {
+  "id": "5454",
+  "parent": "0",
+  "date": "2017-04-11T14:40:48+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "wowo大神，\r\nattribute handle的唯一性是在attribute type的范围里还是attribute的范围里。看您的意思是，attribute范围内唯一的，想确认下。还有比较纠结的是attribute type都叫UUID了，为嘛还相同啊，听这名字但又不唯一，感觉很别扭。"
+ },
+ {
+  "id": "5458",
+  "parent": "5454",
+  "date": "2017-04-11T18:45:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chen_chuang：attribute handle的唯一性是在attribute的范围里。\r\nattribute type的UUID，主要为了唯一识别某一类的attribute，例如温度、湿度等等。但温度可以有多个啊，所以相同。"
+ },
+ {
+  "id": "5705",
+  "parent": "0",
+  "date": "2017-06-20T09:57:26+08:00",
+  "author": "jiangxu",
+  "site": "",
+  "text": "wowo你好，问一下Characteristic Descriptor具体是什么作用呢？"
+ },
+ {
+  "id": "5709",
+  "parent": "5705",
+  "date": "2017-06-20T11:41:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jiangxu：可以从如下的思路去理解：\r\n1. ATT是一种数据的组织方式，包括Attribute Handle、Attribute Types、Attribute Value、Attribute Permissions等字段。\r\n2. GATT呢，是架构在ATT之上的、BLE profile的组织方式，包括Service、Include、Characteristic、Characteristic Value、Characteristic Descriptor等条目，每个条目都是一个Attribute（因此包括上面1中的字段）。\r\n3. Service、Characteristic、Characteristic Value、Characteristic Descriptor等等，是有从属关系（本文“图片4 GATT Profile hierarchy”中Characteristic之后的从属关系不是很明显），即：\r\n\t一个Service可以包含多个Characteristic，一个Characteristic可以包含一个Characteristic Value，而一个Characteristic Value又可以包含 多个Characteristic Descriptor。\r\n4. Service、Characteristic、Characteristic Value都很好理解，不再赘述。那Characteristic Descriptor呢？\r\n\t从字面意思来说，Characteristic Descriptor就是描述Characteristic Value的。为什么要描述呢？描述什么呢？怎么描述呢？\r\n\t在GATT的体系结构中Characteristic+Characteristic Value可以满足大多数的标准需求，但是不是有特殊需求呢？答案是不知道。\r\n\t不过，对一个优秀的框架来说，不知道就是有，要为后续潜在的需求留个扩展空间，这就是Characteristic Descriptor。基于它，我们可以添加各种奇奇怪怪的扩展，当然，蓝牙spec已经预先定义了一些，具体可以去翻翻spec（结合实例，可以辅助理解）。"
+ },
+ {
+  "id": "5857",
+  "parent": "0",
+  "date": "2017-07-28T20:12:36+08:00",
+  "author": "haizeiwang",
+  "site": "",
+  "text": "你好，我有几个问题.\r\n1.你说除开了profile之外，一个server是一个Attribute,一个characteristic也是一个characteristic，而server是包含characteristic的，Service、Characteristic、Characteristic Value、Characteristic Descriptor等等，是有从属关系的，那么是不是就是一个Attribute里面会包含另外一个Attribute呢？那么如何保证Attribute Handle的唯一性呢？\r\n2.BLE蓝牙不是没有配对过程吗？那为什么在GAP层还会定义实现蓝牙设备的配对操作呢？"
+ },
+ {
+  "id": "5876",
+  "parent": "5857",
+  "date": "2017-08-07T09:59:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@haizeiwang：Attribute Handle只需要在一个server中唯一就可以了，不同server见不需要唯一。至于怎么保证，server的软件应该很清楚。\r\nBLE有配对过程，只不过基于SM（Security Manager）。"
+ },
+ {
+  "id": "5883",
+  "parent": "0",
+  "date": "2017-08-07T11:20:36+08:00",
+  "author": "Reashy",
+  "site": "",
+  "text": "Attribute Value代表Attribute的值，可以是任何固定长度或者可变长度的octet array（理解为字节类型的数组即可） ---> 我想问一下wowo大神，这个value的长度怎么改变，最大支持多大的字符串传输呢？"
+ },
+ {
+  "id": "5884",
+  "parent": "5883",
+  "date": "2017-08-08T08:31:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Reashy：Attribute Value的长度和内容，是由Attribute Type决定的，所以要去看具体的某一个Attribute是怎么定义的。\r\n至于最大长度，ATT和GATT都没有规定，因为会以ATT_MTU为单位进行拆包。"
+ },
+ {
+  "id": "5933",
+  "parent": "5884",
+  "date": "2017-08-21T11:38:17+08:00",
+  "author": "Reashy",
+  "site": "",
+  "text": "@wowo：我还想问一下，ble设备作为服务器端，怎么主动断开外围的ble设备？gatt协议是靠什么参数判断去断开的呢？是有提供那个函数还是api给调用去断开的吗？大神"
+ },
+ {
+  "id": "5935",
+  "parent": "5933",
+  "date": "2017-08-21T14:40:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Reashy：att/gatt本身没有连接、断开的概念，只有底层的ACL链路才有连接、断开等操作，因此需要断开的话，直接断相应的acl链路即可。"
+ },
+ {
+  "id": "5938",
+  "parent": "5935",
+  "date": "2017-08-22T11:05:36+08:00",
+  "author": "Reashy",
+  "site": "",
+  "text": "@wowo：那我的程序是如何监听到ACL链路呢？是监听什么参数吗？"
+ },
+ {
+  "id": "5939",
+  "parent": "5938",
+  "date": "2017-08-22T13:50:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Reashy：这个问题太宽泛了，和具体的平台有关。了解原理后，对着自己的平台，找一下。"
+ },
+ {
+  "id": "6111",
+  "parent": "5709",
+  "date": "2017-10-16T16:12:41+08:00",
+  "author": "codingbelief",
+  "site": "",
+  "text": "@wowo：预定义的 Descriptors 可以在这里看到：\r\nhttps://www.bluetooth.com/specifications/gatt/descriptors\r\n\r\n举个例子：\r\n一个 Sensor Data 的 Characteristic 的其中一个 Descriptor，类型为 Client Characteristic Configuration，在这个 Descriptor 中，有一个 bit 可以控制 Device 是否在 Characteristic 的 Value 发生变化是主动将变化后的 Value 上报给 Host。（不采用主动上报，就是能做轮训，各有合适的应用场景）\r\n\r\n总体上来讲，可以将 Descriptor 理解为对 Characteristic 信息的补充和行为的配置，例如 Characteristic Value 的格式、含义、单位等，控制 Characteristic Value 上报等。"
+ },
+ {
+  "id": "6112",
+  "parent": "6111",
+  "date": "2017-10-16T16:18:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@codingbelief：是的。现在多出来好多预定义的Descriptor啊（刚开始只有两个）。\r\n话说老外起名字有时候也挺费解的，按照我们的语言习惯，如果修改为extra information，就好理解了。"
+ },
+ {
+  "id": "6178",
+  "parent": "5876",
+  "date": "2017-11-07T08:15:37+08:00",
+  "author": "Seven",
+  "site": "",
+  "text": "@wowo：首先膜拜一下大牛\r\n这个问题我也有点疑问，我的理解是既然服务，特性，属性，值都是一个attribute ，是不是说这些都需要通过attribute 协议来访问？然而handle 有尽在同一服务里保持唯一，那么就是说每个服务对应一个attribute type,服务下面的特性，值等有不同的handle?因为只有这样才能唯一定位一个子项，比如characteristic value,是这样理解吗？但是这跟您说的handle 用于区分不同的实例又不太一样，求科普"
+ },
+ {
+  "id": "6180",
+  "parent": "6178",
+  "date": "2017-11-08T09:10:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Seven：我上面的回复，说的是“attribute handle需要在一个server中唯一”，而不是service。这样就能解决你的疑问了吧？"
+ },
+ {
+  "id": "6301",
+  "parent": "0",
+  "date": "2017-12-07T15:25:43+08:00",
+  "author": "Pccccc",
+  "site": "",
+  "text": "wowo大牛，你好。\r\n我在阅读相关文献和资料的时候，发现GATT协议里面的characteristic的properties并非以一个att数据的形式出现，即characteristic后面直接跟的是value。不知道是我的理解是否有误？"
+ },
+ {
+  "id": "6315",
+  "parent": "6301",
+  "date": "2017-12-08T10:18:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Pccccc：你的理解是正确的，很抱歉我文章里面的写的不严谨，稍后我改正。谢谢～～～"
+ },
+ {
+  "id": "6806",
+  "parent": "4946",
+  "date": "2018-06-15T16:13:41+08:00",
+  "author": "drc",
+  "site": "",
+  "text": "@wowo：这个信息是在广播包或者扫描响应包中的，在扫描的过程中就可以得到。"
+ },
+ {
+  "id": "7445",
+  "parent": "0",
+  "date": "2019-05-29T20:00:09+08:00",
+  "author": "haonan",
+  "site": "",
+  "text": "我linux上开启了BLE服务端，使用另一台机器作为客户端可以获取到对应的服务，但是我手机上使用BLE调试助手时，只能搜索到对应设备，却无法获取相应的服务，使用的代码为BLuez中btgatt-server.c"
+ },
+ {
+  "id": "7493",
+  "parent": "0",
+  "date": "2019-06-27T18:12:59+08:00",
+  "author": "爱哭的热带鱼",
+  "site": "",
+  "text": "受益匪浅~~~~~~~~~~~~~~~~~~~~~"
+ },
+ {
+  "id": "7896",
+  "parent": "0",
+  "date": "2020-02-23T17:55:15+08:00",
+  "author": "jack",
+  "site": "",
+  "text": "写的太好了，对理解协议的分层很有帮助，谢谢作者的分享。"
+ },
+ {
+  "id": "8308",
+  "parent": "0",
+  "date": "2021-09-09T11:23:00+08:00",
+  "author": "lxx",
+  "site": "",
+  "text": "非常感谢博主的分享，实在写的太好了"
+ },
+ {
+  "id": "8775",
+  "parent": "6315",
+  "date": "2023-04-23T18:23:18+08:00",
+  "author": "123",
+  "site": "",
+  "text": "@wowo：以上除“Profile”外的每一个定义，Service、Characteristic、Characteristic Properties、Characteristic Value、Characteristic Descriptor等等，都是作为一个Attribute存在的，具备第8章所描述的Attribute的所有特征：Attribute\r\nHandle、Attribute Types、Attribute Value和AttributePermissions。\r\nwowo大神，这里是已经改正了吗？"
+ },
+ {
+  "id": "8939",
+  "parent": "0",
+  "date": "2024-10-14T11:12:03+08:00",
+  "author": "SuiTang",
+  "site": "",
+  "text": "请教下大神，蓝牙Beacon的Local Name可以重复吗？"
+ }
+]

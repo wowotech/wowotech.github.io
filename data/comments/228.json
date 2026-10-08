@@ -1,0 +1,162 @@
+[
+ {
+  "id": "2999",
+  "parent": "0",
+  "date": "2015-11-05T09:01:29+08:00",
+  "author": "logv",
+  "site": "",
+  "text": "请教一下，“首先要满足order大于0，并且gfp_mask携带__GFP_FS和__GFP_IO”，这的order，以及这两个mask，实际意义是什么呢？谢谢"
+ },
+ {
+  "id": "3000",
+  "parent": "2999",
+  "date": "2015-11-05T14:25:08+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@logv：（1）order大于0。buddy system是以page为单位组织的，所谓“碎片整合”就是把分散在各个地方的不连续页调整在一起，形成连续的多个页。如果申请的order=0，不要求多个连续的页，也就没必要整合了；\r\n（2）要求__GFP_FS和__GFP_IO。是因为在碎片整合过程中，有可能进行“页迁移”，这个操作需要进行页面回写，操作VFS并访问磁盘IO，因此需要携带这两个flag。"
+ },
+ {
+  "id": "3001",
+  "parent": "3000",
+  "date": "2015-11-05T16:15:08+08:00",
+  "author": "logv",
+  "site": "",
+  "text": "@itrocker：多谢指点"
+ },
+ {
+  "id": "3029",
+  "parent": "0",
+  "date": "2015-11-11T17:24:51+08:00",
+  "author": "zhuochong",
+  "site": "",
+  "text": "大神，如何避免出现内核碎片的问题？可以从哪几个方面下手？"
+ },
+ {
+  "id": "3039",
+  "parent": "3029",
+  "date": "2015-11-12T19:06:29+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@zhuochong：这个问题好大：）  \r\n碎片问题难就难在无法完全避免，即便现在已经有了上述几个技术，问题还是存在，我们能做的就是尽量降低概率、延迟时间。\r\n对于开发者而言，就要尽量减少在buddy system中持续地申请释放page。\r\n可以考虑在上层实现内存池；复用slab技术；优化malloc库；甚至在用户不感知的情况下重启系统服务等等"
+ },
+ {
+  "id": "3337",
+  "parent": "3000",
+  "date": "2016-01-04T16:57:07+08:00",
+  "author": "rainys",
+  "site": "",
+  "text": "@itrocker：不带着两个标记，有可能造成申请流程的嵌套死锁，这个是实现层面的意义"
+ },
+ {
+  "id": "3414",
+  "parent": "0",
+  "date": "2016-01-19T09:04:13+08:00",
+  "author": "jixing",
+  "site": "",
+  "text": "linuxer：\r\n    膜拜\r\n能加个好友吗？我对linux内核有比较强的兴趣， 但是接触时间较短， 想您指导一下。。。"
+ },
+ {
+  "id": "3417",
+  "parent": "3414",
+  "date": "2016-01-19T12:19:41+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@jixing：可以的，我没有QQ，不过有微信，如果你足够仔细，应该可以搜索到我，不过其实这个网站也很合适交流的。"
+ },
+ {
+  "id": "4775",
+  "parent": "0",
+  "date": "2016-10-25T10:43:13+08:00",
+  "author": "komex",
+  "site": "",
+  "text": "您好，请教个问题，在实际的驱动程序中，有会用到MIGRATE_UNMOVABLE这个类型的吗？看了下code，好像没看到给page标志MIGRATE_UNMOVABLE这个类型的code. 谢谢！"
+ },
+ {
+  "id": "4777",
+  "parent": "4775",
+  "date": "2016-10-25T12:21:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@komex：你可以参考kernel中的这段代码：\r\n        /*                                                                      \r\n         * Disable grouping by mobility if the number of pages in the           \r\n         * system is too low to allow the mechanism to work. It would be        \r\n         * more accurate, but expensive to check per-zone. This check is        \r\n         * made on memory-hotadd so a system can start with mobility            \r\n         * disabled and enable it later                                         \r\n         */                                                                     \r\n        if (vm_total_pages < (pageblock_nr_pages * MIGRATE_TYPES))              \r\n                page_group_by_mobility_disabled = 1;                            \r\n        else                                                                    \r\n                page_group_by_mobility_disabled = 0;"
+ },
+ {
+  "id": "4778",
+  "parent": "4777",
+  "date": "2016-10-25T14:28:52+08:00",
+  "author": "komex",
+  "site": "",
+  "text": "@wowo：这段是初始化的时候的代码吧，一般page_group_by_mobility_disabled 都等于 0 吧，那都初始化好之后，后面申请的都没有用到 MIGRATE_UNMOVABLE 这个type吗？\r\n谢谢！"
+ },
+ {
+  "id": "4779",
+  "parent": "4778",
+  "date": "2016-10-25T14:35:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@komex：看代码应该是这样。如果系统的page比较少，少到不足以支撑相应的机制的时候，就使用MIGRATE_UNMOVABLE，也就变相的禁止了内存整理的功能。"
+ },
+ {
+  "id": "4780",
+  "parent": "4779",
+  "date": "2016-10-25T14:38:33+08:00",
+  "author": "komex",
+  "site": "",
+  "text": "@wowo：在分配时，有一个gfpflags_to_migratetype(const gfp_t gfp_flags)函数\r\n\r\n实现从 gfp_flags 转成 migrate_type。但分配的时候，一般我们给的都是GFP_KERNEL，照这个code看的话，用到的migrate_type都是同一个类型，所以就有点疑惑，不知道具体其他几种type的使用情况，求指点！\r\n谢谢！\r\n\r\ncode贴不上来，提示说黑客攻击，不知道是不是code问题，删了试下~ 囧~~~~"
+ },
+ {
+  "id": "4784",
+  "parent": "4780",
+  "date": "2016-10-26T21:48:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@komex：code贴不上的问题已经解决了。话说内存这一块的东西实在是太多了，还是等linuxer同学的分析文章吧，我相信他会把大家的问题讲明白的:-)"
+ },
+ {
+  "id": "4789",
+  "parent": "4784",
+  "date": "2016-10-27T11:04:44+08:00",
+  "author": "komex",
+  "site": "",
+  "text": "@wowo：好的，谢谢！期待后续的分析文章~~\r\n谢谢！"
+ },
+ {
+  "id": "6598",
+  "parent": "0",
+  "date": "2018-03-07T17:46:46+08:00",
+  "author": "Bob",
+  "site": "",
+  "text": "请问个问题，我们有个程序要申请大块内存的DMA，总的free内存是够得，但就是申请速度特别慢，分钟级。\r\n\r\n把系统 extfrag_threshold 改成 1000后，申请速度快了很多。\r\n\r\n按照你文章的意思，是慢在做内存 compact 上，改成 1000 后优先 reclaim 了，所以变快了。\r\n\r\n但我想不通的是，不 compact 怎么有连续内存可用呢？\r\n\r\n或者是说 extfrag_threshold 改成 1000 还有个隐含意思是，系统会去释放 buffer/cache 内存？"
+ },
+ {
+  "id": "7580",
+  "parent": "0",
+  "date": "2019-08-08T15:50:06+08:00",
+  "author": "davidlamb",
+  "site": "",
+  "text": "碎片整合对系统的性能有没什么影响？"
+ },
+ {
+  "id": "7768",
+  "parent": "4780",
+  "date": "2019-11-29T08:22:21+08:00",
+  "author": "看客",
+  "site": "",
+  "text": "@komex：事实上gfpflags_to_migratetype（）的代码已经把这个事情说清楚了。当kernel想要分配内存的时候，其传入的GFP_KERNEL:\r\n#define GFP_KERNEL      (__GFP_RECLAIM | __GFP_IO | __GFP_FS)\r\n#define __GFP_RECLAIM ((__force gfp_t)(___GFP_DIRECT_RECLAIM|___GFP_KSWAPD_RECLAIM))\r\n\r\n也就是说如果你没有显式传入__GFP_RECLAIMABLE或者__GFP_MOVABLE，那么gfp_flags中关于migratetype的值就是0,0不就是MIGRATE_UNMOVABLE的值吗。\r\n\r\n#define GFP_MOVABLE_MASK (__GFP_RECLAIMABLE|__GFP_MOVABLE)\r\n#define GFP_MOVABLE_SHIFT 3"
+ },
+ {
+  "id": "9181",
+  "parent": "7580",
+  "date": "2026-03-05T21:07:29+08:00",
+  "author": "凌云行者",
+  "site": "",
+  "text": "@davidlamb：肯定是有的，所以选择在系统内存使用率低的时候进行碎片整合"
+ },
+ {
+  "id": "9182",
+  "parent": "6598",
+  "date": "2026-03-05T21:23:14+08:00",
+  "author": "凌云行者",
+  "site": "",
+  "text": "@Bob：把extfrag_threshold设置为1000只是说明kernel不会在分配内存时因为内存碎片程序进行compact了，不代表kernel不会compact，还有kcompactd线程负责compact"
+ }
+]

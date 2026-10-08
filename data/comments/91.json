@@ -1,0 +1,602 @@
+[
+ {
+  "id": "464",
+  "parent": "0",
+  "date": "2014-09-24T20:05:26+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "hi linuxer\r\n我现在遇到一个问题，就是很多时候我看到0xffff000c的地方是一个机器码为EAFFFFFE也就是 while（1）一样的指令，我不知道什么情况下vector table 会变成这样，不知道你有什么思路没有"
+ },
+ {
+  "id": "465",
+  "parent": "0",
+  "date": "2014-09-25T10:16:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "你可以先用arm-linux-objdump的命令看看是否你编译的异常向量表就是这样的。\r\n指令“EAFFFFFE”应该是被翻译成一个跳转指令，跳转范围是24-bit的立即数，对于“EAFFFFFE”，显然还没有填入这个立即数，一般而言，当你编译出.o文件的时候，异常向量表的反汇编结果就是：\r\n__vectors_start():\r\narch/arm/kernel/entry-armv.S:1134\r\n   0:   eaffffff        b       4 <__vectors_start+0x4>\r\narch/arm/kernel/entry-armv.S:1135\r\n   4:   eafffffe        b       1a0 <vector_und>\r\narch/arm/kernel/entry-armv.S:1136\r\n   8:   e59ffff0        ldr     pc, [pc, #4080] ; 1000 <.vectors+0x1000>\r\narch/arm/kernel/entry-armv.S:1137\r\n   c:   eafffffe        b       120 <vector_pabt>\r\narch/arm/kernel/entry-armv.S:1138\r\n  10:   eafffffe        b       a0 <vector_dabt>\r\narch/arm/kernel/entry-armv.S:1139\r\n  14:   ea000086        b       220 <vector_swi>\r\narch/arm/kernel/entry-armv.S:1140\r\n  18:   eafffffe        b       20 <vector_irq>\r\narch/arm/kernel/entry-armv.S:1141\r\n  1c:   ea000087        b       224 <vector_fiq_offset>\r\n这时候，还没有link，因此地址还是reallocated。当连接完成，“EAFFFFFE”会被修正，其24-bit的立即数的位置会被填入真正跳转的地址，例如：\r\n__vectors_start():\r\nc000e4e4:\tef9f0000 \tsvc\t0x009f0000\r\nc000e4e8:\tea0000dd \tb\tc000e864 <early_mem+0x8>\r\nc000e4ec:\te59ff410 \tldr\tpc, [pc, #1040]\t; c000e904 <early_initrd+0x38>\r\nc000e4f0:\tea0000bb \tb\tc000e7e4 <parse_tag_serialnr+0x8>\r\nc000e4f4:\tea00009a \tb\tc000e764 <parse_tag_ramdisk+0x20>\r\nc000e4f8:\tea0000fa \tb\tc000e8e8 <early_initrd+0x1c>\r\nc000e4fc:\tea000078 \tb\tc000e6e4 <parse_tag_videotext+0x20>\r\nc000e500:\tea0000f7 \tb\tc000e8e4 <early_initrd+0x18>\r\n\r\n我建议你一步一步的检查：\r\n1、先检查你编译出来的kernel image\r\n2、完成early_trap_init之后，检查看看exception table的copy的对不对\r\n3、是否运行时，有些代码误操作了exception table"
+ },
+ {
+  "id": "1321",
+  "parent": "0",
+  "date": "2015-03-10T21:10:45+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "Hi Linuxer,\r\n请教一个问题，ARM外设使用GPIO中断唤醒CPU时，像GPIO配置成输入，和让该GPIO关联系统中断，以及让GPIO作为中断唤醒源等等动作一定要在外设驱动的初始化函数中完成吗？\r\n\r\n可以在device tree中编写，然后留一个类似的接口，让驱动只单纯的调用一个函数可以吗？\r\n我其实遇到的问题是，外设（中断源）的驱动是客户写的，但是这些系统相关的他们又不想管。"
+ },
+ {
+  "id": "1323",
+  "parent": "1321",
+  "date": "2015-03-11T09:03:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@RobinHsiang：你问的问题涉及了三个模块：\r\n1、GPIO子系统模块\r\n2、电源管理子系统模块\r\n3、中断子系统模块\r\n\r\n实际上，一个外设驱动当然需要调用内核各个子系统的接口来完成自己的具体功能。因此：\r\nGPIO配置、申请中断以及设置wakeup source本身都是驱动功能的一部分。device tree的主要功能是让系统知道硬件的拓扑结构，不可能提供一个一统天下的接口来完成你说的那一系列功能。\r\n\r\n如果外设驱动是客户写的，那么你是否在他撰写该驱动的时候仔细的定义了规格？我觉得电源管理也是规格之一的。不过我猜你们和客户其实没有那么正式的合同来约定该驱动的开发，因此，他们只想关注硬件功能的代码而不想涉及其他，如果这样的话，那么该驱动的责任人应该是你们，客户仅仅是提供示例代码而已。"
+ },
+ {
+  "id": "1325",
+  "parent": "1323",
+  "date": "2015-03-11T10:16:21+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "@linuxer：Thanks..!!\r\n确实是你所说的，这几个驱动没有约定这么详细，当初只是定了大致如何实现功能。\r\n关键是这个客户专门做这几个模块的研发，而且可能牵涉到一些军工和政府项目，不开源给我们。\r\n客户的建议是系统平台部分我们做，他们只open /dev/ttyhsl，至于电源和唤醒部分，我们也提供接口。\r\n最近也讨论了一些方案，比如侦测UART的传输情况来关闭电源和clock啊，或者将系统平台的情况写一些接口出来供他们调用，但是都感觉怪怪的，也怕实现不好。\r\n\r\n最终看来，只能是我们将代码写好，让他们做填空题，我们再测试了。"
+ },
+ {
+  "id": "1413",
+  "parent": "0",
+  "date": "2015-03-25T16:42:04+08:00",
+  "author": "阿孟",
+  "site": "",
+  "text": "Hi Linuxer,\r\n请教一下，\r\n\r\n“新的内核已经不区分slow handler和fast handle，都是fast handler，都是需要关闭CPU中断的，那些需要后续处理的内容推到threaded interrupt handler中去执行。”\r\n\r\n如果有的中断比较频繁，会不会可能丢失，如果刚好有其他中断已经关闭了CPU中断。 如果有这样的情况有什么建议吗?"
+ },
+ {
+  "id": "1418",
+  "parent": "1413",
+  "date": "2015-03-26T09:55:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@阿孟：这是和系统（HW and SW）设计有关的，我们假设有硬件A和硬件B，在A的的handler中是关闭中断的，因此，这时候B产生中断只能体现在中断控制器的中断状态寄存器上，如果该寄存器不能反应多次中断，那么在由于A handler而关闭CPU中断的期间，多次B产生的中断只能是合成一次。\r\n\r\n如何解决这个问题？我想可能有下面的方法：\r\n1、fast handler就是fast handler，不要做额外的事情，尽量快的处理，减少关闭中断的时间\r\n2、硬件这么快的产生中断是为何呢？是不是硬件的FIFO不够大？"
+ },
+ {
+  "id": "1419",
+  "parent": "1418",
+  "date": "2015-03-26T10:58:45+08:00",
+  "author": "阿孟",
+  "site": "",
+  "text": "@linuxer：是想使用mcu的一个timer中断，定时处理一些事务。 我这个timer中断是不是可能会导致其他中断收不到？把timer中断处理函数线程化会不会好些。\r\n\r\n中断的原理这一块不是很了解，我补补课。"
+ },
+ {
+  "id": "1420",
+  "parent": "1419",
+  "date": "2015-03-26T12:48:45+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@阿孟：不能用softtime timer吗？为何要用硬件timer的中断来处理某些定时的事务？"
+ },
+ {
+  "id": "1421",
+  "parent": "1420",
+  "date": "2015-03-26T13:29:40+08:00",
+  "author": "阿孟",
+  "site": "",
+  "text": "@linuxer：这个也是我们一个客户搞的东西，具体为啥用个硬件timer还没搞清楚。\r\n\r\n另外\r\n还有点疑惑，现在版本linux都会禁止cpu中断，那么之前版本linux如果不加IRQF_DISABLED这个flag是支持中断嵌套吗？"
+ },
+ {
+  "id": "1430",
+  "parent": "1421",
+  "date": "2015-03-27T11:54:23+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@阿孟：是的，slow handler执行时间太长了，必须开中断，以便在执行该handler的时候有机会让其他类型的中断handler抢占执行。当然，同一种类型的中断不会嵌套"
+ },
+ {
+  "id": "1434",
+  "parent": "1430",
+  "date": "2015-03-27T15:17:19+08:00",
+  "author": "阿孟",
+  "site": "",
+  "text": "@linuxer：明白了，多谢linuxer的解答。"
+ },
+ {
+  "id": "1795",
+  "parent": "0",
+  "date": "2015-05-14T17:09:26+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "@linuxer\r\n如果中断控制器可以支持足够多的interrupt source，那么在两个外设间共享一个interrupt request line是不推荐的，毕竟有一些额外的开销（发生中断的时候要逐个询问是不是你的中断，软件上就是遍历action list）\r\n-------------------------------------------------------------------------------------------------------------------------\r\n按上面描述，在遍历的时候做一次对比。没完全搞明白这个是如何实现的。\r\n我的理解是：\r\n首先,中断到来，那肯定先得到一个硬件寄存器中的信息。\r\n接着，那另一边就遍历所有这些IRQF_SHARED flags的信息，我不知道这些中断处理程序(标记IRQF_SHARED flags的)是如何被保存的，是抽象保存到一个链表里面？如果是这样，那这个是内核访问的全局地址抽象出来的，还是在request_irq(....,void *dev_id)时抽取的这个设备结构体指针？感觉应该保存这个dev_id，至少我表面上看上去这样会直观一点。不知道内核如何管理这些的？"
+ },
+ {
+  "id": "1798",
+  "parent": "1795",
+  "date": "2015-05-14T23:00:59+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@RobinHsiang：我自己感觉你的问题都可以在/irq_subsystem/interrupt_descriptor.html中找到答案，你先看看这份文档，如果仍有疑问，那么我再进一步解答"
+ },
+ {
+  "id": "1806",
+  "parent": "1798",
+  "date": "2015-05-15T11:49:01+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@linuxer：@linuxer:\r\n\r\n    看到您的这一句描述 \"为了让系统的performance不受影响，irqaction的callback函数必须在函数的最开始进行判断，是否是自己的硬件设备产生了中断（读取硬件的寄存器），如果不是，尽快的退出。\" \r\n \r\n    有一个关于共享中断的疑问, 共享中断是不是根据您上面的描述来区分具体的判断是哪一个设备发生了中断, 然后调用具体的action list中的specific handler ?"
+ },
+ {
+  "id": "1807",
+  "parent": "1806",
+  "date": "2015-05-15T12:18:01+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@super-：我看了技术手册上的一些设备, 没有找到用于记录设备产生了中断的寄存器?  还是我没有找到?"
+ },
+ {
+  "id": "1817",
+  "parent": "1806",
+  "date": "2015-05-15T18:09:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@super-：如果多个设备共享interrupt request line，那么任何一个产生了中断都可以触发中断线的有效状态，从而让interrupt controller向CPU汇报该中断，对于通用中断子系统而言，它无法分辨哪个设备产生了中断，因此只能是遍历action list，让specific handler自己判断。\r\n\r\n一般而言，设备中总是有记录中断状态寄存器的，你再仔细看看datasheet"
+ },
+ {
+  "id": "1824",
+  "parent": "1817",
+  "date": "2015-05-18T09:53:37+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@linuxer：非常感谢。"
+ },
+ {
+  "id": "2008",
+  "parent": "0",
+  "date": "2015-06-18T16:35:13+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "hi linux,\r\n    有个小问题，我们通过request_irq申请时指定中断触发标志IRQF_TRIGGER_RISING ，但是这个表示我在代码中没有看到怎么写到寄存器里面的。能否指点一下"
+ },
+ {
+  "id": "2009",
+  "parent": "2008",
+  "date": "2015-06-18T17:15:35+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@passerby：OK,刚才是老眼昏花了。。。找到了，是__irq_set_trigger里面定义的，然后调用irq chip的irq_set_type进行寄存器设置的。"
+ },
+ {
+  "id": "2997",
+  "parent": "0",
+  "date": "2015-11-04T10:29:47+08:00",
+  "author": "coray",
+  "site": "",
+  "text": "请问使用了标志 IRQF_NO_SUSPEND申请中断，是否会造成功耗的增加？能简要分析一下吗？谢谢"
+ },
+ {
+  "id": "2998",
+  "parent": "2997",
+  "date": "2015-11-04T19:34:43+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@coray：你问的是增加什么状态下的功耗？是正常运行时候的，还是系统处于suspend状态时候的功耗？\r\n如果你问的是正常运行时候，那么毫无疑问，不会。 IRQF_NO_SUSPEND这个标志本来就不会影响正常运行时候的功耗。\r\n系统处于suspend状态时候的功耗是否会增加呢？我的理解是：这和系统实现相关。\r\n设置了IRQF_NO_SUSPEND flag的驱动，会导致在系统进入suspend状态的时候不会关闭该irq number对应的irq request line（具体代码参考suspend_device_irqs），也就是说，interrupt controller不会disable该外设的interrupt request line。会不会影响功耗呢？对于该外设而言，当然不会，在suspend过程中，该外设仍然会进入suspend状态。对于interrupt controller和cpu core而言，这不好回答，和具体的实现相关。"
+ },
+ {
+  "id": "3492",
+  "parent": "0",
+  "date": "2016-02-05T12:30:25+08:00",
+  "author": "source_123",
+  "site": "",
+  "text": "新人报道！\r\n先给各位大神拜个早年。\r\n小弟最近遇到个问题，请各位大神把把脉。\r\nerr = request_threaded_irq(irq, NULL, test_irq, \r\n\t\t\tIRQF_TRIGGER_RISING | IRQF_ONESHOT | IRQF_NO_SUSPEND,\r\n\t\t\tdev_name(&spi->dev), my_dev);\r\nenable_irq_wake(irq);\t\r\n\r\n但是系统休眠后，这个中断无法唤醒系统，中断回调函数里面有log，看不到任何log输出。这是什么原因呢？\r\n备注：这个中断号是可以唤醒系统的，我们有另外一个器件用这个中断号没任何问题，做了一个器件替换后，系统无法唤醒了。 所以这个问题应该是软件问题，但小弟看了很久了，没有思路，求大神指点下哦。\r\n\r\n谢谢！"
+ },
+ {
+  "id": "3496",
+  "parent": "3492",
+  "date": "2016-02-06T10:03:05+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@source_123：如果我遇到这个问题，我们先沿着下面的思路处理：\r\n1、示波器观察该器件是否真的产生了中断信号\r\n2、如果的确产生了硬件的中断信号，那么在系统进入休眠状态之前，观察电源管理相关的寄存器设定是否正确\r\n3、如果都是OK的，那么在系统唤醒附近增加log，看看是否实际系统已经唤醒，只不过是卡在某个driver的resume函数中"
+ },
+ {
+  "id": "3512",
+  "parent": "0",
+  "date": "2016-02-23T10:21:55+08:00",
+  "author": "狂奔的蜗牛",
+  "site": "",
+  "text": "向大神请教一个问题，我在3.14版本的内核上面直接request_irq(61,x,x,x,x);的时候cat /proc/interrupt显示的信息是：\r\n          CPU0    CPU1\r\n61         0       0       GIC    61    pcie_algo\r\n这里应该是简单的线性映射，前面和后面都是61，并且是可以正常接收到中断进入中断处理函数的，但是同样的方式在4.0版本的内核下就成了这个样子了：\r\n          CPU0    CPU1\r\n61         0       0       zynq-gpio    38    pcie_algo \r\n这时候中断控制器变了，后面的数字也从61变成了38，而且这时候是无法接收中断信号的，确定中断已经拉高了，应该是出在了中断号上面了，4.0上面不是简单的线性映射关系，但是我现在不知道如何在驱动里面正确的获得这个61号硬件interrupt ID 对应的虚拟中断号，如果是一个真实的设备有对应的寄存器的话，我可以在设备树里面定义中断，并且把驱动套一个platform的壳子，但现在data手册里面只给了硬件中断号就是61号，我只能在驱动里面想办法获取他的映射后的IRQ NUM了？"
+ },
+ {
+  "id": "3543",
+  "parent": "3512",
+  "date": "2016-02-26T14:16:45+08:00",
+  "author": "狂奔的蜗牛",
+  "site": "",
+  "text": "@狂奔的蜗牛：这个问题使用设备树+platform的方式解决了，现在中断号是正确了，虚拟中断号是16，硬件中断号是61，但是中断一来，就进入死循环了，提示说unexpected IRQ trap at vector 00,   irq 0, desc:xxxxx  depth:1   count:0  unhandled:0 应该是内核没有找到我注册的那个中断处理函数，irq值也不对，跟站点请教一下，如果知道的话给个提示。。。。"
+ },
+ {
+  "id": "3546",
+  "parent": "3543",
+  "date": "2016-02-26T14:45:12+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@狂奔的蜗牛：呵呵～～～你这个问题太具体了，中断控制器原来用的是GIC，现在用了一个似乎是zynq-gpio的中断控制器（估计是一个有中断功能的GPIO controller？），那么你的系统的中断控制器是如何的？你的IRQ到hw interrupt ID是如何映射的？\r\n我估计你是注册了IRQ=16的中断handler，但是，要能执行这个handler需要：\r\n1、正确的初始化zynq-gpio所属的irq domain\r\n2、正确的建立mapping table，否则也无法将61号硬件中断转换成16这个IRQ number\r\n\r\n你给出的信息太少了，我也无法帮你，只能随便说两句"
+ },
+ {
+  "id": "3547",
+  "parent": "3546",
+  "date": "2016-02-26T14:54:05+08:00",
+  "author": "狂奔的蜗牛",
+  "site": "",
+  "text": "@郭健：后来是GIC了，我搜了整个内核代码，也没有关于中断控制器的叫做ZYNQ-GPIO的，现在的打印信息是这样的：\r\ncat   /proc/interrupts\r\n       CPU0      CPU1\r\n16      0         0        GIC   61    PCIE_ALGO\r\n后面的是硬件中断号，前面的是对应的映射后的，我是在设备树里面的设置的中断号，<0 29 4>,这个样子"
+ },
+ {
+  "id": "3548",
+  "parent": "3547",
+  "date": "2016-02-26T14:55:37+08:00",
+  "author": "狂奔的蜗牛",
+  "site": "",
+  "text": "@狂奔的蜗牛：在驱动里面使用的platform_get_irq(),返回值就是16了，然后使用devm_request_irq()进行的注册"
+ },
+ {
+  "id": "3597",
+  "parent": "0",
+  "date": "2016-03-07T09:43:18+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "有个小疑问，对于中断只简单使用过gpio中断，有个gpio_to_irq的函数，可以把gpio直接转换成\r\nrequest_irq函数中所需要的irq number， 而其它的中断，对于request_irq中的irq number号如何\r\n得到。"
+ },
+ {
+  "id": "3604",
+  "parent": "3597",
+  "date": "2016-03-07T22:40:44+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@electrlife：这个和中断控制器驱动有关，可以静态分配，也可以动态分配。静态分配很简单，固定映射，某个IRQ number对应某个IRQ domain的HW interrupt ID。对于动态分配，可以调用irq_alloc_desc来分配一个空闲的IRQ number，然后建立和HW interrupt ID的mapping。"
+ },
+ {
+  "id": "3608",
+  "parent": "3604",
+  "date": "2016-03-08T11:09:18+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@郭健：HW ID 与irq number 映射的过程，我明白，只是这个number如何告知驱动编写者，\r\n例如，有一个串口设备，我需要使用这个串口的中断，如果我想在tty serial框架下\r\n实现，但是我也需要这个串口中断，因此我的设备驱动中需要知道这个串口中断number，\r\n但这个中断的映射应该是厂商通过动态申请的，所以我无法得知这个number。PS：这个需求仅是虚构，实际上可能不会有这种场景出现，只是为了说明问题。"
+ },
+ {
+  "id": "3612",
+  "parent": "3608",
+  "date": "2016-03-08T19:00:23+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@electrlife：任何的驱动都不能脱离驱动模块，对应你的场景，我们可以借用platform bus、platform driver和platform device。具体而言，你可以在UART driver中定义一个platform driver。在该platform driver的probe函数只要调用platform_get_irq即可以获得IRQ number。虽然IRQ是动态分配的，但是你可以通过接口获取该IRQ number。"
+ },
+ {
+  "id": "3622",
+  "parent": "3612",
+  "date": "2016-03-09T14:06:35+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@郭健：假设有一个I2C设备，这个设备就是记录串口中断产生的数量，因些按I2C驱动框架\r\n实现这个假想设备的驱动，在这种具体的场景中，如何得到串口的中断号？\r\n换句话说，这些动态申请的，分散在各个驱动的子系统中的irq number可没可能被其它\r\n的驱动共享使用。\r\n比如，I2C驱动子系统中并没有提供和中断有关的接口信息，而我的驱动Probe时也无法\r\n得到I2C的中断number，因为它是在厂商驱动初始化时动态申请，并且一般保存在厂商\r\n自己抽象的XXX_I2C结构中。"
+ },
+ {
+  "id": "3623",
+  "parent": "3622",
+  "date": "2016-03-09T14:10:39+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@electrlife：补充：比如，如何得到I2C adapter 的中断number？"
+ },
+ {
+  "id": "3635",
+  "parent": "3623",
+  "date": "2016-03-09T22:56:37+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@electrlife：一般而言，SOC上的I2C controller（也就是I2C adapter）都是platform bus上的设备，呵呵~~~这个问题不是回答过了吗？你是想问I2C device driver如何得到IRQ number吗？"
+ },
+ {
+  "id": "3639",
+  "parent": "3623",
+  "date": "2016-03-10T12:16:42+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@electrlife：唉，郭兄，我终于说明白，让你理解了，确实是想问I2C device driver如何得到IRQ number，或者说类似这种情况的。"
+ },
+ {
+  "id": "3640",
+  "parent": "3623",
+  "date": "2016-03-10T12:18:28+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@electrlife：另外还有就是I2C如何得到其它设备驱动的IRQ number，比如串口。"
+ },
+ {
+  "id": "3645",
+  "parent": "3623",
+  "date": "2016-03-10T20:09:42+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@electrlife：其实struct i2c_client（对应设备模型中的i2c device）中有irq的成员的，保存的就是这个i2c设备使用的irq number，不过怎么得到呢？还是回到如何实例化i2c_client这个数据结构的场景。\r\n\r\n分配i2c_client并注册到设备模型中是在I2C controller（i2c adapter）驱动的初始化函数中进行的。在该函数中会调用i2c_register_adapter接口向I2C core模块注册一个adapter，并调用of_i2c_register_devices函数进行i2c device的实例化。这时候可以分析该i2c client的设备树节点，获取和中断相关的信息（设备树传递过来的），并进行分析并创建映射（irq_of_parse_and_map），并赋值给client->irq。"
+ },
+ {
+  "id": "3692",
+  "parent": "3546",
+  "date": "2016-03-19T10:13:08+08:00",
+  "author": "狂奔的蜗牛",
+  "site": "",
+  "text": "@郭健：这个中断的问题解决了，是赛灵思提供的内核的问题，之前使用的他们网站上的内核是不稳定版本原来（他们竟然取名为master版本），换了一个稳定版就OK了。。。。。"
+ },
+ {
+  "id": "3696",
+  "parent": "3692",
+  "date": "2016-03-20T23:55:25+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@狂奔的蜗牛：问题解决了就好，呵呵~~"
+ },
+ {
+  "id": "3777",
+  "parent": "3597",
+  "date": "2016-04-02T15:36:24+08:00",
+  "author": "民",
+  "site": "",
+  "text": "@electrlife：刚入门，看了这里也有个疑问想请教下：\r\n”gpio_to_irq的函数可以以把gpio直接转换成 request_irq函数中所需要的irq number“，并且request_irq函数的中断回调也可以设置了。那gpio中断，好像irq domain无关（request_irq函数没有和irq domain关联的地方），中断来了调用到回调函数不就达到目的了。\r\n“gpio中断，好像irq domain无关”=>这样理解对不？\r\n\r\n谢谢"
+ },
+ {
+  "id": "4157",
+  "parent": "0",
+  "date": "2016-06-29T19:55:33+08:00",
+  "author": "simonzhang",
+  "site": "",
+  "text": "（d）强制线程化是一个和实时性相关的选项，从我的角度来看是一个很不好的设计（个人观点），各个驱动工程师在撰写自己的驱动代码的时候已经安排好了自己的上下文环境。有的是进程上下文，有的是中断上下文，在各自的上下文环境中，驱动工程师又选择了适合的内核同步机制。但是，强制线程化导致原来运行在中断上下文的primary handler现在运行在进程上下文，这有可能导致一些难以跟踪和定位的bug。\r\n==================================================================================================\r\nstatic int irq_thread(void *data)\r\n{\r\n。。。\r\n\tif (force_irqthreads && test_bit(IRQTF_FORCED_THREAD,\r\n\t\t\t\t\t&action->thread_flags))\r\n\t\thandler_fn = irq_forced_thread_fn;\r\n\telse\r\n\t\thandler_fn = irq_thread_fn;\r\n。。。\r\n}\r\n\r\nstatic irqreturn_t\r\nirq_forced_thread_fn(struct irq_desc *desc, struct irqaction *action)\r\n{\r\n\tirqreturn_t ret;\r\n\r\n\tlocal_bh_disable();\r\n\tret = action->thread_fn(action->irq, action->dev_id);\r\n\tirq_finalize_oneshot(desc, action);\r\n\tlocal_bh_enable();\r\n\treturn ret;\r\n}\r\n\r\nlocal_bh_disable()保证了强制线程化并不会导致同步问题\r\n\r\n（e）驱动工程师是撰写具体外设驱动的，他/她未必会了解到底层的一些具体的interrupt controller的信息。有些interrupt controller（例如MSI based interrupt）本质上就是就是one shot的（通过IRQCHIP_ONESHOT_SAFE标记），因此驱动工程师设定的IRQF_ONESHOT其实是画蛇添足，因此可以去掉。\r\n================================================================================================\r\n虽然kernel的注释上是这样说，但是request_threaded_irq时还是必须要设定IRQF_ONESHOT，否者它就会被错误的强制线程化了。\r\n其实我觉得这个ONESHOT的命名也是很不好，它不仅仅表示one shot，而且还是thread irq的标志。"
+ },
+ {
+  "id": "4285",
+  "parent": "3692",
+  "date": "2016-07-19T15:13:06+08:00",
+  "author": "龙骑之舞",
+  "site": "",
+  "text": "@狂奔的蜗牛：遇到了跟狂奔的蜗牛同样的问题，后来这个中断号是怎么映射过去的，我使用platform_get_irq()返回的逻辑中断号一直都是-6失败，还有devicetree还要做什么修改吗"
+ },
+ {
+  "id": "4290",
+  "parent": "4285",
+  "date": "2016-07-20T15:11:53+08:00",
+  "author": "hello-world",
+  "site": "",
+  "text": "@龙骑之舞：应该是该设备的dts写的有问题，没有正确的创建platform device及其资源，把相关的dts贴出来看看"
+ },
+ {
+  "id": "4301",
+  "parent": "4290",
+  "date": "2016-07-22T15:49:41+08:00",
+  "author": "龙骑之舞",
+  "site": "",
+  "text": "@hello-world：axi_pcie_0: axi-pcie@50000000 {\r\n\t\t\t#address-cells = <3>;\r\n\t\t\t#interrupt-cells = <1>;\r\n\t\t\t#size-cells = <2>;\r\n\t\t\tcompatible = \"xlnx,axi-pcie-host-1.00.a\";\r\n\t\t\tdevice_type = \"pci\";\r\n\t\t\tinterrupt-map = <0 0 0 1 &pcie_intc 1>,\r\n\t\t\t\t\t<0 0 0 2 &pcie_intc 2>,\r\n\t\t\t\t\t<0 0 0 3 &pcie_intc 3>, \r\n\t\t\t\t\t<0 0 0 4 &pcie_intc 4>;\r\n\t\t\tinterrupt-map-mask = <0 0 0 7>;\r\n\t\t\tinterrupt-parent = <&intc>;\r\n\t\t\tinterrupts = <0 29 4>;\r\n\t\t\tranges = <0x02000000 0x00000000 0x60000000 0x60000000 0x00000000 0x10000000>;\r\n\t\t\treg = <0x50000000 0x10000000>;\r\n\t\t\tpcie_intc: interrupt-controller {\r\n\t\t\t\t#address-cells = <0>;\r\n\t\t\t\t#interrupt-cells = <1>;\r\n\t\t\t\tinterrupt-controller ;\r\n\t\t\t};\r\n\t\t};\r\n\r\n使用的linux版本为xilinx提供的linux-xlnx-xilinx-v2015.2.03"
+ },
+ {
+  "id": "4303",
+  "parent": "4290",
+  "date": "2016-07-22T15:52:52+08:00",
+  "author": "龙骑之舞",
+  "site": "",
+  "text": "@hello-world：东西有点多，不能完全贴上来，主要用的就是linux版本目录下dts中的那个devicetree,加了贴上来的那部分内容。我的qq76346856，能否加一下，谢谢"
+ },
+ {
+  "id": "4366",
+  "parent": "3777",
+  "date": "2016-08-02T16:37:52+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "@民：同问这个问题。@wowo"
+ },
+ {
+  "id": "4367",
+  "parent": "4366",
+  "date": "2016-08-03T09:20:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@maze：二位可以看一下这篇文章：/irq_subsystem/irq-domain.html，理解一下irq domain的含义。irq domain用来抽象一个相对独立的中断域，毫无疑问，GPIO中断就是一个domain。gpio_to_irq，本身就是把GPIO domain的中断号（例如gpio number），转换为CPU视角的中断number。"
+ },
+ {
+  "id": "4368",
+  "parent": "4367",
+  "date": "2016-08-03T16:25:02+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "@wowo：@wowo：因为看之前那篇文章的时候，感觉domain的大部分工作就是把hw id变成cpu认识的irq num；所以才有了这个疑问"
+ },
+ {
+  "id": "4371",
+  "parent": "4368",
+  "date": "2016-08-04T22:36:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@maze：是的，domian的字面意义是“域、领地”，也就是说，只有在自己的领地里有效。如果要和其它领地的人交流，则需要“翻译”。"
+ },
+ {
+  "id": "4469",
+  "parent": "0",
+  "date": "2016-08-30T10:03:28+08:00",
+  "author": "calm.xia",
+  "site": "",
+  "text": "@wowo @linuxer \r\n请问一下，在使用request_threaded_irq申请中断时，传递flag IRQF_TRIGGER_NONE 表示什么意思？\r\n\r\n目前我搜到的信息如下：\r\nhttp://stackoverflow.com/questions/17997381/what-is-the-use-of-the-interrupt-flag-irqf-trigger-none\r\n“IRQF_TRIGGER_NONE is defined with a bit-mask of 0 indicating that it does NOT imply any kind of edge or level triggered interrupt behaviour.\r\n\r\n#define IRQF_TRIGGER_NONE       0x00000000\r\nHence registering an ISR using request_irq() with IRQF_TRIGGER_NONE does NOT modify the existing configuration of the IRQ. This is important in scenarios where we would simply like to register an ISR for an hardware in the mode it is currently configured ”\r\n\r\n不是很明白他的意思。我的理解是：使用 IRQF_TRIGGER_NONE 这个flag就是说驱动不设置该设备的中断触发类型，可能在该设备IC内部或者fireware中已经对它的中断触发类型进行设置了，驱动这里就不用再去设置。不知道我这样的理解对吗？"
+ },
+ {
+  "id": "4471",
+  "parent": "4469",
+  "date": "2016-08-30T10:11:48+08:00",
+  "author": "calm.xia",
+  "site": "",
+  "text": "@calm.xia：这是linux kernel（3.18）, kernel-3.18\\include\\linux\\interrupt.h\r\n的注释：\r\n\r\n/*\r\n * These correspond to the IORESOURCE_IRQ_* defines in\r\n * linux/ioport.h to select the interrupt line behaviour.  When\r\n * requesting an interrupt without specifying a IRQF_TRIGGER, the\r\n * setting should be assumed to be \"as already configured\", which\r\n * may be as per machine or firmware initialisation.\r\n */\r\n#define IRQF_TRIGGER_NONE\t0x00000000\r\n#define IRQF_TRIGGER_RISING\t0x00000001\r\n#define IRQF_TRIGGER_FALLING\t0x00000002\r\n#define IRQF_TRIGGER_HIGH\t0x00000004\r\n#define IRQF_TRIGGER_LOW\t0x00000008\r\n#define IRQF_TRIGGER_MASK\t(IRQF_TRIGGER_HIGH | IRQF_TRIGGER_LOW | \\\r\n\t\t\t\t IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING)\r\n#define IRQF_TRIGGER_PROBE\t0x00000010"
+ },
+ {
+  "id": "4473",
+  "parent": "4469",
+  "date": "2016-08-30T14:30:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@calm.xia：上面的英文说的已经很详细了：IRQF_TRIGGER_NONE表示驱动程序在注册irq的时候并不想修改trigger的类型，原来是什么配置就保持什么配置就OK了，某些场景需要这样的设定。"
+ },
+ {
+  "id": "4479",
+  "parent": "4473",
+  "date": "2016-08-30T21:41:16+08:00",
+  "author": "calm.xia",
+  "site": "",
+  "text": "@linuxer：谢谢回复。\r\n还请问下：\r\n你所说的“原来是什么配置就保持什么配置”，一般在什么时候或地方配置呢？"
+ },
+ {
+  "id": "4482",
+  "parent": "0",
+  "date": "2016-08-31T17:13:11+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "我在等这个todo"
+ },
+ {
+  "id": "4483",
+  "parent": "4482",
+  "date": "2016-09-01T09:21:17+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@maze：最近在搞内存管理，估计需要等一段时间了，抱歉！！！"
+ },
+ {
+  "id": "4484",
+  "parent": "4479",
+  "date": "2016-09-01T09:30:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@calm.xia：其实我写的驱动也从来没有用过IRQF_TRIGGER_NONE，因此我也给不出一个具体的场景。一般而言，我猜测可能是在probe函数中（但是在request_threaded_irq之前），也许在bootloader中。"
+ },
+ {
+  "id": "4681",
+  "parent": "4484",
+  "date": "2016-10-10T10:32:40+08:00",
+  "author": "coco",
+  "site": "",
+  "text": "@linuxer：原来是什么配置就保持什么配置，个人理解，这里的配置指的是chip层的配置。"
+ },
+ {
+  "id": "5186",
+  "parent": "4681",
+  "date": "2017-01-24T21:09:27+08:00",
+  "author": "Wolf",
+  "site": "",
+  "text": "@coco：dts里可以配置"
+ },
+ {
+  "id": "5663",
+  "parent": "0",
+  "date": "2017-06-12T19:59:22+08:00",
+  "author": "lydfl",
+  "site": "",
+  "text": "Linuxer,\r\n    您好，请问nested IRQ主要应用在什么场景？如果说为了节省中断引脚，那在父中断的处理流程里面用switch case不就可以了吗？\r\n    在内核全局搜索了一下，这个nested irq好像使用的也不多。。。"
+ },
+ {
+  "id": "5760",
+  "parent": "0",
+  "date": "2017-06-29T17:25:34+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "@linuxer：\r\nhandle_edge_irq 在这个 handler中，我没有找到怎么保证IRQF_ONESHOT这个实现。如果中断有两次，就有可能wake thread两次，thread会执行两次吗？ wake up thread函数，只是会把它状态改成running。所以，我觉得会执行一次。"
+ },
+ {
+  "id": "5869",
+  "parent": "0",
+  "date": "2017-08-03T10:39:07+08:00",
+  "author": "mouse",
+  "site": "",
+  "text": "threaded irq和工作队列(work queue)都是在进程上下文中处理中断下半部。什么时候选工作队列，什么时候选threaded irq? 谢谢。"
+ },
+ {
+  "id": "5870",
+  "parent": "5869",
+  "date": "2017-08-03T15:03:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@mouse：要不要加入蜗窝微信群，和大家一起讨论这些问题？"
+ },
+ {
+  "id": "5885",
+  "parent": "5869",
+  "date": "2017-08-08T08:46:38+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@mouse：大家在微信群里讨论了这个问题，具体可以参考/forum/#p795"
+ },
+ {
+  "id": "6279",
+  "parent": "0",
+  "date": "2017-12-02T14:21:49+08:00",
+  "author": "floater",
+  "site": "",
+  "text": "请问下关于io expander这种情况相当于soc扩展了一个gpio controller，那它的中断申请中io expander上的中断号是怎么分配的呢？"
+ },
+ {
+  "id": "7555",
+  "parent": "0",
+  "date": "2019-07-29T19:03:16+08:00",
+  "author": "chili",
+  "site": "",
+  "text": "探讨个非常有意思的问题，不知道linux的中断底层是怎么去处理的。\r\n背景：用linux的gpio的中断去捕获并计算一系列1ms~2ms左右的脉宽（在中断中利用ktime_get获得时间并相减获得）\r\n测试1：利用linux的两个gpio来测试中断latency，短接2个pin，然后利用hrtimer定期产生1ms的timer来toggle pin1的状态；然后pin2申请上升沿和下降沿中断。进入pin2中断的时间减去pin1状态改变的时间即为latency，统计多次取平均值，结果如下：\r\n    CPU     HZ          Version         times          latency\r\n    4*A53   1.8G        4.14.78         10000 passes, avg. 1429 nsecs\r\n    Pi\t    700mhz\t3.6.11+\t        1024 passes. avg. 3770 nsecs\r\n   【初步结论】linux虽然不是实时操作系统，但是中断延时似乎还是很小的，但是这里是平均值，可能平滑掉了一些延时非常大的凸点，于是做了第二个实验\r\n\r\n测试2：利用linux的两个gpio来测试中断latency，短接2个pin，然后利用hrtimer定期产生us级别的timer来toggle pin1的状态；然后pin2申请上升沿和下降沿中断，记录下pin2连续两次进入中断时间间隔T2，这个T2应该近似于timer的周期T1，测试结果如下：\r\n    + hrtimer 10 us toggle pin1引脚，pin2 中断间500000 次间隔超出周期 10 us +/- 5 us的 次数有  20-49/499977-499997 time range(4us-306us)\r\n    \r\n    + hrtimer 500 us toggle pin1引脚，pin2 中断 10000 次间隔超出周期 500 us +/- 5us的 次数有  5~8/9996~10000 time range(486 us-1006 us)\r\n    \r\n    + hrtimer 100 us toggle pin1引脚，pin2 中断 50000 次间隔超出周期 100 us +/- 5 us的 次数有  7~20/49990 time range(6 us- 619 us)\r\n    \r\n    + hrtimer 50 us toggle pin1引脚，pin2 中断 100000 次间隔超出周期 50 us +/- 5 us的 次数有  14/(100000) times  34-67 us\r\n    \r\n    + hrtimer 1000 us toggle pin1引脚，pin2 中断 5000 间隔超出周期 1000 us +/- 5 us的 次数有  5-16/5000 time range(489-1006)\r\n    \r\n  【结论】虽然有丢中断，但是总体来说中断延时还是很小的，us基本的，基于以上两个测试，我觉得linux的gpio中断延时还是比想象中的小，于是我打算用gpio来进行IR的解码，于是有了测试3\r\n\r\n测试3：利用一个pin接到ir信号输出，并用单边沿触发，测试脉宽周期T（IR的T的主要有1.15ms/2.25ms/9ms/13ms等，最小的都大于1ms，基于上面测试我认为正确捕获时间应该没问题）， 但是结果如下：\r\n    + 每隔3s发送一个IR信号（每隔IR信号包含33个周期的IO中断），IO捕获的T打印出来，每次捕获的T都有凸点，比如T=9us\r\n    + 每隔1s发送一个IR信号，大概30%概率都有凸点\r\n    + 每隔40ms发送一个IR信号，就第一个IR信号有异常的凸点，从第二个IR信号开始都是正常的T\r\n    + 每隔20ms发送一个IR信号，就第一个IR信号有异常的凸点，从第二个IR信号开始都是正常的T\r\n【结论】中断时间越长，linux越难准确捕获到，现象类似于需要一个激活状态，前面几个不准确的中断导致后面的中断都是准确的，难道底层有runtime的中断处理优化? 另外也怀疑不是睡眠以及dvfs之类的，但是好像没有类似事件发生\r\n，\r\n\r\n附录具有凸点的T数据，这个在一个单独线程中打印的，中断中把时间存好：\r\n[   96.691005] 95600663000,1012137457, d=1114\r\n[   96.695204] 95602281375,1012150404, d=1618   #此处捕获的实际时间比理论时间延迟了500ms，从此处开始后面的中断都延迟了500ms，所以后面T都是正确的\r\n[   96.699311] 95604537875,1012168456, d=2256\r\n[   96.703422] 95605666625,1012177486, d=1128\r\n\r\n[   96.707530] 95606765250,1012186274, d=1098\r\n[   96.711640] 95607894375,1012195308, d=1129\r\n[   96.715748] 95609023625,1012204342, d=1129\r\n[   96.719858] 95611251125,1012222162, d=2227\r\n\r\n[   96.723966] 95612381500,1012231204, d=1130\r\n[   96.728075] 95612993000,1012236097, d=611    #到此处的时候，中断没有延时，而是立即就去处理了，导致此时的时间等于理论时间，从此之后中断都是正常响应\r\n[   96.732184] 95615240000,1012254073, d=2247\r\n[   96.736204] 95616358750,1012263023, d=1118\r\n\r\n[   96.740313] 95619094000,1012284904, d=2735\r\n[   96.744420] 95620848875,1012298944, d=1754\r\n[   96.748542] 95623093000,1012316897, d=2244\r\n[   96.752652] 95624213625,1012325862, d=1120\r\n\r\n[   96.756758] 95626457875,1012343817, d=2244\r\n[   96.760867] 95628703625,1012361782, d=2245\r\n[   96.764973] 95630947750,1012379735, d=2244\r\n[   96.769094] 95633193500,1012397701, d=2245\r\n[   96.773204] 95635438000,1012415657, d=2244\r\n[   96.777314] 95637683625,1012433622, d=2245\r\n[   96.781433] 95639927875,1012451577, d=2244\r\n[   96.785545] 95642172875,1012469537, d=2245\r\n\r\n[   96.789653] 95643292750,1012478495, d=1119\r\n[   96.793775] 95644413625,1012487462, d=1120\r\n[   96.797883] 95645532875,1012496416, d=1119\r\n[   96.801991] 95646652750,1012505375, d=1119\r\n[   96.806106] 95647772750,1012514335, d=1120\r\n[   96.810216] 95648892875,1012523297, d=1120\r\n[   96.814323] 95650012875,1012532256, d=1120\r\n[   96.818444] 95651132875,1012541216, d=1120\r\n   \r\n\r\n【IR解码结果】间隔时间按一个按键，解码会失败；但是你迅速的不断按下IR按键，解码是成功的，跟上面的数据吻合，但是始终不明白为何长时间间隔的中断会捕获不准，或者说中断latency很长"
+ },
+ {
+  "id": "7556",
+  "parent": "7555",
+  "date": "2019-07-30T11:24:19+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@chili：另外也怀疑不是睡眠以及dvfs之类的，但是好像没有类似事件发生 ?\r\n还是检查下吧，很像睡眠引起的。\r\n你可以让系统busy起来，比如用户态 运行个while(1)，然后再测试你的程序。"
+ },
+ {
+  "id": "7564",
+  "parent": "7556",
+  "date": "2019-08-01T14:10:48+08:00",
+  "author": "chili",
+  "site": "",
+  "text": "@bsp：确实啊，4*A53的ARM core，执行下面两个while后，其中2个core的cpu使用率为100%，这种情况下IR按键的识别率可以达到100%，执行一个while还是会存在误识别；\r\nwhile true;do : ;done  &\r\nwhile true;do : ;done  &\r\n\r\n**那么问题又来了，怎么避免不睡眠呢？IRQF_NO_SUSPEND这些中断申请的flag都试了不行，1ms的间隔都会睡眠，有办法规避或者查询到何时睡眠的吗？"
+ },
+ {
+  "id": "7565",
+  "parent": "7564",
+  "date": "2019-08-01T15:27:50+08:00",
+  "author": "chili",
+  "site": "",
+  "text": "@chili：OK,初步研究了下，是因为cpuidle导致，执行下面命令禁止cpuidle,就可正常快速的响应中断了\r\necho 1 > /sys/devices/system/cpu/cpu0/cpuidle/state1/disable"
+ },
+ {
+  "id": "7790",
+  "parent": "0",
+  "date": "2019-12-20T18:32:49+08:00",
+  "author": "bing",
+  "site": "",
+  "text": "请问，我在使用request_thread_irq()的时候，总会进入一次中断函数，看着又不像是出发了中断条件，具体需要怎么查找原因呢，感谢"
+ },
+ {
+  "id": "7914",
+  "parent": "0",
+  "date": "2020-03-10T10:39:55+08:00",
+  "author": "albert",
+  "site": "",
+  "text": "建一个中断后如何设置高级别的优先级以保证该中断的实时性？有没办法让中断一直保持高优先级？"
+ },
+ {
+  "id": "7967",
+  "parent": "0",
+  "date": "2020-04-22T19:06:03+08:00",
+  "author": "小学生",
+  "site": "",
+  "text": "“由于IRQ B的的中断描述符的highlevel irq-events handler处理   设计   I2C的操作”\r\n\r\n应该是\r\n\r\n“由于IRQ B的的中断描述符的highlevel irq-events handler处理   涉及   I2C的操作”"
+ },
+ {
+  "id": "8081",
+  "parent": "0",
+  "date": "2020-08-04T20:44:06+08:00",
+  "author": "每天一小步",
+  "site": "",
+  "text": "请教一下：\r\n“（d-2）在那些被强制线程化的中断线程中，disable bottom half的处理。这是因为在旧的中断处理机制中，botton half是不可能抢占top half的执行，强制线程化之后，应该保持这一点。”\r\n\r\n有两个问题：\r\n1）“disable bottom half的处理” 这个源码在哪里？\r\n2）那些被强制线程化的中断处理函数作者可能并不知道自己被强制线程化了，他有可能会在自己认为的中断上半部启动一个下半部机制来处理后面的工作，如果强制线程化机制把bottom half diable了，那本来该在下半部中处理的业务不是不能完成了吗？"
+ },
+ {
+  "id": "8635",
+  "parent": "7914",
+  "date": "2022-06-30T09:42:50+08:00",
+  "author": "wate",
+  "site": "",
+  "text": "@albert：如果只从保持高优先级角度看的话，那只有让中断处理程序处于中断上下文时有最高优先级了，使用IRQF_NOTHREAD在request_thread_irq()注册时明确指定不线程化应该是可以满足高优先级的问题。否则，线程化之后会被内核高优先级线程欺负的。"
+ }
+]

@@ -1,0 +1,186 @@
+[
+ {
+  "id": "1902",
+  "parent": "0",
+  "date": "2015-05-31T13:15:55+08:00",
+  "author": "zzq57683968",
+  "site": "",
+  "text": "ARM64开始，cpu topology/cpu power在PSCI中也是很重要的一个部分，希望wowo有机会研究和分析。"
+ },
+ {
+  "id": "1904",
+  "parent": "1902",
+  "date": "2015-06-01T08:39:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zzq57683968：多谢关注，我会尽力做的:-)"
+ },
+ {
+  "id": "2803",
+  "parent": "0",
+  "date": "2015-10-20T12:30:12+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "multi-core和Hyper-Threading有什么区别？有没有比较懂的人讲一讲\r\nBTW，ARM似乎是没有采用Hyper-Threading技术"
+ },
+ {
+  "id": "3033",
+  "parent": "2803",
+  "date": "2015-11-11T18:45:32+08:00",
+  "author": "sched_fork",
+  "site": "",
+  "text": "@linuxer：Hyper-Threading 就是 SMT。是现在超标量计算机的一个通用加速方法。简单地认为就是一个物理CPU里面有多个虚拟CPU。这些虚拟CPU共享L1 cache\r\nmulti-core 一般说的是 SMP。就是一个 cluster 里面封装多颗物理 CPU。这些CPU共享L2 cache（当然HMP也可以说是multi-core。multi-core的概念比较笼统）"
+ },
+ {
+  "id": "3034",
+  "parent": "3033",
+  "date": "2015-11-12T09:54:26+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@sched_fork：多谢您的回复，不过由于我对CPU的设计知识不足，因此还是有些不是很清楚，改天再回头看看CPU architecture的书籍先吧。"
+ },
+ {
+  "id": "3212",
+  "parent": "0",
+  "date": "2015-12-10T08:10:30+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "hi wowo,有连个问题请教一下。\r\n\r\n1. 2个sockets，每个socket有6个core，2*6=12个core，但是lscpu出来是 CPU(s):24\r\n1个core里有2个cpu？还有类似下面的：\r\n\r\ntopology_thread_cpumask，获取和该CPU属于同一个core的所有CPU，通俗的讲，就是姐妹Thread；\r\n\r\n\r\n2.    \r\n\t\t\t\t\t\t core0 {\r\n\t\t\t\t\t\t\t\t\tthread0 {\r\n\t\t\t\t\t\t\t\t\t\t\tcpu = <&big0>;\r\n\t\t\t\t\t\t\t\t\t}；\r\n\t\t\t\t\t\t\t\t\tthread1 {\r\n\t\t\t\t\t\t\t\t\t\t\tcpu = <&big1>;\r\n\t\t\t\t\t\t\t\t\t}；\r\n\t\t\t\t\t\t\t}; \r\n\t\t\t\t\t\t\r\ncore0上有两个线程，每个thread里的cpu是什么意思？"
+ },
+ {
+  "id": "3217",
+  "parent": "3212",
+  "date": "2015-12-10T09:23:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：这是您在PC上lscpu看到的吗？文章中也讲到了，CPU的拓扑结构是有三级的：socket、core和thread。之所有有24个CPU，是因为该架构支持多线程，也即每个CPU core里面可以有两个线程。\r\n多线程在X86体系结构上用的比较多，在ARM架构上，现在还没有使用。\r\n多线程（multi-thread）和多核（multi-core）之间的差别在于：每个core都是一个物理上独立的单位，SOC设计者可以随意增减core的数量，不同CPU core之间，可能仅仅通过BUS共享系统的RAM、外设等资源；而一个core上的多个thread，共用的资源就会比较多，可能仅仅通过增加单独的寄存器来实现context上的切换。\r\n其实这两个概念比较模糊，SOC厂商自由发挥的空间比较大，所以最终实现成什么样子，要看具体的CPU。"
+ },
+ {
+  "id": "3221",
+  "parent": "3217",
+  "date": "2015-12-10T11:50:30+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "@wowo：额。。socket*cores*thread来与cpu数划上等号是不是有点太牵强了。。\r\n\r\n另外，对于第二个问题，\r\n\r\n两个thread分别对应的 cpu = <&big0>;和 cpu = <&big1>; 是什么意思啊？\r\n谢谢~！"
+ },
+ {
+  "id": "3222",
+  "parent": "3221",
+  "date": "2015-12-10T13:20:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：这个DTS项只是在描述CPU的拓扑结构，具体的CPU的node，则需要引用到CPU的DTS项中。big0、big1，就是CPU DTS node的一个标签。"
+ },
+ {
+  "id": "3472",
+  "parent": "0",
+  "date": "2016-01-29T15:11:43+08:00",
+  "author": "狼狼",
+  "site": "",
+  "text": "想请教下，cat /proc/cpuinfo的时候，如果是多CPU的PC（至少有两个物理CPU），为什么core id 不是连续的呢"
+ },
+ {
+  "id": "3473",
+  "parent": "3472",
+  "date": "2016-01-29T15:57:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@狼狼：没有要求core id要连续，只要开心，什么值都行~~"
+ },
+ {
+  "id": "4570",
+  "parent": "0",
+  "date": "2016-09-19T06:40:41+08:00",
+  "author": "xianglong",
+  "site": "",
+  "text": "在做试验过程中如果我想在运行中动态打开关闭几个特定CPU的话可以完成吗？需要在哪些文件中修改，使用哪些函数呢？"
+ },
+ {
+  "id": "4574",
+  "parent": "4570",
+  "date": "2016-09-19T13:05:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xianglong：你可以参考cpu hotplug有关的内容：\r\n/pm_subsystem/cpu_hotplug.html"
+ },
+ {
+  "id": "4867",
+  "parent": "1902",
+  "date": "2016-11-13T15:48:07+08:00",
+  "author": "bigchris",
+  "site": "",
+  "text": "@zzq57683968：居然发现你还在上面留言了"
+ },
+ {
+  "id": "4870",
+  "parent": "4867",
+  "date": "2016-11-13T21:17:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bigchris：看来二位是熟人啊，呵呵~~"
+ },
+ {
+  "id": "5744",
+  "parent": "0",
+  "date": "2017-06-27T14:50:12+08:00",
+  "author": "J",
+  "site": "",
+  "text": "L3是cluster或者socket共享的吗？"
+ },
+ {
+  "id": "5748",
+  "parent": "5744",
+  "date": "2017-06-28T08:45:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@J：通常是这样的（其实arm平台有L3 cache的也不多），不过还是看一下具体arch的spec，上面会说的清清楚楚。"
+ },
+ {
+  "id": "5753",
+  "parent": "5748",
+  "date": "2017-06-28T16:42:37+08:00",
+  "author": "J",
+  "site": "",
+  "text": "@wowo：多谢回复，新的arm SOC基本都加入了L3了"
+ },
+ {
+  "id": "5754",
+  "parent": "5753",
+  "date": "2017-06-28T17:58:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@J：CLIDR_EL1, Cache Level ID Register,这个寄存器应该可以获得你想要的信息。"
+ },
+ {
+  "id": "5755",
+  "parent": "5744",
+  "date": "2017-06-28T20:17:27+08:00",
+  "author": "驴肉火烧",
+  "site": "",
+  "text": "@J：L3属于外部缓存，非cluster内共享，推荐阅读DEN0024A_v8_architecture_PG"
+ },
+ {
+  "id": "5757",
+  "parent": "5755",
+  "date": "2017-06-29T09:38:11+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@驴肉火烧：其实不能这么武断的，根据ARMv8 ARM文档描述，ARM处理器可以最多可以支持7个level的cache，当然具体的CPU实现的时候，可以根据需求进行cache level的设定。例如对于Cortex-A72处理器，其内部实现了L1和L2，在SOC设计的时候，可以增加L3 cache，这时候，可以说L3属于外部缓存。不过，随着ARM切入服务器领域，未来的ARM处理器也许会build in L3 cache，这时候就不能说L3是外部缓存了，因此，还是读CLIDR_EL1可以得到精准的结果。"
+ },
+ {
+  "id": "7071",
+  "parent": "5757",
+  "date": "2018-12-06T13:31:04+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@linuxer：专业的回答！"
+ },
+ {
+  "id": "9164",
+  "parent": "3212",
+  "date": "2025-07-15T10:35:52+08:00",
+  "author": "pudding_art",
+  "site": "",
+  "text": "@koala：cpu是逻辑核心，core是物理核心"
+ }
+]

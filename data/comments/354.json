@@ -1,0 +1,18 @@
+[
+ {
+  "id": "5300",
+  "parent": "0",
+  "date": "2017-03-09T14:35:09+08:00",
+  "author": "Sky",
+  "site": "",
+  "text": "版主，请问platform的设备层要怎么写，有例子吗？\r\nuart_ops 结构体中的函数什么时候会被调用？\r\n上层的用户程序如何操作serial 这个设备？是以open（）的方式吗？还是别的。"
+ },
+ {
+  "id": "5301",
+  "parent": "5300",
+  "date": "2017-03-09T15:55:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Sky：这篇文章就是一个例子啊：\r\n[8] 和本文对应的patch文件，https://github.com/wowotechX/linux/commit/d072d177c9a88e57eb7c5f18c424b96f0ce6d2d5\r\n你可以自己先试试，有具体问题的话再提出来讨论。\r\n\r\n上层open就行了。"
+ }
+]

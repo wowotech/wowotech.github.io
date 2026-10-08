@@ -1,0 +1,258 @@
+[
+ {
+  "id": "640",
+  "parent": "0",
+  "date": "2014-11-05T15:09:32+08:00",
+  "author": "xvzhaobin",
+  "site": "",
+  "text": "你好，注2中的“另外，clock的enable/disable为什么需要睡眠呢？”是不是写错了？enable/disable是不能睡眠的，prepare/unprepare是可以睡眠的；这个地方不理解"
+ },
+ {
+  "id": "645",
+  "parent": "640",
+  "date": "2014-11-05T15:44:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xvzhaobin：不好意思，我想说的是一个泛指（指clock的开关），而不是具体的enable/disable接口。修改一下表述会好一些。谢谢提醒。"
+ },
+ {
+  "id": "646",
+  "parent": "645",
+  "date": "2014-11-05T16:16:57+08:00",
+  "author": "xvzhaobin",
+  "site": "",
+  "text": "@wowo：谢谢哈"
+ },
+ {
+  "id": "648",
+  "parent": "645",
+  "date": "2014-11-05T16:27:56+08:00",
+  "author": "xvzhaobin",
+  "site": "",
+  "text": "@wowo：Linux common clock framework第三篇文章什么时候出啊？期待"
+ },
+ {
+  "id": "649",
+  "parent": "648",
+  "date": "2014-11-05T16:30:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xvzhaobin：该我谢谢您才是。\r\n我还正犹豫要不要立即写第三篇呢，因为我觉得90%的人应该不关心第三篇，所以想稍微往后推推。不过我会考虑您的建议。谢谢。"
+ },
+ {
+  "id": "651",
+  "parent": "649",
+  "date": "2014-11-05T16:35:58+08:00",
+  "author": "xvzhaobin",
+  "site": "",
+  "text": "@wowo：很是期待，"
+ },
+ {
+  "id": "1149",
+  "parent": "0",
+  "date": "2015-02-02T10:38:03+08:00",
+  "author": "xiaogao",
+  "site": "",
+  "text": "谢谢作者，分析的太棒了，已转载并注明原文出处"
+ },
+ {
+  "id": "1300",
+  "parent": "0",
+  "date": "2015-03-06T08:47:54+08:00",
+  "author": "wzw200",
+  "site": "",
+  "text": "一口气把这3篇文章看完了，以前只知道有一个时钟树，用GET SET方法，跟硬件联系之类的，很模糊！\r\n现在算是看明白了，真是感谢！"
+ },
+ {
+  "id": "2494",
+  "parent": "0",
+  "date": "2015-08-26T16:14:27+08:00",
+  "author": "kkajm",
+  "site": "",
+  "text": "终于找到大神了，对芯片级的分析超透彻，本人也是做芯片级bringup，但相对楼主的深度 这是自愧不如啊"
+ },
+ {
+  "id": "2495",
+  "parent": "2494",
+  "date": "2015-08-26T21:19:41+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@kkajm：您这真是过奖了的，不敢当。欢迎常来，多交流。"
+ },
+ {
+  "id": "2583",
+  "parent": "2494",
+  "date": "2015-09-15T20:02:10+08:00",
+  "author": "lucky",
+  "site": "",
+  "text": "@kkajm：大家建一个群怎样？"
+ },
+ {
+  "id": "2584",
+  "parent": "2495",
+  "date": "2015-09-15T20:02:31+08:00",
+  "author": "lucky",
+  "site": "",
+  "text": "@wowo：大家建一个群怎样？"
+ },
+ {
+  "id": "2586",
+  "parent": "2583",
+  "date": "2015-09-15T22:44:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lucky：其实现在有一个群：/contact_us.html\r\n只是很少在里面回答大家的问题，总觉得不甚好意思，呵呵……"
+ },
+ {
+  "id": "2589",
+  "parent": "2586",
+  "date": "2015-09-15T22:48:19+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：悄悄问一句：没有QQ的能加入群吗？"
+ },
+ {
+  "id": "2591",
+  "parent": "2589",
+  "date": "2015-09-15T22:50:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：晕……，linuxer同学你暴露了你的“年龄”了啊，恐龙级的人物啊，哈哈。"
+ },
+ {
+  "id": "2750",
+  "parent": "0",
+  "date": "2015-10-12T17:32:09+08:00",
+  "author": "vic",
+  "site": "",
+  "text": "请问您的 hw3_clk 要如何定义？\r\n\r\n它的clock包括osc_clk、pll1_clk、pll2_clk、pll3_clk、hw1_clk、hw2_clk和hw3_clk。我们完全可以通过名字，抽象这7个clock，进行开/关、rate调整等操作。但这样做有一个缺点：不能很好的处理clock之间的级联关系，如hw2_clk和hw3_clk都关闭后，pll2_clk才能关闭。因此就引入struct clk结构，以链表的形式维护这种关系。\r\n\r\n我想pll1_clk, pll2_clk, pll3_clk 应该是如下：\r\n\r\nstruct pll1_clk {\r\n\tstruct clk_hw\thw;\r\n\tvoid __iomem\t*reg;\r\n};\r\n\r\nstruct pll2_clk {\r\n\tstruct clk_hw\thw;\r\n\tvoid __iomem\t*reg;\r\n};\r\n\r\nstruct pll3_clk {\r\n\tstruct clk_hw\thw;\r\n\tvoid __iomem\t*reg;\r\n};"
+ },
+ {
+  "id": "2751",
+  "parent": "2750",
+  "date": "2015-10-12T21:34:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@vic：抱歉，不是很明白您的意思，你能稍微详细的描述一下吗？"
+ },
+ {
+  "id": "2753",
+  "parent": "2751",
+  "date": "2015-10-13T09:39:33+08:00",
+  "author": "vic",
+  "site": "",
+  "text": "@wowo：hw3_clk 的 device tree 要如何写， 才能表达 “如hw2_clk和hw3_clk都关闭后，pll2_clk才能关闭。因此就引入struct clk结构，以链表的形式维护这种关系”。\r\n\r\n是如下吗?\r\nstruct hw3_clk { \r\n    struct clk_hw    hw; \r\n    void __iomem    *reg; \r\n}; \r\n\r\nstruct pll2_clk { \r\n    struct clk_hw    hw; \r\n    void __iomem    *reg; \r\n    struct clk      *hw3_clk;\r\n};"
+ },
+ {
+  "id": "2754",
+  "parent": "2753",
+  "date": "2015-10-13T13:38:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@vic：您可以参考“/pm_subsystem/clock_provider.html”，在注册clock的时候，指定parent即可。"
+ },
+ {
+  "id": "2761",
+  "parent": "2754",
+  "date": "2015-10-14T14:35:08+08:00",
+  "author": "vic",
+  "site": "",
+  "text": "@wowo：我知道了。例如我在device tree定义：\r\n\r\nhw3_clk: hw3_clk {\r\n\t#clock-cells = <0>;\r\n\tcompatible = \"hw3-clk\";\r\n\tclocks = <&pll2 0>,<&pll3 0>;\r\n\tclock-output-names = \"hw3_clk\";\r\n};\r\n\r\n然后：\r\nof_property_read_string(node, \"clock-output-names\", &clk_name);\r\nparent_name[0] = of_clk_get_parent_name(node, 0);\r\nparent_name[1] = of_clk_get_parent_name(node, 1);\r\n\r\nclk = clk_register_mux(NULL, clk_name, parent_name,\r\n      ARRAY_SIZE(parent_name), 0,\r\n      regs_base , offset_bit, one_bit, 0, NULL);\r\n\r\n应该是这样吧。谢谢。"
+ },
+ {
+  "id": "3566",
+  "parent": "649",
+  "date": "2016-03-01T10:17:50+08:00",
+  "author": "heavenward",
+  "site": "",
+  "text": "@wowo：我们还是很关心第三篇的，我觉得第三部分才是精华，能更清楚的明白透彻"
+ },
+ {
+  "id": "3567",
+  "parent": "3566",
+  "date": "2016-03-01T10:43:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@heavenward：第三篇已经有了，请参考：/pm_subsystem/clock_framework_core.html，谢谢"
+ },
+ {
+  "id": "4960",
+  "parent": "0",
+  "date": "2016-12-05T10:56:39+08:00",
+  "author": "lolo",
+  "site": "",
+  "text": "Dear sir:\r\n   我最近也需要在linux下配置一个时钟，找了好多有关如何调用clk配置的api，发现现在linux下面针对所有的clk都是用同一的接口去管理了，难怪底层的驱动都不提供用户调用接口了，而是都封装成 common clock framework调用的统一接口了；\r\n   我现在在做这个的时候碰到了一个问题，就是只要程序包含 #include <linux/clk.h> 就会报错，我找了下我装的交叉编译工具 arm-linux-gnueabihf-gcc 工具下的include 目录确实没有包含  clk.h这个文件，但是我参考的xilinx的内核文件下是有这一系列文件的，请问下我该如何处理呢？ 我尝试着把文件直接copy到交叉编译工具的目录下面，但是还是会报其他错误，因为内核结构又很多都不一样 ；\r\n\r\n请问楼主有没有碰到这样的问题？"
+ },
+ {
+  "id": "4965",
+  "parent": "4960",
+  "date": "2016-12-05T11:21:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lolo：为什么要放到交叉编译工具目录呢？这个头文件是kernel的啊"
+ },
+ {
+  "id": "4969",
+  "parent": "4965",
+  "date": "2016-12-06T12:57:19+08:00",
+  "author": "lolo84",
+  "site": "",
+  "text": "@wowo：但是怎么解决写应用程序包含头文件报错的问题呢？ 我现在不是要编内核 我是想要写应用程序 。我包含 linux/fb.h 就不会报错 因为我找交叉编译工具的include目录下面确实有fb.h  ,但是我包含clk.h 它就会报没有这个文件 显然是编译器没有找到这个文件。"
+ },
+ {
+  "id": "4970",
+  "parent": "4965",
+  "date": "2016-12-06T13:00:47+08:00",
+  "author": "lolo84",
+  "site": "",
+  "text": "@wowo：我网上找到有直接找到交叉编译工具的源码直接包含kernel 然后编译针对kernel的交叉编译工具 ，不知道我现在碰到的问题是不是也要这样去解决呢，但是那个过程貌似太复杂了"
+ },
+ {
+  "id": "4972",
+  "parent": "4969",
+  "date": "2016-12-06T13:23:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lolo84：用户空间的代码为什么要包含clk.h呢？这是不允许的。\r\n用户空间能够包含的头文件，都在include/uapi/linux/里面，你可以看看。"
+ },
+ {
+  "id": "4998",
+  "parent": "4972",
+  "date": "2016-12-08T17:53:02+08:00",
+  "author": "lolo84",
+  "site": "",
+  "text": "@wowo：你好，我现在就是想在linux下动态的配置一个时钟输出，频率为， 一直在器件驱动下面找可以直接调用的api，最后看了您的文章才知道所有的时钟都是在common clock framework框架下去做了;\r\n那么我就想知道标准的用户接口放在那个头文件里面了呢？ 我以为是要包含clk.h , 但是clk.h确实不在 include/uapi/linux 路径下面;\r\n楼主有应用层配置的代码可以发给我参考下吗？ 回头一定打赏下～"
+ },
+ {
+  "id": "5000",
+  "parent": "4998",
+  "date": "2016-12-08T18:30:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lolo84：Linux kernel是不允许用户空间代码直接控制clock的（太危险了），因此没有提供用户空间的访问API。\r\n如果有在用户空间动态配置时钟输出的需求，你可以试着将需求转换一下：不是直接控制clock，而是控制使用clock的那个设备，例如：\r\n如果设备是cpu，则使用cpufreq framework提供的接口（博客里面有相关的文章）；\r\n如果是外部设备的，则使用devfreq（drivers/devfreq）提供的接口（和cpufreq类似）。"
+ },
+ {
+  "id": "6883",
+  "parent": "2591",
+  "date": "2018-08-13T18:08:00+08:00",
+  "author": "kernel_journey",
+  "site": "",
+  "text": "@wowo：咱们是不是还有微信群"
+ },
+ {
+  "id": "7936",
+  "parent": "0",
+  "date": "2020-04-02T11:27:58+08:00",
+  "author": "吴兵",
+  "site": "http://https://wu-being.blog.csdn.net/",
+  "text": "如您这篇最后一个例子，我在display 平台代码中，找到pclk=devm_clk_get(dev,clk_name) 使用函数，打印出clk_name是没问题的，但是我想打印pclk的name和parent和rate，但编译提示成员没实现，有人了解是怎么回事吗？比如下面：\r\n\r\npclk=devm_clk_get(dev,clk_name);\r\nprintk(\"%s\", pclk->core->name);// build error"
+ },
+ {
+  "id": "8799",
+  "parent": "7936",
+  "date": "2023-07-21T17:43:37+08:00",
+  "author": "yeee",
+  "site": "",
+  "text": "@吴兵：pclk还没注册？"
+ }
+]

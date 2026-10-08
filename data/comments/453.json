@@ -1,0 +1,138 @@
+[
+ {
+  "id": "7148",
+  "parent": "0",
+  "date": "2019-01-24T10:44:25+08:00",
+  "author": "yayaya",
+  "site": "",
+  "text": "编译器（compiler）的工作就是优化我们的代码以提高性能??"
+ },
+ {
+  "id": "7149",
+  "parent": "7148",
+  "date": "2019-01-24T10:54:20+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@yayaya：很明显其中之一的功能嘛！"
+ },
+ {
+  "id": "7150",
+  "parent": "7149",
+  "date": "2019-01-24T11:29:36+08:00",
+  "author": "yayaya",
+  "site": "",
+  "text": "@smcdef：我处女座^_^"
+ },
+ {
+  "id": "7152",
+  "parent": "0",
+  "date": "2019-01-24T14:22:17+08:00",
+  "author": "xtzt",
+  "site": "",
+  "text": "写的很好！！！"
+ },
+ {
+  "id": "7190",
+  "parent": "0",
+  "date": "2019-02-19T11:55:04+08:00",
+  "author": "威点零",
+  "site": "",
+  "text": "问个问题，为什么我们正常写程序的时候，不需要考虑加内存屏障？\r\n所以是不是要加上限定关系？比如有前后因果关系的指令不会重排，用户层面全局变量使用互斥锁能防止重排？"
+ },
+ {
+  "id": "7202",
+  "parent": "7190",
+  "date": "2019-02-24T20:54:22+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@威点零：考虑屏障，一般都是无锁编程需要。如果使用同步原语（自旋锁，信号量，互斥锁等）保护共享资源，我们是不需要考虑内存屏障的。因为，同步原语的实现已经帮助我们考虑好了。"
+ },
+ {
+  "id": "7222",
+  "parent": "0",
+  "date": "2019-03-05T20:25:00+08:00",
+  "author": "steven",
+  "site": "",
+  "text": "add\tw0, w2, #0x13 有笔误，应该是#0x1吧"
+ },
+ {
+  "id": "7246",
+  "parent": "7222",
+  "date": "2019-03-07T22:27:28+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@steven：是的，感谢。"
+ },
+ {
+  "id": "7522",
+  "parent": "0",
+  "date": "2019-07-09T16:21:31+08:00",
+  "author": "石石",
+  "site": "",
+  "text": "请问compiler reorder 跟CPU execution reorder 该如何理解?\r\n\r\n当使用了barrier(), 让compiler正确的编译出正确的顺序(program order), \r\n却没有对cpu out-of-order execution做出确保(execution order)?\r\n\r\n对一个C programmer而言, 这样的问题该理解到哪个层次, 才能确保程式正确性?"
+ },
+ {
+  "id": "7523",
+  "parent": "7522",
+  "date": "2019-07-09T16:38:03+08:00",
+  "author": "石石",
+  "site": "",
+  "text": "@石石：如果cpu有OOOE, 不能单纯用 __asm__ __volatile__(\"\": : :\"memory\")\r\n应该使用__asm__ __volatile__(\"dmb\": : :\"memory\"),\r\nmachine-specific implementation 应该使用 __sync_synchronize()."
+ },
+ {
+  "id": "7525",
+  "parent": "7523",
+  "date": "2019-07-09T23:06:00+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@石石：是的，这篇文章其实算是乱序的上篇，仅仅是编译器乱序。然而CPU也是存在乱序的，所以CPU乱序部分的文章还没有发表。后面会补上。"
+ },
+ {
+  "id": "7535",
+  "parent": "0",
+  "date": "2019-07-17T16:03:30+08:00",
+  "author": "steven",
+  "site": "",
+  "text": "<foo>:\r\n\t...\r\n\tldr\tw0, [x0]\t// load b to w0\r\n\tadd\tw1, w0, #0x1\r\n\t...\r\n\tstr\tw1, [x0]\t// a = b + 1   这个地方有问题，str  w1, [x0]不应该是x0，否则变成b=b+1\r\n\t...\r\n\tstr\twzr, [x0]\t// b = 0"
+ },
+ {
+  "id": "7538",
+  "parent": "7535",
+  "date": "2019-07-17T23:08:38+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@steven：这个是其实是汇编直接copy过来的，中间省略部分可能就是改变了x0的值。但是的确这段代码会让人觉得歧义。"
+ },
+ {
+  "id": "8241",
+  "parent": "7202",
+  "date": "2021-06-03T15:25:01+08:00",
+  "author": "wulala",
+  "site": "",
+  "text": "@smcdef：其实我更关心层主说的\"是不是要加上限定关系？比如有前后因果关系的指令不会重排\",并且什么样的\"限定关系\"能达到这样的效果"
+ },
+ {
+  "id": "9138",
+  "parent": "0",
+  "date": "2025-02-14T15:29:48+08:00",
+  "author": "xinghuo",
+  "site": "",
+  "text": "显式编译器屏障(Explicit Compiler Barriers)节中barrier()是最弱的屏障，只是静态的代码上做了屏障不能乱序，但后面对barrier()的解释中关联到缓存，寄存器这些硬件，是不是不太合适？"
+ },
+ {
+  "id": "9139",
+  "parent": "0",
+  "date": "2025-02-14T16:21:14+08:00",
+  "author": "xinghuo",
+  "site": "",
+  "text": "隐式编译器屏障(Implied Compiler Barriers)小节中，虽然最后的结论“要显式的插入barrier()，而不是依靠函数调用附加的隐式compiler barriers”大家都没有什么疑问，但个人对其中fun()函数不包含barrier()的情况下“大多数的函数调用都表现出compiler barriers的作用”这一描述持怀疑态度。作者应该是想表述大多外部函数表现为一个跳转指令，保证了函数调用前后的代码顺序，而inline或优化为inline的函数则不能保证。但编译器优化时，考虑的是考虑整个程序的逻辑和数据依赖关系，编译器在函数调用前后可以进行多种优化，包括但不限于内联展开、常量传播、死代码消除等。这些优化可能跨越函数边界进行，只要它们不会改变程序的行为。原文的例子中，可能优化为\t\r\na = 5;\r\nb = a;\r\nprintf(\"smcdef\");\r\n这样也不影响程序的结果。不知道我这样理解对不对？"
+ },
+ {
+  "id": "9140",
+  "parent": "9139",
+  "date": "2025-02-14T16:26:29+08:00",
+  "author": "xinghuo",
+  "site": "",
+  "text": "@xinghuo：我想说的是ab赋值之间有没有屏障，与其之间有没有函数调用无关"
+ }
+]

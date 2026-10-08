@@ -1,0 +1,330 @@
+[
+ {
+  "id": "533",
+  "parent": "0",
+  "date": "2014-10-16T14:38:34+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "这样就需要访问下一阶memory来加载cache line。 \r\n这里缺了个不"
+ },
+ {
+  "id": "534",
+  "parent": "533",
+  "date": "2014-10-16T15:40:29+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：已经修改了，多谢多谢！"
+ },
+ {
+  "id": "535",
+  "parent": "0",
+  "date": "2014-10-16T15:49:26+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "SHIFT_PERCPU_PTR宏定义的含义很简单，不过具体实现还是有些模糊之处，__verify_pcpu_ptr和RELOC_HIDE有谁知道其工作原理吗？"
+ },
+ {
+  "id": "545",
+  "parent": "0",
+  "date": "2014-10-22T10:06:48+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "hi linuxer\r\n请教一个问题，如果我一个semaphore，初始化两次会有什么后果？\r\n比如\r\nstatic struct semaphore seam;\r\n\r\nsema_init(&seam, 0);\r\n\r\nsema_init(&seam, 0);\r\n\r\n这样然后比如我\r\n\r\ndown(&seam);\r\n这样会有什么后果呢？？"
+ },
+ {
+  "id": "546",
+  "parent": "545",
+  "date": "2014-10-22T10:31:06+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@forion：如果我用kthread_run();创建两个名字一模一样的线程呢？换句话说，kthread_run();跑两次，里面的参数都一样。这样又是一种怎样的情况呢？"
+ },
+ {
+  "id": "547",
+  "parent": "545",
+  "date": "2014-10-22T12:03:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：如果你保证你的执行序列是两次初始化，然后调用down，在没有配置CONFIG_LOCKDEP的时候应该是没有问题的。\r\nstatic inline void sema_init(struct semaphore *sem, int val)\r\n{\r\n\tstatic struct lock_class_key __key;\r\n\t*sem = (struct semaphore) __SEMAPHORE_INITIALIZER(*sem, val);\r\n\tlockdep_init_map(&sem->lock.dep_map, \"semaphore->lock\", &__key, 0);\r\n}\r\nsema_init如果连续执行两次，应该是第二次覆盖第一次初始化的结果。lockdep_init_map这个函数在没有配置CONFIG_LOCKDEP的时候没有实际的代码逻辑。"
+ },
+ {
+  "id": "548",
+  "parent": "546",
+  "date": "2014-10-22T12:12:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：在3.14内核中已经没有kthread_run()这个接口了。我估计这是旧内核中创建内核线程的接口函数。如果调用kthread_run两次，那么就创建两个一样的线程了，当然，其pid是不一样的。这是我直观的感觉，当然要沿着你那个版本的内核代码看一看，是否有一些限制"
+ },
+ {
+  "id": "549",
+  "parent": "547",
+  "date": "2014-10-22T13:27:09+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：那如果定义了CONFIG_LOCKDEP的时候呢？我也去review一下code。\r\n我现在的code里面是定义了CONFIG_LOCKDEP。我现在是4个core的cpu\r\n我现在是遇到一个这样的问题，一个工程师在他的代码的probe函数里面写了一个sema的init，以及kthread_run,但是这个probe会走两次，所以sema 以及线程会初始化两次。然后up的操作是在中断处理里面。很多driver都是这样的一个逻辑。\r\n然后发现经常死锁在线程里面down（）；sema的时候，具体就是down（）操作里面的raw_spin_lock_irqsave，但是具体为什么会卡在这里，我还没有从代码上面找到原因。因为我没有看到其他的core拿到这把锁。表面上看，肯定是这把锁，被别人拿了，所以想请教下你，整理一下逻辑。"
+ },
+ {
+  "id": "550",
+  "parent": "549",
+  "date": "2014-10-22T14:36:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：probe函数会走两次是设计如此吗？我听你的描述觉得这个driver怪怪的。\r\n一般driver的逻辑是使用等待队列的，初始化函数中init 等待队列，创建线程。\r\n在线程中进行处理，当需要等待硬件事件的时候，wait在等待队列上，在中断handler中唤醒等待队列的task。\r\n\r\n如果probe两次是对的，是否是有两个device需要初始化？也就是说，每次把device加入bus的时候，都会调用该driver的probe函数？如果是这样，那么需要为每一个device建立一个semaphore而不是共用，一般而言，会定义一个xxx_device的数据结构，这个数据结构中有一个semaphore成员，用来保护对该device实例的访问\r\n\r\n我感觉不是LOCKDEP的问题，还是semaphore使用的问题"
+ },
+ {
+  "id": "551",
+  "parent": "550",
+  "date": "2014-10-22T15:44:23+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：首先我自己写的driver确实不多，惭愧惭愧，我都是用到的时候去看已有的差不多相似的driver，去copy。\r\n你说的等待队列，应该是一个通用的逻辑。现在这个drvier的逻辑是直接kthread_run起一个线程，然后线程刚开始的地方，down一个sema然后睡下去，在中断handler中up sema然后唤醒这个线程\r\n\r\n现在这个driver里面确实是有两个device，所以probe两次，所以init了两个sema，以及kthread_run起了两个线程。\r\n\r\n关于等待队列，这个你能举例一个common的driver，我去学习一下吗？"
+ },
+ {
+  "id": "552",
+  "parent": "551",
+  "date": "2014-10-22T16:21:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：你可以去看看Linux Device Driver的第六章，blocking I/O那个小节。那里描述的非常详细了。"
+ },
+ {
+  "id": "1543",
+  "parent": "0",
+  "date": "2015-04-22T09:37:41+08:00",
+  "author": "xiaoxiao",
+  "site": "",
+  "text": "Hi \r\n我一直不明白per-CPU的意义。它是为了解决CPU之间同步问题引入的，但到底是怎么解决的呢？\r\n每个CPU都有自己的副本，也没有讲副本和原始变量之间的同步。如果不需要同步，那每个CPU的副本不相当于四个变量了？如果需要同步，那不跟设计per-cpu之前一样的问题？\r\n\r\n是否是这样：\r\n每个CPU都可以对自己的副本进行操作，比如+1，-3之类的操作，但是不会实时同步到原始变量中，但是有个阈值，比如30，当你修改超过30后，则必须同步修改到原始变量中。但是这样的话，原始变量中的值是个近似值，不是准确值。（什么情况下可以使用计数器的近似值而不需要准确值呢？）"
+ },
+ {
+  "id": "1549",
+  "parent": "1543",
+  "date": "2015-04-22T12:46:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@xiaoxiao：毫无疑问per-CPU变量之间不需要同步，否则per cpu不就没有意义了吗？每个CPU上的执行的代码就是访问属于本cpu的那个变量。原始变量仅仅是作为一个initial data区域，当per cpu变量的副本分配之后，将原始变量的initial data copy到各自per cpu的变量副本中。"
+ },
+ {
+  "id": "1556",
+  "parent": "1549",
+  "date": "2015-04-22T17:44:53+08:00",
+  "author": "xiaoxiao",
+  "site": "",
+  "text": "@linuxer：Hi linuxer\r\n多谢回复。确实per-cpu之间是不需要同步的，但是原始变量和副本之间还是有同步的需要的（有spinlock）。刚找到在professional linux kernel architecture书中关于per-cpu的说明还算详细（5.2.9章节），但是还是不甚明了。副本中确实存的是修改，不是修改后的值。在需要近似值的地方，直接取原始变量percpu_counter_read()就可以了，但是需要准确值的话，需要调用percpu_counter_sum()来获取。只是什么情况下会只需要近似值就OK了？\r\n真觉得这些设计真的是巧妙啊～"
+ },
+ {
+  "id": "1629",
+  "parent": "0",
+  "date": "2015-04-29T10:07:19+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "Quote:\"当然，还有一点要注意，那就是在访问Per-CPU变量的时候，不能调度，当然更准确的说法是该task不能调度到其他CPU上去。目前的内核的做法是在访问Per-CPU变量的时候disable preemptive\"\r\n\r\n    谈一点感想，有不对的地方请指出：\r\n    引入per-cpu变量的原因就是文中所说的，每个cpu都在自己的变量副本上工作，这样每次读写就可以避免锁开销，上下文切换和cache等一系列问题。假设当前task运行在其中一个core cpu0上且获得了var在该cpu上的本地副本，然后该task在操作该副本的过程中因被抢占而转移到另外一个core cpu1上运行，那么接下来cpu1将会继续操作该变量副本（属于cpu0），违反了“每个cpu都工作在自己副本上”这样一个前提，该机制就乱套了。\r\n\r\n    上面是我所认为的disable preemptive的初衷，就是在操作per-cpu副本的过程中防止task调度到其他cpu上去。但同样的get_cpu_var(var)的时候也disable了本CPU的调度。我想了下，在这样的场景下disable本cpu的调度好像没有必要，我理解为disable preemptive的副作用。"
+ },
+ {
+  "id": "3273",
+  "parent": "1556",
+  "date": "2015-12-23T10:32:59+08:00",
+  "author": "jinxin",
+  "site": "http://www.linux2web.net",
+  "text": "@xiaoxiao：你说的近似值是个什么概念噢"
+ },
+ {
+  "id": "3717",
+  "parent": "1629",
+  "date": "2016-03-23T19:34:49+08:00",
+  "author": "scnutiger",
+  "site": "",
+  "text": "@puppypyb：我看到一个代码似乎per-CPU在访问的时候没有禁止抢占。\r\n内核里面对vfsmount这个结构体做计数器增加的时候\r\nstruct vfsmount *mntget(struct vfsmount *mnt)\r\n直接就对per-cpu的mnt_count值做this_cpu_add(mnt->mnt_pcp->mnt_count, n);操作了\r\n最后统计vfsmount结构体的count值的时候\r\n在读写锁的保护下，把per-cpu的count值都加到一起了，也没有后面comment里面的阈值的感觉\r\nfor_each_possible_cpu(cpu) {\r\n\t\tcount += per_cpu_ptr(mnt->mnt_pcp, cpu)->mnt_count;\r\n}"
+ },
+ {
+  "id": "3721",
+  "parent": "1629",
+  "date": "2016-03-24T10:05:21+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@puppypyb：你说的很对，只不过最后一段话我不是非常理解。我是这么看的，用户在使用percpu变量的时候调用场景是这样的：\r\n－－－－－－－－－－－－－－－－\r\nget_cpu_var\r\n\r\n访问per-cpu变量\r\n\r\nput_cpu_var\r\n－－－－－－－－－－－－－－－－\r\n用户并不需要显式的调用禁止抢占，per-cpu API已经封装好了，当然，一个好的模块实现必然是这样的。"
+ },
+ {
+  "id": "3722",
+  "parent": "3717",
+  "date": "2016-03-24T10:10:06+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@scnutiger：this_cpu_add在4.1.10内核中的实现如下：\r\n\r\n#define this_cpu_add(pcp, val)\t\t__pcpu_size_call(this_cpu_add_, pcp, val)\r\n\r\n如果你愿意一层层的看下去，会发现其实this_cpu_add也会内嵌禁止抢占的代码的。"
+ },
+ {
+  "id": "4428",
+  "parent": "0",
+  "date": "2016-08-20T11:44:24+08:00",
+  "author": "lamaboy",
+  "site": "",
+  "text": "你好\r\n\r\n   我看了Per-CPU变量 还是没有理出Per-CPU变量 的使用场景，，\r\n请指教下了   谢谢了"
+ },
+ {
+  "id": "4436",
+  "parent": "4428",
+  "date": "2016-08-22T18:56:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lamaboy：千言万语汇成一句话：性能，per-cpu变量就是为了更好的性能而已。或者更通俗的将：就是用空间换时间的一种优化而已。"
+ },
+ {
+  "id": "5166",
+  "parent": "0",
+  "date": "2017-01-19T14:48:42+08:00",
+  "author": "风华正茂",
+  "site": "",
+  "text": "请问一下，既然每个cpu都有自己独立的变量，那么他们是怎么做到同步的呢？"
+ },
+ {
+  "id": "5170",
+  "parent": "5166",
+  "date": "2017-01-20T08:37:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@风华正茂：不需要同步（可以扒扒后面的评论，有讨论这个事情）。"
+ },
+ {
+  "id": "5172",
+  "parent": "5166",
+  "date": "2017-01-20T10:31:47+08:00",
+  "author": "hello",
+  "site": "",
+  "text": "@风华正茂：不需要同步，各个CPU都是看到自己的私有的数据，例如对于percpu变量X，CPUa只能看到自己的那个Xa，其他的CPU不会访问Xa，因此不需要同步。"
+ },
+ {
+  "id": "5173",
+  "parent": "5170",
+  "date": "2017-01-20T10:34:13+08:00",
+  "author": "风华正茂",
+  "site": "",
+  "text": "@wowo：在QQ群里面讨论过了，最后感觉per_cpu的机制不像是为同步准备的，更像是一种新的思路"
+ },
+ {
+  "id": "5174",
+  "parent": "5170",
+  "date": "2017-01-20T10:43:45+08:00",
+  "author": "风华正茂",
+  "site": "",
+  "text": "@wowo：有没有关于 per_cpu的 demo？"
+ },
+ {
+  "id": "5292",
+  "parent": "0",
+  "date": "2017-03-08T11:53:06+08:00",
+  "author": "speedan",
+  "site": "",
+  "text": "linuxer：你好，请教个问题：\r\n关于per-cpu变量的接口，只说get_cpu_var()这类接口会处理抢占的问题，但没说明中断互斥的问题。\r\n比如有个per-cpu变量也会在中断处理程序中用到，那在普通进程上下文中使用这个per-cpu变量时，是不是在调用get_cpu_var()之前也应该先通过spin_lock()或关本地中断的方式来进行互斥，防止和中断处理程序的竞争问题?"
+ },
+ {
+  "id": "5293",
+  "parent": "5292",
+  "date": "2017-03-08T13:43:41+08:00",
+  "author": "speedan",
+  "site": "",
+  "text": "@speedan：另外，下边的用法中，get_cpu()和put_cpu()应该是在for循环之类还是之外，望请指点，谢谢！\r\nint i, curcpu;\r\ncurcpu = get_cpu(); // 禁止抢占\r\nfor_each_possible_cpu(i) {\r\n    sec_info = &per_cpu(my_birthday, i).sec_info; // per_cpu()不会禁止抢占\r\n    sec_info->sec++;\r\n}\r\nput_cpu(); // 重新开启抢占"
+ },
+ {
+  "id": "5295",
+  "parent": "5292",
+  "date": "2017-03-08T22:46:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@speedan：per-cpu变量只是能够保护来自不同cpu的并发访问，并不能保护同一个cpu上，进程上下文和中断上下文中的并发，这时候，往往需要其他的同步原语。"
+ },
+ {
+  "id": "5296",
+  "parent": "5293",
+  "date": "2017-03-08T23:01:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@speedan：你这是什么代码？你能不能描述一下临界区中的数据访问情况是怎样的？"
+ },
+ {
+  "id": "5298",
+  "parent": "5296",
+  "date": "2017-03-09T12:22:49+08:00",
+  "author": "speedan",
+  "site": "",
+  "text": "@linuxer：不好意思，我之前描述的问题不准确，修改如下：\r\n    我的理解，使用per-cpu变量的前提是每个CPU只能访问此变量对应当前CPU的部分，这样就不存在多个CPU并发访问的问题。\r\n    但对于需要遍历per-cpu变量的场景，意味着在当前CPU需要访问其他所有CPU对应的部分，这样使用per-cpu变量的前提就不再成立，此时似乎陷入了自我矛盾之中，应该怎么处理？\r\n    我看内核的代码在这种情况下好像没有做过多的保护，所以挺奇怪的。\r\n\r\n// 下边的代码是我设想的一个遍历的例子\r\nint i, curcpu, sum;\r\nstatic DEFINE_PER_CPU(int, arr) = {0};\r\nfor_each_possible_cpu(i) { // 遍历per-cpu变量时怎么处理多CPU并发访问的问题？\r\n    sum += per_cpu(arr, i);\r\n    per_cpu(arr, i)++;\r\n}"
+ },
+ {
+  "id": "5299",
+  "parent": "5295",
+  "date": "2017-03-09T12:25:10+08:00",
+  "author": "speedan",
+  "site": "",
+  "text": "@linuxer：你说得对，我理解得不够本质，赞！！！"
+ },
+ {
+  "id": "5302",
+  "parent": "5298",
+  "date": "2017-03-09T17:43:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@speedan：其实这个问题仍然是一个基本的临界区保护的问题，per cpu变量并不会让临界区的保护更复杂，只不过是把数据访问分散到各个cpu上而已。\r\n\r\n我们来举一个实际的例子好了：有一个per cpu变量A，该变量表示某个事件的count，该变量不会在中断上下文中访问，只会在进程上下文访问。访问的场景有两个：\r\n1、各个cpu上的写进程会对A累加操作，记录各个cpu上事件发生的次数\r\n2、读进程遍历全部cpu，对各个cpu上的A累加，得到一个globa count值\r\n\r\n在这样的数据访问情况下，读进程需要锁保护吗？如果没有锁保护，那么有可能写进程会插入，但是这又有什么关系？累加后的那个globa count值有那么高的精度要求吗？\r\n\r\n因此，结论是： 遍历per-cpu变量时需不需要保护，用什么锁机制保护是和per cpu变量的临界区数据访问情况相关的，不同的情况需要不同的分析。"
+ },
+ {
+  "id": "5304",
+  "parent": "5302",
+  "date": "2017-03-09T22:46:01+08:00",
+  "author": "speedan",
+  "site": "",
+  "text": "@linuxer：你说的这种原子变量的情况我也设想过，只要精度不要求，确实没关系。\r\n\r\n我只是看到内核中也有把per cpu变量用到了结构体中，这样就有可能出现结构体部分被修改的情况。\r\n不过如你所说，对于这种情况，如果意识到会出现竞争问题就不应该使用per cpu变量了吧……"
+ },
+ {
+  "id": "7442",
+  "parent": "0",
+  "date": "2019-05-27T17:51:59+08:00",
+  "author": "xiaoai",
+  "site": "",
+  "text": "Hi linux:\r\n当然，还有一点要注意，那就是在访问Per-CPU变量的时候，不能调度，当然更准确的说法是该task不能调度到其他CPU上去。\r\n\r\n我不太理解这里，即使调度到其他CPU上面去也没关系啊，反正访问操作的也是其他CPU上的值。我理解是处理好本CPU上的同步就好了，关闭调度是为了避免该CPU上其他可能存在的并发调度。"
+ },
+ {
+  "id": "7614",
+  "parent": "7442",
+  "date": "2019-08-26T15:59:30+08:00",
+  "author": "bird",
+  "site": "http://q2621473170",
+  "text": "@xiaoai：因为per_cpu的原则是各个CPU只访问属于自己的数据, 故在实际访问时要关闭抢占. 即当A CPU在访问自己的私有变量时,该task不能被调度到其他CPU去, 不然就造成了B在访问A CPU的私有变量."
+ },
+ {
+  "id": "7615",
+  "parent": "0",
+  "date": "2019-08-26T16:02:29+08:00",
+  "author": "bird",
+  "site": "http://q2621473170",
+  "text": "是很多人在考虑同步的事情, 可能是因为例子里,提到了lock bus 这些.  其实本质上,\r\nPer-CPU是基于空间换时间的方法, 让每个CPU都有自己的私有数据段(放在L1中),并将一些变量私有化到\r\n每个CPU的私有数据段中. 单个CPU在访问自己的私有数据段时, 不需要考虑其他CPU之间的竞争问题,也不存在同步的问题.  注意只有在该变量在各个CPU上逻辑独立时才可使用."
+ },
+ {
+  "id": "8338",
+  "parent": "7615",
+  "date": "2021-10-20T09:58:23+08:00",
+  "author": "Magicmanoooo",
+  "site": "",
+  "text": "@bird：大佬，可以这么理解吗：在没有per-cpu之前，多个cpu之间即使对于同一变量没有逻辑依赖，但依旧只声明了一份，全局使用，这势必会造成竞争。现在有了per-cpu，则实现了多cpu之间的对同一变量的解耦，我直接就在每个cpu上都创建一份该变量，大家各自使用，互不干扰？"
+ },
+ {
+  "id": "8655",
+  "parent": "5302",
+  "date": "2022-07-26T14:26:33+08:00",
+  "author": "smallfish",
+  "site": "",
+  "text": "@linuxer：大佬，你说利用 globa count来统计各个cpu 本地的累加值，这个好理解，但是我的操作不是++或者--， 我要对这个count 赋值，比如说count=0，  那这个是不是还得进行同步。"
+ },
+ {
+  "id": "8785",
+  "parent": "8338",
+  "date": "2023-05-26T16:19:14+08:00",
+  "author": "立志学linux",
+  "site": "",
+  "text": "@Magicmanoooo：既然这样，那为什么不干脆用好几个不同的变量呢？还是说percpu变量就是等于定义了好几个不同的变量？"
+ },
+ {
+  "id": "8902",
+  "parent": "8785",
+  "date": "2024-05-26T21:35:06+08:00",
+  "author": "duckwu",
+  "site": "",
+  "text": "@立志学linux：我觉得percpu变量就是等于定义了好几个不同的变量但是比定义多个变量更好。假设一个进程在运行过程中需要某个变量，该变量在各个CPU上逻辑独立，但是程序员在编码时是无法知道该进程运行在哪个cpu上，也就无法为其指定对应的变量。想反，让cpu自己去选择对应的变量即per-cpu变量就可以解决这个问题。"
+ }
+]

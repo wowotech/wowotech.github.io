@@ -1,0 +1,314 @@
+[
+ {
+  "id": "105",
+  "parent": "0",
+  "date": "2014-04-24T21:29:30+08:00",
+  "author": "火果博客",
+  "site": "http://blog.huofruit.com",
+  "text": "技术博客不错"
+ },
+ {
+  "id": "107",
+  "parent": "105",
+  "date": "2014-04-25T09:00:19+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@火果博客：多谢鼓励"
+ },
+ {
+  "id": "696",
+  "parent": "0",
+  "date": "2014-11-10T11:59:06+08:00",
+  "author": "非常响亮",
+  "site": "",
+  "text": "刚学linux不久，还是个菜鸟，看到大神们百忙之中抽出时间发贴授课为我们后辈指引迷津，对前辈们无私奉献的精神、炉火纯青的技术、严谨深刻的分析表示深深的敬佩，更让我明确了以后对技术追求的态度，专于技术，乐于奉献。\r\n     这几天一直在看设备模型，摸清了大概，但是还有几个地方不是很明白，请帮忙分析分析下（用的是2.6.32内核）\r\n\t注册一个字符设备的时候我是这么做的：\r\n\t1.major = register_chrdev(0, \"myled\", &led_fops); 注册一个字符设备\r\n\t2.cls = class_create(THIS_MODULE, \"led_class\");  创建一个类\r\n\t3.device_create(cls, NULL, MKDEV(major, 0), NULL, \"dev_led\"); 在类下创建一个设备以供udev自动创建设备节点 \r\n\r\n\t这样的结果是在/sys/devices和/sys/class下都产生了led_class/myled/,（截了图，插不进来..）在class中产生这样一个类和类中的设备容易理解，但是在/sys/devices产生led_class这个一个目录就有点不懂了，追踪class_create()->__class_create()->__class_register(),在__class_register（）中只找到kset_register(&cp->class_subsys)即可在class中创建led_class目录，但是没有找到关于在/sys/devices中能创建led_class的蛛丝马迹。  （ps）led_class是一个类，为什么会出现在/sys/devices中呢？类也是一个设备么？   \r\n\t再追踪device_create（）->...->device_register()，发现此函数传入的parent参数置为Null的话应该会在/sys/devices中创建dev_led的。\r\n\r\n描述有点冗长，还忘不要介意，希望蜗蜗前辈能帮我理清这几个目录之间的关系，"
+ },
+ {
+  "id": "698",
+  "parent": "696",
+  "date": "2014-11-10T13:17:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@非常响亮：我觉得你已经分析的很清楚了啊，device_create，总要在sysfs下某一个目录中创建该设备的目录啊，如果你不指定它的parent的话，难道让它在/sys/devices下创建吗？所以kernel采用了相对优雅的方式，帮你创建一个以class命名的目录。\r\n其实你可以看看kernel标准led class是怎么做的，例如：\r\nled_pwm_probe-->led_classdev_register:\r\nret = led_classdev_register(&pdev->dev, &led_dat->cdev);\r\n\r\n虽然某一个LED设备（led_classdev_register所注册的）依附于led class，但首先它是一个platform device，那么他就可以在/sys/devices/platform/下创建自己的目录了。"
+ },
+ {
+  "id": "701",
+  "parent": "696",
+  "date": "2014-11-10T16:30:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@非常响亮：可以从两个角度来看一个设备：\r\n1、物理拓扑方面。非常直观，物理上一个外设是如何连接到系统的。\r\n2、该设备属于那个类别的设备。从high level角度来看一个设备，抽象其特性（例如：I2C的声卡和PCI的声卡虽然low level的bus是不一样的，但是，作为声卡，无论是I2C还是PCI都是有着共同的设备属性。\r\n例如：一个device，是一个声卡设备，这个结论其实就是从上面的第二点来观察该外设的。我们不管他是什么总线设备，我关注的是设备类别。但是如果从物理拓扑方面来看，我们则关注其属于哪个总线上的设备。例如一个USB声卡，其拓扑结构可能是PCI总线－－－USB总线－－－－USB sound device。\r\n\r\nsys文件系统做设备模型和user space的接口，毫无疑问也要提供两个层面的通道来描述一个设备。我们用你的例子来说明好了。对于一个LED设备，sysfs可以有两个节点来描述该外设：\r\n1、/sys/class/led_class目录下的节点。这是从high level角度看该LED设备的接口。这里我们可以把一个属于LED设备的属性放到这个目录下，例如：LED颜色、闪烁的频率、占空比等，只要是led class，任何设备都是有这些属性的（无论是接到platform bus还是接到I2C bus）。\r\n2、/sys/class/virtual/led_class目录下的节点。这个节点是和物理拓扑有关了。其实对于device_create(哪一类设备, 物理拓扑参数,....) 而言，如果你不传递物理拓扑参数（传入NULL），那么设备模型会统一放到virtual的目录下。这个目录保存的属性文件和/sys/class/led_class目录下的是不一样的，这里的属性文件更多的是关注作为某个总线外设的属性。我们可以把这个LED变得复杂些，例如是一个USB接口的LED设备（当然，实际上我是没有见过这样的设备，呵呵～～最多是I2C的LED设备），这时候，这个目录下就会保存这样的属性文件：该设备有多少个endpoint、interface的数目，类别等，而这些属性是和USB总线有直接的关系"
+ },
+ {
+  "id": "710",
+  "parent": "698",
+  "date": "2014-11-11T13:21:00+08:00",
+  "author": "非常响亮",
+  "site": "",
+  "text": "@wowo：确实像wowo前辈说的，kernel创建目录的方式很优雅。昨天追踪子函数的还不够仔细深入，想当然的漏了一个函数没看。唉，幸好今天再仔细查看的时候发现了这样一个函数：==>device_register==>device_add==>setup_parent==>get_device_parent，在这个函数中有这么一段话If we have no parent, we live in \"virtual\". Class-devices with a non class-device as parent, live in a \"glue\" directory to prevent namespace collisions.     dev在有class而没有parent时，会遍历dev->class->class_dirs.list 寻找在virtual中的class_dirs（一个kset），找到了则返回此kobj当作parent,如果没找到则创建一个与class同名的kset当作parent . 这样一来，class中的设备在/sys/devices中存放的位置必定是在一个与class同名的kset下。"
+ },
+ {
+  "id": "711",
+  "parent": "701",
+  "date": "2014-11-11T13:39:19+08:00",
+  "author": "非常响亮",
+  "site": "",
+  "text": "@linuxer：谢谢linuxer前辈详细的解说。受益良多。\r\n还想请教一个问题，sysfs中所有的目录都具kobj属性，bus目录中所有的目录都具有bus_type属性，class目录中所有的目录都具有class属性，同理推想，devices中应该也具有某个数据结构的属性吧？  不知道这样理解对不对"
+ },
+ {
+  "id": "712",
+  "parent": "711",
+  "date": "2014-11-11T14:12:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@非常响亮：我觉得这是使用“属性”这个词汇不是非常合适，更准确的说：\r\nsysfs中所有的目录以及目录下的文件都对应内核中的一个struct kobj实例。\r\nbus目录中所有的子目录都对应内核中的一个struct bus_type实例。\r\nclass目录中所有的子目录对应内核中的一个struct class实例\r\ndevices目录中的所有目录以及子目录都对应一个struct device实例"
+ },
+ {
+  "id": "713",
+  "parent": "0",
+  "date": "2014-11-11T14:50:39+08:00",
+  "author": "非常响亮",
+  "site": "",
+  "text": "对的，我也是想表达这个意思。事实也应该如此，device_register()-->device_initialize（）中首先将dev的kset字段设为devices(dev->kobj.kset = devices_kset;)如果dev的class、parent字段都为空，那么后续将不会对dev->kset进行操作，那么dev将置于/sys/devices中。这样逆着推，/sys/devices中的所有子目录都应该是device_register（）的结果。但是目录中也有例外，如先前那个例子，（先纠正上面的输入错误，led_class/目录下是led_dev而不是myled）在/sys/devices/virtual/led_class/led_dev中,led_class仅仅只是一个kset实体，并不包括device实体。不过我想上面有这么一句话应该可以解释：Class-devices with a non class-device as parent, live in a \"glue\" directory to prevent namespace collisions."
+ },
+ {
+  "id": "714",
+  "parent": "712",
+  "date": "2014-11-11T14:52:39+08:00",
+  "author": "非常响亮",
+  "site": "",
+  "text": "@linuxer：@linuxer 对的，我也是想表达这个意思。事实也应该如此，device_register()-->device_initialize（）中首先将dev的kset字段设为devices(dev->kobj.kset = devices_kset;)如果dev的class、parent字段都为空，那么后续将不会对dev->kset进行操作，那么dev将置于/sys/devices中。这样逆着推，/sys/devices中的所有子目录都应该是device_register（）的结果。但是目录中也有例外，如先前那个例子，（先纠正上面的输入错误，led_class/目录下是led_dev而不是myled）在/sys/devices/virtual/led_class/led_dev中,led_class仅仅只是一个kset实体，并不包括device实体。不过我想上面有这么一句话应该可以解释：Class-devices with a non class-device as parent, live in a \"glue\" directory to prevent namespace collisions."
+ },
+ {
+  "id": "738",
+  "parent": "0",
+  "date": "2014-11-17T09:34:49+08:00",
+  "author": "袁波",
+  "site": "",
+  "text": "大神啊，看了楼主的文章我一下就明白过来了。谢谢。"
+ },
+ {
+  "id": "741",
+  "parent": "0",
+  "date": "2014-11-17T15:27:29+08:00",
+  "author": "袁波",
+  "site": "",
+  "text": "楼主我发现你文章中有个错误。dev_kobj，代表本class的kobject，用于在sysfs中创建目录。 \r\n\r\n这句话有错误吧，class 在sysfs中创建的目录是由class 中subsys_private *p 中的subsys这个kset决定的吧。\r\n\r\n内核中在 __class_register(struct class *cls, struct lock_class_key *key)中有这么一段代码\r\nstruct subsys_private *cp;\r\nerror = kset_register(&cp->subsys);这句就说明了class是注册的这个subsys这个kset而并非dev_kobj。\r\n而同样在注册这个函数中还有这么一段代码：\r\n/* set the default /sys/dev directory for devices of this class */\r\n\tif (!cls->dev_kobj)\r\n\t\tcls->dev_kobj = sysfs_dev_char_kobj;\r\n这说说明了dev_kobj这个成员代表的是这样一内设备的类型缺省为/sys/dev/char"
+ },
+ {
+  "id": "743",
+  "parent": "741",
+  "date": "2014-11-17T18:50:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@袁波：非常感谢。文中的表述确实是错的。正像您说的，dev_kobj表示该class下的设备，在/sys/dev/下的目录，现在一般有char和block两个，如果dev_kobj为NULL，则默认选择char。\r\n一会儿我会更新文章，谢谢~~"
+ },
+ {
+  "id": "749",
+  "parent": "0",
+  "date": "2014-11-18T12:22:43+08:00",
+  "author": "袁波",
+  "site": "",
+  "text": "楼主大神你的《input子系统、RTC子系统分析》文章在哪里可以找到啊。很想看一下啊。谢谢了啊。我找了半天都没看得起。"
+ },
+ {
+  "id": "750",
+  "parent": "749",
+  "date": "2014-11-18T12:29:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@袁波：非常抱歉，还没写呢。业余时间实在不多，很多想写的都没有写。抱歉~~"
+ },
+ {
+  "id": "1214",
+  "parent": "0",
+  "date": "2015-02-23T22:14:44+08:00",
+  "author": "lucifer",
+  "site": "",
+  "text": "怎么理解比如input subsystem跟设备模型什么关系了？我自己看到设备模型是在讲driver跟device的绑定，但是input似乎是在说处理事件？应用层怎么应对了？不是说设备都是文件吗？另外最简单的驱动例子的的都是实现fops，似乎在设备模型和类似input subsystem中看不到。"
+ },
+ {
+  "id": "1218",
+  "parent": "1214",
+  "date": "2015-02-25T10:56:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lucifer：input子系统和设备模型的关系有两个基本的体现：\r\n1. input device（struct input_dev）本身就包含了struct device变量，并且在input device注册（input_register_device）时，会调用device_add等设备模型的接口，添加设备模型的元素。\r\n2. 所谓的event机制，正是基于设备模型（uevent）的封装。\r\n\r\n至于fops，就是字符设备层面的事情了，在input子系统也是存在的，只不过input subsystem core的实现比较简单，只规定了input字符设备的major number，其它的具体事情（如fops实现），则由具体的input driver负责实现，例如drivers/input/mousedev.c。"
+ },
+ {
+  "id": "1228",
+  "parent": "1218",
+  "date": "2015-02-26T22:03:09+08:00",
+  "author": "lucifer",
+  "site": "",
+  "text": "@wowo：谢谢回复!我再看看."
+ },
+ {
+  "id": "1410",
+  "parent": "0",
+  "date": "2015-03-25T09:28:37+08:00",
+  "author": "wzw200",
+  "site": "",
+  "text": "class网上讲的很少，可以直接看代码，\r\n《分析过mdev(udev的BusyBox简化版)源码的都知道mdev的基本原理》\r\n执行mdev -s命令时，mdev扫描/sys/block(块设备保存在/sys/block目录下,内核2.6.25版本以后，块设备也保存在/sys/class/block目录下。mdev扫描/sys/block是为了实现向后兼容)和/sys/class两个目录下的dev属性文件，从该dev属性文件中获取到设备编号(dev属性文件以\"major:minor\\n\"形式保存设备编号)，并以包含该dev属性文件的目录名称作为设备名device_name(即包含dev属性文件的目录称为device_name，而/sys/class和device_name之间的那部分目录称为subsystem。也就是每个dev属性文件所在的路径都可表示为/sys/class/subsystem/device_name/dev)，在/dev目录下创建相应的设备文件。例如，cat /sys/class/tty/tty0/dev会得到4:0，subsystem为tty,device_name为tty0。"
+ },
+ {
+  "id": "1903",
+  "parent": "1410",
+  "date": "2015-05-31T16:30:10+08:00",
+  "author": "lucifer",
+  "site": "",
+  "text": "@wzw200：多谢你的解答。我再看看代码。"
+ },
+ {
+  "id": "3344",
+  "parent": "0",
+  "date": "2016-01-05T11:48:26+08:00",
+  "author": "czh",
+  "site": "",
+  "text": "非常感谢蜗蜗的好文章！\r\n有一个问题，如果在device_add()时，device的bus和class都不为空，device_add_class_symlinks(dev)会调用\r\nerror = sysfs_create_link(&dev->kobj,&dev->class->p->subsys.kobj,\"subsystem\"); bus_add_device(dev);也会调用\r\nerror = sysfs_create_link(&dev->kobj,&dev->bus->p->subsys.kobj, \"subsystem\");是不是会有冲突？"
+ },
+ {
+  "id": "3346",
+  "parent": "3344",
+  "date": "2016-01-05T17:12:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@czh：不会的，一个是在class目录，一个是在bus目录。"
+ },
+ {
+  "id": "3352",
+  "parent": "3346",
+  "date": "2016-01-06T10:44:48+08:00",
+  "author": "czh",
+  "site": "",
+  "text": "@wowo：回复的这么快，太感动了！\r\n\"subsystem\"链接都是在devices目录下创建的，class目录和bus目录不会有啊\r\n是不是我的问题没有表述明白。如果一个device注册到kernel的时候bus指针和class指针都不为空的话，既要在device的目录下创建subsystem链接到bus，又要创建subsystem链接到class，这样不会又冲突吗？\r\n是不是device的bus指针和class指针不会同时有效？"
+ },
+ {
+  "id": "3355",
+  "parent": "3352",
+  "date": "2016-01-06T16:38:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@czh：抱歉，是我没有仔细看您的问题，并不是您没有表述清除。\r\n确实，device_add的时候，如果同时存在class和bus的时候，sysfs_create_link时，后一个（也就是bus）会报错，不能共存。\r\n对于bus和class，我的理解是：\r\n同一个bus下的设备，是一种“空间上（或物理上）”聚集，之所以加引号，可能是虚拟的；\r\n同一个class下的设备，是一种“文化上”的聚集，例如我们有共同的特征、共同的兴趣爱好等等。\r\n\r\n那么，一个设备是否可能既从属于某一个bus，又从属于某一个class？是可以的。通常的做法是：\r\n该设备的device指针（由设备模型管理），和bus打交道，如某一个platform设备下的device指针；\r\n如果需要加入某一个class，则新添一个子设备，让这个设备加入到class。"
+ },
+ {
+  "id": "3922",
+  "parent": "3355",
+  "date": "2016-05-12T01:04:30+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@wowo：1、如果device_add的时候，dev同时存在class和bus，那么后一个（也就是bus）会报错。\r\n我觉得这好像不仅仅导致不能共存，而且影响了bus的管理。\r\nint bus_add_device(struct device *dev)\r\n{\r\n\t...\r\n\terror = sysfs_create_link(&dev->kobj,\r\n\t\t\t&dev->bus->p->subsys.kobj, \"subsystem\");\r\n\tif (error)\r\n\t\tgoto out_subsys;\r\n\tklist_add_tail(&dev->p->knode_bus, &bus->p->klist_devices);\r\n\r\n\treturn 0;\r\n}\r\nsysfs_create_link()失败，导致dev不能注册到bus的klist_devices。\r\n2、如果需要加入某一个class，则新添一个子设备，让这个设备加入到class。\r\n如果是子设备添加到class，那么该子设备的bus必定是NULL吧？这样的话，也不算同时包含bus和class吧？我看到的gpio_keys例子就是这样。wowo看到过子设备同时包含bus和class的例子吗？"
+ },
+ {
+  "id": "3924",
+  "parent": "3922",
+  "date": "2016-05-12T09:05:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@callme_friend：是的，子设备是parent--child的关系，不是总线上的从属关系。"
+ },
+ {
+  "id": "3994",
+  "parent": "3355",
+  "date": "2016-05-28T11:44:32+08:00",
+  "author": "kevin",
+  "site": "",
+  "text": "@wowo：“device_add的时候，如果同时存在class和bus的时候，sysfs_create_link时，后一个（也就是bus）会报错，不能共存。”\r\n\r\n这里应该有点问题，在 device_add 的时候，为device添加class软链接的时候，会先做以下判断：if(!dev->class) return 0;我们知道父设备是不会注册class的，所以这里会直接返回 0，然后继续执行 bus_add_device，在 sysfs_create_link 中不会失败报错。"
+ },
+ {
+  "id": "3997",
+  "parent": "3994",
+  "date": "2016-05-30T08:55:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@kevin：kevin同学，可能您没有看清楚我们上面的讨论。if(!dev->class) return 0;这个判断也是当前设备，不是父设备。\r\n“device_add的时候，如果同时存在class和bus的时候，sysfs_create_link时，后一个（也就是bus）会报错，不能共存。” 这个表述应该是对的~~~"
+ },
+ {
+  "id": "4002",
+  "parent": "3997",
+  "date": "2016-05-30T18:37:57+08:00",
+  "author": "kevin",
+  "site": "",
+  "text": "@wowo：谢谢指正！我重新看了一下代码，我的理解确实有误，当 dev->class 存在的时候，在 bus_add_device 中，bus = bus_get(dev->bus) 的返回值为 NULL，所以并不会走到 sysfs_create_link，原提问前提应该不存在。至于为什么 dev->class 存在时，bus 会为 NULL，我暂时还没找到答案。我猜应该跟设备创建时 class_register 有关。\r\n\r\nwowo 可否指点一二。"
+ },
+ {
+  "id": "4250",
+  "parent": "0",
+  "date": "2016-07-14T09:17:15+08:00",
+  "author": "js_wawayu",
+  "site": "",
+  "text": "请教一下，根目录下的dev和sys目录下的dev有什么关系？这几篇设备模型里的节点都是位于sys目录下的"
+ },
+ {
+  "id": "4254",
+  "parent": "4250",
+  "date": "2016-07-14T09:51:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@js_wawayu：/dev下面的东西，本质是“文件系统”有关的东西，不属于设备模型：\r\nmknod - make block or character special files\r\n\r\n/sys/dev/下面的东西，就是系统所有device的一个符号连接：\r\nls -l /sys/dev/\r\n可以看看是什么效果。"
+ },
+ {
+  "id": "4459",
+  "parent": "698",
+  "date": "2016-08-26T21:34:54+08:00",
+  "author": "lucifer",
+  "site": "",
+  "text": "@wowo：wowo用lxr吗？很奇怪我怎么搜3.12内核中class结果是unused，结果但是代码中可以看到class，只是显示灰色。"
+ },
+ {
+  "id": "4460",
+  "parent": "4459",
+  "date": "2016-08-27T16:41:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lucifer：我很少用lxr，很多是哈我是直接在github上看，可以关键字搜索。"
+ },
+ {
+  "id": "4461",
+  "parent": "4460",
+  "date": "2016-08-28T21:54:30+08:00",
+  "author": "lucifer",
+  "site": "",
+  "text": "@wowo：谢谢哈~"
+ },
+ {
+  "id": "5144",
+  "parent": "712",
+  "date": "2017-01-14T11:36:42+08:00",
+  "author": "hony",
+  "site": "",
+  "text": "@linuxer：\"sysfs中所有的目录以及目录下的文件都对应内核中的一个struct kobj实例。\"—— 目录下的属性文件不是kobject实体哦。"
+ },
+ {
+  "id": "5152",
+  "parent": "5144",
+  "date": "2017-01-16T09:09:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hony：“目录下的属性文件”，指的是什么呢？"
+ },
+ {
+  "id": "5159",
+  "parent": "5144",
+  "date": "2017-01-16T10:50:42+08:00",
+  "author": "hello",
+  "site": "",
+  "text": "@hony：多谢指正！应该是目录对应kobject，目录下的属性文件对应attribute"
+ },
+ {
+  "id": "7095",
+  "parent": "0",
+  "date": "2018-12-21T11:56:50+08:00",
+  "author": "sklli",
+  "site": "",
+  "text": "@wowo   大神，请问下input子系统什么时候上线了？"
+ },
+ {
+  "id": "8793",
+  "parent": "1218",
+  "date": "2023-06-30T11:10:42+08:00",
+  "author": "Bright-Ho",
+  "site": "",
+  "text": "@wowo：2. 所谓的event机制，正是基于设备模型（uevent）的封装。\r\nwowo，你好！\r\n这句话有依据吗？event事件作为input子系统的事件上报机制，与设备模型（uevent）有关系吗？"
+ }
+]

@@ -1,0 +1,18 @@
+[
+ {
+  "id": "4410",
+  "parent": "0",
+  "date": "2016-08-16T14:17:27+08:00",
+  "author": "amalgam-silver",
+  "site": "",
+  "text": "标题是不是手滑把2打成5了? :)"
+ },
+ {
+  "id": "4411",
+  "parent": "4410",
+  "date": "2016-08-16T18:18:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@amalgam-silver：没有手滑，参考“/linux_kenrel/kernel_config_overview.html”中的计划，这个确实是第5篇，之所以先写，因为它比较简单:-)"
+ }
+]

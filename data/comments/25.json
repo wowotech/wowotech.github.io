@@ -1,0 +1,466 @@
+[
+ {
+  "id": "52",
+  "parent": "0",
+  "date": "2014-04-02T21:45:02+08:00",
+  "author": "狂晕致死",
+  "site": "http://www.forwhat.cn",
+  "text": "写的很好，楼主是从事那一块的啊？驱动还是应用？"
+ },
+ {
+  "id": "58",
+  "parent": "52",
+  "date": "2014-04-03T11:21:54+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@狂晕致死：谢谢夸奖。我偏驱动方向"
+ },
+ {
+  "id": "59",
+  "parent": "58",
+  "date": "2014-04-03T11:49:25+08:00",
+  "author": "狂晕致死",
+  "site": "http://www.forwhat.cn",
+  "text": "@蜗蜗：恩恩。友链已加。我以后有问题还得向您请教呢。嘿嘿。"
+ },
+ {
+  "id": "60",
+  "parent": "59",
+  "date": "2014-04-03T11:51:15+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@狂晕致死：别那么客气，互相学习～"
+ },
+ {
+  "id": "61",
+  "parent": "0",
+  "date": "2014-04-03T13:16:41+08:00",
+  "author": "qq朋友圈",
+  "site": "http://www.qqqyq.com",
+  "text": "看不懂啊，博主厉害啊"
+ },
+ {
+  "id": "62",
+  "parent": "61",
+  "date": "2014-04-03T13:29:19+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@qq朋友圈：看不懂就证明不厉害啊。\r\n真正厉害的谁都能看懂，呵呵"
+ },
+ {
+  "id": "507",
+  "parent": "0",
+  "date": "2014-10-10T14:08:27+08:00",
+  "author": "常山黄豆",
+  "site": "",
+  "text": "写得不错，我发现越来越喜欢linux！"
+ },
+ {
+  "id": "803",
+  "parent": "0",
+  "date": "2014-12-03T16:47:40+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "大多数时候，attribute文件的读写数据流为：vfs---->sysfs---->kobject---->attibute---->kobj_type---->sysfs_ops---->xxx_attribute，其中kobj_type、sysfs_ops和xxx_attribute都是由包含kobject的上层数据结构实现。 \r\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\r\nvfs---->sysfs---->kobject---->attibute---->kobj_type---->sysfs_ops---->xxx_attribute，看了代码，wowo你描述的这个流程没有问题，但是有个前提:必须要先用sysfs_create_group来为kobj建立attribute_group关联。因为真正最后调用的是该kobj对应的attribute_group中的show和store。\r\n这部分在设备模型4最后一段好像有写，但描述得比较隐晦。"
+ },
+ {
+  "id": "804",
+  "parent": "803",
+  "date": "2014-12-03T21:58:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@puppypyb：抱歉，今天比较忙，没来得及回复。设备模型4中，我确实没有关注attribute group的，我再去看一下代码确认一下。\r\n另外，你也可以把你的理解贴在这里和大家分享一下。"
+ },
+ {
+  "id": "813",
+  "parent": "803",
+  "date": "2014-12-04T22:53:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@puppypyb：sysfs中，attribute group是另一个概念。正常情况下，使用sysfs_create_file已经够了。如果还需要把这些attribute文件组织起来，放到一个目录中，那么group是其中的一个方法。因此您这里所说的“先用sysfs_create_group来为kobj建立attribute_group关联”，不是必须的。\r\n另外我在“Linux设备模型(4)_sysfs”有对您的这个评论专门解释，希望继续交流。"
+ },
+ {
+  "id": "858",
+  "parent": "813",
+  "date": "2014-12-08T16:01:40+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "@wowo：让你见笑了，sysfs_create_file我都没太注意。\r\n  我是在看sysfs那一章节的同时产生的疑问，具体是fill_read_buffer函数中的count = ops->show(kobj, attr_sd->s_attr.attr, buffer->page)这一句。这里ops->show就是ktype中sysfs_ops的show，跟进去以后发觉ktype的show和store其实没做具体的事情。kernel中所有的ktype的show及store无一例外的都是类似下面这样：\r\nstatic ssize_t xxx_attr_show(struct kobject *kobj, struct attribute *attr, char *buf)\r\n{\r\n    struct xxx_attribute *yyy;\r\n    ...\r\n\r\n    yyy = container_of(attr, struct xxx_attribute, attr);\r\n    if (yyy->show)\r\n\tret = yyy->show(kobj, buf);\r\n    \r\n    ...\r\n}\r\n基本上就是一个思想：通过container_of获取attr的上层struct，然后再调用上层的show方法，而attr的上层struct又总是象个样子：\r\nstruct xxx_attribute {\r\n\tstruct  attribute  attr;\r\n\tssize_t (*show)(...);\r\n\tssize_t (*store)(...);\r\n};\r\n例如 bus_attribute, device_attribute, kobj_attribute等等。\r\n\r\n所以sysfs的read/write真正关联的是kobj_attribute、device_attribute这些。 关键的操作是在sysfs_add_file_mode()函数中sd->s_attr.attr = (void *)attr这一条语句(这里有些猜测的成分，因为只看到了s_attr.attr部分，wowo能帮助确认下？)，sysfs_create_file以及sysfs_create_group都会调用到sysfs_add_file_mode来建立关联。\r\n但是我看到sysfs_create_file中对ktype的default_attrs进行判断，若为NULL则不会建立这种关联。\r\n\r\nps:kernel中有一个例子 kobject-example.c，里面很典型的使用了sysfs_create_group这种方式。"
+ },
+ {
+  "id": "870",
+  "parent": "858",
+  "date": "2014-12-09T22:03:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@puppypyb：是的，你总结的很对。另外：\r\n“所以sysfs的read/write真正关联的是kobj_attribute、device_attribute这些。 关键的操作是在sysfs_add_file_mode()函数中sd->s_attr.attr = (void *)attr这一条语句”\r\nsysfs真正关联的还是attr啊，是struct xxx_attribute中的那个struct attribute变量。除了struct attribute，sysfs应该是六亲不认的。"
+ },
+ {
+  "id": "2779",
+  "parent": "0",
+  "date": "2015-10-16T11:24:27+08:00",
+  "author": "tom",
+  "site": "",
+  "text": "这篇文章根本就是翻译了一下源码的注释，根本没有走心，例如数据结构的建立，调用流程的分析，都没有"
+ },
+ {
+  "id": "2781",
+  "parent": "2779",
+  "date": "2015-10-16T12:07:17+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tom：device和driver是linux设备模型的核心，是一个高度抽象的模块，我们对它的理解也是在慢慢加深的，有时间会出Version II的，^_^\r\n\r\n多谢您的建议和批评，我们会努力的。"
+ },
+ {
+  "id": "2804",
+  "parent": "0",
+  "date": "2015-10-20T18:41:47+08:00",
+  "author": "zoon",
+  "site": "",
+  "text": "对我很有帮助，不过我没找到vfs到driver_attribute的过程(show, store)\r\n如果有建立数据结构，分析下调用过程就更好了"
+ },
+ {
+  "id": "2807",
+  "parent": "2804",
+  "date": "2015-10-21T09:05:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zoon：您可以参考下面puppypyb同学的回复，这篇文章只是简单的总结一下，具体的流程大家可以照着代码自己理解，因为只有自己理解过之后，才会设备模型有比较深刻的认识。"
+ },
+ {
+  "id": "3004",
+  "parent": "62",
+  "date": "2015-11-06T14:21:40+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@蜗蜗：看不懂，主要还是相关内容的基础不够，尤其是跟蜗窝和linuxer的基础不在一个层次上，所以你们写的内容，好多可能觉得没必要解释的地方，很多人就不明白了。但是写的过细，恐怕又会扩展太多，模糊了文章主题。这个需要你们大神把握啊，建议这样的地方，可以几句话带过，告诉不明白的人可以去脑补一下哪些知识。"
+ },
+ {
+  "id": "3005",
+  "parent": "3004",
+  "date": "2015-11-06T15:42:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Daniel Shieh：Daniel说的很对，我的观点是：\r\n\r\n被我们忽略的细节，很多时候是有意忽略的。从我自身的感受来说，学习一个新东西的时候，如果关注的细节太多，最后会把自己逼疯的，这对学习是无益的。往往我们想知道的越多，得到的反而越少。\r\n\r\n当然，由于一些先入为主的原因，我们肯定会漏掉一些应该说明的东西，怎么把握，是一个非常高超的技术，以我们现在的能力，肯定还有很大差距。\r\n\r\n不过您的方法确实值得借鉴，多谢提醒，后面我们会注意的。谢谢~~"
+ },
+ {
+  "id": "3694",
+  "parent": "0",
+  "date": "2016-03-20T08:45:12+08:00",
+  "author": "buls1542",
+  "site": "",
+  "text": "刚学习驱动没几天，正看字符设备驱动。里面有个CDEV结构体请问窝窝这个和DEVICE与device_driver有什么联系吗？因为我在尝试写sull驱动的时候都没有发现上面两个结构体的定义，现在感觉比较模糊"
+ },
+ {
+  "id": "3697",
+  "parent": "3694",
+  "date": "2016-03-20T23:56:56+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@buls1542：没有什么关系，一个是用于VFS层的抽象，和用户空间接口相关，一个是设备驱动模型的抽象。"
+ },
+ {
+  "id": "3731",
+  "parent": "0",
+  "date": "2016-03-27T10:44:40+08:00",
+  "author": "Musiclover",
+  "site": "",
+  "text": "看完device 和 device_driver 之后有个疑问，既然sysfs可以将device的属性导出到用户空间，那是不是说一些简单的设备可以直接使用sysfs_ops操作而不用专门写device_driver了呢？device_driver的本质是不是也是实现设备的读写和向用户空间提供接口呢？（问题比较幼稚，见笑）"
+ },
+ {
+  "id": "3732",
+  "parent": "3731",
+  "date": "2016-03-27T11:37:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Musiclover：Hi Musiclover，这是个非常好的问题，一点都不幼稚，说明你已经有自己的思考了，恭喜恭喜。你说得对，如果某个设备只是提供一些简单的功能，没有device driver也是可以的。不过这样单独存在的device在kernel中应该不对（一时半会我找不到例子）。不过，很多device直接使用自己的bus、class等作为driver，和这个思路本质上是一样的。"
+ },
+ {
+  "id": "3736",
+  "parent": "3732",
+  "date": "2016-03-28T06:17:33+08:00",
+  "author": "Musiclover",
+  "site": "",
+  "text": "@wowo：多谢wowo的鼓励和帮助，我会继续努力。"
+ },
+ {
+  "id": "3857",
+  "parent": "0",
+  "date": "2016-04-26T10:13:29+08:00",
+  "author": "liuchang5772",
+  "site": "",
+  "text": "@蜗蜗  我是linux初学者，看你你的bus、device、device_driver 章节，能看明白。下面是典型的一个字符驱动程序，大部分初学者应该都接触过这个程序，现在比较困惑的就是统一设备模型和下面的字符驱动模型是怎么关联起来的？文章中也没有看到填充file_operation结构体的操作。能不能在这个基础上修改一下，加入bus、device、device_driver，用统一设备模型来描述这个驱动程序？\r\n\r\n字符驱动链接：\r\nhttp://www.oschina.net/code/snippet_262623_9616"
+ },
+ {
+  "id": "3858",
+  "parent": "3857",
+  "date": "2016-04-26T10:35:23+08:00",
+  "author": "unique",
+  "site": "",
+  "text": "@liuchang5772：这位兄弟的要求有点太那个了，你可以先自己试着写一下，遇到问题请博主帮忙可以，总不能让博主直接帮你写吧？"
+ },
+ {
+  "id": "3860",
+  "parent": "3858",
+  "date": "2016-04-26T10:59:43+08:00",
+  "author": "liuchang5772",
+  "site": "",
+  "text": "@unique：@unique  字符驱动已经写过了，但是不知道怎么加到模型里面。原来的方法是通过cdev_add()函数可以将file_operation 结构体注册到系统中，然后可以执行open 、read 等操作，换成统一模型之后没有看到有相关操作，所以想让博主指点一下。"
+ },
+ {
+  "id": "3865",
+  "parent": "3860",
+  "date": "2016-04-26T16:25:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@liuchang5772：这里有我之前写过的一个关于device和device_driver的demo，你可以参考一下（需要完善一下Makefile才能编译）：\r\nhttps://github.com/wowotech/sparrow"
+ },
+ {
+  "id": "3868",
+  "parent": "3865",
+  "date": "2016-04-27T14:24:29+08:00",
+  "author": "liuchang5772",
+  "site": "",
+  "text": "@wowo：感谢博主指点，这样就全都能串起来了。将原来驱动中的初始化部分写到probe，去初始化部分写到remove，这是/dev系统和/sys系统关联的关键的部分。"
+ },
+ {
+  "id": "3870",
+  "parent": "3868",
+  "date": "2016-04-28T08:54:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@liuchang5772：不客气:-)"
+ },
+ {
+  "id": "3888",
+  "parent": "0",
+  "date": "2016-05-05T21:17:15+08:00",
+  "author": "liuchang5772",
+  "site": "",
+  "text": "今天又想到个问题：用device_create()函数创建设备的时候会在/dev目录下生成设备文件，但是并没有指定是块设备还是字符设备，那内核是怎么知道需要创建哪种类型的设备呢？"
+ },
+ {
+  "id": "3889",
+  "parent": "3888",
+  "date": "2016-05-05T21:56:47+08:00",
+  "author": "liuchang5772",
+  "site": "",
+  "text": "@liuchang5772：哦 应该是和 device结构体下的class中的dev_kobj有关，默认是字符设备。\r\n我再看看代码。"
+ },
+ {
+  "id": "3893",
+  "parent": "3888",
+  "date": "2016-05-06T14:52:45+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@liuchang5772：/dev目录下的设备文件是systemd-udev这个用户空间进程根据内核来的uevent消息而创建的，systemd-udev本身可以通过这些uevent消息来判断一个设备是字符设备还是块设备。一个简单的例子就是：block device传递的uevent消息中会有\"SYBSTSTEM＝block\""
+ },
+ {
+  "id": "4176",
+  "parent": "0",
+  "date": "2016-07-02T23:20:07+08:00",
+  "author": "Robin--",
+  "site": "",
+  "text": "@wowo:请教，关于attribute的读写流程中“kobject---->attibute”，这里的attibute是对应哪里？对照《Linux设备模型(4)_sysfs》中，从sysfs_open_file（）函数中获取object后，直接就到Kset了，获取 sysfs_ops后，在sysfs_read/write_file()时就到xxx_attibute了，您写这个流程怎么理解？"
+ },
+ {
+  "id": "4177",
+  "parent": "4176",
+  "date": "2016-07-03T09:48:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Robin--：建议看这个文章，/device_model/dm_sysfs.html，里面已经写了。"
+ },
+ {
+  "id": "4444",
+  "parent": "0",
+  "date": "2016-08-25T14:23:03+08:00",
+  "author": "freeman",
+  "site": "http://freemandealer.github.io",
+  "text": "\"想知道的越多，得到的反而越少\"，说得没错，慢慢来比较快！赞！ 评论真的很精彩"
+ },
+ {
+  "id": "4446",
+  "parent": "4444",
+  "date": "2016-08-26T09:54:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@freeman：多谢~~"
+ },
+ {
+  "id": "5031",
+  "parent": "0",
+  "date": "2016-12-16T16:01:25+08:00",
+  "author": "HHP_Low",
+  "site": "",
+  "text": "4. 设备驱动probe的时机 :7: Error:'prove' you mean 'probe'?\r\n设备驱动prove的时机有如下几种（分为自动触发和手动触发）：\r\n       ^\r\n2333\r\n菜鸟只能找这种错误了\r\n\r\nPS:感觉技术教程太严肃看不下去，太浮夸又营养。wowo写的感觉就很舒服～  谢谢wowo"
+ },
+ {
+  "id": "5033",
+  "parent": "5031",
+  "date": "2016-12-16T16:42:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@HHP_Low：多谢指正～～\r\n话说能被发现的错误都不算错，哈哈:-)"
+ },
+ {
+  "id": "5048",
+  "parent": "0",
+  "date": "2016-12-22T10:48:27+08:00",
+  "author": "heng",
+  "site": "",
+  "text": "@wowo\r\n  窝窝，这个probe我大致理解了，之前都是内核检测到有相应的设备的时候，又匹配到有相应的平台驱动。但是最近linux不是更新了设备树吗？就是用dts文件这个，我在《ARM Device Tree设备树.pdf》这个文章里面看到这样一句话，有点不理解。。：（以下是原文）\r\n    使用 Device Tree 后,驱动需要与.dts 中描述的设备结点进行匹配,从而引发驱动的\r\nprobe()函数执行。\r\n  1.这段话的理解可不可以是现在就算没有设备，plattform_driver的probe也可以执行？\r\n   2.如果不是，那么这个of_match_table里面匹配dts中的东西的时候，是什么原理？\r\n  谢谢窝窝～"
+ },
+ {
+  "id": "5049",
+  "parent": "5048",
+  "date": "2016-12-22T10:57:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@heng：driver一定要等到device才能匹配。\r\ndts是一种描述设备的语法，kernel在启动的时候会把dts的描述转换为实际的device。"
+ },
+ {
+  "id": "5051",
+  "parent": "5049",
+  "date": "2016-12-22T11:32:43+08:00",
+  "author": "heng",
+  "site": "",
+  "text": "@wowo：明白了，实际上probe的原理还是没变的。那么，如果没有实际的物理设备呢？比如，dts里面有一个wifi device的配置，但是这个wifi芯片并没有连到板子上面。\r\n因为我之前写了一个platform_driver,然后在dts里面加了相应的配置，最后这个driver的probe也执行了呢。很明确的是platform_driver没有真正的物理设备"
+ },
+ {
+  "id": "5052",
+  "parent": "5051",
+  "date": "2016-12-22T11:34:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@heng：换个思路想一下：检查是不是有真正的物理设备，不就是driver要干的事情吗？"
+ },
+ {
+  "id": "5053",
+  "parent": "5052",
+  "date": "2016-12-22T11:54:27+08:00",
+  "author": "heng",
+  "site": "",
+  "text": "@wowo：啊！我傻了！对阿～driver可以先加载的。。。不一定先要有设备0.0。。\r\n \r\n(◡¸◡✿)\r\n谢谢窝窝～用了dts过后纠结了好久呢～"
+ },
+ {
+  "id": "5076",
+  "parent": "0",
+  "date": "2017-01-03T10:41:27+08:00",
+  "author": "Parchilor",
+  "site": "",
+  "text": "能不能顺便给个练手的练习，作为小白根本不知道如何下手啊！"
+ },
+ {
+  "id": "5077",
+  "parent": "5076",
+  "date": "2017-01-03T13:18:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Parchilor：这里有个例子，你可以参考一下自己写一个:-)\r\nhttps://github.com/wowotech/sparrow"
+ },
+ {
+  "id": "5647",
+  "parent": "0",
+  "date": "2017-06-09T16:53:53+08:00",
+  "author": "LINUX",
+  "site": "",
+  "text": "@蜗蜗 你好，现在struct device不直接使用，有被封装了一层，如soc device、platform device等等，然后在写驱动的时候，怎么都不用对这个struct device结构体进行初始化了？是不是linux内部帮我们初始化好了？"
+ },
+ {
+  "id": "5650",
+  "parent": "5647",
+  "date": "2017-06-10T14:28:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@LINUX：大部分初始化好了，不过还有一些东西，driver还能看到，比如drv_data等。"
+ },
+ {
+  "id": "5863",
+  "parent": "3732",
+  "date": "2017-08-01T09:50:01+08:00",
+  "author": "LornYin",
+  "site": "http://lornyin.top/",
+  "text": "@wowo：“如果某个设备只是提供一些简单的功能，没有device driver也是可以的。不过这样单独存在的device在kernel中应该不对（一时半会我找不到例子）”  前几天看到单总线的ds18b20,感觉就是wowo说的这种情况，没有走封装好的设备模型，在他的注册里只有个sysfs_create_bin_file(&sl->dev.kobj,&(w1_f29_sysfs_bin_files[i]));   （w1_ds2408.c）"
+ },
+ {
+  "id": "5911",
+  "parent": "0",
+  "date": "2017-08-15T23:40:42+08:00",
+  "author": "小白",
+  "site": "",
+  "text": "指正一个明显错误：\r\nstruct device_driver中成员p，私有数据的指针，具体的driver代码可以把任何需要的内容放在这里，反正设备模型代码不关心。\r\n这个变量是驱动模型很重要的，非常重要，因为里面包含了kobject是挂到sysfs的，不能使用"
+ },
+ {
+  "id": "5912",
+  "parent": "5911",
+  "date": "2017-08-16T08:38:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@小白：多谢指正，是的，这个是driver core的私有指针，其它人不能动。已修改。多谢～～～"
+ },
+ {
+  "id": "6209",
+  "parent": "5077",
+  "date": "2017-11-16T17:53:17+08:00",
+  "author": "虎妞",
+  "site": "",
+  "text": "@wowo：新手求教：\r\n这个例子卸载模块的时候出现的警告是不是因为sparrow是一个platform_device,但是初始化的时候没有指定底层的device，也就没有指定device的release函数。而没有release系统认为资源未释放所以报警？\r\n还有那个test是不是用来测试线层同步的。麻烦简单说明一下。我运行起来报错。"
+ },
+ {
+  "id": "6211",
+  "parent": "6209",
+  "date": "2017-11-16T21:33:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@虎妞：警告的原因是没有指定device的release函数，而不是没有指定device。至于为什么没指定release函数，因为platform device一般都是不remove的。我们这个例子比较特殊。\r\n那个测试，就是随手写写，没什么目的，报错的话，你试着自己解决一下吧。"
+ },
+ {
+  "id": "6759",
+  "parent": "0",
+  "date": "2018-05-19T17:12:21+08:00",
+  "author": "essaypinglun 作家",
+  "site": "",
+  "text": "Linux设备驱动程序的平台，您可以从中检查此区域中的更好条件。您也可以用....替换最好的想法，并在这里用struct device的文章维护更好的博客。"
+ },
+ {
+  "id": "7524",
+  "parent": "0",
+  "date": "2019-07-09T21:52:38+08:00",
+  "author": "luffy",
+  "site": "",
+  "text": "感谢博主，博主能否分享一些媒体设备驱动心得。刚入门的小白对里面pipeline，dts节点图，数据流看的头大"
+ },
+ {
+  "id": "7975",
+  "parent": "0",
+  "date": "2020-05-06T01:28:41+08:00",
+  "author": "tyy",
+  "site": "",
+  "text": "@wowo 有个地方我不明白，在注册device时，device_add会调用发送uevent消息，让用户空间的mdev创建/dev下的文件。\r\n但是按照下面的描述，字符设备注册是在driver的probe里面做的。那么在注册device的时候，字符设备还没注册，字符设备都没注册，mdev怎么创建/dev下的文件呢？\r\n\r\n所谓的\"probe”，是指在Linux内核中，如果存在相同名称的device和device_driver（注：还存在其它方式，我们先不关注了），内核就会执行device_driver中的probe回调函数，而该函数就是所有driver的入口，可以执行诸如硬件设备初始化、字符设备注册、设备文件操作ops注册等动作（\"remove”是它的反操作，发生在device或者device_driver任何一方从内核注销时，其原理类似，就不再单独说明了）"
+ },
+ {
+  "id": "8036",
+  "parent": "5049",
+  "date": "2020-06-27T12:25:02+08:00",
+  "author": "sheeaza",
+  "site": "",
+  "text": "@wowo：想问下arm64 把dts转为实际device是在哪里，我找了下源码，没有找到"
+ },
+ {
+  "id": "8757",
+  "parent": "0",
+  "date": "2023-03-20T00:57:09+08:00",
+  "author": "Thomas",
+  "site": "",
+  "text": "前辈你好，阅读你的文章受益良多。linuxer新手前来讨论。对以下两段话还是感觉有不对的地方。\r\n1.在\"Linux设备模型(4)_sysfs”中，我们有讲到，大多数时候，attribute文件的读写数据流为：vfs---->sysfs---->kobject---->attribute---->kobj_type---->sysfs_ops---->xxx_attribute，其中kobj_type、sysfs_ops和xxx_attribute都是由包含kobject的上层数据结构实现。\r\n2.至于driver的attribute，则要简单的多，其数据流为：vfs---->sysfs---->kobject---->attribute---->driver_attribute，\r\nPS:我阅读的是3.18的源码。\r\n首先1，kobject里没有attribute结构体，只能通过kobj_type---->sysfs_ops---->xxx_attribute调用show/store\r\n其次2，在源码drivers/base/bus.c 中，int bus_add_driver(struct device_driver *drv)函数在添加driver的时候会带入driver_ktype，driver_ktype是kobj_type，且driver也有同样的sysfs_ops 。这说明device和driver的attribute的处理方式是一样的，且所有的属性的的ops方法都是在openfile里面这样获取的\r\n/* every kobject with an attribute needs a ktype assigned */\r\n 15:    if (kobj->ktype && kobj->ktype->sysfs_ops)\r\n 16:        ops = kobj->ktype->sysfs_ops;\r\n所以driver的kobject读取设备属性的时候和device是一样的，都应该为：vfs---->sysfs---->kobject---->kobj_type---->sysfs_ops---->xxx_attribute\r\n\r\n望赐教。"
+ },
+ {
+  "id": "8828",
+  "parent": "0",
+  "date": "2023-09-21T10:55:00+08:00",
+  "author": "xiaotonga",
+  "site": "",
+  "text": "了解device和device_driver相关概念和结构，但对应device和device_driver之间怎么匹配或建立联系呢？\r\n1.内核解析dts(device tree source)文件获知系统存在的硬件设备及其配置；\r\n2.device driver 通过设备树来获取系统中硬件设备，并与其通信。\r\n3.device driver功能，读写设备寄存器，或调用封装设备寄存器读写的接口，实现改变设备寄存器状态、数据。\r\n4.device driver 通过实现vfs提供标准接口结构file_operations{.read=xxx_read;.write=xxx_write}给用户使用。"
+ }
+]

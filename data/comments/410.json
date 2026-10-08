@@ -1,0 +1,18 @@
+[
+ {
+  "id": "6050",
+  "parent": "0",
+  "date": "2017-09-21T00:22:41+08:00",
+  "author": "小白",
+  "site": "",
+  "text": "我看了代码，devm_ioremap_resource具有排他性，这个devm_ioremap好像是没有排他性的!"
+ },
+ {
+  "id": "6051",
+  "parent": "6050",
+  "date": "2017-09-21T10:18:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@小白：多谢提醒，好像是这个样子的，devm_ioremap_resource中会调用__request_region申请一个“busy resource region”，所谓的busy，就是这段memory区域只能自己使用。用devm_ioremap/ioremap取代就没有这个限制了。\r\n\r\n/**                                                                             \r\n * __request_region - create a new busy resource region                         \r\n * @parent: parent resource descriptor                                          \r\n * @start: resource start address                                               \r\n * @n: resource region size                                                     \r\n * @name: reserving caller's ID string                                          \r\n * @flags: IO resource flags                                                    \r\n */                                                                             \r\nstruct resource * __request_region(struct resource *parent,                     \r\n                                   resource_size_t start, resource_size_t n,    \r\n                                   const char *name, int flags)"
+ }
+]

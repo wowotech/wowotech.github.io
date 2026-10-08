@@ -1,0 +1,130 @@
+[
+ {
+  "id": "5319",
+  "parent": "0",
+  "date": "2017-03-15T15:38:43+08:00",
+  "author": "时间为贵",
+  "site": "",
+  "text": "@codingbelief 请教一个问题：一般而言，emmc vendor会不会在emmc内部自己预留一块分区用于存储emmc的error信息？因为很多时候emmc的问题都不容易抓到现场，系统直接panic,连协议分析仪抓的话费时费力"
+ },
+ {
+  "id": "5321",
+  "parent": "5319",
+  "date": "2017-03-15T19:53:21+08:00",
+  "author": "codingbelief",
+  "site": "",
+  "text": "@时间为贵：没有了解到有这种方案，一般的 log system 可能是这样的：\r\n1. log 信息输入到约定好的内存区域；\r\n2. 用户空间的 log 程序定期将 log 信息从内存区域取出并且存储到文件或者存储器；\r\n3. 如果发生 panic 或者其他原因导致系统重启，用户空间的 log 程序可能来不及抓取最后发生问题时的现场 log，但是通常会有一部分有用的信息还在内存中，这种情况下，可以在异常重启后，在 BootLoader 中，将上一次异常现场的 log 从约定的内存中取出来，存放到存储器，再次启动系统后就可以进一步分析问题。\r\n\r\n如果是专门针对 emmc 做分析的话，基本都是依赖于在驱动中添加恰当的 debug 信息了。"
+ },
+ {
+  "id": "5323",
+  "parent": "5321",
+  "date": "2017-03-16T07:23:20+08:00",
+  "author": "时间为贵",
+  "site": "",
+  "text": "@codingbelief：@codingbelief\r\n但是驱动只能从host这端去获取信息，如果是emmc器件的问题的话，更多的时候是需要emmc fw的信息来定位的器件的具体问题的，而fw的信息又无法反馈给驱动端。vendor在调试emmc器件本身的问题时使如何获取异常信息的呢，像fw针对nand、emmc cache之类的操作报出的错误"
+ },
+ {
+  "id": "5334",
+  "parent": "5323",
+  "date": "2017-03-16T17:27:52+08:00",
+  "author": "codingbelief",
+  "site": "",
+  "text": "@时间为贵：目前接触到的产品中，emmc 没有特殊存储内部 log 信息的位置。Vendor 在研发 emmc 芯片时，推测是会在硬件上就导出调试端口出来的，而后在量产的 emmc 芯片上，调试端口在屏蔽掉，以确保安全性。\r\n（注: 上面的说法都只是推测，没有去求证过 ~~ ）"
+ },
+ {
+  "id": "5956",
+  "parent": "0",
+  "date": "2017-08-28T22:56:12+08:00",
+  "author": "gxx9203",
+  "site": "",
+  "text": "在emmc中，使用gpt 进行分区的话，gpt的分区表，在boot area partitions 还是在 user areas"
+ },
+ {
+  "id": "5958",
+  "parent": "5956",
+  "date": "2017-08-30T10:36:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@gxx9203：在eMMC中，只有user areas才有分区的概念（MBR或者GPT），而分区表都是存在本分区所在的物理磁盘中，所以是在user areas。"
+ },
+ {
+  "id": "6348",
+  "parent": "0",
+  "date": "2017-12-13T10:45:49+08:00",
+  "author": "南瓜南瓜",
+  "site": "",
+  "text": "你好，请问下，SD卡下有/dev/block/mmcblk0 ，/dev/block/mmcblk0p1\r\n挂载/dev/block/mmcblk0为什么会失败的？"
+ },
+ {
+  "id": "6354",
+  "parent": "6348",
+  "date": "2017-12-13T13:44:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@南瓜南瓜：这个要具体情况具体分析。"
+ },
+ {
+  "id": "6358",
+  "parent": "6354",
+  "date": "2017-12-13T15:31:24+08:00",
+  "author": "南瓜南瓜",
+  "site": "",
+  "text": "@wowo：需要实现sd卡自动挂载，mmcblk0挂载失败，不清楚是不是有的SD卡只有mmcblk0？\r\n# mount -o iocharset=utf8 /dev/mmcblk0 /mnt/mmc\r\n[   46.921003] FAT-fs (mmcblk0): utf8 is not a recommended IO charset for FAT filesystems, filesystem will be case sensitive!\r\n[   46.936536] NTFS-fs warning (device mmcblk0): parse_options(): Option iocharset is deprecated. Please use option nls=<charsetname> in the future.\r\nmount: mounting /dev/mmcblk0 on /mnt/mmc failed: Invalid argument\r\n# mount -o iocharset=utf8 /dev/mmcblk0p1 /mnt/mmc\r\n[   57.129061] FAT-fs (mmcblk0p1): utf8 is not a recommended IO charset for FAT filesystems, filesystem will be case sensitive!\r\n[   57.147167] FAT-fs (mmcblk0p1): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.\r\n# cat /proc/partitions \r\nmajor minor  #blocks  name\r\n\r\n  31        0       1024 mtdblock0\r\n  31        1       6144 mtdblock1\r\n  31        2       8192 mtdblock2\r\n  31        3      83968 mtdblock3\r\n  31        4      31744 mtdblock4\r\n  31        5      80104 mtdblock5\r\n 179        0   15126528 mmcblk0\r\n 179        1   15116141 mmcblk0p1\r\n  31        6      26660 mtdblock6"
+ },
+ {
+  "id": "6359",
+  "parent": "6358",
+  "date": "2017-12-13T15:35:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@南瓜南瓜：mmcblk0 是mmc；mmcblk0p1 是分区。挂载都是挂在分区。"
+ },
+ {
+  "id": "6456",
+  "parent": "6359",
+  "date": "2018-01-05T10:15:41+08:00",
+  "author": "南瓜南瓜",
+  "site": "",
+  "text": "@wowo：我有张sd卡只有mmcblk0设备，自动挂载解决方法增加个判断了\r\n#!/bin/sh\r\n\r\n#if partition exsit,then the event of \"mmcblk?\" not response\r\nls /dev/mmcblk[0-9]p[0-9]\r\nif [ $? -eq 0 ];then\r\n        echo $MDEV | grep -o -e \"mmcblk[0-9]p[0-9]\"\r\n        if [ $? -ne 0 ];then\r\n                exit\r\n        fi\r\nfi\r\n\r\n#auto mount\r\nif [ $ACTION = \"add\" ];\r\nthen\r\n        if [ ! -d /mnt/mmc ];then\r\n                mkdir /mnt/mmc\r\n        fi\r\n        mount -o iocharset=utf8 /dev/$MDEV /mnt/mmc\r\n        touch  /tmp/mmc_add\r\nelse\r\n        sync\r\n        rm /tmp/mmc_add\r\n        umount /mnt/mmc\r\nfi"
+ },
+ {
+  "id": "7078",
+  "parent": "0",
+  "date": "2018-12-12T11:02:59+08:00",
+  "author": "jams",
+  "site": "",
+  "text": "如果在linux下使用fdisk对EMMC进行分区，不考虑Boot Area Partitions和RPMB Partitions，会对这两个分区造成破坏吗？"
+ },
+ {
+  "id": "7616",
+  "parent": "0",
+  "date": "2019-08-26T17:23:31+08:00",
+  "author": "北海风云",
+  "site": "",
+  "text": "图挂了 ，能麻烦 再贴下吗 ？"
+ },
+ {
+  "id": "7755",
+  "parent": "0",
+  "date": "2019-11-18T15:26:42+08:00",
+  "author": "echo",
+  "site": "",
+  "text": "在uboot下使用mtd_partition静态分区，然后把emmc的user areas读出来，但没有找到mbr、gpt分区表,然后用fdisk再次分区，user areas就有了mbr分区，请问用mtd_partition是不是没有分区表？"
+ },
+ {
+  "id": "7799",
+  "parent": "5958",
+  "date": "2019-12-26T15:52:03+08:00",
+  "author": "chao",
+  "site": "",
+  "text": "@wowo：如果说user areas分区了，那user分区是不是不能直接放代码了，得靠文件系统了，放的话会冲掉分区表么，还是可以选一个分区按地址直接放代码在里面"
+ },
+ {
+  "id": "8097",
+  "parent": "0",
+  "date": "2020-08-17T08:15:04+08:00",
+  "author": "省钱买辣椒",
+  "site": "",
+  "text": "请问如果PARTITION_CONFIG Field 的 Bit[5:3]:BOOT_PARTITION_ENABLE 设为0的话，是从哪个区域启动的呢？"
+ }
+]

@@ -1,0 +1,26 @@
+[
+ {
+  "id": "4528",
+  "parent": "0",
+  "date": "2016-09-07T15:35:11+08:00",
+  "author": "melan",
+  "site": "",
+  "text": "linuxer 最近一边拜读 professional linux kernel architecture，一边享用wowotech技术，十分钦佩"
+ },
+ {
+  "id": "4530",
+  "parent": "4528",
+  "date": "2016-09-07T17:41:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@melan：感谢支持！慢慢享用，多提意见，哈哈。"
+ },
+ {
+  "id": "5787",
+  "parent": "0",
+  "date": "2017-07-07T16:56:04+08:00",
+  "author": "linux小白",
+  "site": "",
+  "text": "@linuxer,  有几个疑问请帮忙解答下，谢谢~\r\n1这是否意味着进程可以任意的申请虚拟地址空间呢？也不行，毕竟virtual memory需要physical memory做为支撑，如果分配了太多的virtual memory，和物理内存不成比例，对性能会有影响。对于这个状况，我们称之为overcommit。 这块不太明白，既然只是一段虚拟地址的使用权，为什么不能分配太多vm, 申请超过多少不能再申请了？\r\n2.当进程需要内存时（例如通过brk分配内存），进程从内核获得的仅仅是一段虚拟地址的使用权，而不是实际的物理地址，进程并没有获得物理内存。  这里进程只是指用户进程吗？ 是否包含内核进程（内核调用__get_free_pages直接去申请物理页了）？\r\n3.OVERCOMMIT_ALWAYS表示内核并不限制overcommit， 是不是也只针对用户进程申请地址，当设置ALWAYS标志时__vm_enough_memory直接返回了，当实际需要申请物理内存时如果不够会触发oom机制（假设panic_on_oom为0)"
+ }
+]

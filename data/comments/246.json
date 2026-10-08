@@ -1,0 +1,226 @@
+[
+ {
+  "id": "3274",
+  "parent": "0",
+  "date": "2015-12-23T13:17:17+08:00",
+  "author": "cainiao367",
+  "site": "",
+  "text": "特意注册，赞一下。期待后续^_^"
+ },
+ {
+  "id": "3276",
+  "parent": "3274",
+  "date": "2015-12-23T13:25:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cainiao367：多谢关注~~"
+ },
+ {
+  "id": "3310",
+  "parent": "0",
+  "date": "2015-12-30T15:18:21+08:00",
+  "author": "尼玛",
+  "site": "",
+  "text": "你将“图形子系统”放到“linux内核分析”分类下，你这样划分是不严格的。内核里压根就没有图形相关的东西，不过是一些设备的驱动而已。linux的图形服务就是在后台运行的linux应用程序。"
+ },
+ {
+  "id": "3311",
+  "parent": "3310",
+  "date": "2015-12-30T16:13:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@尼玛：您的表述从一定程度上是对的，不过也是值得思考的。其实我这样划分是有原因的，主要有二：\r\n1. 最近几年linux图形框架有很大程度的进化，主要体现在：将旧的、包罗万象的display server（如x server）边缘化。\r\n这里的“边缘化”并非贬义词，之所以这么做，是从复杂度、可维护性、移动化等多个角度考虑的。而边缘化的手段之一，就是将display server中诸多的机制移出，一部分交由kernel实现，如memory管理、mode setting等，一部分交给第三方软件实现（如字库等）。\r\n而边缘化的结果就是，display server变成薄薄的一层，而和真正的graphic相关的东西，分布在两个地方：\r\n        1）GUI Toolkits以及3D有关的工具集中，如GTK+、QT等非常复杂的图形库，Mesa3D等OpenGL实现；\r\n        2）kernel中，负责管理复杂的显示设备。\r\n2. 我对graphic subsystem的分析，重点不是GUI Toolkits，它们太庞大、太专业了。因此在进行一些铺垫之后，我会把关注点放在kernel中，这也是graphic subsystem放到linux内核分析这个分类的原因。\r\n另外，也正是因为“内核里压根就没有图形相关的东西，不过是一些设备的驱动而已”这样的理念（它没有错，错的是linux系统忽视了移动终端显示有关需求的多样性），才导致这么长时间一来，linux kernel显示驱动的简单、粗暴（只有简单Framebufffer驱动）。不过随着DRM/KMS的完成，情况已经有改善了。"
+ },
+ {
+  "id": "3504",
+  "parent": "0",
+  "date": "2016-02-18T14:59:18+08:00",
+  "author": "seven",
+  "site": "",
+  "text": "赞一下, 期待"
+ },
+ {
+  "id": "3648",
+  "parent": "0",
+  "date": "2016-03-11T10:47:55+08:00",
+  "author": "buhui",
+  "site": "",
+  "text": "希望把VR显示在Linux下面实现也给猜想推测一下，让我们星际穿越一下。"
+ },
+ {
+  "id": "3652",
+  "parent": "3648",
+  "date": "2016-03-11T16:52:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@buhui：VR的重点在应用和GPU，有机会可以介绍一下。"
+ },
+ {
+  "id": "4182",
+  "parent": "0",
+  "date": "2016-07-04T11:49:49+08:00",
+  "author": "lifupan@gmail.com",
+  "site": "",
+  "text": "期待后续．．．．"
+ },
+ {
+  "id": "4934",
+  "parent": "0",
+  "date": "2016-11-29T23:10:50+08:00",
+  "author": "motou",
+  "site": "",
+  "text": "不错，2）后面就再没有新的了吗？"
+ },
+ {
+  "id": "4935",
+  "parent": "4934",
+  "date": "2016-11-30T08:44:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@motou：多谢关注。由于太忙，要写的东西又比较杂，所以这一块一直没有机会更新。\r\n我准备在x project做到显示的时候，再接着写这一系列的文章。"
+ },
+ {
+  "id": "5184",
+  "parent": "0",
+  "date": "2017-01-24T16:39:09+08:00",
+  "author": "demon",
+  "site": "",
+  "text": "wowo，\r\n如果我想在android系统中实现数据的转换，比如将RGB数据变为RGBW之类的。\r\n有什么好的建议么？"
+ },
+ {
+  "id": "5190",
+  "parent": "5184",
+  "date": "2017-01-25T09:15:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@demon：openGL中有大把的颜色转换的实现，不过RGBW这种新东西，不知道有没有。"
+ },
+ {
+  "id": "5672",
+  "parent": "5184",
+  "date": "2017-06-14T11:45:47+08:00",
+  "author": "whl",
+  "site": "",
+  "text": "@demon：希望大神能多写些关于GPU的知识"
+ },
+ {
+  "id": "5675",
+  "parent": "5672",
+  "date": "2017-06-14T21:30:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@whl：苦于没时间……"
+ },
+ {
+  "id": "6309",
+  "parent": "0",
+  "date": "2017-12-08T09:14:58+08:00",
+  "author": "wzyy2",
+  "site": "",
+  "text": "图形这块的文章太少了， 支持客户好痛苦 \r\n:p 想要研究这块的可以买个rockchip的开发板来玩，我觉得我们是DRM/KMS这块做的最好的arm linux了（不过不知道terga是什么情况。。）\r\nhttp://blog.iotwrt.com/media/2017/11/27/graphic/"
+ },
+ {
+  "id": "6310",
+  "parent": "6309",
+  "date": "2017-12-08T09:42:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wzyy2：是啊，我一直想把这块的文章整理一下，只是苦于没有时间:-("
+ },
+ {
+  "id": "6427",
+  "parent": "6310",
+  "date": "2017-12-28T10:15:10+08:00",
+  "author": "miroor",
+  "site": "",
+  "text": "@wowo：博主有没有V4l2实现及适配相关的文章？"
+ },
+ {
+  "id": "6429",
+  "parent": "6427",
+  "date": "2017-12-29T09:15:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@miroor：暂时没有写这一块的内容。"
+ },
+ {
+  "id": "6430",
+  "parent": "6429",
+  "date": "2017-12-29T10:42:01+08:00",
+  "author": "miroor",
+  "site": "",
+  "text": "@wowo：感觉这一块内容也很多，很多网上的很多都没说清楚，希望出一个系列！"
+ },
+ {
+  "id": "6459",
+  "parent": "0",
+  "date": "2018-01-09T13:54:37+08:00",
+  "author": "semilog",
+  "site": "",
+  "text": "直接有X-server控制。 写的很好，有个错别字"
+ },
+ {
+  "id": "6475",
+  "parent": "6459",
+  "date": "2018-01-16T09:28:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@semilog：多谢提醒，已修改~~"
+ },
+ {
+  "id": "7412",
+  "parent": "0",
+  "date": "2019-05-12T11:13:37+08:00",
+  "author": "linuxdog",
+  "site": "http://bzhao.xicp.net:9009",
+  "text": "简单地看完，　对名词了解一下！　KMS/DRM/DRI/Xlib..."
+ },
+ {
+  "id": "7647",
+  "parent": "0",
+  "date": "2019-09-09T17:27:01+08:00",
+  "author": "escofield",
+  "site": "",
+  "text": "大神，后续还有么"
+ },
+ {
+  "id": "7674",
+  "parent": "0",
+  "date": "2019-09-29T11:46:33+08:00",
+  "author": "allen",
+  "site": "",
+  "text": "大神，后续还有么"
+ },
+ {
+  "id": "7760",
+  "parent": "0",
+  "date": "2019-11-22T16:31:43+08:00",
+  "author": "carolyn",
+  "site": "",
+  "text": "这个板块凉了啊"
+ },
+ {
+  "id": "8118",
+  "parent": "0",
+  "date": "2020-09-20T15:27:38+08:00",
+  "author": "BiaoWang",
+  "site": "",
+  "text": "想看到专业的总结framebuffer的文章"
+ },
+ {
+  "id": "8202",
+  "parent": "0",
+  "date": "2021-03-09T13:48:14+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "wayland->weston:drm-backend->libdrm+libgbm:ion->drm/kms:framebuffer:gem&prime->xxx \r\n期待wowo的精品"
+ },
+ {
+  "id": "9162",
+  "parent": "0",
+  "date": "2025-07-12T01:19:04+08:00",
+  "author": "wpfly",
+  "site": "",
+  "text": "通过framebuffer来图形化的LVGL处在哪个位置呢？"
+ }
+]

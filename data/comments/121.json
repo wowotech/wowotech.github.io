@@ -1,0 +1,58 @@
+[
+ {
+  "id": "1819",
+  "parent": "0",
+  "date": "2015-05-16T09:45:37+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "请教几个问题：\r\n    在periodic处理函数中，呼叫了do_timer，然后调用了update_wall_time，在这个函数里面会通过clock->read来读取clocksource的offset。通过offset来补偿xtime。是否可以理解为无论在传统的tick模式下，还是在tickless模式下，假设hz＝100，那么程序里面都会每秒钟读取clocksrouce的counter至少100次？这种高强度的读取clocksource对芯片设计提出了高要求，假设这个clocksource和cpu core之间有很长的距离，会导致每一次读取counter的时候浪费很久的CPU时间。\r\n    如果硬件timer处于periodic模式，没有使用oneshot模式，是否可以简单的在periodic中断处理函数里面对xtime加上一个interval来维护xtime？kernel不信任周期性中断到来的频率，肯定是由于它的精度不够，HZ＝100意味着中断每10ms产生一次，而xtime是需要记录ns值的，所以只能选择去clocksource里面读取精准的counter，这样理解是否正确？"
+ },
+ {
+  "id": "1826",
+  "parent": "1819",
+  "date": "2015-05-18T10:44:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：关于读取system counter的频率\r\n－－－－－－－－－－－－－－－－－－－－－－－－\r\n是的，如果hz＝100，那么系统会每秒钟读取clocksrouce的counter至少100次，不过每秒100次的强度其实不算大的，除非那个system counter的硬件（clocksource）和cpu core之间使用慢速总线连接（例如I2C、HDQ什么的）\r\n\r\n如果硬件timer处于periodic模式，没有使用oneshot模式，是否可以简单的在periodic中断处理函数里面对xtime加上一个interval来维护xtime？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n其实不论periodic模式，tickless中的oneshot模式，内核不都是在周期性tick中操作xtime进行更新的吗？当然，tickless需要在进入idle和推出idle的时间点上进行特别处理。\r\n具体的更新xtime的方式有两种：\r\n1、直接加上一个或者多个固定的interval（jiffy并非always加1）\r\n2、每次read system counter，获取delta，累加这个delta\r\n目前内核采用了2，你想要改成方案1。\r\n\r\nkernel不信任周期性中断到来的频率，肯定是由于它的精度不够，HZ＝100意味着中断每10ms产生一次，而xtime是需要记录ns值的，所以只能选择去clocksource里面读取精准的counter，这样理解是否正确？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－\r\n我也是这么理解的。real （wall） time clock的精度（xtime的精度）需要是ns级别的，需要system counter来驱动，而不是jiffy来驱动"
+ },
+ {
+  "id": "1827",
+  "parent": "0",
+  "date": "2015-05-18T11:13:02+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "非常感谢你的解答。\r\n我目前遇到的系统里面system counter以及system timer两个硬件都和CPU之间隔了很远，经过了一个AXI，一个AHB，一个APB，在这种情况下，假设按照TI beaglebone的配置，HZ＝512，启用oneshot mode，那么每秒钟要写入system timer register 512次，这些操作会让system bus以及CPU停顿下来，影响性能。请问这种级别的性能影响是否可以忽略？假设system bus运行在200MHz，假设一次system timer register的写入要10个bus cycle，那么意味着每一次写寄存器，1/200M ＊10 ＝ 50ns，CPU处于空等待，因为每秒要写入timer register 512次，所以每秒CPU空等待的时间是50ns＊512=25.6us，如果算法正确，貌似的确代价大了点。。。\r\n\r\n系统每秒钟在timer irq中要读取system counter register 512次。timer irq是在softirq中运行的，所以没有影响硬件中断的响应时间，不过和system timer一样，system counter的寄存器同样会造成CPU每秒钟空等待时间达到us级别。\r\n\r\n现在特别想搞明白硬件设计的这2个问题，对软件来说到底要怎么去妥协和修正。会不会有某个驱动或者应用程序的性能受到影响。"
+ },
+ {
+  "id": "2397",
+  "parent": "0",
+  "date": "2015-08-01T21:28:20+08:00",
+  "author": "huangzhongmin",
+  "site": "",
+  "text": "do_timer(1);－－－－－－－－－－－－－更新jiffies，计算平均负载 \r\n=>本人菜鸟，对这里一直很疑惑，jiffies不是1s增加1吗，但是tick_periodic这个函数应该跟clocksource频率相关，假设它的频率是10Hz，那么jiffes岂不是1s要增加10吗.\r\n望LZ不吝赐教，谢谢。"
+ },
+ {
+  "id": "2401",
+  "parent": "2397",
+  "date": "2015-08-03T08:59:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@huangzhongmin：jiffies是每一个tick增加1，如果HZ＝100的话，那么每10ms jiffies增加1"
+ },
+ {
+  "id": "2416",
+  "parent": "2401",
+  "date": "2015-08-04T12:25:50+08:00",
+  "author": "huangzhongmin",
+  "site": "",
+  "text": "@linuxer：多谢答复，这几天反复看这几篇文章终于弄明白了\r\n不过还有一个疑问，希望Lz也抽空解答一下：\r\n\r\n结合这些文章按照我的理解，每当我们申请一个hrtimer的时候，会挂到某个CPU，比如CPU0.但是如果系统运行期间CPU0没online或者被禁用，是不是这个timer就一直不会触发了呢？"
+ },
+ {
+  "id": "2421",
+  "parent": "2416",
+  "date": "2015-08-04T18:13:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@huangzhongmin：当然不会，hrtimer模块会和cpu hotplug模块交互，如果如果timer所在的CPU在系统运行期间没online或者被禁用，timer会被移到其他的cpu上。"
+ }
+]

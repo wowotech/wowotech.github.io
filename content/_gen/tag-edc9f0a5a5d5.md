@@ -1,0 +1,86 @@
+---
+title: "标签：Linux"
+url: "/tag/Linux"
+---
+
+带标签「Linux」的文章共 79 篇。
+
+- [Linux内核的自旋锁](/kernel_synchronization/460.html) <span class="small">2019-05-17</span>
+- [tty驱动分析](/tty_framework/435.html) <span class="small">2018-04-20</span>
+- [Linux kernel内存管理的基本概念](/memory_management/concept.html) <span class="small">2017-11-09</span>
+- [Linux kernel scatterlist API介绍](/memory_management/scatterlist.html) <span class="small">2017-10-13</span>
+- [Linux reset framework](/pm_subsystem/reset_framework.html) <span class="small">2017-09-01</span>
+- [X-023-KERNEL-Linux pinctrl driver的移植](/x_project/kernel_pinctrl_driver_porting.html) <span class="small">2017-07-14</span>
+- [linux内核中的GPIO系统之（4）：pinctrl驱动的理解和总结](/gpio_subsystem/pinctrl-driver-summary.html) <span class="small">2017-06-27</span>
+- [Linux DMA Engine framework(2)_功能介绍及解接口分析](/linux_kenrel/dma_engine_api.html) <span class="small">2017-05-02</span>
+- [Linux DMA Engine framework(1)_概述](/linux_kenrel/dma_engine_overview.html) <span class="small">2017-03-30</span>
+- [Linux MMC framework(2)_host controller driver](/comm/mmc_host_driver.html) <span class="small">2017-03-08</span>
+- [Linux MMC framework(1)_软件架构](/comm/mmc_framework_arch.html) <span class="small">2017-01-10</span>
+- [Linux serial framework(1)_概述](/comm/serial_overview.html) <span class="small">2016-12-12</span>
+- [X-019-KERNEL-串口驱动开发之数据收发](/x_project/serial_driver_porting_4.html) <span class="small">2016-11-29</span>
+- [X-018-KERNEL-串口驱动开发之serial console](/x_project/serial_driver_porting_3.html) <span class="small">2016-11-18</span>
+- [X-017-KERNEL-串口驱动开发之uart driver框架](/x_project/serial_driver_porting_2.html) <span class="small">2016-11-16</span>
+- [X-015-KERNEL-ARM generic timer driver的移植](/x_project/generic_timer_porting.html) <span class="small">2016-11-02</span>
+- [Linux kernel debug技巧----开启DEBUG选项](/linux_application/kernel_debug_enable.html) <span class="small">2016-11-01</span>
+- [X-014-KERNEL-ARM GIC driver的移植](/x_project/gic_driver_porting.html) <span class="small">2016-10-31</span>
+- [Linux TTY framework(5)_System console driver](/tty_framework/system_console_driver.html) <span class="small">2016-10-29</span>
+- [Linux TTY framework(4)_TTY driver](/tty_framework/tty_driver.html) <span class="small">2016-10-25</span>
+- [Linux TTY framework(3)_从应用的角度看TTY设备](/tty_framework/application_view.html) <span class="small">2016-10-14</span>
+- [X-012-KERNEL-serial early console的移植](/x_project/kernel_earlycon_porting.html) <span class="small">2016-10-02</span>
+- [Linux TTY framework(2)_软件架构](/tty_framework/tty_architecture.html) <span class="small">2016-09-27</span>
+- [Linux TTY framework(1)_基本概念](/tty_framework/tty_concept.html) <span class="small">2016-09-18</span>
+- [Linux kernel内核配置解析(5)_Boot options(基于ARM64架构)](/linux_kenrel/kernel_config_boot_option.html) <span class="small">2016-08-12</span>
+- [Linux kernel内核配置解析(1)_概述(基于ARM64架构)](/linux_kenrel/kernel_config_overview.html) <span class="small">2016-08-10</span>
+- [Linux I2C framework(3)_I2C consumer](/comm/i2c_consumer.html) <span class="small">2016-03-23</span>
+- [Linux I2C framework(2)_I2C provider](/comm/i2c_provider.html) <span class="small">2016-02-26</span>
+- [Linux I2C framework(1)_概述](/comm/i2c_overview.html) <span class="small">2016-02-14</span>
+- [Linux graphic subsytem(1)_概述](/graphic_subsystem/graphic_subsystem_overview.html) <span class="small">2015-12-17</span>
+- [Linux进程冻结技术](/pm_subsystem/237.html) <span class="small">2015-11-24</span>
+- [linux cpufreq framework(5)_ARM big Little driver](/pm_subsystem/arm_big_little_driver.html) <span class="small">2015-11-10</span>
+- [Linux 3.18U盘无法正确使用](/226.html) <span class="small">2015-10-28</span>
+- [Linux PWM framework(1)_简介和API描述](/comm/pwm_overview.html) <span class="small">2015-10-11</span>
+- [Linux CPU core的电源管理(5)_cpu control及cpu hotplug](/pm_subsystem/cpu_hotplug.html) <span class="small">2015-09-19</span>
+- [linux cpufreq framework(4)_cpufreq governor](/pm_subsystem/cpufreq_governor.html) <span class="small">2015-08-23</span>
+- [linux cpufreq framework(3)_cpufreq core](/pm_subsystem/cpufreq_core.html) <span class="small">2015-07-30</span>
+- [Linux CPU core的电源管理(3)_cpu ops](/pm_subsystem/cpu_ops.html) <span class="small">2015-07-17</span>
+- [Linux cpufreq framework(2)_cpufreq driver](/pm_subsystem/cpufreq_driver.html) <span class="small">2015-06-19</span>
+- [linux cpufreq framework(1)_概述](/pm_subsystem/cpufreq_overview.html) <span class="small">2015-06-13</span>
+- [Linux电源管理(15)_PM OPP Interface](/pm_subsystem/pm_opp.html) <span class="small">2015-06-04</span>
+- [Linux CPU core的电源管理(1)_概述](/pm_subsystem/cpu_core_pm_overview.html) <span class="small">2015-04-30</span>
+- [Linux Regulator Framework(2)_regulator driver](/pm_subsystem/regulator_driver.html) <span class="small">2015-04-16</span>
+- [linux 串口调试方法](/159.html) <span class="small">2015-04-08</span>
+- [Linux Regulator Framework(1)_概述](/pm_subsystem/regulator_framework_overview.html) <span class="small">2015-03-20</span>
+- [Linux power supply class(1)_软件架构及API汇整](/pm_subsystem/psy_class_overview.html) <span class="small">2015-03-13</span>
+- [Linux PM QoS framework(3)_per-device PM QoS](/pm_subsystem/per_device_pm_qos.html) <span class="small">2015-02-26</span>
+- [Linux PM QoS framework(2)_PM QoS class](/pm_subsystem/pm_qos_class.html) <span class="small">2015-02-10</span>
+- [Linux PM QoS framework(1)_概述和软件架构](/pm_subsystem/pm_qos_overview.html) <span class="small">2015-02-04</span>
+- [Linux cpuidle framework(4)_menu governor](/pm_subsystem/cpuidle_menu_governor.html) <span class="small">2015-01-18</span>
+- [Linux cpuidle framework(2)_cpuidle core](/pm_subsystem/cpuidle_core.html) <span class="small">2014-12-30</span>
+- [Linux cpuidle framework(1)_概述和软件架构](/pm_subsystem/cpuidle_overview.html) <span class="small">2014-12-17</span>
+- [Linux common clock framework(3)_实现逻辑分析](/pm_subsystem/clock_framework_core.html) <span class="small">2014-11-24</span>
+- [Linux PM domain framework(1)_概述和使用流程](/pm_subsystem/pm_domain_overview.html) <span class="small">2014-11-13</span>
+- [新技能get: 订阅Linux内核邮件列表](/linux_application/lkml.html) <span class="small">2014-11-04</span>
+- [Linux common clock framework(2)_clock provider](/pm_subsystem/clock_provider.html) <span class="small">2014-10-23</span>
+- [arm64 linux移植](/100.html) <span class="small">2014-10-23</span>
+- [Linux common clock framework(1)_概述](/pm_subsystem/clk_overview.html) <span class="small">2014-10-20</span>
+- [Linux电源管理(11)_Runtime PM之功能描述](/pm_subsystem/rpm_overview.html) <span class="small">2014-10-08</span>
+- [Linux设备模型(9)_device resource management](/device_model/device_resource_management.html) <span class="small">2014-09-24</span>
+- [Linux电源管理(10)_autosleep](/pm_subsystem/autosleep.html) <span class="small">2014-09-18</span>
+- [Linux电源管理(9)_wakelocks](/pm_subsystem/wakelocks.html) <span class="small">2014-09-14</span>
+- [Linux电源管理(8)_Wakeup count功能](/pm_subsystem/wakeup_count.html) <span class="small">2014-09-12</span>
+- [Linux电源管理(7)_Wakeup events framework](/pm_subsystem/wakeup_events_framework.html) <span class="small">2014-09-09</span>
+- [Linux电源管理(6)_Generic PM之Suspend功能](/pm_subsystem/suspend_and_resume.html) <span class="small">2014-08-22</span>
+- [Linux电源管理(5)_Hibernate和Sleep功能介绍](/pm_subsystem/std_str_func.html) <span class="small">2014-06-10</span>
+- [Linux电源管理(4)_Power Management Interface](/pm_subsystem/pm_interface.html) <span class="small">2014-05-29</span>
+- [Linux电源管理(3)_Generic PM之Reboot过程](/pm_subsystem/reboot.html) <span class="small">2014-05-19</span>
+- [Linux电源管理(2)_Generic PM之基本概念和软件架构](/pm_subsystem/generic_pm_architecture.html) <span class="small">2014-05-13</span>
+- [Linux设备模型(8)_platform设备](/device_model/platform_device.html) <span class="small">2014-04-28</span>
+- [Linux设备模型(7)_Class](/device_model/class.html) <span class="small">2014-04-23</span>
+- [Linux设备模型(6)_Bus](/device_model/bus.html) <span class="small">2014-04-15</span>
+- [Linux设备模型(5)_device和device driver](/device_model/device_and_driver.html) <span class="small">2014-04-02</span>
+- [Linux设备模型(4)_sysfs](/device_model/dm_sysfs.html) <span class="small">2014-03-14</span>
+- [Linux设备模型(3)_Uevent](/device_model/uevent.html) <span class="small">2014-03-10</span>
+- [Linux设备模型(2)_Kobject](/device_model/kobject.html) <span class="small">2014-03-07</span>
+- [Linux内核的整体架构](/linux_kenrel/11.html) <span class="small">2014-02-21</span>
+- [MinGW下安装man工具包](/linux_application/8.html) <span class="small">2014-01-24</span>
+- [Windows系统结合MinGW搭建软件开发环境](/soft/6.html) <span class="small">2014-01-22</span>

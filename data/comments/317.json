@@ -1,0 +1,1034 @@
+[
+ {
+  "id": "4179",
+  "parent": "0",
+  "date": "2016-07-04T11:01:39+08:00",
+  "author": "wuwu",
+  "site": "",
+  "text": "你真的好厉害啊，好崇拜你"
+ },
+ {
+  "id": "4180",
+  "parent": "0",
+  "date": "2016-07-04T11:31:32+08:00",
+  "author": "维尼",
+  "site": "",
+  "text": "BLE让蓝牙起死了，未来很有可能一同智能家居的天下"
+ },
+ {
+  "id": "4181",
+  "parent": "4180",
+  "date": "2016-07-04T11:42:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@维尼：一统天下估计不可能，这个市场蛋糕太大了……\r\n蓝牙SIG的估计是这样的：到2020年，全球的IoT设备数量将达到45亿，其中蓝牙设备约为14亿。"
+ },
+ {
+  "id": "4246",
+  "parent": "0",
+  "date": "2016-07-13T15:05:20+08:00",
+  "author": "老陆",
+  "site": "",
+  "text": "楼主什么时候写下BLE安全方面的内容？"
+ },
+ {
+  "id": "4249",
+  "parent": "4246",
+  "date": "2016-07-13T17:14:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@老陆：按照我的思路，连接建立之后，就是安全了。\r\n不过这几天有点忙，没时间写。\r\nPS: BLE安全方面的逻辑，还是很绕的~"
+ },
+ {
+  "id": "4257",
+  "parent": "4249",
+  "date": "2016-07-14T14:47:08+08:00",
+  "author": "老陆",
+  "site": "",
+  "text": "@wowo：是啊，我反反复复看，还是理解不了。。楼主好厉害，能把知识理得这么清！"
+ },
+ {
+  "id": "4260",
+  "parent": "4249",
+  "date": "2016-07-14T17:09:00+08:00",
+  "author": "老陆",
+  "site": "",
+  "text": "@wowo：楼主，有两个问题请教下：(1) L2CAP层是利用HCI接口访问LL层吗？ (2) GAP/SMP等有没有绕过L2CAP而直接跟controller通讯的部分？"
+ },
+ {
+  "id": "4261",
+  "parent": "4260",
+  "date": "2016-07-14T17:26:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@老陆：1）蓝牙所有的通信，都绕不开HCI，必须经过HCI。所以L2CAP不能直接访问LL。\r\n2）L2CAP只负责连接有关的数据通信，因此GAP基本上不和L2CAP打交道，一般都是直接和HCI交互。\r\n3）SMP是基于连接的，因此需要一个L2CAP通道传输数据，至于是否有不经过L2CAP的，肯定有，例如连接建立的过程。"
+ },
+ {
+  "id": "4265",
+  "parent": "4261",
+  "date": "2016-07-15T09:08:17+08:00",
+  "author": "老陆",
+  "site": "",
+  "text": "@wowo：对于HCI，我的理解是，对于单芯片解决方案，它未必是必须的。"
+ },
+ {
+  "id": "4266",
+  "parent": "4265",
+  "date": "2016-07-15T10:14:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@老陆：一般情况，为了协议栈方便的兼容与统一，单芯片HCI也会存在，只是薄薄的一层。"
+ },
+ {
+  "id": "4345",
+  "parent": "0",
+  "date": "2016-07-29T15:25:58+08:00",
+  "author": "zy",
+  "site": "",
+  "text": "“经典蓝牙连接建立的速度实在难以忍受（要好几秒）”\r\n\r\n这个应该没这么久，standard模式下1.28s会扫一轮A train，interlaced 扫两轮，所以大部分应该在1s内就建立起来了；反倒觉得LE的连接慢了很多。"
+ },
+ {
+  "id": "4346",
+  "parent": "4345",
+  "date": "2016-07-29T23:08:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zy：BR/EDR和BLE在连接时间方面，差别还是很大的，可以总结为：\r\n\r\nBLE的连接时间，优点为：机制简单；消耗少；时间短；时间是确定的（这一点很重要）。它由advInterval决定，Connectable Undirected和Low Duty Cycle Connectable Directed两种Advertising Event不小于20ms，Connectable Directed Event不小于3.75ms。具体可参考“/bluetooth/ble_broadcast.html”。\r\n\r\n对应的，BR/EDR的缺点是：机制复杂（不是简单的一两句话能说明白）；消耗大；时间长；时间不确定（这一点很重要）。\r\nBR/EDR的连接，类似2个人在操场上跑圈，master跑得快，slave跑得慢，最终总有机会遇到，但遇到的时间，是不确定的。运气好的话，可以立即遇上。运气不好的话，需要1个1.28s，甚至2个1.28s。\r\n\r\n前面一直在强调“时间确定”这一点的重要性。试想这样的一种场景：两个设备需要周期性的建立连接，传输一笔实时数据，假设周期是1s（相当宽泛了，跟不用说说毫秒级的了）。BLE毫无压力，保证不辱使命。而BR/EDR就麻烦了，万一抽风了，超过1s才能连接上，怎么办？因此只能选择保持连接（相应的代价，就是维持连接的功耗）。"
+ },
+ {
+  "id": "4498",
+  "parent": "0",
+  "date": "2016-09-02T16:58:36+08:00",
+  "author": "coco",
+  "site": "",
+  "text": "hi,wowo,这里请教一下阿，如果撇开bluetooth stack这一层进行测试，仅仅是针对bluetooth driver，是不是就只有tx,rx的概念了？"
+ },
+ {
+  "id": "4501",
+  "parent": "4498",
+  "date": "2016-09-02T21:51:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@coco：是的，一般情况下，TX/RX上面可能会把HCI packet封装一下，0x1标识command、0x04标识event，等等。\r\n因此用这一层测试，就是TX、RX加HCI的格式。"
+ },
+ {
+  "id": "4502",
+  "parent": "4501",
+  "date": "2016-09-03T12:40:56+08:00",
+  "author": "coco",
+  "site": "",
+  "text": "@wowo：这样子说，如果纯粹在drvier这一层去做测试，是无法测试得了如a2dp、opp等等这些profile功能的了吧？"
+ },
+ {
+  "id": "4503",
+  "parent": "4502",
+  "date": "2016-09-03T13:58:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@coco：是的。"
+ },
+ {
+  "id": "4504",
+  "parent": "4503",
+  "date": "2016-09-03T14:01:21+08:00",
+  "author": "coco",
+  "site": "",
+  "text": "@wowo：哈哈，那有什么开源的针对于蓝牙方面的测试用例吗？"
+ },
+ {
+  "id": "4506",
+  "parent": "4504",
+  "date": "2016-09-03T15:14:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@coco：你这个问题好大啊:-)\r\n这要看是什么平台，纯linux的话还好一些，不过也不多。\r\n说白了，基于HCI做测试，就是自己写一个协议栈了~~~"
+ },
+ {
+  "id": "4507",
+  "parent": "4506",
+  "date": "2016-09-03T15:21:14+08:00",
+  "author": "coco",
+  "site": "",
+  "text": "@wowo：小弟在android上尝试了直接由stack那一层进去，能做的事情也不多，就是扫描、配对、test mode（tx,rx）等等一些基本的。\r\n请问纯Linux都有哪些呢？急需学习。"
+ },
+ {
+  "id": "4508",
+  "parent": "0",
+  "date": "2016-09-03T15:23:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@coco,经典蓝牙的测试确实不多，linux下也差不多是那些。你最好能确定要测什么东西，不同的测试内容，要借助不同的工具。"
+ },
+ {
+  "id": "4631",
+  "parent": "0",
+  "date": "2016-09-29T19:20:24+08:00",
+  "author": "老陆",
+  "site": "",
+  "text": "楼主，我现在调试，发现APP(Master)和设备（slaver）连接后，如果没有应用数据传输（更新服务的特征值），则会一直保持连接状态，而一旦有应用数据传输，过一会连接就断开了，且在APP收不到数据几十秒钟后，设备才收到连接断开的事件。我想请教，是不是连接以后，即使没有应用数据传输，也会有连接事件按连接间隔产生，从而维持连接？3.4节连接过后的通信过程中的那些M->S，S->M都是一些什么样的包啊？"
+ },
+ {
+  "id": "4633",
+  "parent": "4631",
+  "date": "2016-09-29T21:10:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@老陆：链接之后，就算没有数据传输，也会在每个连接事件中传输数据包，只不过是空包而已。\r\nM->S、S->M是表示master给slave，或者slave给master的数据包。"
+ },
+ {
+  "id": "4634",
+  "parent": "4633",
+  "date": "2016-09-30T09:37:03+08:00",
+  "author": "老陆",
+  "site": "",
+  "text": "@wowo：连接事件如何产生在哪个规范里？连接的控制和管理好理解，是在GAP规范里。M->S，S->M，这些包的具体定义不在LL层，应该是上一层的协议规定的。"
+ },
+ {
+  "id": "4635",
+  "parent": "4634",
+  "date": "2016-09-30T09:44:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@老陆：连接事件如何产生？你指的是哪个方面呢？\r\n其实在BLE里面，连接事件（Connection Event）,是一个虚拟的东西，表示的是一对主/从设备可以进行数据收发的一段时隙。\r\n在BLE连接建立之后，这段时隙就基本确定下来了，主从双方按照一定的节拍（连接参数规定的），定时醒来收发数据即可。\r\n上面的描述，是由LL实现的，至于收发的数据到底是什么，LL不会关心，而是由上层协议一层层传递下来的，如：Profile/Service---->GATT/ATT---->L2CAP----->HCI---->LL"
+ },
+ {
+  "id": "4636",
+  "parent": "4635",
+  "date": "2016-09-30T10:29:49+08:00",
+  "author": "老陆",
+  "site": "",
+  "text": "@wowo：1. 打个比方，我现在有个GATT Service，其有一个characteristic的Properties为Notify，然后周期性地更新它，那么我感觉在LL，应该只有S->M的包。可上面又说了，在每个连接事件都有M->S和S->M，挺难理解的，是不是在这种情况下，M->S是空包？\r\n\r\n2. 您之前说的，连接后，就算没有数据传输，也会在每个连接事件中传输空数据包，给我感觉连接事件是在LL层产生的.....\r\n\r\n可能是我理解能力太差了 :((\r\n\r\n楼主对我遇到的，没有应用数据传输，连接正常，有数据传输后反而连接会断开的问题，有没有什么建议？ 谢谢了！"
+ },
+ {
+  "id": "4637",
+  "parent": "4636",
+  "date": "2016-09-30T10:51:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@老陆：我觉得，你之所以觉得理解困难，是因为你把协议的上下层次搅在一起去理解了。\r\n协议的根本点就是，纵向的每个层次互相独立，都可以单独理解。\r\n回到我们这个话题上，先明确一点：从LL看，BLE怎么才算处于连接状态？\r\n答案是，连接双方的LL能正确的按照节拍收发数据，如果miss几次，就可能超时断开了。\r\n所以，无论上层协议有没有实际的数据，LL都要维持这个M->S/S->M的节拍。\r\n因此，如果上层协议有数据传输，LL很乐意的帮它们传输。如果没有怎么办？LL的数据节拍还是要维持，只不过不需要携带有效的用户数据而已（空包）。\r\n\r\n“给我感觉连接事件是在LL层产生的”这句表述还是有问题，连接事件不是“产生”的，是连接建立之后的一个固有属性。\r\n\r\n连接断开的话，每个BLE设备都会汇报一个断开原因的event，先大致确认一下。\r\n至于断开的原因，很多，总结出来就是M主动断，S主动断，连接超时（距离过大，信号质量不好，某一个设备的LL无法处理了，等等）。"
+ },
+ {
+  "id": "4638",
+  "parent": "4637",
+  "date": "2016-09-30T18:44:22+08:00",
+  "author": "老陆",
+  "site": "",
+  "text": "@wowo：非常感谢！ :))"
+ },
+ {
+  "id": "4703",
+  "parent": "0",
+  "date": "2016-10-13T17:37:51+08:00",
+  "author": "lenli",
+  "site": "",
+  "text": "窝窝 \r\nLength，有效数据的长度（Payload+MIC），只有8-bits，因此Link Layer所能传输的最大数据是255 bytes（有MIC的话是251bytes）\r\n\r\n你说的一次最多可以传输251字节，蓝牙手册Vol 6, Part B 2.4小节 说的是最多27+4=31字节。\r\n这个是我没有理解正确，还是你这里说错了"
+ },
+ {
+  "id": "4705",
+  "parent": "4703",
+  "date": "2016-10-13T18:12:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lenli：使得，一次传输。\r\n都没有错，255是Data channel上的PDU；31是广播channel的PDU（可参考/bluetooth/ble_broadcast.html）。"
+ },
+ {
+  "id": "4862",
+  "parent": "0",
+  "date": "2016-11-10T17:41:31+08:00",
+  "author": "ybcai",
+  "site": "",
+  "text": "WOWO，有一点疑问请教您:\r\nLL层中，每一个连接事件可以有多组 M->S S->M，这里假设是3组；那么，M->S 和 S->M 的顺序是什么规律：\r\nA：M->S S->M M->S S->M M->S S->M \r\nB：M->S M->S M->S S->M S->M S->M\r\nC：其它\r\n？"
+ },
+ {
+  "id": "4864",
+  "parent": "4862",
+  "date": "2016-11-10T22:16:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ybcai：这个我还真没有留意，从逻辑的角度看，应该是A。有空可以用协议分析仪抓一下包看看。"
+ },
+ {
+  "id": "4942",
+  "parent": "0",
+  "date": "2016-12-01T10:18:41+08:00",
+  "author": "li_inlook",
+  "site": "",
+  "text": "你好，关于连接事件（Connection Event）时隙的确定的，比如 Connection Interval 50ms ，Latency = 0，那这个时隙是多大了？"
+ },
+ {
+  "id": "4945",
+  "parent": "4942",
+  "date": "2016-12-02T10:29:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@li_inlook：抱歉，我不是特别明白您的问题，“时隙是多大”指的是什么意思呢？在连接参数里面，最重要的一个就是：我（slave）多久可以传输一次数据，就是connInterval。这个参数决定了数据传输的速率。而一次数据传输可以持续多久，是由master自行决定的。"
+ },
+ {
+  "id": "4947",
+  "parent": "4945",
+  "date": "2016-12-02T10:46:19+08:00",
+  "author": "li_inlook",
+  "site": "",
+  "text": "@wowo：非常感谢您的回复。\r\n\r\n因为我看到你说“其实在BLE里面，连接事件（Connection Event）,是一个虚拟的东西，表示的是一对主/从设备可以进行数据收发的一段时隙。 \r\n在BLE连接建立之后，这段时隙就基本确定下来了”\r\n\r\n其实我说的“时隙是多大” 就是当interva 确定后，这个时隙的时长。"
+ },
+ {
+  "id": "4949",
+  "parent": "4947",
+  "date": "2016-12-02T11:37:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@li_inlook：抱歉，终于明白你的意思了，这个长度是由transmitWindowSize决定的。"
+ },
+ {
+  "id": "4950",
+  "parent": "4949",
+  "date": "2016-12-02T11:51:51+08:00",
+  "author": "li_inlook",
+  "site": "",
+  "text": "@wowo：非常感谢"
+ },
+ {
+  "id": "5032",
+  "parent": "0",
+  "date": "2016-12-16T16:13:26+08:00",
+  "author": "wan",
+  "site": "",
+  "text": "wowo,请教一下。看到LE Create Connection Command 中需要设置LE_Scan_Interval和LE_Scan_Window ，这里为什么需要扫描相关的参数。看spec不怎么明白。望解答！"
+ },
+ {
+  "id": "5034",
+  "parent": "5032",
+  "date": "2016-12-16T16:46:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wan：因为连接的过程包含了scan和connect：\r\n先scan，找到一个符合目标的对象（符合某个规则的ADV包）；\r\n然后发连接请求，建立连接。"
+ },
+ {
+  "id": "5128",
+  "parent": "0",
+  "date": "2017-01-11T10:57:52+08:00",
+  "author": "LaoShen",
+  "site": "",
+  "text": "楼主，有点不明白。是不是因为这个connection interval 和每个connection event能传输的packet数量限制的存在，才导致低速率（比如ios传输速率为20B * 6 / 30ms = 32kbps）。但是iphone也能用蓝牙耳机听歌啊，音乐的传输速率是很高的。一般大于200kbps吧？这个远远大于32kbps的速率是怎么传输的啊？是不是ios支持BLE的同时也支持classic蓝牙。classic蓝牙是不是没有connection interval 和每个connection event能传输的packet数量限制了？"
+ },
+ {
+  "id": "5130",
+  "parent": "5128",
+  "date": "2017-01-11T12:19:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@LaoShen：是的。classic和ble的原理完全不同。"
+ },
+ {
+  "id": "5132",
+  "parent": "5130",
+  "date": "2017-01-11T14:50:11+08:00",
+  "author": "LaoShen",
+  "site": "",
+  "text": "@wowo：楼主，\r\n是不是有些profile不能运行在BLE上的，比如A2DP？\r\n有没有可能指定HID profile用classic bluetooth而不是BLE? 这样速度能快一点？"
+ },
+ {
+  "id": "5136",
+  "parent": "5132",
+  "date": "2017-01-12T13:30:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@LaoShen：是的，目前为止BLE不支持A2DP（后面肯定会支持的）。\r\n至于指定profile，技术上肯定没问题。不过考虑到BLE/Classic不能互通，因此需要看对端设备的脸色行事，要强行classic的HID配BLE的HID，就不可能了。"
+ },
+ {
+  "id": "5207",
+  "parent": "0",
+  "date": "2017-02-07T15:11:06+08:00",
+  "author": "yicun",
+  "site": "",
+  "text": "wowo,请教一下 这个ble从连接建立、再发送一帧数据、再断开，大约需多长时间？\r\n最近公司在用nxp qn9021的芯片，这个时间实测接近于1s，有点太长，目标是50ms\r\n于是方案改成，连接后master搜索从机服务特征值，写入特征值，从机收到后断开，这个时间也要200ms。\r\n可是官方上说可以5ms大概，你说的20ms？，不知道是不是nxp这个芯片的限制，还是？"
+ },
+ {
+  "id": "5208",
+  "parent": "5207",
+  "date": "2017-02-07T16:06:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yicun：可以检查一下slave ADV（ADV_IND）的周期，看看是多少，一般连接时间是由这个决定的。如果实在想快，可以试试用ADV_DIRECT_IND。"
+ },
+ {
+  "id": "5240",
+  "parent": "0",
+  "date": "2017-02-24T14:30:26+08:00",
+  "author": "lenli",
+  "site": "",
+  "text": "问一下窝窝:\r\n    应用层为了数据能正确在端到端之间传输，需不需要在实现两个控制传输层，ble本身的L2CAP层有重传机制，能确保数据到达对端吗？如果需要实现，怎么样做比较好？能大致讲一下吗？"
+ },
+ {
+  "id": "5241",
+  "parent": "5240",
+  "date": "2017-02-24T14:58:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lenli：首先：\r\n链路层的PDU中，有24-bit的CRC\r\nPreamble  Access Address  PDU                CRC\r\n(1 octet) (4 octets)      (2 to 257 octets)  (3 octets)\r\n然后通过链路层的应答和重传机制，基本上保证了基于连接的数据传输是可靠的。\r\n\r\n然后：\r\nL2CAP也有自己的应答、重传、流控机制(基于i-frame和s-frame）。\r\n\r\n因此：\r\n从L2CAP之上的应用程序的角度看，可以认为数据是可靠的，传输过程中的错误，对应用来说，就是无休止的重传和卡顿。"
+ },
+ {
+  "id": "5242",
+  "parent": "5241",
+  "date": "2017-02-24T15:50:45+08:00",
+  "author": "lenli",
+  "site": "",
+  "text": "@wowo：非常感谢窝窝。还想在问一下，LL层机制类似与TCP的传输，但不知道L2CAP如何实现？LL重传有次数的限制，当达到重传次数以后，数据是如何处理的,这部分的工作是L2CAP实现的吗？（i-frame和s-frame）大致的思路是什么样的？能讲一下吗?"
+ },
+ {
+  "id": "5244",
+  "parent": "5241",
+  "date": "2017-02-24T17:44:53+08:00",
+  "author": "lenli",
+  "site": "",
+  "text": "@wowo：我可能没有说清楚，在L2CAP层也还是重传这种思想吗？就你所说:对应用来说，就是无休止的重传和卡顿。假设最坏的情况下次数到了之后咋办？数据丢了还是有其他的办法"
+ },
+ {
+  "id": "5248",
+  "parent": "5244",
+  "date": "2017-02-24T22:36:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lenli：我这里只是介绍了简单的机制。其实重传机制，确实可以控制（重传次数等），经典蓝牙经常用。但在ble中，个人觉得没必要这么麻烦。想象一下我们遇到的困惑：\r\nBLE使劲的收，但都发生了错误！！\r\nBLE的数据一般是小批量的控制数据（不同于经典蓝牙的音乐播放），这样的数据一点都不能错。\r\n因此，这个错误底层协议是清晰的知道的，那怎么办？其实告诉应用程序也没有什么意义，应用也一样干瞪眼。不如尽量重传下去，大不了链路的控制信息也传不下去了，连接就会timeout并断开了"
+ },
+ {
+  "id": "5251",
+  "parent": "5248",
+  "date": "2017-02-25T14:59:27+08:00",
+  "author": "lenli",
+  "site": "",
+  "text": "@wowo：谢谢窝窝的解答,如雷贯耳啊，lolllllll"
+ },
+ {
+  "id": "5327",
+  "parent": "0",
+  "date": "2017-03-16T10:22:26+08:00",
+  "author": "chong",
+  "site": "",
+  "text": "我想请教一下窝窝：\r\n   主机端在同一时刻只能连接一个从机吗，这在哪体现出来的呢，刚开始看蓝牙这块，不是很懂，谢谢啦！"
+ },
+ {
+  "id": "5328",
+  "parent": "5327",
+  "date": "2017-03-16T11:01:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chong：不是。对BLE来说，主机可以连接多个从机，从机也可以连接多个主机。"
+ },
+ {
+  "id": "5329",
+  "parent": "5328",
+  "date": "2017-03-16T11:29:16+08:00",
+  "author": "chong",
+  "site": "",
+  "text": "@wowo：谢谢wowo的回复，我看到这样一段话“在任何时刻都只能最多一个设备在尝试建立连接。如果同时对多个蓝牙设备发起建立 Gatt 连接请求。如果前面的设备连接失败了，后面的设备请求会被永远阻塞住，不会有任何连接回调”，这个说法是对的吗？"
+ },
+ {
+  "id": "5330",
+  "parent": "5329",
+  "date": "2017-03-16T11:34:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chong：这个协议栈的设计有关，蓝牙协议没有规定这事儿。"
+ },
+ {
+  "id": "5331",
+  "parent": "5330",
+  "date": "2017-03-16T11:38:53+08:00",
+  "author": "chong",
+  "site": "",
+  "text": "@wowo：那我就了解了，真的很感谢wowo☺"
+ },
+ {
+  "id": "5333",
+  "parent": "5331",
+  "date": "2017-03-16T17:15:04+08:00",
+  "author": "q576333",
+  "site": "",
+  "text": "@chong：向wowo請教一下\r\n您說從機也可以連接多個主機\r\n那假設我有多個主機都有各自連接多個不同的從機\r\n而主機間也如果需要互相通訊\r\n那相對的是不是可以把從機當成是主機間通訊的轉寄站呢?"
+ },
+ {
+  "id": "5335",
+  "parent": "0",
+  "date": "2017-03-17T19:38:44+08:00",
+  "author": "q576333",
+  "site": "",
+  "text": "向wowo請教一下 \r\n您說從機也可以連接多個主機 \r\n那假設我有多個主機都有各自連接多個不同的從機 \r\n而主機間也如果需要互相通訊 \r\n那相對的是不是可以把從機當成是主機間通訊的轉寄站呢?\r\n(剛剛才發現原來我按錯回復了....)"
+ },
+ {
+  "id": "5336",
+  "parent": "5335",
+  "date": "2017-03-17T22:44:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@q576333：没关系的，都能看到，只是有点事情，没来得及回复，抱歉！\r\n可以的，这其实就是mesh网络的拓扑了。而且从这个角度看，主或者从的概念，已经不重要了，重要的是传输的效率，只要可以满足应用需求即可。"
+ },
+ {
+  "id": "5393",
+  "parent": "0",
+  "date": "2017-03-30T14:14:54+08:00",
+  "author": "Micah",
+  "site": "",
+  "text": "3.2.1 LL Data PDU中LLID＝0x10是Start of an L2CAP message or no fragmentation吧，你的两个LLID是一样的。刚开始了解蓝牙，看了你之前写的好多的日志，很有收获！"
+ },
+ {
+  "id": "5396",
+  "parent": "5393",
+  "date": "2017-03-30T22:04:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Micah：多谢提醒，确实写错了，已改正:-)"
+ },
+ {
+  "id": "5398",
+  "parent": "0",
+  "date": "2017-03-31T15:35:06+08:00",
+  "author": "panda",
+  "site": "",
+  "text": "一个Connection Event中packet的个数需要master和slave之间协商吗？"
+ },
+ {
+  "id": "5399",
+  "parent": "0",
+  "date": "2017-03-31T15:36:45+08:00",
+  "author": "panda",
+  "site": "",
+  "text": "WOWO，一个Connection Event中packet的个数需要master和slave协商吗？"
+ },
+ {
+  "id": "5401",
+  "parent": "5399",
+  "date": "2017-03-31T16:05:33+08:00",
+  "author": "panda",
+  "site": "",
+  "text": "@panda：我在spec里找到了答案：\r\nThe MD bit of the Header of the Data Channel PDU is used to indicate that the\r\ndevice has more data to send. If neither device has set the MD bit in their\r\npackets, the packet from the slave closes the connection event."
+ },
+ {
+  "id": "5403",
+  "parent": "5401",
+  "date": "2017-03-31T17:04:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@panda：Good job:-)"
+ },
+ {
+  "id": "5676",
+  "parent": "0",
+  "date": "2017-06-15T15:29:13+08:00",
+  "author": "darren",
+  "site": "",
+  "text": "我想用linux 系统的开发板作为蓝牙server ,让安卓手机作为client， 手机主动发起匹配，连接。成功后，手机端APP端发送数据，开发板接受到数据后，再做相应的动作。\r\n请问这种应用场景用到哪种协议？　没有参看例子？　网上都是开发板自动发起匹配连接的。蛋疼。\r\n\r\n谢谢。"
+ },
+ {
+  "id": "5679",
+  "parent": "5676",
+  "date": "2017-06-15T18:29:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@darren：可以参考一下这篇文章：/bluetooth/weixin_ble_1.html\r\n其实就是你所说的场景。"
+ },
+ {
+  "id": "5733",
+  "parent": "0",
+  "date": "2017-06-26T10:11:51+08:00",
+  "author": "lpy",
+  "site": "",
+  "text": "我想问一下，BLE时分过程是怎么时分的？比如两个从设备与主设备通信，同时还有主设备可以作为别的设备的从设备，整个过程怎么理解？望解答"
+ },
+ {
+  "id": "5739",
+  "parent": "5733",
+  "date": "2017-06-27T10:39:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lpy：BLE和经典蓝牙不同，时分的概念有点特殊，因为master和slave之间，不会共享physical channel。\r\n也就是说，无论是一个master和多个slave之间，还是一个slave和多个master之间，都是独立的物理channel。\r\n而时分的概念，仅仅是指master可能要在不同的时间段和slave进行数据收发（参考本文3.4小节的连接参数的说明）。"
+ },
+ {
+  "id": "5746",
+  "parent": "5739",
+  "date": "2017-06-27T19:17:05+08:00",
+  "author": "lpy",
+  "site": "",
+  "text": "@wowo：这个我理解，就是master和slave按时到指定信道去收发。有一个问题，如果一个slave和master1通信了，然后这个slave与master2也通信了，那slave怎么协调这个时间？因为通信连接参数都是master下发给slave的，望解答"
+ },
+ {
+  "id": "5750",
+  "parent": "5746",
+  "date": "2017-06-28T09:27:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lpy：我们讨论的这些“时间”，例如connection event等，都是链路层（link layer）的概念。它们是怎么对应到物理层的传输上的（是否可以并发，是否可以串行，等等），要看ble controller的设计。\r\n不过，这一块我也不是很熟悉，因此不能立即回答你（抱歉！）。后面有时间我可以看看controller的具体行为，再和你讨论。"
+ },
+ {
+  "id": "5773",
+  "parent": "5750",
+  "date": "2017-07-05T17:37:20+08:00",
+  "author": "lpy",
+  "site": "",
+  "text": "@wowo：你好，我想咨询下，“这样以connInterval为周期的发送（M->S）、接收（S->M）组合（可能有多个）”这句话是在M-S、S-M在一个连接间隔内可以进行多次么？"
+ },
+ {
+  "id": "5775",
+  "parent": "5773",
+  "date": "2017-07-06T09:10:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lpy：是的，不过蓝牙spec上的比较模糊，具体要看相应的controller是怎么支持的。有以下的信息可供你参考：\r\n1. 蓝牙spec（这里以Core_v5.0.pdf为例）\r\nFigure 1.4: Connection Events\r\n\r\n2. Nordic社区中有关的回复\r\nhttps://devzone.nordicsemi.com/question/3440/how-do-i-calculate-throughput-for-a-ble-link/\r\n\r\nNumber of packets per event With regard to number of packets per connection event, the nRF8001 will be able to receive 2-3 but can transmit only 1. The nRF51822 on the other hand can both send or transmit up to 6 packets per interval. It seems that most Android devices supports ~4 packets per interval, while most iOS devices supports up to 6 packets. \r\n\r\n不过具体是怎么样的行为，我没有实测，所以有可能理解的不对，你可以再帮忙确认一下。"
+ },
+ {
+  "id": "5819",
+  "parent": "5775",
+  "date": "2017-07-19T11:23:12+08:00",
+  "author": "lpy",
+  "site": "",
+  "text": "@wowo：你好，我想问一下，上面提到slave在传输窗口内没有收到包，那会在下一个窗口继续进行接收。那我想问的是如果master在第一个传输窗口发了一个包，slave也收到包了，只是master没有收到slave的发的包，那下一步怎么进行？"
+ },
+ {
+  "id": "5825",
+  "parent": "0",
+  "date": "2017-07-19T22:04:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lpy \r\n-------------------------------------------------------\r\n@wowo：你好，我想问一下，上面提到slave在传输窗口内没有收到包，那会在下一个窗口继续进行接收。那我想问的是如果master在第一个传输窗口发了一个包，slave也收到包了，只是master没有收到slave的发的包，那下一步怎么进行？\r\n-------------------------------------------------------\r\n1. 无论怎么样，master发包的时间点都是固定的（不管slave收到与否）。因此，master有没有收到slave的发包，是一个“无关紧要”的事情。\r\n2. slave之所以要等master的发包，是为了确定收发数据的时间点（这个是master决定的，参考上1的说明）。\r\n3. 最后，master无法收到slave发包，或者slave无法收到master的发包，都会走后续的超时断开流程（connSupervision）。"
+ },
+ {
+  "id": "5866",
+  "parent": "0",
+  "date": "2017-08-02T18:13:02+08:00",
+  "author": "zoe_man",
+  "site": "",
+  "text": "@wowo请教一下，Master和Slaver建立连接后，由于超出距离而断开连接，从协议栈看此时host发起了LE Create Connection,但是收到Slaver的广播包后，没有立即连接上，过了大概1分钟后才连接成功，而这1分钟时间都在report Slaver的广播包，这是为什么？"
+ },
+ {
+  "id": "5872",
+  "parent": "0",
+  "date": "2017-08-04T16:11:38+08:00",
+  "author": "odissey",
+  "site": "",
+  "text": "你好，请教一个问题：\r\n你的文章里提到“连接建立的过程中，如果TLLconnSupervision超过6 * connInterval（没有接收到第一个数据包），则认为连接建立失败。”请问这个是BLE规范里定义的吗？\r\n1、我使用NXP9021主从机例程测试时，我在主机扫描到从机后，就把从机断电了，然后在主机侧调用GAP_LE_CREATE_CONN_REQ请求，发现过了很长时间，并不会返回任何错误。\r\n2、主机扫描到从机并且和从机成功建立连接后，我迅速将从机断电，过一会（具体时间我没有测试），应该就是过了connSupervisionTimeout，主机会打印连接断开，并且返回断开原因CO_ERROR_CON_TIMEOUT。\r\n\r\n我现在的疑问是：是否只有在连接成功建立后，才会有超时机制，而连接建立前没有超时机制，还是说BLE规范里定义了超时机制，只是厂商各自实现不同，比如我自己需要在调用GAP_LE_CREATE_CONN_REQ后，开启定时器去判断连接建立成功没有。\r\n\r\n还有一个疑问就是：测试2里，我代码里的connSupervisionTimeout配置为20s，为什么将从机断电后，主机很快，大概不到1s的样子，就返回CO_ERROR_CON_TIMEOUT了。\r\n\r\n谢谢。"
+ },
+ {
+  "id": "5880",
+  "parent": "5872",
+  "date": "2017-08-07T10:16:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@odissey：1. 你去看spec，“Supervision Timeout”说的清清楚楚的，是指在连接建立之后的超时断开。\r\n连接的时候，没有收到连接成功的消息之前，都是不成功，不需要什么定时器。\r\n\r\n2. TLLconnSupervision和connSupervisionTimeout不是一回事，时间也不一样。前者监控的是所有的数据包（断电属于这种情况），后者监控的是data pdu。"
+ },
+ {
+  "id": "5881",
+  "parent": "5866",
+  "date": "2017-08-07T10:21:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zoe_man：把这一分钟的包抓一下，看看才能知道怎么回事。"
+ },
+ {
+  "id": "5887",
+  "parent": "5881",
+  "date": "2017-08-08T10:14:48+08:00",
+  "author": "zoe_man",
+  "site": "",
+  "text": "@wowo：@wowo：您好！是怀疑发出的包有问题吗?可以确定Slaver发出的广播包没问题。但有一点异常，发起连接时BD_ADDR是空的，正常情况下BD_ADDR应该存在才对，不知道这是为什么？望解答。\r\n谢谢！"
+ },
+ {
+  "id": "5892",
+  "parent": "5887",
+  "date": "2017-08-08T14:02:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zoe_man：BD_ADDR都是空的了，还有什么好说的啊！查这个问题就是了。至于为什么，我还想问你呢（偷笑:-)"
+ },
+ {
+  "id": "5898",
+  "parent": "5892",
+  "date": "2017-08-09T11:23:10+08:00",
+  "author": "zoe_man",
+  "site": "",
+  "text": "@wowo：wowo：我看到btsnoop里是LE_Create_Connection的时候启用了White_list机制，这个机制会对我连接有影响吗？"
+ },
+ {
+  "id": "5899",
+  "parent": "5898",
+  "date": "2017-08-09T16:52:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zoe_man：会。你要检查一下白名单是怎么用的，已经被连接的设备是否在你的白名单里面。另外也可以先把白名单禁用看看是否okay。"
+ },
+ {
+  "id": "5905",
+  "parent": "0",
+  "date": "2017-08-12T19:42:45+08:00",
+  "author": "dong",
+  "site": "",
+  "text": "希望wowo能够写一章描述“一个数据”在协议栈里格式如何变化的帖子，因为作为新手我们本来对每个层的概念就不是很清晰，这样可以通过数据格式的变化来理解它们，而不是反过来通过理解每个层的概念来猜他的PDU格式。\r\n\r\n比如说，本来以为理解了HCI层和LL的概念了。可是在看协议BLUETOOTH SPECIFICATION Version 4.0 [Vol 3] L2CAP层的Recombination功能的时候，给出了一幅“一个数据”是怎么从L2CAP->HCI->LL的。但是HCI->LL那个地方并没有说明HCI data packets是怎么变成你这一篇文章所说的data chanel PDU的，瞬间就懵逼了，找协议也没有找到相关的，难受啊。"
+ },
+ {
+  "id": "5906",
+  "parent": "5905",
+  "date": "2017-08-14T08:16:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dong：多谢建议，有时间的话我会按照你所困惑的思路整理一下～"
+ },
+ {
+  "id": "6124",
+  "parent": "0",
+  "date": "2017-10-19T22:36:38+08:00",
+  "author": "odng",
+  "site": "",
+  "text": "wowo好久没来逛了，最近遇到个问题，比较郁闷来请教一下。\r\n我用sniffer进行抓包，主从设备连接之后，一开始双方交换空包（心跳包）是正常的，慢慢的会频繁抓到slave连续发出来的空包，而且每个包的sn和nesn都是一样的，只是每个包发送的channel不一样（sniffer是从3个channel抓到的包），我就感觉很疑惑，为什么会出现这种情况呢？"
+ },
+ {
+  "id": "6126",
+  "parent": "6124",
+  "date": "2017-10-20T09:16:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@odng：slave没有收到master的包？不过这种情况下channel应该一样才是啊（不应该有跳频发生）。"
+ },
+ {
+  "id": "6129",
+  "parent": "6126",
+  "date": "2017-10-21T18:03:56+08:00",
+  "author": "dong",
+  "site": "",
+  "text": "@wowo：假设slave没有收到master的包，slave为什么还会发包出去呢？先不考虑channel的问题，协议里面不是每次S->M之前，必须要有个M->S吗？\r\n\r\n我查阅了一下协议，要让slave发一模一样的sn和nesn，有可能是master那边发过来的包收到了，但是CRC是有问题的，但是这样也是基于M->S的包接收到才行。\r\n\r\n我都开始怀疑是不是我的从机硬件有问题，或者是抓包软件漏包了，晕。"
+ },
+ {
+  "id": "6130",
+  "parent": "6129",
+  "date": "2017-10-21T21:40:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dong：包里面的SN和NESN，单纯比较是没有意义的，说明不了什么（参考本文的描述，它们要分别和本地的sn和nesn比较才有意义）。\r\n“每个包的sn和nesn都是一样的”，是指每个包一样，还是指sn和nesn一样呢？\r\n如果每个包一样，也就是说每个包的sn和nesn没变化，就是指：\r\nmaster期待slave发送的包没变，slave正在发给master的包也没变。也就是说此时slave一直在重发，并且没有收到master的任何回应。\r\n如果sn和nesn一样，代表slave正在发生的，以及master期待slave发送的，是一样的，没问题啊！！"
+ },
+ {
+  "id": "6132",
+  "parent": "6130",
+  "date": "2017-10-23T00:36:19+08:00",
+  "author": "dong",
+  "site": "",
+  "text": "@wowo：指包里面的sn和nesn数值是一样的。\r\n\r\n但是，如果slave没收到master'packet，slave怎么会知道master期望收到什么包呢，协议并没说slave会自发地进行重发啊，只有收到master'packet，并且这个packet的sn和nesn和slave上一个收到的master'packetsn一样的情况下，才会进行重发啊。\r\n\r\n如果重发，不就说明slave已经收到master的包了？抓包软件应该显示出来master发出来这个packet才对呀，怎么说也不会连续出现两次一样的slave'packet呀，我是这么考虑的。"
+ },
+ {
+  "id": "6133",
+  "parent": "6132",
+  "date": "2017-10-23T09:32:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dong：是的，如果master不发，应该走timeout断开的流程。\r\n“包里面的sn和nesn数值是一样的”，会增加吗？出现这种情况之后会断开吗？如果会增加，又不断开，很有可能是抓包出问题了。\r\n如果不是，很有可能是slave controller有特殊实现，在收不到应答的时候自动重发了。"
+ },
+ {
+  "id": "6212",
+  "parent": "0",
+  "date": "2017-11-17T10:13:08+08:00",
+  "author": "方言",
+  "site": "",
+  "text": "Wowo，我感觉核心协议文档里那个图还是对的，可以直接通过包里的SN和NESN来判断包的情况，左边是数据的发送者，右边是数据的接受者，也就是要回复ACK的人。只是文档里的文字写得太晦涩了，和图的关系看起来不那么大。"
+ },
+ {
+  "id": "6217",
+  "parent": "6212",
+  "date": "2017-11-18T10:11:25+08:00",
+  "author": "方言",
+  "site": "",
+  "text": "@方言：Wowo是对的，协议文档的图竟然是错的。比如接收方应该和上一次发出的NESN来对比，协议图里直接SN = NESN ?会让人误解利用本次接收到的包里的SN和NESN来对比。"
+ },
+ {
+  "id": "6223",
+  "parent": "6217",
+  "date": "2017-11-20T17:07:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@方言：估计画那个图的家伙对协议太熟悉了，想当然的认为不应该直接比较包里面的内容，因而画图的时候就没有区分。"
+ },
+ {
+  "id": "6228",
+  "parent": "6223",
+  "date": "2017-11-21T11:51:55+08:00",
+  "author": "方言",
+  "site": "",
+  "text": "@wowo：恩恩~ 是啊 :)\r\n感谢Wowo的文章，让我们可以深入了解协议的内涵。"
+ },
+ {
+  "id": "6275",
+  "parent": "0",
+  "date": "2017-12-01T17:05:07+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "------ nesn和sn到底是一个什么变量了？？！！如果非二进制，1加1等于2了，如果位变量1加1等于0了，WOWO能否帮说明下下"
+ },
+ {
+  "id": "6276",
+  "parent": "0",
+  "date": "2017-12-01T17:13:35+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "\"1）无论是Master还是Slave，发送packet的时候，都会将当前的sn和nesn copy到packet的SN和NESN bit中。\"这句话中理解，“sn和nesn copy到packet的SN和NESN bit中”，那只能说明sn和nesn都是位变量才有意义，不是位变量压根就没有意义，假如发了3个包sn或nesn变成了3，copy给位SN和NESN，SN和NESN怎么的也是1，因为他除了1就是0，你加到30特么的也还是1，这有何意义呢"
+ },
+ {
+  "id": "6277",
+  "parent": "6276",
+  "date": "2017-12-01T17:15:28+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@EE：所以说sn和nesn只为位变量是否？"
+ },
+ {
+  "id": "6281",
+  "parent": "6277",
+  "date": "2017-12-04T14:44:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：是的，这篇文章中有说明，这两个sn和nesn都是1 bit，用于应答和重传，足够了。毕竟带宽有限，能省点开销是最好不过的了。"
+ },
+ {
+  "id": "6282",
+  "parent": "6275",
+  "date": "2017-12-04T14:45:41+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：你把这篇文章仔细看看，可以解决你的疑惑的:-)"
+ },
+ {
+  "id": "6283",
+  "parent": "6281",
+  "date": "2017-12-05T10:29:40+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：恩恩，明白了是1bit"
+ },
+ {
+  "id": "6284",
+  "parent": "6282",
+  "date": "2017-12-05T10:30:49+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：确实是的，已看懂"
+ },
+ {
+  "id": "6351",
+  "parent": "5775",
+  "date": "2017-12-13T11:52:12+08:00",
+  "author": "ljy",
+  "site": "",
+  "text": "@wowo：可以的，传输声音数据或者快速的OTA 功能时都需要多个数据一个Interval，Android手机实测可达5/interval."
+ },
+ {
+  "id": "6375",
+  "parent": "0",
+  "date": "2017-12-18T10:10:25+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "wowo帮忙请问：BLUETOOTH SPECIFICATION Version 4.2 [Vol 6, Part B]// 4.5.7 Window Widening//中：If the slave receives a packet from the master regardless of a CRC match, the slave shall update its anchor point.是不是只有建连后的第一个包从机不管CRC是否匹配就算一个有效的包，后续包如果CRC不匹配就不算？如果从机每接收一个CRC不匹配的包也算的话，那很容易受到攻击，比如反正CRC不匹配也算一个包我就发一系列的假包，从机接到后就会创建新的anchor point 从而导致正确的主机包没法接收，是不是这样？"
+ },
+ {
+  "id": "6376",
+  "parent": "6375",
+  "date": "2017-12-18T10:29:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：第一个收到的包，不管CRC对不对，都会用来更新anchor point。\r\n至于这个包是不是一个有效包，从送给Host，还是依赖CRC的，没毛病:-)"
+ },
+ {
+  "id": "6378",
+  "parent": "6376",
+  "date": "2017-12-18T11:55:51+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：恩恩也是的，还有个问题也一并请问下了：建连后当从机成功的接到主机的第一个包然确定了Anchor Point，此刻以后主机和从机都会以相同的connInterval为周期开始同步收发数据，这里就有个问题因为时钟没有绝对的相等，因为起点相同所以肯定会出现抢跑的情况，从而可能导致数据丢失，这个蓝牙是怎么规避的，是不是BLUETOOTH SPECIFICATION Version 4.2 [Vol 6, Part B] //4.5.7 Window Widening//就是说明如果规避的，Window Widening理解想来有点难度，wowwo有空可帮简单的说下吗？！"
+ },
+ {
+  "id": "6379",
+  "parent": "6378",
+  "date": "2017-12-18T12:23:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：双方的ble controller所维护的clock，基本上是很准确的，时钟的误差（PPM）很小，因此可以不考虑这种情况（或者说当时钟偏差到无法通信的时候，就是断开了）。"
+ },
+ {
+  "id": "6380",
+  "parent": "6379",
+  "date": "2017-12-18T13:38:09+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：这样说是有道理"
+ },
+ {
+  "id": "6393",
+  "parent": "0",
+  "date": "2017-12-20T17:02:44+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "wowo,又来问了喔，BLUETOOTH SPECIFICATION Version 4.2 [Vol 6, Part B]//5.1.2 Channel Map Update Procedure//\r\n When a slave receives an LL_CHANNEL_MAP_REQ PDU where (Instant –connEventCount ) modulo 65536 is less than 32767 and Instant is not equal to connEventCount , the slave shall listen to all the connection events until it has confirmation that the master has received its acknowledgement of the\r\nLL_CHANNEL_MAP_REQ PDU or  connEventCount equals Instant.\r\n\r\n这原文总是理解不了：LL_CHANNEL_MAP_REQ PDU是单向的不会有回应命令，怎么会有acknowledgement？32767不知怎跑出来的，逻辑上感觉没有可理解性"
+ },
+ {
+  "id": "6398",
+  "parent": "6393",
+  "date": "2017-12-21T09:17:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：我暂时没有去看spec，姑且认为你这个表述“LL_CHANNEL_MAP_REQ PDU是单向的不会有回应命令”是对的，我的理解是，LL层的传输本身就是有应答的可靠传输。\r\n32767是65536的一半，具体的逻辑，应该是Instant和connEventCount差值最大的时候？"
+ },
+ {
+  "id": "6399",
+  "parent": "6398",
+  "date": "2017-12-21T09:37:41+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：哦哦，暂那样理解先了，Instant和connEventCount差值最大32767，估计也是协议硬性规定数值无逻辑可言的，"
+ },
+ {
+  "id": "6402",
+  "parent": "6399",
+  "date": "2017-12-21T09:48:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：这个值应该有逻辑：Instant和connEventCount都是32bit表示，因此最大是65536，那么它们的差值的最大就32767（因为要取模）。"
+ },
+ {
+  "id": "6580",
+  "parent": "0",
+  "date": "2018-03-01T17:57:27+08:00",
+  "author": "nikoladi",
+  "site": "",
+  "text": "wowo，看了你一系列文章，受益匪浅。\r\n有没有继续分析ATT协议的打算，自己看core V4.2总是找不到在哪找。\r\n总体还是把握不好"
+ },
+ {
+  "id": "6584",
+  "parent": "6580",
+  "date": "2018-03-02T15:26:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@nikoladi：这一段暂时没有时间了，太忙了，见谅哈~~"
+ },
+ {
+  "id": "6613",
+  "parent": "0",
+  "date": "2018-03-15T14:20:33+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "wowo,请问瞬时到来时，从机没有接到主机发过来的包（主机链路丢失）从机该怎么做了？是以新的链接间隔一直进行扫描窗吗，直到超时还是怎样了？"
+ },
+ {
+  "id": "6614",
+  "parent": "6613",
+  "date": "2018-03-16T21:10:24+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@EE：wowo，我找到答案了，会一直接着发直到超时"
+ },
+ {
+  "id": "6665",
+  "parent": "0",
+  "date": "2018-04-15T22:33:43+08:00",
+  "author": "cici",
+  "site": "",
+  "text": "您好，在设备支持直连的情况下，不扫描，直接通过mac地址直连的和扫描再连接的区别在哪里呢？会不会成功率不一样？"
+ },
+ {
+  "id": "6668",
+  "parent": "6665",
+  "date": "2018-04-16T08:46:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cici：主要是广播间隔不同，速度或者成功率就不同，可参考这篇文章：\r\n===========\r\n1）处于connectable状态设备（Advertiser），按照一定的周期广播ADV_IND或者ADV_DIRECT_IND包（可参考“蓝牙协议分析(5)_BLE广播通信相关的技术分析”）。"
+ },
+ {
+  "id": "6675",
+  "parent": "0",
+  "date": "2018-04-18T12:04:41+08:00",
+  "author": "嘟囔",
+  "site": "",
+  "text": "大神你好，请问如果知道设备的mac地址，scan与否对连接成功率和速度有影响吗"
+ },
+ {
+  "id": "6676",
+  "parent": "6668",
+  "date": "2018-04-18T12:08:29+08:00",
+  "author": "cici",
+  "site": "",
+  "text": "@wowo：您好，是这样的，我们目前采用的蓝牙设备，是支持直连的，而且我们也知道设备的mac地址，这种情况才，是否可以跳过接收广播的阶段，从协议上来看，广播阶段是否可以加快连接的速度？"
+ },
+ {
+  "id": "6694",
+  "parent": "0",
+  "date": "2018-04-24T18:13:19+08:00",
+  "author": "sdm",
+  "site": "",
+  "text": "看了蓝牙系列的文章， 受益匪浅， 谢谢"
+ },
+ {
+  "id": "6699",
+  "parent": "6675",
+  "date": "2018-04-25T20:23:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@嘟囔：scan与否，和连接无关。\r\n如果需要加快连接速度，可以使用ADV_DIRECT_IND，但需要被连接方知道连接方的地址。"
+ },
+ {
+  "id": "6931",
+  "parent": "0",
+  "date": "2018-09-06T12:00:20+08:00",
+  "author": "KK",
+  "site": "",
+  "text": "Wowo大 你好 \r\nsn和nesn還是不太懂意思\r\nsn和nesn在连接建立的时候，它们都被初始化为0,无论是Master还是Slave，发送packet的时候，都会将当前的sn和nesn copy到packet的SN和NESN bit中。\r\n\r\n如果初始化都為0 那發送pacekt時SN&NESN也都為0 那不是永遠都是0?什麼時候才有不同的情況? \r\n\r\n謝謝"
+ },
+ {
+  "id": "6932",
+  "parent": "6931",
+  "date": "2018-09-06T12:21:27+08:00",
+  "author": "KK",
+  "site": "",
+  "text": "@KK：如果相同，说明该packet是对端设备发来的NAK packet（请求重发），则需要将旧的packet重新发送出去  舊的packet的SN&NESN還是0吧?"
+ },
+ {
+  "id": "6935",
+  "parent": "6932",
+  "date": "2018-09-07T11:12:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@KK：你可以看看“图片4 BLE应答和流控机制”中的过程，我回复你也是把那个过程再写一遍~~~"
+ },
+ {
+  "id": "7082",
+  "parent": "0",
+  "date": "2018-12-12T19:16:49+08:00",
+  "author": "万",
+  "site": "",
+  "text": "connSupervisionTimeout是一个可配置的参数，范围是100ms~32s，并且不能大于(1 + connSlaveLatency) * connInterval * 2，这句有误，应该将“不能大于”改为“不能小于”。\r\n参考 Core_v4.2.pdf P2620，The connSupervisionTimeout shall be a multiple\r\nof 10 ms in the range of 100 ms to 32.0 s and it shall be larger than\r\n(1 + connSlaveLatency) * connInterval * 2."
+ },
+ {
+  "id": "7213",
+  "parent": "0",
+  "date": "2019-03-01T15:24:55+08:00",
+  "author": "StayrealS",
+  "site": "",
+  "text": "WOWO大您好：拜读了您这个蓝牙协议分析系列受益良多，最近我也在研究BLE，有几个问题请教：\r\n1. 我根据自己的理解大概画了个单master多slave的timeline的示意图：\r\nMaster1 -TX--RX---TX--RX----Advertising------------\r\nSlave1   -RX--TX--------------------------------------\r\nSlave2   -----------RX--TX---------------------------\r\nBLE4.1提出了一个设备可以既作为master也作为slave进行连接，那么如果上图中Slave1既是Master1的slave也是Slave2的master，timeline会变成怎么样呢？\r\n\r\n2. 如果一个master连接了多个（如10个）slave设备，那么它就会一个一个的去进行connInterval的连接和传送吗？这样会不会导致每个slave被连接到的中间间隔很长呢？\r\n\r\n3. 我记得在spec中有一个关于T_IFS的限制，就是从收到一个数据帧到自己发送出去需要间隔T_IFS，在您的文章里好像没有体现，是因为这个T_IFS过于细节了吗？\r\n\r\n谢谢wowo大！"
+ },
+ {
+  "id": "7351",
+  "parent": "0",
+  "date": "2019-04-15T17:06:04+08:00",
+  "author": "bright",
+  "site": "",
+  "text": "Hi wowo \r\n\r\nhttps://www.codetd.com/article/2274205  裡面有一張關於sn nesn的流程圖。\r\n\r\n請教一下 幾個問題\r\n1. 一般情況下，假設本地端傳送資料給對端，那對端收到後一定會馬上回應?\r\n  \r\n2.假設是的話\r\nconnection packet 在傳送的時候\r\n假設一開始是M->S  master傳資料給slave \r\nsn nesn   ->      sn nesn \r\n0  0              0  0\r\n0  0              0  1    此時slave的sn與對端的nesn一樣，但是slave並沒有傳東西給master，難道也要理解成master發來的NAK?  這樣會使slave回傳ACK封包(但是內容是什麼?)，\r\n之後\r\n0  0      <-      0  1 \r\n1  1              0  1    \r\nmaster 收到slave傳來的回傳以後，sn對上slave的nesn可以理解是slave的ack，\r\nnesn對上slave的sn，也可以理解，但是承上，slave傳的內容是什麼?\r\n\r\n繼續傳未傳完的資料(MD = 1)\r\n1  1      ->     0   1   \r\n1  1             1   0            \r\nslave收到master的資料,sn對上master的nesn，代表master有收到slave的data,nesn對上master的sn，代表收到的封包序號也是對的。  到這邊我就不理解slave是如何判斷要再度回傳封包給master?  \r\n\r\n雖然根據你的文章 sn != NESN(ack) 可以傳新的data ，可是slave到底要傳什麼內容給master? Empty PDU嗎?"
+ },
+ {
+  "id": "7579",
+  "parent": "7213",
+  "date": "2019-08-08T14:21:50+08:00",
+  "author": "方言",
+  "site": "",
+  "text": "@StayrealS：WOWO老大可能太忙，没空回复了，我来回复一下吧，WOWO看到如果不正确请帮忙指正。\r\nT_IFS，这个在Spec的AIR INTERFACE PROTOCOL里一开头就有提到，意思就是同一个信道上连续的传送的包之间有一个时间的间隔，这个间隔叫 Inter Frame Space，即“T_IFS”。这个间隔不管发出者是主还是从，只要包与包之间，都必须有这个间隔。"
+ },
+ {
+  "id": "7595",
+  "parent": "0",
+  "date": "2019-08-19T03:00:44+08:00",
+  "author": "ru-chan",
+  "site": "",
+  "text": "こんにちは。\r\nパワハラ指切断でおなじみのド屑県香川のド屑企業フジフーヅでございます。\r\n裁判も会社ぐるみで偽証をして無事乗り切ったド屑でございます。\r\n餃子シュウマイなどをスーパーで販売しております。\r\n店頭で見かけましたらそのときはご購入のほどどうかよろしくお願い致します。"
+ }
+]

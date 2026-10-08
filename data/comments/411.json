@@ -1,0 +1,146 @@
+[
+ {
+  "id": "6065",
+  "parent": "0",
+  "date": "2017-09-24T16:46:24+08:00",
+  "author": "u-boter",
+  "site": "",
+  "text": "其中还提供了一个fdtdump的工具，可以反编译dtb文件……\r\n============================================\r\n这一段的表述（以及后面那个图），有些歧义，其实dts的编译和反编译都是都是通过dtc来完成的：\r\n编译----dtc -i dts -o dtb\r\n反编译--dtc -i dtb -o dts\r\n至于fdtdump，正如它的名字，应该类似hexdump之类的，只是一个查看工具而已。"
+ },
+ {
+  "id": "6066",
+  "parent": "6065",
+  "date": "2017-09-24T19:19:37+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@u-boter：是的，是我表述的有点歧义！谢谢指正！dtc工具是可以双向编译的。待会修改…"
+ },
+ {
+  "id": "6087",
+  "parent": "0",
+  "date": "2017-09-30T23:00:38+08:00",
+  "author": "zeroway",
+  "site": "http://www.github.com/54shady",
+  "text": "画图工具感觉不错，不知道用的是什么？"
+ },
+ {
+  "id": "6089",
+  "parent": "6087",
+  "date": "2017-10-04T10:22:04+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@zeroway：微软visio"
+ },
+ {
+  "id": "6104",
+  "parent": "0",
+  "date": "2017-10-12T10:22:08+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "ACPI 比dts 灵活多了。"
+ },
+ {
+  "id": "6490",
+  "parent": "6104",
+  "date": "2018-01-19T20:09:27+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@schedule：兄台可否与大家分享一下ACPI的相关文章呢？"
+ },
+ {
+  "id": "6569",
+  "parent": "0",
+  "date": "2018-02-27T16:51:06+08:00",
+  "author": "wason",
+  "site": "",
+  "text": "非常棒的文章，谢谢分享！"
+ },
+ {
+  "id": "6680",
+  "parent": "0",
+  "date": "2018-04-19T09:50:45+08:00",
+  "author": "xtzt",
+  "site": "",
+  "text": "“an-empty-property”\r\n图片中写成“an-cmpty-property”"
+ },
+ {
+  "id": "6681",
+  "parent": "0",
+  "date": "2018-04-19T10:03:14+08:00",
+  "author": "xtzt",
+  "site": "",
+  "text": "“stsrt_kernel()函数”\r\n应该是“start_kernel()函数”"
+ },
+ {
+  "id": "6724",
+  "parent": "6681",
+  "date": "2018-04-30T23:52:01+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@xtzt：谢谢。笔误"
+ },
+ {
+  "id": "7142",
+  "parent": "6724",
+  "date": "2019-01-18T20:43:50+08:00",
+  "author": "kang",
+  "site": "",
+  "text": "@smcdef：似乎没改完..."
+ },
+ {
+  "id": "7143",
+  "parent": "7142",
+  "date": "2019-01-18T20:54:59+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@kang：很明显的错误，大家都知道。哈哈"
+ },
+ {
+  "id": "7606",
+  "parent": "0",
+  "date": "2019-08-21T19:49:26+08:00",
+  "author": "mating",
+  "site": "",
+  "text": "dts makefile会包含很多dtbo,现在应该只会选择一个dtb，编译时如何确定用哪个dtb的"
+ },
+ {
+  "id": "7608",
+  "parent": "7606",
+  "date": "2019-08-21T19:57:59+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@mating：编译的时候可以编译多个 dtb，不用编译器选择只编译哪一个。具体使用哪个 dtb 是由 BootLoader 根据当前硬件情况判断，最终选择一个合适的 dtb，直接将地址传给 kernel。"
+ },
+ {
+  "id": "7783",
+  "parent": "7606",
+  "date": "2019-12-10T16:48:47+08:00",
+  "author": "idyll",
+  "site": "",
+  "text": "@mating：应该是配置CONFIG_DEFAULT_DEVICE_TREE"
+ },
+ {
+  "id": "7855",
+  "parent": "0",
+  "date": "2020-01-20T11:16:15+08:00",
+  "author": "Warren",
+  "site": "",
+  "text": "写得很棒，感谢分享。\r\n有个地方需要交流一下哈，i2c_adapter是依赖于i2c platform_driver的probe函数创建的,i2c_adapter本身是注册在i2c_bus上的，没有在platform_bus上注册设备驱动，并且没有在i2c_bus上注册相应的驱动(i2c_core.c中的i2c_device_probe()有一条判断if (!client) return 0;说明不需要为i2c_adapter匹配驱动)，厂商只需要实现i2c_adapter的i2c_algorithm方法，通过i2c_client->adapter访问i2c_adapter就能实现i2c协议的数据传输。"
+ },
+ {
+  "id": "8129",
+  "parent": "0",
+  "date": "2020-10-22T15:05:24+08:00",
+  "author": "时文杰",
+  "site": "",
+  "text": "在经过DTC工具编译之后，&node1会变成一个特殊的整型数字n，假设n值为1，那么在node@1节点下自动生成两个属性，属性如下：\r\nlinux,phandle = <0x00000001>;\r\nphandle = <0x00000001>;\r\n\r\n使用fdtdump dump之后发现只添加了phandle = <0x00000001>这一条property;没有linux,phandle = <0x00000001>;这个property"
+ },
+ {
+  "id": "8917",
+  "parent": "0",
+  "date": "2024-07-31T10:51:55+08:00",
+  "author": "orange",
+  "site": "",
+  "text": "点赞点赞，对linuxer的文章总结到位"
+ }
+]

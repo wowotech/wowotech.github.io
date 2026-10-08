@@ -1,0 +1,3426 @@
+[
+ {
+  "id": "53",
+  "parent": "0",
+  "date": "2014-04-02T21:45:52+08:00",
+  "author": "狂晕致死",
+  "site": "http://www.forwhat.cn",
+  "text": "路过，踩一脚"
+ },
+ {
+  "id": "57",
+  "parent": "53",
+  "date": "2014-04-03T11:20:11+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@狂晕致死：欢迎常来，多交流"
+ },
+ {
+  "id": "69",
+  "parent": "0",
+  "date": "2014-04-06T22:36:35+08:00",
+  "author": "叶靖",
+  "site": "http://space.wiyejign.cn",
+  "text": "我也留一脚，我是纯个人博客，欢迎光临寒舍"
+ },
+ {
+  "id": "70",
+  "parent": "69",
+  "date": "2014-04-07T08:41:50+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@叶靖：欢迎欢迎:-)"
+ },
+ {
+  "id": "71",
+  "parent": "69",
+  "date": "2014-04-07T08:43:30+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@叶靖：不过你留的链接打不开呢，去不了啊"
+ },
+ {
+  "id": "74",
+  "parent": "0",
+  "date": "2014-04-09T13:39:15+08:00",
+  "author": "vesli",
+  "site": "",
+  "text": "我也在研究Linux内核代码，找到志同道合的朋友了。"
+ },
+ {
+  "id": "75",
+  "parent": "74",
+  "date": "2014-04-09T17:52:58+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@vesli：欢迎欢迎！Vesli可以留下联系方式，没事多交流，呵呵。"
+ },
+ {
+  "id": "108",
+  "parent": "0",
+  "date": "2014-04-28T13:03:46+08:00",
+  "author": "流年、酷",
+  "site": "http://www.zp520.cn",
+  "text": "已回访"
+ },
+ {
+  "id": "110",
+  "parent": "0",
+  "date": "2014-04-30T12:55:21+08:00",
+  "author": "damuzi",
+  "site": "http://www.damuzi.net",
+  "text": "我来啦，留言板不好找啊"
+ },
+ {
+  "id": "111",
+  "parent": "110",
+  "date": "2014-04-30T21:32:11+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@damuzi：呵呵，欢迎常回来看看。嗯，留言板比较低调，哈~~"
+ },
+ {
+  "id": "196",
+  "parent": "0",
+  "date": "2014-06-05T07:27:41+08:00",
+  "author": "蜗蜗~",
+  "site": "",
+  "text": "垃圾评论有点多，所以评论加验证码了。"
+ },
+ {
+  "id": "217",
+  "parent": "0",
+  "date": "2014-06-27T09:56:48+08:00",
+  "author": "linux",
+  "site": "",
+  "text": "请教个问题，是否有做过或见过多dtb的功能，就是说我有很多的dtb同时加载到memory中，最后根据具体的板型来判断传递给kernel那个dts。谢谢"
+ },
+ {
+  "id": "218",
+  "parent": "217",
+  "date": "2014-06-27T11:55:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linux：我想你问的是运行时HW platform识别的问题。一般的做法是在bootloader中读取HW platform的ID信息（一个简单的例子是利用外部的拨码开关，8bit的拨码开关可以定义256个ID），之后bootloader可以根据这个ID选择一个合适的dtb copy到memory，传递给kernel。"
+ },
+ {
+  "id": "220",
+  "parent": "218",
+  "date": "2014-06-30T13:13:15+08:00",
+  "author": "linux",
+  "site": "",
+  "text": "@linuxer：谢谢回复，我的应用中，dtb,ramdisk,kernel被编译为一个image（通过mkimage工具）。之前的做法是通过uboot加载这个image.uboot中加载的时候解析这些image,根据image header,分别加载到不同的memory地址，然后告诉kernel。\r\n现在我有很多的板型，这些image基本上是相同的（只是dtb不同），所以我想把所有的dtb,ramdisk,kernel image打包成一个image。不知道别人是否有过类似的问题，uboot中是否有现成的解决方案？"
+ },
+ {
+  "id": "221",
+  "parent": "220",
+  "date": "2014-06-30T16:44:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linux：想让一个image支持多个target board的话，image中当然要包括所有的内容（bootloader、各个target board的dtb、kernel、ramdisk、rootfs image等），只是必须有一个软件模块要识别target board。具体有两种方法：\r\n方法一、让kernel识别target board。也就是说，bootloader将所有的dtb同时加载到memory中，kernel判断出target board类型，然后选择适合的dtb。\r\n方法二、让bootloader识别target board，从image中解析出相应的dtb文件copy到memory中，kernel按照指定的dtb进行初始化即可。\r\n\r\n这两个方法中，毫无疑问我会选择方法二。\r\n我没有看过uboot的代码，不过，kernel中没有处理多个dtb的内容。"
+ },
+ {
+  "id": "277",
+  "parent": "0",
+  "date": "2014-08-07T23:58:08+08:00",
+  "author": "lg2841",
+  "site": "",
+  "text": "楼主真的有非常高的技术水平与文学造诣，将复杂的技术问题讲解的如此的条理清晰，非常佩服。"
+ },
+ {
+  "id": "278",
+  "parent": "277",
+  "date": "2014-08-08T08:51:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lg2841：多谢支持！\r\n蜗窝是一个开放的网站，不算是一个专门为个人设立的博客，这里大家其实都是都已任意发言的"
+ },
+ {
+  "id": "401",
+  "parent": "0",
+  "date": "2014-09-03T14:47:31+08:00",
+  "author": "weller",
+  "site": "",
+  "text": "可以私下里聊聊吗？ 看看你们的技术实力如何，要有项目介绍就更好了"
+ },
+ {
+  "id": "404",
+  "parent": "401",
+  "date": "2014-09-03T19:07:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@weller：有什么重要的事情吗？这里目前主要是一个技术交流的网站，我们暂时不打算承接项目，也没有项目需要外包。"
+ },
+ {
+  "id": "407",
+  "parent": "0",
+  "date": "2014-09-05T18:14:02+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "博主 中秋快乐啊 放假啦 好好休息才有力气写文章啊"
+ },
+ {
+  "id": "408",
+  "parent": "407",
+  "date": "2014-09-05T18:49:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@forion：中秋快乐。\r\n有些人写文章就是休息啊，所以不用担心，哈哈"
+ },
+ {
+  "id": "409",
+  "parent": "407",
+  "date": "2014-09-05T21:05:52+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：中秋快乐!\r\n\r\nwowo同学，你在说我吗？哈哈，最近有点打鸡血，写文章的热情高涨，不知道能保持多久....."
+ },
+ {
+  "id": "410",
+  "parent": "409",
+  "date": "2014-09-05T22:12:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：还是别太高了比较好，细水才能长流啊。罗马也不是一日建成的，别太着急。"
+ },
+ {
+  "id": "411",
+  "parent": "409",
+  "date": "2014-09-06T12:19:15+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：所谓 女为悦己者容 士为知己者死 \r\n帅哥写的文章这么受欢迎，自己肯定也是干劲十足。而且写文章过程中，又能加深自己的理解。利人利己。贵在坚持啊！"
+ },
+ {
+  "id": "424",
+  "parent": "0",
+  "date": "2014-09-10T14:06:59+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "最新评论 里面只能显示最新的5个评论，如果我之前写了一个评论，提交了一个问题，到后面如果人气越来越旺盛的时候，我就可能找不到我那个评论，因为我也忘记是评论了哪篇文章。不知道这个可不可以修改，或者可以查询我的评论。"
+ },
+ {
+  "id": "425",
+  "parent": "424",
+  "date": "2014-09-10T14:12:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@forion：改成10个，看着不太美观，forion怎么看？"
+ },
+ {
+  "id": "426",
+  "parent": "425",
+  "date": "2014-09-10T14:14:56+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@wowo：有可以查询的吗？如果没有我感觉10个比我一篇一篇文章找我的评论要好一点。\r\n或者还有其他更好的方法吗？\r\n我找了一下，没有一个可以查询的方法，是不是应该注册的用户，开放一个查询权限？"
+ },
+ {
+  "id": "427",
+  "parent": "426",
+  "date": "2014-09-10T14:33:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@forion：等下班了我研究研究，晚上给您答复。多谢支持，呵呵～～～"
+ },
+ {
+  "id": "430",
+  "parent": "426",
+  "date": "2014-09-11T09:26:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@forion：forion兄，这个开源blog没提供类似评论查询的功能，先维持10个评论吧。后续我尝试添加一下这个功能，不过网络编程我不在行，不知道能搞定不。"
+ },
+ {
+  "id": "432",
+  "parent": "430",
+  "date": "2014-09-11T11:50:57+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@wowo：辛苦了，wowo哥。老是给你们提意见，不好意思啊。"
+ },
+ {
+  "id": "492",
+  "parent": "0",
+  "date": "2014-10-04T17:56:11+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "群主房子还没有装修完么？\r\n我有个问题，我在中断处理函数里面，能up一个信号量吗？"
+ },
+ {
+  "id": "493",
+  "parent": "492",
+  "date": "2014-10-05T10:58:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@forion：Linuxer估计除去潇洒去了啊，forion上班了啊？\r\n参考kernel的注释，我觉得应该是可以的（may be called from any context ）：\r\n/**\r\n * up - release the semaphore\r\n * @sem: the semaphore to release\r\n *\r\n * Release the semaphore.  Unlike mutexes, up() may be called from any\r\n * context and even by tasks which have never called down().\r\n */\r\nvoid up(struct semaphore *sem)"
+ },
+ {
+  "id": "494",
+  "parent": "493",
+  "date": "2014-10-05T14:01:33+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@wowo：是的，已经加班第五天了。\r\n哈哈，目测一个星期都要加班，联系上班14天的节奏"
+ },
+ {
+  "id": "495",
+  "parent": "494",
+  "date": "2014-10-05T15:25:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@forion：佩服啊！中国电子产业有forion这样的工程师，不愁不崛起。加油哈！"
+ },
+ {
+  "id": "496",
+  "parent": "495",
+  "date": "2014-10-05T16:17:03+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@wowo：@ @\r\n -\r\n主要是没钱，来赚加班费的，嘻嘻。"
+ },
+ {
+  "id": "497",
+  "parent": "492",
+  "date": "2014-10-05T23:28:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：^_^，还没有装修完，目前还在装修启动阶段。没有外出潇洒，那太奢侈了，大部分时间都是在看孩子，真不是什么好活，目前在崩溃中~~~~就盼着放假结束，我就可以解脱了\r\n\r\n你的问题应该是中断上下文（在引入中断线程化之后，中断处理函数也有可能是threaded handler）中是否可以调用up函数。其实，无论什么内核函数，只要把握一个原则就OK了（我的理解）：调用该函数不会导致当前进程被挂起就可以在中断上下文中调用。"
+ },
+ {
+  "id": "498",
+  "parent": "497",
+  "date": "2014-10-06T10:03:49+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：这个原则我知道，但是就是看up函数，没看懂到底会不会导致进程挂起"
+ },
+ {
+  "id": "499",
+  "parent": "497",
+  "date": "2014-10-06T10:32:53+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：哈哈，您的小孩正好4-5岁，是人心理渐渐形成的关键时期。多陪陪有好处的。之前看心理学的视频，都说6岁之前父母的陪伴是非常非常重要的。而且小孩要先养才能育。你要是现在不养他，等他大了就没法教育了。就不听你的话了。\r\n嘻嘻"
+ },
+ {
+  "id": "574",
+  "parent": "430",
+  "date": "2014-10-25T10:40:58+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@wowo：兄弟们，“评论列表”上线了，可猛戳右上角。"
+ },
+ {
+  "id": "619",
+  "parent": "0",
+  "date": "2014-11-04T22:21:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer, AMD出的ARM64开发板，不过太贵了，它是按开发套件卖，两三千美金啊。还是等以后有便宜的再玩好了。\r\nhttp://www.amd.com/en-us/press-releases/Pages/64-bit-developer-kit-2014jul30.aspx"
+ },
+ {
+  "id": "620",
+  "parent": "619",
+  "date": "2014-11-04T22:50:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：3000美金就是18000RMB，的确有点吃不消哦，看来还是要等等啊"
+ },
+ {
+  "id": "621",
+  "parent": "620",
+  "date": "2014-11-05T08:40:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：是啊，再等等。"
+ },
+ {
+  "id": "652",
+  "parent": "0",
+  "date": "2014-11-05T17:19:47+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "坛子里面人气越来越旺啊，提问的人也越来越多，wowo跟linuxer要忙不过来啦。\r\n幸福的烦恼～～"
+ },
+ {
+  "id": "653",
+  "parent": "652",
+  "date": "2014-11-05T17:25:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@forion：所以forion要多来帮忙啊~~~"
+ },
+ {
+  "id": "654",
+  "parent": "653",
+  "date": "2014-11-05T18:06:05+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@wowo：不误人子弟就好啊，帮忙不敢当。"
+ },
+ {
+  "id": "715",
+  "parent": "0",
+  "date": "2014-11-11T15:39:58+08:00",
+  "author": "非常响亮",
+  "site": "",
+  "text": "群主有没有弄一个技术交流群啊，有的话能否加小弟一个啊"
+ },
+ {
+  "id": "718",
+  "parent": "0",
+  "date": "2014-11-11T17:01:33+08:00",
+  "author": "741342765",
+  "site": "",
+  "text": "对于WARN_ON(1)这个用法，不知道是怎么用的，我随便在一个函数加了一句WARN_ON(1)，能从串口出来堆栈的信息，,假如通过这种方式跟踪一个模块，比如要跟踪一个外设的睡眠与唤醒流程，能不能做到只输出这一个外设的堆栈信息"
+ },
+ {
+  "id": "719",
+  "parent": "715",
+  "date": "2014-11-11T17:10:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@非常响亮：您是指QQ群吗？我一直觉得使用QQ讨论技术不够严肃，所以没有建，估计也不准备建。\r\n有什么问题我们在网站上讨论挺好的，这样可以记录下来，对其他人也有帮助。"
+ },
+ {
+  "id": "720",
+  "parent": "719",
+  "date": "2014-11-11T17:32:15+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：是的，qq群这种交流方式我感觉不适合技术交流。这个跟wowo网站的宗旨也不一样。慢下来享受技术。"
+ },
+ {
+  "id": "721",
+  "parent": "718",
+  "date": "2014-11-11T17:35:17+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@741342765：可以用dump_stack()"
+ },
+ {
+  "id": "722",
+  "parent": "721",
+  "date": "2014-11-11T18:42:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：我觉得这个问题可以拆解为三个问题：\r\n1. WARN_ON的用法\r\n2. 怎么debug跟踪一个外设的睡眠和唤醒流程\r\n3. 怎么跟踪一个模块\r\n第一个显然很清楚，就是打印当前的堆栈信息。\r\n那么后两个，我们可以考虑一个问题：真的要用堆栈信息去调试吗？\r\n例如调试睡眠/唤醒流程，可以使用kernel提供的pm_trace。而其它的debug，用printk不够吗？\r\n对于Debug来说，最重要的是思路，工具只是一个辅助手段。"
+ },
+ {
+  "id": "723",
+  "parent": "720",
+  "date": "2014-11-11T19:02:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：tigge说的很对，多谢理解~~~"
+ },
+ {
+  "id": "724",
+  "parent": "723",
+  "date": "2014-11-11T19:18:29+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：因为网站的浏览量越来越高，所以我的有些同事也会看到这个网站，为了我自己的隐私，我改成了这个名字。看我对网站这么的了解，你应该知道我是谁。"
+ },
+ {
+  "id": "725",
+  "parent": "724",
+  "date": "2014-11-11T19:28:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：哈哈，知道，怪不得好久不见^_^"
+ },
+ {
+  "id": "726",
+  "parent": "722",
+  "date": "2014-11-11T19:46:13+08:00",
+  "author": "741342765",
+  "site": "",
+  "text": "@wowo：我感觉得用WARN_ON这种方式跟踪总体代码的流程会比较方便，所以才会想试一下"
+ },
+ {
+  "id": "739",
+  "parent": "720",
+  "date": "2014-11-17T14:30:39+08:00",
+  "author": "非常响亮",
+  "site": "",
+  "text": "@tigger：由于没有消息提醒，一下子忘记了来看看楼主的回复，不好意思哈，但是这样确实不方便啊，讨论一个问题可能需要挺久才有回复，而且没消息提醒特别容易遗漏啊。。"
+ },
+ {
+  "id": "740",
+  "parent": "719",
+  "date": "2014-11-17T14:32:09+08:00",
+  "author": "非常响亮",
+  "site": "",
+  "text": "@wowo：前面不小心@错了。。"
+ },
+ {
+  "id": "744",
+  "parent": "739",
+  "date": "2014-11-17T18:53:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@非常响亮：确实，您说的也是实情，在博客上确实不适合讨论比较紧急的事，这种事儿，也许比较适合在面对面的会议上解决。\r\n我会考虑一下，争取让大家的讨论更顺畅，例如只要提供email，回复后就E-mail通知。\r\n谢谢您的建议~~"
+ },
+ {
+  "id": "747",
+  "parent": "744",
+  "date": "2014-11-18T10:42:47+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：这是个好建议，没有注册用户的时候留言提供了email，然后就有回复。\r\n但是注册了用户之后，没有email，所以也没有email提示。当然如果email提示能自由选择开关就更好了。"
+ },
+ {
+  "id": "748",
+  "parent": "747",
+  "date": "2014-11-18T12:20:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：其实这个功能一直有，不过为了方便，没有强制游客留言或用户注册提供E-mail。另外，由于服务器在国外，用sendmail发送邮件，及时性和可靠性都保证不了。\r\n再考虑一下，看看有没有比较好的方法。"
+ },
+ {
+  "id": "755",
+  "parent": "0",
+  "date": "2014-11-21T15:41:33+08:00",
+  "author": "ounie",
+  "site": "",
+  "text": "请教一个问题：\r\n内核打印如下：\r\n[  330.913897] Unhandled fault: external abort on non-linefetch (0x1028) at 0xfa1d0000\r\n这个是什么原因引起的呀？问题困扰我好多天了。\r\n多谢！"
+ },
+ {
+  "id": "756",
+  "parent": "755",
+  "date": "2014-11-21T21:07:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ounie：还请您提供问题的前因后果、场景、上下文等，不然这样一个突兀的问题，大家也不知道怎么回答啊"
+ },
+ {
+  "id": "757",
+  "parent": "756",
+  "date": "2014-11-23T08:11:07+08:00",
+  "author": "ounie",
+  "site": "",
+  "text": "@wowo：谢谢wowo的及时关注，问题后来解决了。我把大致情况说下吧：\r\n我在编写一个can控制器模块的内核驱动程序，内核版本是3.8.13。在驱动程序完成probe后，我在打开这个设备、想读写寄存器时，内核打印出上述错误提示。当然，oops信息很多，我只摘取了最关键部分。\r\n后来分析发现，是该模块的电源没有使能。于是调用了相关内核接口使能了设备的电源。之后，问题得到了解决。\r\n开始内核驱动开发才几个月，不过蜗窝科技的文章大多通俗易懂，我很喜欢:)"
+ },
+ {
+  "id": "759",
+  "parent": "757",
+  "date": "2014-11-23T11:21:39+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@ounie：解决了就好。过奖了，以后大家多交流，共同进步，(^_^)"
+ },
+ {
+  "id": "760",
+  "parent": "0",
+  "date": "2014-11-25T23:05:57+08:00",
+  "author": "sky",
+  "site": "",
+  "text": "大神有没有kernel中关于dma框架的书籍啊，如何在dma框架下写驱动，求推荐，谢谢了"
+ },
+ {
+  "id": "762",
+  "parent": "760",
+  "date": "2014-11-26T09:03:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@sky：抱歉，wowotech上还没有dma相关的文章，我们会尽快添加。至于书籍，我是没有看到过比较新的、比较系统的分析这一块的书。一般都是直接看kernel中的代码，都是很好的例子。"
+ },
+ {
+  "id": "765",
+  "parent": "0",
+  "date": "2014-11-26T10:56:43+08:00",
+  "author": "~零~",
+  "site": "",
+  "text": "请教一个问题，我想跟一下suspend跟resume，但是console被先睡眠了，LOG打不出来，在uboot中传no_console_supend参数也没有用，不知道还有没有什么方法能打出LOG。"
+ },
+ {
+  "id": "766",
+  "parent": "765",
+  "date": "2014-11-26T11:28:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@~零~：不知道您用的哪个版本的kernel？以我现在使用的3.10版本的，默认状态，console suspend是没有enable的的，如下：\r\nbool console_suspend_enabled = 0;\r\nEXPORT_SYMBOL(console_suspend_enabled);\r\n \r\nstatic int __init console_suspend_disable(char *str)\r\n{               \r\n        console_suspend_enabled = 0;\r\n        return 1;\r\n}\r\n__setup(\"no_console_suspend\", console_suspend_disable);\r\n您可以先确认一下console是否真的suspended了（查看suspend_console中的打印）。\r\n还是你的console设备先suspend了，导致后续的打印无法输出。"
+ },
+ {
+  "id": "770",
+  "parent": "0",
+  "date": "2014-11-29T11:18:53+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer前几天发的文章怎么不见了呢"
+ },
+ {
+  "id": "771",
+  "parent": "770",
+  "date": "2014-11-29T14:47:36+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：我们的网站挂在一个国外的免费空间上，前两天服务器崩溃了，目前是用Wowo最新的一个备份恢复了这个网站。那篇文章我有备份，改天再发上来吧"
+ },
+ {
+  "id": "772",
+  "parent": "766",
+  "date": "2014-11-29T15:08:22+08:00",
+  "author": "~零~",
+  "site": "",
+  "text": "@wowo：这两天一直登不上来，printk.c  console_suspend_enabled改成0已经好了，uboot中参数没有传好，感谢博主。"
+ },
+ {
+  "id": "773",
+  "parent": "772",
+  "date": "2014-11-29T16:56:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@~零~：不用客气。这两天数据库崩溃了。"
+ },
+ {
+  "id": "791",
+  "parent": "0",
+  "date": "2014-12-02T20:22:01+08:00",
+  "author": "非常响亮",
+  "site": "",
+  "text": "最近一直在努力理解内存映射的具体实现，但是始终没能实现用vma->ops中的缺页回调函数来返回对应的页，ldd中讲了老版本中对应的函数 nopage()的实现方法，但是新的内核已经换成了 fault()函数，我试着用老版本的方法写新函数，可是行不通，网上对这种实现方法描述的不多。 还请大神们指点指点。 要是能贴个fault()函数的实现代码就再好不过勒   ~（）~"
+ },
+ {
+  "id": "792",
+  "parent": "791",
+  "date": "2014-12-03T08:52:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@非常响亮：目前已经进行分析的子系统太多了，如果再加上一个内存管理子系统我们实在搞不过来，不过这两天不是很忙，有空看看fault这个函数还是可以的"
+ },
+ {
+  "id": "796",
+  "parent": "791",
+  "date": "2014-12-03T12:33:52+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@非常响亮：你的LDD是第二版吧，nopage实在是太老了，建议你还是看LDD3吧，虽然LDD3也比较老了，据说LDD4明年就要出新版了"
+ },
+ {
+  "id": "808",
+  "parent": "796",
+  "date": "2014-12-04T19:26:52+08:00",
+  "author": "非常响亮",
+  "site": "",
+  "text": "@linuxer：好的，我看的是ldd3,里面讲的东西确实有的都不用了，有点老，期待ldd4"
+ },
+ {
+  "id": "842",
+  "parent": "0",
+  "date": "2014-12-05T22:51:24+08:00",
+  "author": "绿色风",
+  "site": "http://JianYiIT.com",
+  "text": "回访啦，你这技术型的也好好的"
+ },
+ {
+  "id": "1015",
+  "parent": "0",
+  "date": "2015-01-06T13:37:09+08:00",
+  "author": "xiaov",
+  "site": "",
+  "text": "求友链www.xiaovdiy.cn"
+ },
+ {
+  "id": "1021",
+  "parent": "1015",
+  "date": "2015-01-06T23:22:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xiaov：已添加。"
+ },
+ {
+  "id": "1022",
+  "parent": "1021",
+  "date": "2015-01-07T11:10:03+08:00",
+  "author": "xiaov",
+  "site": "",
+  "text": "@wowo：已添加，谢谢"
+ },
+ {
+  "id": "1030",
+  "parent": "0",
+  "date": "2015-01-08T09:04:02+08:00",
+  "author": "米粒秀",
+  "site": "http://www.milixiu.com",
+  "text": "求友链，已添加贵站链接。\r\n米粒秀\r\nhttp://www.milixiu.com"
+ },
+ {
+  "id": "1040",
+  "parent": "1030",
+  "date": "2015-01-08T22:04:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@米粒秀：已添加。"
+ },
+ {
+  "id": "1203",
+  "parent": "0",
+  "date": "2015-02-11T18:31:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "提前祝大家新年快乐！在新的一年里，事业顺利，心想事成！\r\n感谢这一年来大家的陪伴！你们的存在，就是蜗窝最大的动力！"
+ },
+ {
+  "id": "1215",
+  "parent": "0",
+  "date": "2015-02-25T00:26:14+08:00",
+  "author": "孤寂的侵凌",
+  "site": "",
+  "text": "WOWO现在哪里工作啊？貌似是大神中的大神啊……小菜鸟求WO大神指引方向！！！"
+ },
+ {
+  "id": "1220",
+  "parent": "1215",
+  "date": "2015-02-25T19:07:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@孤寂的侵凌：呵呵，这个世上没有大神和菜鸟的区别，有的只是工作时间的长短。\r\n认真做好现在的每一件事情，然后有那么一天，蓦然回首时，你已经是当初羡慕的那个人了。"
+ },
+ {
+  "id": "1250",
+  "parent": "0",
+  "date": "2015-03-01T17:35:01+08:00",
+  "author": "车干",
+  "site": "",
+  "text": "版主，那啥，啥时候把资料整理下出书？都很经典，看的好累，我想要书"
+ },
+ {
+  "id": "1253",
+  "parent": "1250",
+  "date": "2015-03-01T21:29:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@车干：多谢鼓励，但是我们还是觉得内容太少，还没办法出书，不然就是误人子弟了。抱歉:-("
+ },
+ {
+  "id": "1254",
+  "parent": "1253",
+  "date": "2015-03-02T09:39:27+08:00",
+  "author": "车干",
+  "site": "",
+  "text": "@wowo：谦虚了，网站上虽只看了一部分，但叶落知秋，感觉其他内容不会太差，希望吧，希望尽快出书吧，哪怕书薄点，不要紧，先第一版，现在linux好东西不多，这里很不错，毕竟看书注意力集中，效率高。"
+ },
+ {
+  "id": "1255",
+  "parent": "1254",
+  "date": "2015-03-02T09:49:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@车干：看书容易集中注意力，我非常认同。我们会努力的，争取不辜负大家的心意。"
+ },
+ {
+  "id": "1256",
+  "parent": "1254",
+  "date": "2015-03-02T10:36:47+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@车干：把喜欢的文章打印出来看啊。我就是这样做的。"
+ },
+ {
+  "id": "1277",
+  "parent": "0",
+  "date": "2015-03-04T12:59:36+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "我们的评论列表里面的内容，好像没法被搜索。\r\n这个有方法解决吗？比如很多在评论里面讨论的东西，只能返回去一篇篇的找，不能关键字检索"
+ },
+ {
+  "id": "1278",
+  "parent": "1277",
+  "date": "2015-03-04T13:07:58+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@tigger：应该可以，可以借助百度搜索。等晚上我试试。"
+ },
+ {
+  "id": "1360",
+  "parent": "0",
+  "date": "2015-03-20T13:42:04+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "老大这一周很忙啊，没有作品出来～～～"
+ },
+ {
+  "id": "1365",
+  "parent": "1360",
+  "date": "2015-03-21T23:14:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：最近的确很忙，不过更多的是因为在思考人生：到底是苟延残喘还是纵情燃烧......《追梦赤子心》是一首好歌曲，强力推荐......."
+ },
+ {
+  "id": "1367",
+  "parent": "1365",
+  "date": "2015-03-22T00:06:59+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：这是要换工作的节奏啊......"
+ },
+ {
+  "id": "1442",
+  "parent": "0",
+  "date": "2015-03-30T16:35:59+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "老大 下一个专题会是什么呢？\r\ntimer/interrupt之后"
+ },
+ {
+  "id": "1443",
+  "parent": "1442",
+  "date": "2015-03-30T18:12:36+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：不知道wowo同学搞完电源管理搞什么，我准备写一些和进程相关的文档吧"
+ },
+ {
+  "id": "1444",
+  "parent": "1443",
+  "date": "2015-03-30T18:39:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：电源管理完不了啊，还遥遥无期呢~\r\n不过我最近对CPU的拓扑结构比较感兴趣，比如multi-core、logical core、multi-thread、hyper-thread等等，这些和系统boot、cpufreq、进程管理等等都有关系。尤其和进程管理有关啊~你要不要考虑一下？哈哈~~"
+ },
+ {
+  "id": "1445",
+  "parent": "1444",
+  "date": "2015-03-30T18:52:58+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：电源管理是遥遥无期，我现在手头暂时不涉及这块内容，所以暂时没有时间看呢，代码没看过，光看文档没啥体会的。\r\n而且也没时间，或者说没勇气写啊。现在了解的太浅显了，写出来误人子弟呢。还是好好的学习^_^"
+ },
+ {
+  "id": "1446",
+  "parent": "1445",
+  "date": "2015-03-30T19:02:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：电源管理我会继续的，就是问问你对cpu topology是否有了解，有的话给大家讲一下啊，呵呵~~"
+ },
+ {
+  "id": "1448",
+  "parent": "1446",
+  "date": "2015-03-31T16:11:05+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：没有了解呢。现在我感觉我了解的都不深入，没有东西可以写呢。\r\n技术不是我的强项，我的强项是扯淡。改天发个扯淡的帖子，哈哈。"
+ },
+ {
+  "id": "1480",
+  "parent": "0",
+  "date": "2015-04-07T15:11:55+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "老大，我最近在考虑一个比较难搞的问题。想请教一下。\r\n我怎么样才能看到cache里面的东西呢。我现在有仿真器比如trace32等等，在某种情况下，我想把cache里面的东西搞出来，然后看一下实际上arm是跑的什么代码。但是我对cache里面数据的格式，或者怎么对应memory里面的代码，暂时没有很好的想法。\r\n现在还在构思阶段，没有实际动手操作。"
+ },
+ {
+  "id": "1481",
+  "parent": "1480",
+  "date": "2015-04-07T19:07:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：这个听起来很高端啊！我也没有搞过。让我现在立刻考虑的话我有两个方向：\r\n1、enable cache之后很难直接访问它，cache中的内容对软件是透明的，软件只能是lock住某些cacheline，或者flush某些cache line等等类似操作。也许可以在disable cache之后，通过普通访问ram的方式进行，这时候，那些cache的地址会 mapping 到cpu的某段地址上\r\n2、看看有没有什么特殊的寄存器可以dump出cache的内容"
+ },
+ {
+  "id": "1538",
+  "parent": "0",
+  "date": "2015-04-20T22:46:44+08:00",
+  "author": "akashequ",
+  "site": "",
+  "text": "强烈建议加入内存管理部分啊"
+ },
+ {
+  "id": "1554",
+  "parent": "0",
+  "date": "2015-04-22T15:58:12+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "马上单位就要开搞Yocoto了(3.10.17) 啥时候普及一下device tree 啊，我大platform平台要淘汰了。"
+ },
+ {
+  "id": "1557",
+  "parent": "1554",
+  "date": "2015-04-22T18:38:06+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@printk：Linuxer有写过三篇device tree的大作啊，您可以在站内找找。"
+ },
+ {
+  "id": "1591",
+  "parent": "0",
+  "date": "2015-04-24T17:46:51+08:00",
+  "author": "飞来走去",
+  "site": "",
+  "text": "你好，我在移植max17049的时候遇到了几个问题，一个是充满电的时候，读出来寄存器的值是90%，没有电的时候显示是0%，即充电越满，误差越大。\r\n后来我让他们给我的电池重新建模得到model data，但是给了我的数据是128个字节，可给我的文档显示只需要64个字节，可以参考一下你们的代码吗~"
+ },
+ {
+  "id": "1592",
+  "parent": "1591",
+  "date": "2015-04-24T17:48:23+08:00",
+  "author": "飞来走去",
+  "site": "",
+  "text": "@飞来走去：whut_fn@qq.com  ~_~真的非常感谢啊"
+ },
+ {
+  "id": "1694",
+  "parent": "0",
+  "date": "2015-05-04T16:11:31+08:00",
+  "author": "Doctor",
+  "site": "",
+  "text": "一直都在看您的博文，想请教一个问题，一个混杂设备使用UART传输数据，我需要板级文件添加什么？如何向内核指明使用的是哪个UART口？"
+ },
+ {
+  "id": "1846",
+  "parent": "0",
+  "date": "2015-05-21T21:13:37+08:00",
+  "author": "qiyue",
+  "site": "http://www.qi-yue.net",
+  "text": "贵站申请dmoz全球网站目录（www.dmzo.org），由于站点有部分错误；请联系编辑qiyue处理；QQ：289204338 Email：admin@qi-yue.net"
+ },
+ {
+  "id": "1936",
+  "parent": "0",
+  "date": "2015-06-03T21:09:33+08:00",
+  "author": "ZZ",
+  "site": "",
+  "text": "@wowo and linuxer \r\n请教一个问题，怎么保存内核 coredump（gdb专用core-file）,\r\n大致思路，系统发生panic的时候，调用panic函数的同时，能否把 从coredump保存下来；供后面用gdb + vmlinux+ core-file 来恢复死机现场，调试panic debug"
+ },
+ {
+  "id": "1937",
+  "parent": "1936",
+  "date": "2015-06-03T23:11:10+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@ZZ：可以在不断电的情况下重启，在uboot中把ddr内容保存到电脑上，最后用crash解析。去网上搜搜crash会有很多资料的。"
+ },
+ {
+  "id": "1944",
+  "parent": "1937",
+  "date": "2015-06-04T22:10:01+08:00",
+  "author": "ZZ",
+  "site": "",
+  "text": "@bear20081015：crash解析不出 core-file的"
+ },
+ {
+  "id": "1945",
+  "parent": "1944",
+  "date": "2015-06-05T09:03:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ZZ：kernel有专门的工具----kdump，用起来有点繁琐，你可以试试：\r\nhttps://www.kernel.org/doc/Documentation/kdump/kdump.txt\r\n如果成功了，可以发篇文章上来给大家分享一下。"
+ },
+ {
+  "id": "1946",
+  "parent": "1945",
+  "date": "2015-06-05T22:18:27+08:00",
+  "author": "ZZ",
+  "site": "",
+  "text": "@wowo：@wowo thanks ，I will try"
+ },
+ {
+  "id": "1947",
+  "parent": "0",
+  "date": "2015-06-06T11:24:36+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "好久不见啊，最近忙的不可开交，都没有时间充电了。"
+ },
+ {
+  "id": "1948",
+  "parent": "1947",
+  "date": "2015-06-08T09:53:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：是啊，好久不见，都挺忙的，文章更新也比较缓慢了，呵呵。"
+ },
+ {
+  "id": "1980",
+  "parent": "1947",
+  "date": "2015-06-11T00:19:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：我也是，最近比较忙，家里和公司都忙，已经很久没有写文章了。不过没有关系，咱们的宗旨不是慢下来享受科技嘛"
+ },
+ {
+  "id": "2061",
+  "parent": "0",
+  "date": "2015-06-26T17:07:13+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "留言又被广告刷屏了"
+ },
+ {
+  "id": "2070",
+  "parent": "2061",
+  "date": "2015-06-26T17:19:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：这家伙太执着了，不得不把IP给他封了……"
+ },
+ {
+  "id": "2071",
+  "parent": "2070",
+  "date": "2015-06-26T18:08:46+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：都是为了生活，都不容易～～～哈哈"
+ },
+ {
+  "id": "2072",
+  "parent": "2071",
+  "date": "2015-06-26T21:16:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：tiger所言极是啊，听这话就知道兄弟也是性情中人啊，哈哈"
+ },
+ {
+  "id": "2143",
+  "parent": "0",
+  "date": "2015-07-06T16:09:21+08:00",
+  "author": "Robert",
+  "site": "",
+  "text": "你好，请问贵站啥时出mmc驱动的内容呢？"
+ },
+ {
+  "id": "2144",
+  "parent": "2143",
+  "date": "2015-07-06T20:04:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Robert：抱歉，由于业余时间太少了，MMC尚不在计划中。"
+ },
+ {
+  "id": "2145",
+  "parent": "2144",
+  "date": "2015-07-07T09:53:54+08:00",
+  "author": "Robert",
+  "site": "",
+  "text": "@wowo：了解，大神能问个问题吗？ 就是要是mmc驱动提供的接口是直接被文件系统调用的吗？ 谢谢"
+ },
+ {
+  "id": "2147",
+  "parent": "2145",
+  "date": "2015-07-07T10:46:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Robert：对mmc驱动而言，只需要实现一个MMC host（struct mmc_host），并提供相应的ops（struct mmc_host_ops）即可。后续的操作逻辑，都由mmc core负责，大概包括：\r\n启动一个用于detect的work，检测MMC card的插入（由mmc_rescan完成，会调用host->bus_ops->detect接口）；\r\n调用mmc_rescan_try_freq，根据卡的类型，使用不同的速率，扫描ｍｍc卡；\r\n以MMC卡为例，会调用mmc_attach_mmc，最终会调用mmc_add_card添加一个card（struct mmc_card）；\r\ncard driver在系统初始化的时候，已经注册了一个mmc driver（struct mmc_driver），每当有新的card加入时，会调用mmc_blk_probe接口，进而创建一个block device；\r\nblock device之上，就是文件系统。\r\n\r\n因此，回答您的问题：狭义的mmc driver（指的是mmc host driver），是由mmc core调用；广义的mmc driver（一些wifi卡除外），由block device调用。\r\n希望能给您提供一点帮助。"
+ },
+ {
+  "id": "2149",
+  "parent": "0",
+  "date": "2015-07-07T11:29:58+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@窝蜗，请问arm iommu具体作用是什么？现在kenel报了个错误，iommu的PTE PA = 0，现在不太明白iommu是做什么的。"
+ },
+ {
+  "id": "2150",
+  "parent": "0",
+  "date": "2015-07-07T11:48:37+08:00",
+  "author": "paul_chen",
+  "site": "",
+  "text": "@wowo and linuxer\r\n大神们,什么时候分析下alsa系统，期待！"
+ },
+ {
+  "id": "2151",
+  "parent": "2149",
+  "date": "2015-07-07T12:25:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：以前的时候，能够主动访问memory的，只有CPU、DMA等少数器件，因此MMU大多是把CPU看到的虚拟地址转换为实际的物理地址。\r\n而现在，为了减轻CPU的压力，很多外设，也具备访问memory的能力，如GPU、codec等等。正常情况下，这些外设看到的是物理地址，因此直接使用物理地址操作memory。\r\n使用物理地址的一个缺点是，地址必须是连续的，如果memory的需求较大（如显示相关的器件），则对内存管理形成了压力。因而很多外设本身也支持MMU功能，这时，外设看到的是连续的IO虚拟地址，经过MMU转换为不连续的物理地址。\r\n因此，位于外设中的MMU模块，就称作IOMMU。\r\n现在IOMMU应用比较多的地方，是GPU，另外一些显示控制器、视频codec等，也有。"
+ },
+ {
+  "id": "2152",
+  "parent": "2150",
+  "date": "2015-07-07T12:28:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@paul_chen：ALSA框架，我们在公司的时候，写过一些分析文档，要整理出来的话也不难，只是时间不是很多。不知道paul同学有没有兴趣帮忙整理一下？我可以把那些文档给你分享一下（有一两百页呢）。"
+ },
+ {
+  "id": "2153",
+  "parent": "2152",
+  "date": "2015-07-07T14:15:38+08:00",
+  "author": "paul_chen",
+  "site": "",
+  "text": "@wowo：@wowo\r\n很有兴趣，工作需要，正在学习alsa，如果大神能够分享，边整理边提升，真是太好了。可以发到我的邮箱chengong924@163.com"
+ },
+ {
+  "id": "2154",
+  "parent": "2147",
+  "date": "2015-07-07T14:15:50+08:00",
+  "author": "Rebort",
+  "site": "",
+  "text": "@wowo：非常感谢，是不是block.c是给上层提供接口？ 最近的任务是优化emmc驱动，求大神指点一个方向，谢谢"
+ },
+ {
+  "id": "2155",
+  "parent": "2151",
+  "date": "2015-07-07T15:05:18+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：那这样在IOMMU中也要建立映射页表吗？那进行iommu_map时候要得到page对应的物理地址，然后进行映射是吗？"
+ },
+ {
+  "id": "2156",
+  "parent": "2155",
+  "date": "2015-07-07T15:16:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：是的。一般的原理是这样的：\r\n1. 该设备的driver建立一个页表，并把页表的基地址告诉设备。页表的索引，就是对这个设备而言的“虚拟地址”，可以称作Device Address（DA）。\r\n2. 应用需要给该设备发送数据时，送给该设备的driver一个虚拟地址(VA)。\r\n3. driver通过VA获取物理地址（PA）列表，并保存在设备的页表中，同时获取DA，交给设备。\r\n4. 设备根据DA，获取对应的PA，进而操作memory数据。\r\n\r\n当然，实际可能比较复杂，如页表的换入换出算法等，所以可能抽象出了一个IOMMU框架。"
+ },
+ {
+  "id": "2157",
+  "parent": "2154",
+  "date": "2015-07-07T15:22:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Rebort：是的。不过抱歉，优化是一个比较细致的事情，我也指点不了什么。"
+ },
+ {
+  "id": "2165",
+  "parent": "0",
+  "date": "2015-07-07T20:27:36+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "wowo 同学的8核cpu方案，大核小核使用的是同一个PIMC吗？"
+ },
+ {
+  "id": "2167",
+  "parent": "2165",
+  "date": "2015-07-08T09:05:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：我没有做过8核的方案。不过有研究过竞争对手的方案，确实用两个PMIC，因为功耗太大了。\r\n另外，8核的方案有时候挺尴尬的，开小核吧性能不够，开大核吧，功耗太大。最后客户不得不放弃。ARM的初衷挺好，不过需要好的规划、定位和设计。"
+ },
+ {
+  "id": "2173",
+  "parent": "2157",
+  "date": "2015-07-08T10:04:48+08:00",
+  "author": "Rebort",
+  "site": "",
+  "text": "@wowo：了解，谢谢大神的帮助"
+ },
+ {
+  "id": "2195",
+  "parent": "0",
+  "date": "2015-07-13T11:04:48+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "请教各位：\r\n\r\n我现在用的一个soc有个RTC，它的中断类型是level的，当它产生中断之后，我在中断下半部去写rtc的一个寄存器去clear这个level-triggered irq，但是由于bus和时钟同步的原因，这个写的动作比较慢，所以当我从下半部的irq handler里面返回的时候并不能保证rtc到gic的中断信号已经清除了，所以有可能会造成level irq的中断仍然没有被清除，这样系统就有可能会不停进入这个level irq。 请问这种情况下有什么好办法吗？ 我看到pxa的平台在处理mmc插拔的时候使用了如下方法：\r\n1. 中断产生\r\n2. disable_irq，\r\n3. 启动一个timer，设置一个经验值作为到期时间，比如1s\r\n4. 退出中断处理函数，本次中断处理完成，但是这个mmc irq处于disable状态。\r\n5, timer到期之后，在timer handler里面polling mmc的一个寄存器，确定irq状态清除之后，enable_irq\r\n\r\n这种方式消耗cpu是最少的，但是我很难找到其它平台使用类似的代码，因此我想是不是还有更好的解决方式？"
+ },
+ {
+  "id": "2196",
+  "parent": "0",
+  "date": "2015-07-13T16:15:30+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "请教一个RTC设计的问题：\r\n     假设一款SOC里面没有外接的RTC，只有内部的RTC，这个内部的RTC是用timer和counter来模拟的，并不是一个真正的可以设置年月日的RTC。\r\n     SOC内部的RTC放在always on的domain里面，系统suspend的时候继续运行。\r\n     假设现在android的闹钟设置了一个5分钟之后的唤醒时间，然后全系统进入suspend，那么等闹钟时间到了，假设这个RTC有能力让系统的PMU先收到通知，然后PMU有能力唤醒AP，通常情况下AP core的resume过程是先走一遍ROM code，然后再运行kernel 的resume 过程。kernel resume的时候会把GIC 中断控制器恢复，当GIC 恢复的时候，请问RTC的中断会瞬间被触发从而调用到它的中断处理函数吗？ 假设RTC的irq pin是level-triggered并且在系统resume的过程中irq pin一直处于active状态。\r\n     1. 假设RTC的中断处理函数在系统resume的过程中不会被触发，那么很显然系统需要在RTC driver自己的resume函数里面想办法通知RTC framework: RTC到期的事件已经发生了。比如说在RTC driver的resume函数里面呼叫rtc_update_irq() ? kernel里面很难看到类似的实现。。。\r\n     2. 假设RTC的中断处理函数在系统resume的过程中被触发，那么看上去一切和系统不睡眠的时候处理RTC事件是一样的，在中断处理函数中呼叫rtc_update_irq()把事件上报给RTC framework层。"
+ },
+ {
+  "id": "2199",
+  "parent": "2195",
+  "date": "2015-07-14T08:47:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：为何在bottom half中去清中断呢？那个操作RTC寄存器的动作真的很慢吗？"
+ },
+ {
+  "id": "2200",
+  "parent": "2199",
+  "date": "2015-07-14T08:51:02+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：可以在上半部清中断，不过RTC模块要等几万个cycle之后才会真正把连到GIC的那个irq信号变成inactive"
+ },
+ {
+  "id": "2201",
+  "parent": "2196",
+  "date": "2015-07-14T09:32:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：我先说一下我的看法，稍后再去查证。\r\n当系统进入suspend状态的时候，为了节省GIC的大部分功能都是disable的，因为大部分的中断都不需要响应了，需要响应的的一般只剩下RTC、或者一两个GPIO的中断（多半是和power key以及charger相关），对于gic而言，其内部也可以分成中断检测HW block和wakeup功能HW block，在suspend的时候，中断检测相关的HW block被disable了，而保留了wakeup功能HW block以便检测到唤醒事件，从而wakup processor。\r\n对于RTC hw block而言，一旦到期会立刻触发level电平通知GIC（应该是SPI类型的），在suspend状态的时候，不会导致GIC向processor报告中断事件，但是可以唤醒processor，当cpu执行resume的过程中，恢复了GIC的中断检测HW block的功能之后，GIC立刻可以检测到RTC的电平事件（没有clear interrupt，这个level 电平可以保持住），从而触发一个中断。"
+ },
+ {
+  "id": "2202",
+  "parent": "2200",
+  "date": "2015-07-14T09:33:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：这个RTC HW block不是SOC上的吗？为何如此之慢？硬件拓扑是怎样的？RTC和Processor是通过什么bus连接的？"
+ },
+ {
+  "id": "2203",
+  "parent": "2202",
+  "date": "2015-07-14T10:03:03+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：是SOC上的RTC，不过芯片设计人员给出了这样子的解释，由于CPU和RTC模块的clock差太多，CPU在1ghz，RTC在32KHz，所以RTC在收到寄存器写入之后需要很久(相对于cpu的cycle来说很久，相对于rtc自己的cycle来说其实不久)才能拉irq pin。"
+ },
+ {
+  "id": "2204",
+  "parent": "2201",
+  "date": "2015-07-14T10:14:35+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：我之前接触的soc里面，GIC在system suspend的时候会掉电，suspend之后会用系统的一个独立的PMU来接管唤醒的中断源。假设RTC可以触发MPU，MPU再唤醒AP，然后AP经过了ROM code之后回到了resume的流程，那么在resume的早期中有一步是去重新初始化GIC的，RTC的中断理论上来说在这一步会被恢复，于是应该会在之后的某一个时间点被触发。\r\n    不过我有另外一个问题，是对android的alarm system的： 假设RTC的irq没有连接到GIC，但是连接到了PMU，那么当RTC里面设置的闹钟时间到了之后，系统是可以从suspend状态被唤醒的，AP也可以走进resume的过程，只是RTC的irq在AP也就是kernel这边不存在，那么这种情况下android的闹钟应用是否还能正常判断出来自己设置的闹钟到期了？"
+ },
+ {
+  "id": "2205",
+  "parent": "2203",
+  "date": "2015-07-14T12:37:28+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：对level类型的中断而言，基本上在interrupt handler（top half）中需要完成clear interrupt的动作，否则，在执行完成interrupt handler之后会unmask该irq（参考handle_level_irq函数），如果没能清中断，那么中断会立刻再次进入的。\r\n\r\n如果外设和CPU是通过慢速总线连接，那么这个clear interrupt的动作的确会比较慢，例如通过I2C接口访问寄存器来清除外设的中断。针对这种情况，基本上linux kernel中可以使用threaded interrupt handler，并且将flag设定为oneshot。当然，你这个场景的总线其实并不慢，慢的是外设的clock。不过，你说的场景有点怪，我倒是置疑硬件的设计。本质上，软件写寄存器来clear rtc interrupt，那么其irq signal应该立刻deasserted，也就是说寄存器和irq signal应该是同步的，否则，难道硬件人员还需要提供一个状态寄存器来说明rtc irq signal的状态？这太奇怪了。另外，对于RTC hw block，其包括两个clock domain，一个慢速的、驱动RTC自身功能运作的那个32768 clock，另外一个clock domain是来自和CPU 连接的bus上的clock，我认为清除硬件的中断信号这个HW功能不应该位于slow clock上。可能硬件设计有困难吧，anyway，你说的这种情况，除了在rtc interrupt handler中disable该irq，我还真是想不出其他方法了。"
+ },
+ {
+  "id": "2206",
+  "parent": "2204",
+  "date": "2015-07-14T12:55:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：如果RTC的irq没有连接到GIC，那么cpu是无法感知中断的，那么我相信闹钟应用应该无法正常工作了。"
+ },
+ {
+  "id": "2207",
+  "parent": "2205",
+  "date": "2015-07-14T13:50:54+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：非常感谢你的耐心回答，我也认为irq clear寄存器写入和irq signal应该是完全同步的，让我和硬件设计人员再沟通一下 ：）"
+ },
+ {
+  "id": "2208",
+  "parent": "2206",
+  "date": "2015-07-14T13:58:46+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：我正在啃alarmtimer等源码，希望看了后会有更深入的理解。\r\n\r\n不知道会不会有这样一种可能？ android的alarm framework在每次系统唤醒的时候，不停查询之前设置的timer有没有到期，虽然RTC没有把中断连接到AP，到那时RTC的读写功能是正常的，并且kernel这边维护的RTC相关的timer也是正常的，所以android还是有机会知道闹钟触发了？ 对上层的代码没有研究，不知道这样子是否合理。"
+ },
+ {
+  "id": "2210",
+  "parent": "2208",
+  "date": "2015-07-14T17:32:42+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：啃完alarmtimer的源码之后别忘了写一些心得发表出来哦，^_^"
+ },
+ {
+  "id": "2217",
+  "parent": "2210",
+  "date": "2015-07-15T11:34:21+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：好的，争取"
+ },
+ {
+  "id": "2248",
+  "parent": "0",
+  "date": "2015-07-20T15:19:12+08:00",
+  "author": "coldcl@163.com",
+  "site": "",
+  "text": "博主，想请问一个关于armv8架构启动的问题，之前的v7，大概就是硬件会到一个给定的地址去load uboot，然后call kernel，但是像mtk，它有一个自己的preloader，lk（也就是bootloader），在启动之后，它先调用preloader，然后调用WFI进入standby，根据前面你的WFI的分析，后面应该是硬件去唤醒而进入到lk，这里有什么资料详细介绍是怎么触发WFI状态进入lk的吗，谢谢！！！"
+ },
+ {
+  "id": "2249",
+  "parent": "2248",
+  "date": "2015-07-20T16:31:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@coldcl@163.com：CPU起来之后会调用wfi进入standby？boot CPU应该没有这个行为吧，除非您这里讲的是secondary CPU。\r\n如果是secondary CPU就好办了，boot CPU可以发一个软中断唤醒它们。"
+ },
+ {
+  "id": "2254",
+  "parent": "0",
+  "date": "2015-07-20T20:16:15+08:00",
+  "author": "coldcl@163.com",
+  "site": "",
+  "text": "根据mtk的介绍，前面那个preloader应该是他们有自己的相关芯片的一些初始化，然后才等待启动bootloader，所以我才觉得纳闷，看博主有没有碰到类似的情形"
+ },
+ {
+  "id": "2255",
+  "parent": "2254",
+  "date": "2015-07-20T20:21:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@coldcl@163.com：我不太了解这种情况，不知道是不是有其它大侠知道这种事情，和大家分享一下？"
+ },
+ {
+  "id": "2258",
+  "parent": "2254",
+  "date": "2015-07-21T10:19:12+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@coldcl@163.com：preloader是芯片公司自己写的一个初始化流程而已。会初始化emmc，dram等。会把lk的执行bin     copy到dram中，然后直接跳转过去就执行lk的代码了。不会涉及到WFI的。"
+ },
+ {
+  "id": "2260",
+  "parent": "2258",
+  "date": "2015-07-21T11:27:36+08:00",
+  "author": "coldcl@163.com",
+  "site": "",
+  "text": "@shoujixiaodao：就是在preloader的时候，会进入到WFI这里，然后等待lk的唤醒...到WFI的时候是一个循环，没有跳出去"
+ },
+ {
+  "id": "2267",
+  "parent": "2255",
+  "date": "2015-07-21T15:24:35+08:00",
+  "author": "coldcl@163.com",
+  "site": "",
+  "text": "@wowo：不好意思额，这里不是分享么...在这里发就是希望大家都能看到，看有没有类似的"
+ },
+ {
+  "id": "2268",
+  "parent": "2260",
+  "date": "2015-07-21T15:50:03+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@coldcl@163.com：唤醒wfi一般是中断事件，lk仅仅是个执行bin，它怎么会唤醒wfi？"
+ },
+ {
+  "id": "2272",
+  "parent": "0",
+  "date": "2015-07-21T17:46:21+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "wowo，现在遇到一个问题，查看源码，最晚从2.6.25内核开始，内核中的sys_msgget，sys_msgsnd，sys_msgrcv，sys_msgctl几个函数的原型都找不到了，都只能在linux/syscalls.h头文件中看到声明，但是找不到函数源码？这是什么逻辑呢？而且好多地方还调用了这个函数，这是什么机制变了还是怎么啦？希望过来人明示。需要在内核态中使用消息队列，不知道有没有更好的建议。"
+ },
+ {
+  "id": "2273",
+  "parent": "2272",
+  "date": "2015-07-21T17:48:32+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@Daniel Shieh：是2.6.25内核之后，至少2.6.30内核开始就找不到这些函数的源码了，这是怎么了？网上搜了很多，找不到答案啊。"
+ },
+ {
+  "id": "2275",
+  "parent": "2272",
+  "date": "2015-07-21T19:22:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：都还在啊，在ipc目录下msg.c文件中，只不过用SYSCALL_DEFINEx包装起来了。"
+ },
+ {
+  "id": "2283",
+  "parent": "2275",
+  "date": "2015-07-22T10:00:19+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@linuxer：谢谢linuxer指点。用软件的确跳转不到，后来我自己找源码目录看的时候，也看到ipc目录下边了，有util.c和msg.c，内容大致看了下，的确是通过宏的方式了。不过我编译的内核模块，编译ok，但是在加载的时候会报错，unknown symbol in the module，查看log，就是上面说的三个函数：\r\nunknown symbol sys_msgget\r\nunknown symbol sys_msgsnd\r\nunknown symbol sys_msgrcv\r\n这可能是什么原因呢？\r\n\r\n另外一个问题是，在内核中使用消息队列的方式是使用这些函数吗？还是有别的使用方法？"
+ },
+ {
+  "id": "2286",
+  "parent": "0",
+  "date": "2015-07-22T11:27:57+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "wowo这个小站用的是哪家的服务器？博客的管理系统用的是自己写的还是开源的？例如WordPress？"
+ },
+ {
+  "id": "2289",
+  "parent": "2283",
+  "date": "2015-07-22T12:19:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：毫无疑问这是符号解析的问题，要解决这个问题首先要问自己这样的问题：内核的众多符号中，哪些可以被模块引用？\r\n实际上，内核中只有用EXPORT_SYMBOL和EXPORT_SYMBOL_GPL定义的符号才能被模块引用，也就是说sys_msgget这个符号没有被内核export出来，因此，虽然内核定义了这个符号，但是对于模块而言，它是不可见的。\r\n\r\n如何解决呢？本质上，sys_xxx是给userspace的程序使用的，内核不应该直接使用，不过也有些场景，例如在内核中操作文件。\r\n因此，如果一定要这么做，一般而言，可以考虑使用底层的函数，不要直接调用sys_xxx函数。不过你能否告知你的场景？应该有比消息队列更好的方式"
+ },
+ {
+  "id": "2293",
+  "parent": "2286",
+  "date": "2015-07-22T13:22:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Daniel Shieh：博客管理系统使用的是一个小的开源软件，页面底部有他们的链接，用着还不错。\r\n托管商也是使用他们的，主机在香港，说实话用着不怎样，60分吧。"
+ },
+ {
+  "id": "2294",
+  "parent": "2289",
+  "date": "2015-07-22T13:24:02+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@linuxer：使用场景：私有的无线协议栈在内核态下实现，协议栈的内部用到了消息队列。以前这部分的协议是在其他系统上以应用的方式实现的，现在要移植到linux内核态下。所以就想用系统调用的内部实现函数去替代这部分。不知道linuxer有没有更好的建议，可以用什么替代这部分？"
+ },
+ {
+  "id": "2297",
+  "parent": "2294",
+  "date": "2015-07-22T20:30:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：你给的信息不完整，我需要知道原来是如何通过消息队列进行交互的：消息队列是进程间通信的一种手段，那么原来的用户空间使用的消息队列是在多个进程之间通过消息队列交互数据，那么具体的交互方式如何？所有的逻辑都移到内核中了吗？那么在内核态还是要创建多个内核线程吗？\r\n\r\n没有这些具体的信息，我是给不出什么建议的，呵呵"
+ },
+ {
+  "id": "2300",
+  "parent": "2297",
+  "date": "2015-07-23T09:39:39+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@linuxer：原来在用户空间的协议栈，在两个进程间通过消息队列传输协议数据，发送方根据消息类型通过消息队列发送数据，接收端收到数据后，进行分析，并执行相关的功能操作。你说的交互方式是这些吗？还是别的什么？\r\n所有的逻辑都移到内核，协议部分和协议内部的分析并执行功能都移植到内核态。\r\n内核态下还是要创建两个或者三个内核线程。\r\n不知道这些信息够不够？谢谢linuxer耐心的帮我解决问题！"
+ },
+ {
+  "id": "2303",
+  "parent": "0",
+  "date": "2015-07-23T11:45:28+08:00",
+  "author": "dd",
+  "site": "http://blog.z-dd.net/",
+  "text": "突然发现一片新大陆！！膜拜大神！博客很好，怒赞*^_^*"
+ },
+ {
+  "id": "2311",
+  "parent": "2272",
+  "date": "2015-07-23T21:14:31+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：我现在还是不是非常明白你的通讯模型，建议你还是在讨论区发一篇单独的文档和大家一起探讨。当然，这份文档需要描述清楚之前的软件架构以及目前你想调整的软件架构。要画出block diagram，描述各个block的功能以及各个block之间的接口。只有把逻辑理清楚，才能给出适合的解决方案。"
+ },
+ {
+  "id": "2333",
+  "parent": "0",
+  "date": "2015-07-28T14:23:32+08:00",
+  "author": "coldcl@163.com",
+  "site": "",
+  "text": "博主：對於内存管理這一塊有安排嗎"
+ },
+ {
+  "id": "2336",
+  "parent": "2333",
+  "date": "2015-07-28T16:07:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@coldcl@163.com：暂时没有，我们手头要写的东西已经要进行一段时间了，memory management估计要到明年才可能启动。"
+ },
+ {
+  "id": "2339",
+  "parent": "0",
+  "date": "2015-07-28T19:09:50+08:00",
+  "author": "fucker",
+  "site": "",
+  "text": "linuxer & wowo:\r\n\r\n     大神们好~！\r\n     非常感谢你们的精彩分享，文章写的很美，很让人振奋。非常感叹你们怎么可以知道那么多呢。。。。\r\n     因为我是手机行业，虽然也做的是驱动，但是感觉做的很肤浅，如果仅仅完成工作，也行不需要这么深的知识，但是我真的很佩服你们，因为我觉得能把知识分享给别人是一种美。希望自己也有一天可以在这里写点干货。所以有点疑惑想请教下。\r\n     ①工作需要，可能不需要这么深的知识，那么如何才能研究的这么深入呢？\r\n     ②如果仅仅是看代码，总觉得有点肤浅，总觉得需要用实验来验证下，但是这样的话，感觉又太慢了，你们是怎么平衡的呢？\r\n     ③如果从知识转换为财富的角度，你们觉的这样研究下去，将来的出路是什么呢？因为我总又种预感，终端将来只能是一个为云服务的简单入口，起到的作用和价值会越来越弱。\r\n\r\n也行我的思路有些乱，，，我现在大概这些问题，以后再请教！\r\n\r\nthanks"
+ },
+ {
+  "id": "2342",
+  "parent": "2339",
+  "date": "2015-07-28T23:11:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@fucker：第一个问题，如何研究的这么深入？喜欢是最大的动力，只有发自内心的喜欢才可以付出时间和精力。第二个问题，研究linux kernel当然是一个实践的活动，例如你想要优化内核中的某些操作。不过目前我们主要是阅读代码为主，动手实践较少，有机会的话申请一些开发板什么的就有实践机会了，我们一直在寻找ARM64的服务器平台，希望可以在上面有些动手机会，不过目前时机还不成熟。第三个问题，研究内核其实不太容易带来财富，如果为了财富，可以考虑一些互联网软件或者一些应用程序软件，研究内核毕竟是一个小众行为，多半是自爽吧，我们目前没有什么明确的目标，也许将来搞一些高端的内核培训，也许可以出一些书籍，目前反正都有工作，能养家糊口，这个网站就是一个纯粹技术交流的平台"
+ },
+ {
+  "id": "2344",
+  "parent": "2342",
+  "date": "2015-07-29T08:32:43+08:00",
+  "author": "fucker",
+  "site": "",
+  "text": "@linuxer：linuxer 谢谢你的回复~！"
+ },
+ {
+  "id": "2405",
+  "parent": "2311",
+  "date": "2015-08-03T11:32:38+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@linuxer：具体就是需要对收到的IP包进行私有协议的处理，传递私有协议处理的IP包给另一个线程，本来之前应用层处理用的是消息队列，现在移植到内核态，内核中应该使用什么机制去替换这种方式呢？实在是没查到相关的资料啊。"
+ },
+ {
+  "id": "2410",
+  "parent": "2405",
+  "date": "2015-08-03T21:57:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Daniel Shieh：其实线程没有“内核线程”或者“用户线程”的区别的，都是进程间通信而已。至于在内核态如何调用进程间通信的API，socket、netlink等，都可以啊。碰巧，你这里也是处理IP相关的东西。"
+ },
+ {
+  "id": "2422",
+  "parent": "0",
+  "date": "2015-08-04T23:54:13+08:00",
+  "author": "misakmm20001",
+  "site": "",
+  "text": "linuxer & wowo:\r\n    Hi 接下来会写哪些主题 有计划列表吗？另外顺便问下你们是从事driver porting的吗？"
+ },
+ {
+  "id": "2424",
+  "parent": "2422",
+  "date": "2015-08-05T09:00:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@misakmm20001：我会先把中断子系统和时间子系统这两个大坑填满，之后应该是内存管理部分了。\r\n内核同步的文章有心情就写，进程管理之后考虑写存储系统，大概这些内容足够写到2020年了。wowo似乎陷入电源管理子系统中不能自拔，呵呵\r\n\r\nBTW，我们都是从事linux相关的系统软件工作，驱动开发是其中之一。"
+ },
+ {
+  "id": "2425",
+  "parent": "2424",
+  "date": "2015-08-05T09:05:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：电源管理差不多收尾了，接下来写什么，还在犹豫中。想写显示相关的东西，又怕写不好。\r\nPS：linuxer同学，你随便一写就要写到2020年啊？真吓人。哈哈。"
+ },
+ {
+  "id": "2426",
+  "parent": "2425",
+  "date": "2015-08-05T10:57:12+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：按照我们现在的速度，平均每人每个月能有两篇，这样龟速前进，不得到2020啊\r\n\r\n写什么都行的，想写什么就写什么，别问为什么，任性.......^_^"
+ },
+ {
+  "id": "2427",
+  "parent": "2425",
+  "date": "2015-08-05T12:04:27+08:00",
+  "author": "misakamm20001",
+  "site": "",
+  "text": "@wowo：Hi 刚好最近也在看dispsys 希望到时能交流一下 \r\nBTW 今后的日子估计会经常看到我了  也请多多指教"
+ },
+ {
+  "id": "2450",
+  "parent": "2293",
+  "date": "2015-08-12T09:22:06+08:00",
+  "author": "dd",
+  "site": "",
+  "text": "@wowo：我也是用的emlog的主机，但没有用emlog，主机在美国，前几天他们的美国主机被黑了，所有的资料及备份全没了，幸好我自己有备份。。我觉得博主最好找个好点的主机或服务器，比如新浪云，阿里云等，不然这么好的一个博客没了，实在是太可惜了。"
+ },
+ {
+  "id": "2455",
+  "parent": "2450",
+  "date": "2015-08-12T11:34:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dd：是啊，他们的服务器不是很稳定。你的建议很对的，只是国内的要备案，不想麻烦，今年估计得弄一下，不然以后更麻烦。"
+ },
+ {
+  "id": "2458",
+  "parent": "2455",
+  "date": "2015-08-13T09:19:20+08:00",
+  "author": "dd",
+  "site": "",
+  "text": "@wowo：是的，备案太麻烦了，在天朝莫办法，所以我也才用它的美国主机。wordpress有自动备份的插件，emlog好像也有，我之前也有用过，博主还是经常备份到自己本地为好，不然万一哪天真的被黑了，那真的就太可惜了"
+ },
+ {
+  "id": "2459",
+  "parent": "2458",
+  "date": "2015-08-13T10:06:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dd：多谢提醒，我一般都会备份~~"
+ },
+ {
+  "id": "2463",
+  "parent": "0",
+  "date": "2015-08-15T17:10:03+08:00",
+  "author": "fire",
+  "site": "",
+  "text": "版主你好，\r\n你对Linux的管理流程很深入，请教个问题，最近碰到的critical bug都和PM有关。\r\n什么时候会使用PM resume唤醒Kernel呢？ 只有电源芯片，外部IRQ之类的才能PM resume吗？\r\n我们系统上的pm resume代码如下， 我想问下，系统挂起后，是不是只要PM resume之后，才能接收到runtime resume？\r\n\tatomic_set(&motg->pm_suspended, 0);\r\n\tif (motg->async_int || motg->sm_work_pending) {\r\n\t\tpm_runtime_get_noresume(dev);\r\n\t\tret = msm_otg_resume(motg);\r\n\r\n\t\t/* Update runtime PM status */\r\n\t\tpm_runtime_disable(dev);          //不是很明白这三句的含义\r\n\t\tpm_runtime_set_active(dev);\r\n\t\tpm_runtime_enable(dev);\r\n\r\n\t\tif (motg->sm_work_pending) {\r\n\t\t\tmotg->sm_work_pending = false;\r\n\t\t\tmsm_queue_sm_work(motg);\r\n\t\t}\r\n\t}"
+ },
+ {
+  "id": "2464",
+  "parent": "2463",
+  "date": "2015-08-15T17:12:05+08:00",
+  "author": "fire",
+  "site": "",
+  "text": "@fire：我们做唤醒测试时，总是先看到pm resume, 有时候会有run time resume， 有时候又没有。\r\n\r\n万分感激！"
+ },
+ {
+  "id": "2466",
+  "parent": "0",
+  "date": "2015-08-17T11:28:50+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "@wowo 大神 ，请教一个问题，关于kdump的，我们单位现在开发的基于arm V7平台的freescale IMX6 CPU的设备，现在由于内核不稳定，导致的死机问题增多，想问一下有没有什么类似于kdump的功能，能在内核freeze的时候提供一个core文件，定位到问题发生点。但是kdump不支持arm平台，使用ftrace跟踪，显示的特别乱，并且如果调用过多，无法跟踪到最后死机现场。\r\n\r\n求教～～～～～"
+ },
+ {
+  "id": "2467",
+  "parent": "2464",
+  "date": "2015-08-17T14:09:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@fire：1. 什么时候会使用PM resume唤醒Kernel呢？\r\n====================================\r\n我不太确定您这里的“PM resume”指的是什么，是指System sleep过程中的resume动作（和Runtime PM对应）吗？如果是的话，resume是和suspend成对出现的，只有suspend了，才会resume。\r\n2. 一般情况下，唤醒源是那些没有被disable的中断，电源芯片应该也是其中的一种，和具体系统的设计有关。\r\n3. 我们系统上的pm resume代码如下， 我想问下，系统挂起后，是不是只要PM resume之后，才能接收到runtime resume？\r\n======================================================\r\n这个问题的本质是Runtime PM和System sleep（suspend&resume etc.）之间的交互， 我一直没有来得及写。您可以先参考“Documentation/power/runtime_pm.txt”中的相关的内容，这里我们先简单的讨论一下。\r\n        a）就某个设备而言，suspend的过程中，RPM和System sleep之间的关系可以分为三种：一，先RPM suspend，后System sleep suspend；二，先System sleep suspend，后RPM suspend；三，RPM suspend和System sleep suspend之间互相交叉。\r\n        b）显然，kernel power managerment的同步机制应该会保证第三种情况不会发生，就先忽略。\r\n        c）第二种情况，由于先System sleep suspend，情况比较简单，PM core会在prepare阶段（suspend_devices_and_enter->dpm_suspend_start->dpm_prepare->device_prepare）,get一次RPM的引用计数（pm_runtime_get_noresume），以保证系统不会再RPM suspend，此后的过程，就是正常的suspend流程。因此这种情况也不会发生。\r\n        d）第一种情况有些复杂，如果设备已经RPM suspend了，那么System sleep suspend要怎么做？要强调的是，这种情况下，RPM suspend、System sleep suspend以及后续的resume行为，完全是由设备驱动决定的，例如，RPM suspend执行“浅睡眠（可以唤醒系统）”，System sleep suspend执行“深睡眠（不可以唤醒系统）”，等等。\r\n        e）因此，设备驱动对已经RPM suspend的设备，再执行System sleep suspend时，很有可能会先把设备从RPM suspend状态唤醒，然后再让它进入System sleep suspend状态，而这一切Runtime PM已经不知情了。\r\n        f）回到resume的过程，来探讨一下您提出的两个问题（主要针对第一种情况）。\r\n       g）首先，系统没有从suspend状态resume的时候，RPM机制肯定是没有激活的，因此，肯定是System sleep resume后，才可能有RPM resume。至于是否一定有RPM resume，这依赖于System sleep resume后，设备的实际状态。\r\n        h）如果设备在System sleep suspend之前，已经RPM suspend了，它的RPM status就是SUSPEND状态。但在System sleep resume之后，设备有可能直接变成full power on状态了（这和设备驱动的策略有关），因此就和RPM的实际status不符，怎么办呢？手动修改RPM状态，使其变成ACTIVE的（pm_runtime_set_active(dev) ），这就是那三句话的意思。\r\n        I）最后，如果设备已经是RPM ACTIVE了，在需要RPM resume的时候，就不会再真正执行resume操作；甚至，如果之后不需要再使用设备，有可能会执行RPM suspend。\r\n\r\n有点长，希望能帮到您。"
+ },
+ {
+  "id": "2468",
+  "parent": "2466",
+  "date": "2015-08-17T14:24:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@printk：抱歉，我也不是很了解这一块的内容，因为一般情况下，内核崩溃用ksymoops也就足够了，不知道为什么一定需要kdump？另外，arm下应该也可以用kdump，只是要编译两个kernel image吧（因为ARM不支持重定向内核）。"
+ },
+ {
+  "id": "2470",
+  "parent": "2466",
+  "date": "2015-08-17T16:43:41+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@printk：感觉你这个要跟飞思卡尔的FAE联系吧，一般SOC厂商都会提供内核崩溃的调试机制。MTK就提供了类似KDUMP的机制可以得到core file + vlinux进行奔溃点调试，高通提供了类似的ramdump机制。这些都是向它们的FAE要datasheet看怎么做。"
+ },
+ {
+  "id": "2486",
+  "parent": "2468",
+  "date": "2015-08-21T13:20:59+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "@wowo：oops不是很可靠阿 ，，，起码比如说VPU的时钟disable后操作VPU的寄存器，会导致内核freeze，类似与这样的error就不会产生oops。。或者 有些oops还没来得及打到屏幕上，内核就已经挂拉"
+ },
+ {
+  "id": "2503",
+  "parent": "0",
+  "date": "2015-08-28T17:36:52+08:00",
+  "author": "lieye",
+  "site": "",
+  "text": "文章非常棒！"
+ },
+ {
+  "id": "2507",
+  "parent": "2503",
+  "date": "2015-08-30T07:05:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lieye：谢谢"
+ },
+ {
+  "id": "2563",
+  "parent": "0",
+  "date": "2015-09-12T20:42:14+08:00",
+  "author": "lucky",
+  "site": "",
+  "text": "Linux内核版本推荐和区别\r\n您好！\r\n   我想请教下uboot和Linux kernel重要的几个版本推进，更新版本新引入的机制或策略？比如kernel后面引入device tree的机制。\r\n   之前在网上学习的，很多是以前版本的，比如linux 2.6  ，uboot1.x，然后在接触新版本的时候，不了解变化，导致走了很多弯路，才发现机制有所变化。\r\n    感谢！希望能得到您的指导!"
+ },
+ {
+  "id": "2565",
+  "parent": "2563",
+  "date": "2015-09-13T00:18:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lucky：建议到https://www.kernel.org/上去看看各个版本的change log就OK了，太宽泛的问题不是很好回答，抱歉。"
+ },
+ {
+  "id": "2567",
+  "parent": "2565",
+  "date": "2015-09-13T13:34:10+08:00",
+  "author": "lucky",
+  "site": "",
+  "text": "@linuxer：您好\r\n    我的意思是重要的几个版本。以及它们的关键性的区别"
+ },
+ {
+  "id": "2571",
+  "parent": "2567",
+  "date": "2015-09-14T12:35:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lucky：我定义你说的重要的几个版本就是long term的版本，具体如下：\r\nlongterm: \t3.18.21\r\nlongterm: \t3.14.52\r\nlongterm: \t3.12.47\r\nlongterm: \t3.10.88\r\nlongterm: \t3.4.108\r\nlongterm: \t3.2.71\r\nlongterm: \t2.6.32.67\r\n\r\n这些longterm的版本不会增加新的功能，但是会修复各种issue。选定了这些版本之后，可以通过changelog了解各个版本之间的功能的不同，我没有仔细研究这些版本的不同，因此无法给出具体的信息，如果你有兴趣可以去看看，有什么心得可以发布在网站上哦"
+ },
+ {
+  "id": "2737",
+  "parent": "0",
+  "date": "2015-10-09T13:54:24+08:00",
+  "author": "~零~",
+  "site": "",
+  "text": "一直想学习音频子系统，网上资料实在有点少，各路大神，有没有兴趣写下。。。"
+ },
+ {
+  "id": "2755",
+  "parent": "2470",
+  "date": "2015-10-13T14:03:11+08:00",
+  "author": "justin",
+  "site": "",
+  "text": "@passerby：同意，死机调试应该是平台基本功能，厂商应该会提供支持的。"
+ },
+ {
+  "id": "2808",
+  "parent": "2455",
+  "date": "2015-10-21T11:00:31+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@wowo：在阿里云备案，送备案时间，还可以，备案还好，不是特别复杂，阿里云有非常清晰的备案流程说明，建议可以试试。"
+ },
+ {
+  "id": "2809",
+  "parent": "0",
+  "date": "2015-10-21T11:17:48+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "最近遇到一个Linux死机的问题，大致现象是这样的：\r\nx86平台，用的CentOS系统，kernel是3.10，应用层频繁调用ioctl去读写一个离散量（寄存器），只开一个终端，高频率调用，没出现死机情况。多终端，同时运行这个应用，会死机。应用中ioctl读写离散量的频率是50ms间隔连续读写三次，大概开四个终端，一分钟左右死机，频率在500ms的时候就是三四个小时死机。\r\n3.10版本内核中file_operations结构体已经没了ioctl成员，已经用unlocked_ioctl取代了，而这个字义上就是没有锁，其实看了源码，就是去了大内核锁，后来，我在unlocked_ioctl方法中自己实现了读写锁和自旋锁版本，但是都还是出死机问题，是在读写寄存器前后加的锁。应用中把ioctl的写操作去掉的话，多终端运行一晚上，12个小时也没有死机，看现象肯定是和写操作有关系，这里有必要加锁吗？加锁不加锁都出死机问题，崩溃啊。\r\n\r\n窝窝和linuxer大神，这种情况可能是什么问题？现在没什么思路了。指点一下吧。"
+ },
+ {
+  "id": "2810",
+  "parent": "2424",
+  "date": "2015-10-21T11:19:42+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@linuxer：linuxer是不是对网络非常精通？在一个群里有个对网络很精通，写过很多网络方面博客的linuxer，不知道此linuxer是不是彼linuxer？嘿嘿"
+ },
+ {
+  "id": "2811",
+  "parent": "2809",
+  "date": "2015-10-21T13:14:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：1、关闭本地中断 ＋ spinlock 应该可以保证硬件操作部分代码的原子性\r\n2、你说的那个离散量（寄存器）是否有特殊的读写要求？例如要求操作的间隔，或者需要polling某个状态寄存器什么的，要等到HW ready之后进行下一次寄存器操作\r\n\r\n其他的暂时没有考虑到"
+ },
+ {
+  "id": "2812",
+  "parent": "2810",
+  "date": "2015-10-21T13:15:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：不是的，我都没有QQ，更没有参加过什么群，^_^"
+ },
+ {
+  "id": "2901",
+  "parent": "0",
+  "date": "2015-10-30T17:32:50+08:00",
+  "author": "superm",
+  "site": "",
+  "text": "看到有这样的团队，感到很兴奋，如果想加入你们，也为该网站写点文章，不知如何联系？"
+ },
+ {
+  "id": "2903",
+  "parent": "2901",
+  "date": "2015-10-30T19:41:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@superm：欢迎，欢迎！这个团队是一个非常松散的组织，只要热爱技术（不仅仅限于linux），都可以进入这个团队（注册了这个网站的用户就是我们一员了）。当然，我们还是希望这个组织有一个共同的理念，那就是我们网站的宣传语：慢下来，享受技术。\r\n\r\n只要注册了用户就都可以写文章发表在这个网站，如果你愿意，还可以在文章后面附注：\r\n\r\n原创文章，转发请注明出处。蜗窝科技\r\n\r\n当然，有这个附注的文章，我们要求更加严格，希望是有调理，言之有物的，代表蜗窝品质的"
+ },
+ {
+  "id": "2912",
+  "parent": "0",
+  "date": "2015-10-31T08:27:45+08:00",
+  "author": "man8266",
+  "site": "",
+  "text": "非常好的原创，我正在拜读wowo的大作，收益很大。做过多年的嵌入式软硬件设计，但LINUX经验还不是很丰富，最近有low power方面的任务，搞的晕头转向。我们系统以前的low power机制与LINUX机制差别很大，读了本站的一些文章之后（还没读完），有点感觉了。多谢多谢。"
+ },
+ {
+  "id": "2915",
+  "parent": "2912",
+  "date": "2015-10-31T12:14:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@man8266：能给您一些帮助，是“蜗窝”的荣幸，欢迎常来，多交流多讨论。"
+ },
+ {
+  "id": "3019",
+  "parent": "0",
+  "date": "2015-11-10T15:57:51+08:00",
+  "author": "dadanio",
+  "site": "",
+  "text": "无意中看到一篇你们的文章，明显感觉是自己理解后写出来的，不像很多翻译的或者拷贝的文章还声称是原创，关注你们，希望你们有更多的精华总结。谢谢你们"
+ },
+ {
+  "id": "3021",
+  "parent": "3019",
+  "date": "2015-11-10T16:49:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dadanio：多谢关注~~~"
+ },
+ {
+  "id": "3076",
+  "parent": "0",
+  "date": "2015-11-17T17:00:38+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "有人知道sys_chdir和sys_chroot两个函数的源码实现吗"
+ },
+ {
+  "id": "3077",
+  "parent": "3076",
+  "date": "2015-11-17T18:23:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：这个问题有点大哦，不好回答。"
+ },
+ {
+  "id": "3080",
+  "parent": "3077",
+  "date": "2015-11-18T09:01:33+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：想看看根目录和当前目录怎么切换的，但是没有找到。。。"
+ },
+ {
+  "id": "3081",
+  "parent": "3080",
+  "date": "2015-11-18T09:38:13+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@passerby：如果我没猜错，应该最终是调用set_fs_root来实现的。"
+ },
+ {
+  "id": "3082",
+  "parent": "3076",
+  "date": "2015-11-18T09:41:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：源码可以参考这里：fs/open.c\r\nSYSCALL_DEFINE1(chroot, const char __user *, filename)\r\nSYSCALL_DEFINE1(chdir, const char __user *, filename)"
+ },
+ {
+  "id": "3083",
+  "parent": "3082",
+  "date": "2015-11-18T10:03:20+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：Thank you，刚才我搜索set_fs_root时也发现了这里。仔细看了一下，这里定义了系统调用，就是是i西安sys_chroot的地方。最终都是调用set_fs_root和set_fs_pwd来做的根目录和工作目录设定。"
+ },
+ {
+  "id": "3084",
+  "parent": "0",
+  "date": "2015-11-18T15:01:36+08:00",
+  "author": "老三",
+  "site": "",
+  "text": "有空出一系列书吧，各个子系统都能出一本了，名字就叫蜗窝科技系列图书之一电源管理，之二Linux内核......"
+ },
+ {
+  "id": "3086",
+  "parent": "3084",
+  "date": "2015-11-19T09:03:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@老三：出书的话需要很多时间整理，仅仅业余时间有些不够的。"
+ },
+ {
+  "id": "3150",
+  "parent": "0",
+  "date": "2015-11-26T19:43:08+08:00",
+  "author": "ymj",
+  "site": "",
+  "text": "太好了，我已经整站下载了，持续关注。。。。。。"
+ },
+ {
+  "id": "3156",
+  "parent": "3150",
+  "date": "2015-11-27T13:16:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ymj：多谢关注~~"
+ },
+ {
+  "id": "3161",
+  "parent": "3156",
+  "date": "2015-11-27T16:00:27+08:00",
+  "author": "ymj",
+  "site": "",
+  "text": "@wowo：好东西大家都喜欢。。。\r\n冒昧的问一下wowo在那个城市？"
+ },
+ {
+  "id": "3166",
+  "parent": "3161",
+  "date": "2015-11-27T16:48:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ymj：您可以看“关于蜗窝”，我们的大本营在GZ，当然，其它地方也有“分部”，呵呵~~"
+ },
+ {
+  "id": "3189",
+  "parent": "2153",
+  "date": "2015-12-02T18:16:02+08:00",
+  "author": "blessed",
+  "site": "",
+  "text": "@paul_chen：paul_chen，能把资料分享一下吗，最近也在搞alsa但是不知道怎么入手啊\r\n369979505@163.com ths!"
+ },
+ {
+  "id": "3218",
+  "parent": "0",
+  "date": "2015-12-10T10:35:46+08:00",
+  "author": "云",
+  "site": "",
+  "text": "wowo,我发现linuxer发表的 “时间子系统” 系列文章没有出现在分类里面，是不是漏了?^_^"
+ },
+ {
+  "id": "3219",
+  "parent": "3218",
+  "date": "2015-12-10T10:53:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@云：有啊，我都看到了，您再仔细瞅瞅？"
+ },
+ {
+  "id": "3220",
+  "parent": "3219",
+  "date": "2015-12-10T11:10:54+08:00",
+  "author": "云",
+  "site": "",
+  "text": "@wowo：aha,在右侧的文章分类里看到了\r\n\r\n我之前在顶部导航里没找到。\r\n\r\njust ignore it~"
+ },
+ {
+  "id": "3304",
+  "parent": "0",
+  "date": "2015-12-30T09:41:52+08:00",
+  "author": "szlhappy",
+  "site": "",
+  "text": "input subsystem啥时候出啊？"
+ },
+ {
+  "id": "3307",
+  "parent": "3304",
+  "date": "2015-12-30T11:16:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@szlhappy：感谢关注，暂时还没有计划，抱歉。"
+ },
+ {
+  "id": "3382",
+  "parent": "0",
+  "date": "2016-01-12T16:03:37+08:00",
+  "author": "blessed",
+  "site": "",
+  "text": "大佬们，啥时候出个专题讲讲怎么解kernel crash的问题啊"
+ },
+ {
+  "id": "3385",
+  "parent": "3382",
+  "date": "2016-01-12T22:29:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@blessed：如果能打印出来现场，其实解决kernel panic并不难，最怕无声无息就挂掉了"
+ },
+ {
+  "id": "3387",
+  "parent": "3385",
+  "date": "2016-01-13T08:35:31+08:00",
+  "author": "blessed",
+  "site": "",
+  "text": "@linuxer：Unable to handle kernel paging request at virtual address fffffffe\r\n[18358.892308] pgd = 80004000\r\n[18358.895161] [fffffffe] *pgd=47ffe821, *pte=00000000, *ppte=00000000\r\n[18358.903404] Internal error: Oops: 80000007 [#1] PREEMPT SMP\r\n[18358.908984] Modules linked in: wl18xx wlcore_sdio wlcore mac80211 cdc_ncm usbnet cfg80211 compat otghub\r\n[18358.918532] CPU: 1    Not tainted  (3.0.35-2154-g94689e1 #40)\r\n[18358.924288] PC is at 0xfffffffe\r\n[18358.927442] LR is at get_parent_ip+0x10/0x2c\r\n[18358.931722] pc : [<fffffffe>]    lr : [<80065af4>]    psr: 60000033\r\n[18358.931728] sp : b38a3ea0  ip : 80031d80  fp : 805c6e0c\r\n[18358.943220] r10: 8008b3f8  r9 : 00000002  r8 : 00000000\r\n[18358.948450] r7 : 00000000  r6 : ffffffff  r5 : 80033ed8  r4 : b60099e4\r\n[18358.954985] r3 : 00000000  r2 : 00000002  r1 : 80597d18  r0 : 00000000\r\n[18358.961519] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA Thumb  Segment kernel\r\n[18358.969007] Control: 10c53c7d  Table: 4421804a  DAC: 00000015\r\n[18358.974760] Process kworker/u:2 (pid: 16897, stack limit = 0xb38a22f0)\r\n[18358.981294] Stack: (0xb38a3ea0 to 0xb38a4000)\r\n.............\r\n[18359.067533] 3fe0: b38a3fe0 b38a3fe0 b3851f00 80085e10 80039b1c 80039b1c 00000000 00000000\r\n[18359.075726] Code: bad PC value\r\n好多次都是这样的log，没有打印相应的calltrace，现在怀疑是DDR的问题，但是没法证明"
+ },
+ {
+  "id": "3388",
+  "parent": "3387",
+  "date": "2016-01-13T09:15:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@blessed：应该不是DDR的问题。感觉像内核模块起了一个线程，但是在线程运行结束前相关的资源被free了。你可以检查一下代码，看看是否有这样的场景。"
+ },
+ {
+  "id": "3391",
+  "parent": "3388",
+  "date": "2016-01-13T12:43:49+08:00",
+  "author": "blessed",
+  "site": "",
+  "text": "@wowo：谢谢wowo的及时回复。现在出现的问题的情景是这样的：\r\n1，发生oops/panic的时间并不固定\r\n2，发生问题的时候内存还有很多剩余\r\n3，发生问题时，有可能会打印多次oops的log，但是第一次oops的log基本上跟上面回复的log的内容差不多，而且没有打印出calltrace，在随后的oops log中有calltrace，而且大多是跟缺页中断处理或者系统调用相关：\r\n[118968.341331] [<80437368>] (__schedule+0x3ac/0x6d4) from [<8006fac4>] (do_exit+0x448/0x6e0)\r\n[118968.349612] [<8006fac4>] (do_exit+0x448/0x6e0) from [<8003c7a4>] (die+0x228/0x284)\r\n[118968.357285] [<8003c7a4>] (die+0x228/0x284) from [<804338cc>] (__do_kernel_fault.part.4+0x54/0x74)\r\n[118968.366268] [<804338cc>] (__do_kernel_fault.part.4+0x54/0x74) from [<8004348c>] (do_page_fault+0x2b4/0x31c)\r\n[118968.376114] [<8004348c>] (do_page_fault+0x2b4/0x31c) from [<80033404>] (do_PrefetchAbort+0x34/0x9c)\r\n有时系统只是在处理一些系统调用（例如semtimeop）也会产生异常\r\n[ 1914.820235] [<8043745c>] (__schedule+0x258/0x6d4) from [<80437c54>] (preempt_schedule_irq+0x48/0x68)\r\n[ 1914.829383] [<80437c54>] (preempt_schedule_irq+0x48/0x68) from [<80038b30>] (svc_preempt+0x8/0x18)\r\n[ 1914.838355] [<80038b30>] (svc_preempt+0x8/0x18) from [<80439988>] (__raw_spin_lock+0x80/0x94)\r\n[ 1914.846891] [<80439988>] (__raw_spin_lock+0x80/0x94) from [<801b2fd4>] (ipc_lock+0x3c/0x70)\r\n[ 1914.855254] [<801b2fd4>] (ipc_lock+0x3c/0x70) from [<801b3014>] (ipc_lock_check+0xc/0x48)\r\n[ 1914.863444] [<801b3014>] (ipc_lock_check+0xc/0x48) from [<801b5f10>] (sys_semtimedop+0x244/0x780)\r\n[ 1914.872329] [<801b5f10>] (sys_semtimedop+0x244/0x780) from [<80039040>] (ret_fast_syscall+0x0/0x30)\r\n[ 1927.955262] usb 1-1: device not accepting address 3, error -110\r\n\r\n4，根据上面的log，我们目前的想法是，由于DDR的电压不稳导致数据异常，数据异常导致系统调用失败或者缺页中断处理函数处理失败，我们能看到的log都是第二现场的log\r\n我们对于DDR出问题的经验很少，所以不敢肯定是否是这个原因。"
+ },
+ {
+  "id": "3392",
+  "parent": "3391",
+  "date": "2016-01-13T13:05:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@blessed：如果怀疑DDR，看看是不是可以做一个DDR稳定性的测试，按理说是可以检查出来的。\r\n另外如果DDR里面的数据被意外修改，也有可能出现类似的现象。\r\n有条件的话，把相关位置的DDR数据dump出来，看看是否有什么规律。"
+ },
+ {
+  "id": "3393",
+  "parent": "3392",
+  "date": "2016-01-13T15:25:44+08:00",
+  "author": "blessed",
+  "site": "",
+  "text": "@wowo：谢谢wowo，我这边先会做一个DDR的稳定性测试。"
+ },
+ {
+  "id": "3394",
+  "parent": "0",
+  "date": "2016-01-14T11:26:42+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "本周六，泰晓科技举办了一个活动，具体信息可以参考：\r\n\r\nhttp://www.tinylab.org/the-4th-tiny-salon-forcenotice/\r\n\r\nwowo和我都是非常懒惰的人，自己组织定然是不会的（怕麻烦，呵呵～～～），正好泰晓科技举办了这样一个活动，我们准备参加，顺便和广大的业内工程师进行技术交流活动，珠三角的同学可以考虑去看看哦。"
+ },
+ {
+  "id": "3395",
+  "parent": "3394",
+  "date": "2016-01-14T15:42:38+08:00",
+  "author": "linux_emb",
+  "site": "",
+  "text": "@linuxer：你和wowo都去？\r\n哎，可惜离的太远。。。。"
+ },
+ {
+  "id": "3396",
+  "parent": "3395",
+  "date": "2016-01-14T15:49:54+08:00",
+  "author": "Linux_emb",
+  "site": "",
+  "text": "@linux_emb：感觉我们这边好落后////"
+ },
+ {
+  "id": "3397",
+  "parent": "3395",
+  "date": "2016-01-14T16:19:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linux_emb：是的，这次活动在珠海，估计只能是珠三角的同学才可以，^_^"
+ },
+ {
+  "id": "3399",
+  "parent": "3397",
+  "date": "2016-01-15T09:16:15+08:00",
+  "author": "Linux_emb",
+  "site": "",
+  "text": "@linuxer：活动有没有直播？发个链接"
+ },
+ {
+  "id": "3425",
+  "parent": "0",
+  "date": "2016-01-20T17:00:12+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer 最近在看进程调度，看到HMP的CPU 的check_for_migration进行task迁移的时候不太懂，rq->capacity 以及cpu能力这些在这里面是怎么体现的"
+ },
+ {
+  "id": "3426",
+  "parent": "3425",
+  "date": "2016-01-21T08:40:20+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@passerby：我在读linux4.1.10的代码，没有看到check_for_migration这个函数，你是那个版本的？"
+ },
+ {
+  "id": "3427",
+  "parent": "3426",
+  "date": "2016-01-21T09:34:08+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@郭健：是3.10的，在 /kernel/sched/fair.c 文件里"
+ },
+ {
+  "id": "3428",
+  "parent": "0",
+  "date": "2016-01-21T10:14:02+08:00",
+  "author": "爱萝莉",
+  "site": "",
+  "text": "每次都默默看你们的评论....."
+ },
+ {
+  "id": "3429",
+  "parent": "3427",
+  "date": "2016-01-21T10:21:08+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@passerby：是标准kernel吗？我怎么看不到这个函数？"
+ },
+ {
+  "id": "3430",
+  "parent": "3399",
+  "date": "2016-01-21T10:23:09+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@Linux_emb：没有直播，线下聚会不会有太多的内容，主要是相互认识一下。就类似吃着鸡蛋不错，去看看下蛋的鸡长的啥样，^_^"
+ },
+ {
+  "id": "3437",
+  "parent": "3429",
+  "date": "2016-01-22T19:50:56+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@郭健：这个不敢确定，有可能是高通自己搞得东西。"
+ },
+ {
+  "id": "3447",
+  "parent": "3430",
+  "date": "2016-01-26T19:09:18+08:00",
+  "author": "Linux_emb",
+  "site": "",
+  "text": "@郭健：其实我的目的就是，去不了现场，在远方看看下蛋的鸡长啥样，哈哈哈"
+ },
+ {
+  "id": "3450",
+  "parent": "3437",
+  "date": "2016-01-27T14:43:58+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@passerby：对比理解了下代码，确实是高通的东西。高通为了增加对HMP的支持，对进程调度进行了很大的修改。所以代码变得不同了，增加了它的rq负载计算的机制。"
+ },
+ {
+  "id": "3484",
+  "parent": "0",
+  "date": "2016-02-01T12:18:39+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "问一个问题：devm_ioremap_resource 接口和 devm_ioremap的区别。 \r\n看了一下代码，为一个区别就是一个接口devm_ioremap_resource（）接口会调用 \r\ndevm_request_mem_region（）函数来检查 地址重复的问题。 \r\n但是看到内核里面 确实也有驱动调用devm_ioremap接口来做ioremap， \r\n所以，想问一下，什么情况下可以调用 devm_ioremap ？\r\n\r\n急 。在线等！"
+ },
+ {
+  "id": "3485",
+  "parent": "3484",
+  "date": "2016-02-01T14:22:11+08:00",
+  "author": "云",
+  "site": "",
+  "text": "@madang：举个例子：\r\n小A写了一个内核模块,里面用需要使用一块物理内存空间, 于是他这么写：virt_A = devm_ioremap(phys A , size B)；\r\n另外一个部门的小B也写了一个内核模块，virt_B = devm_ioremap(phys B , size B)\r\n\r\n但是很不幸，A和B是同一块内存区域，或者他们之间有空间重叠。导致了小A和小B的驱动都不能工作正常。而他们彼此互不知情。\r\n怎么解决这个问题呢？所以得引入resource管理的机制了，小A和小B都使用devm_ioremap_resource()防止conflict.\r\n\r\n----------------------------我是分割线----------------------------------\r\n\r\n一般SoC的中，各个硬件模块各自的memory region都有严格的划分(比如说USB host的地址空间绝对不会和flash host冲突)， 所以一般的driver使用devm_ioremap()也就没问题了。 当然了，你要使用devm_ioremap_resource()也是OK的"
+ },
+ {
+  "id": "3486",
+  "parent": "3485",
+  "date": "2016-02-01T15:51:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@云：是对，云说的非常对。总结来说，就是devm_ioremap可以重复map相同的地址空间，devm_ioremap_resource不可以。有时候几个driver可能真的需要map一些相同的寄存器空间（这是不规范的做法，但可能有一些无可奈何的原因），这时候devm_ioremap_resource就不能用了，只能用devm_ioremap。"
+ },
+ {
+  "id": "3487",
+  "parent": "3486",
+  "date": "2016-02-01T16:34:09+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "@wowo：只要做好对同一块物理地址（主要是寄存器之类）的并发访问，应该就没有什么问题。我觉得。你觉得呢？"
+ },
+ {
+  "id": "3488",
+  "parent": "3487",
+  "date": "2016-02-02T09:35:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@madang：是的。应该每个写driver的都干过这事儿:-)\r\n不过尽量少做，因为这样做的原因是有些耦合没有拆开。"
+ },
+ {
+  "id": "3551",
+  "parent": "0",
+  "date": "2016-02-26T18:11:10+08:00",
+  "author": "永恒大帝",
+  "site": "",
+  "text": "很不错的一个网站，什么时候可以讲解一下MMC子系统和文件系统哈"
+ },
+ {
+  "id": "3552",
+  "parent": "3551",
+  "date": "2016-02-26T19:46:36+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@永恒大帝：内核中可以讲的子系统太多，就我们两个人，估计很难照顾到所有的内核模块（其实内核中的任何一块都可以做一辈子的，比如RCU，比如蓝牙，比如Wifi），还需要大家的力量啊！"
+ },
+ {
+  "id": "3572",
+  "parent": "0",
+  "date": "2016-03-02T11:43:34+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "request_irq可以这样使用吗\r\n\r\nspin_lock_irqsave( )\r\n\r\nrequest_irq();\r\n\r\nspin_unlock_restore();"
+ },
+ {
+  "id": "3574",
+  "parent": "3572",
+  "date": "2016-03-02T18:46:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@madang：可以的，不过应该很少需要这样做。request_irq内部也有很多类似lock，不用我们自己特意保护的。"
+ },
+ {
+  "id": "3617",
+  "parent": "0",
+  "date": "2016-03-08T23:31:13+08:00",
+  "author": "yun_2106118",
+  "site": "",
+  "text": "大家好，我现在遇到一个休眠问题，系统经常性遇到休眠不下去的问题，但是不是必然的，都是在frezz阶段失败，\r\nFreezing of tasks aborted after 0.045 seconds，active wakeup source: alarm，请问下这个怎么去查。系统是5.1系统除此以外，系统没有其他wake_lock。睡眠不下去的时候，就一直重复上述frezz过程，不知道为什么alarm一直阻止，按理说，如果alarm没有执行完毕，不会再次启动睡眠流程啊。请各位帮忙指导下，谢谢"
+ },
+ {
+  "id": "3624",
+  "parent": "3617",
+  "date": "2016-03-09T14:23:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yun_2106118：建议先检查一下这个wakeup source是kernel driver持有的，还是Android通过wakelock持有的，如果是driver持有的，可能是RTC相关的驱动有问题，如果是Android持有的，用dumpsys alarm，查一下系统是不是有异常的alarm设置。"
+ },
+ {
+  "id": "3627",
+  "parent": "0",
+  "date": "2016-03-09T17:51:52+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "有没有计划讲讲smmu啊?"
+ },
+ {
+  "id": "3631",
+  "parent": "3627",
+  "date": "2016-03-09T21:17:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@madang：IOMMU用的地方越来越多，有空可以分析一下，不过暂时还没有计划呢。"
+ },
+ {
+  "id": "3636",
+  "parent": "3624",
+  "date": "2016-03-09T23:03:15+08:00",
+  "author": "yun_2106118",
+  "site": "",
+  "text": "@wowo：谢谢wowo的回复，我看过wake_lock是没有任何锁的，而wakeup_souce中能够看到仅仅alarm是active状态，因此看起来时的确是kernel 锁，但是kernel里面是没有任何程序去使用rtc的，所以才有点纠结。我还是在查查kernel，如果有好的建议，还请多多指教。谢谢。"
+ },
+ {
+  "id": "3637",
+  "parent": "3636",
+  "date": "2016-03-10T09:41:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yun_2106118：一般情况下，driver会在有事件要处理的时候，调用pm_wakeup_event等接口，上报wakeup事件。你检查一下RTC有关的driver，是不是有逻辑错误，上报event后没有清除。"
+ },
+ {
+  "id": "3650",
+  "parent": "0",
+  "date": "2016-03-11T14:58:04+08:00",
+  "author": "fancy",
+  "site": "",
+  "text": "WoWo你好，\r\n请教一个问题， 我目前碰到系统在刚唤醒的时候，通过get_monotonic_boottime获取的时间没有包含系统sleep的时间，如果等待大约300ms左右，此时通过get_monotonic_boottime就能获取到包含了系统sleep的时间。\r\n请问在系统刚被唤醒的时候，通过什么接口能够获取到包含了睡眠的时间？不甚感激！"
+ },
+ {
+  "id": "3651",
+  "parent": "3650",
+  "date": "2016-03-11T16:48:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@fancy：我对这个应用场景也不是很熟悉，不过可以提供一些思路，供你参考：\r\n首先你用的这个接口应该是对的，问题是为什么会delay了300ms？\r\n从timekeeping的resume流程来看（timekeeping_resume），有两个方法更新suspend的时间：\r\n1）你所使用的clocksource支持suspend nonstop（CLOCK_SOURCE_SUSPEND_NONSTOP）。\r\n2）rtc_resume的时候调用timekeeping_inject_sleeptime更新。\r\n那么问题来了，你的平台使用的是什么方法？你在什么时机调用get_monotonic_boottime获取boot time呢？"
+ },
+ {
+  "id": "3658",
+  "parent": "3651",
+  "date": "2016-03-14T15:33:23+08:00",
+  "author": "fancy",
+  "site": "",
+  "text": "@wowo：谢谢wowo的回复。\r\n\r\n我是nexus5的开发平台（高通），在系统休眠后，mcu触发中断唤醒系统，在第一次中断处理函数中去获取boot time的。但是看log， 在“timekeeping_resume”中得到的timekeeping_suspend_time是0。 但是在第二次或第三次中断处理函数中再用get_monotonic_boottime去获取AP time, 这个时间就包含了系统suspend的时间。貌似timekeeping_resume获取到的suspend时间无法及时更新。\r\n\r\n[  341.333599] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.\r\n[  341.424081] PM: suspend of devices complete after 79.244 msecs\r\n[  341.430902] PM: late suspend of devices complete after 1.896 msecs\r\n[  341.438512] PM: noirq suspend of devices complete after 2.369 msecs\r\n[  341.444145] Disabling non-boot CPUs ...\r\n[  341.454448] msm_pm_enter\r\n[  341.454448] msm_pm_enter: power collapse\r\n[  341.454448] msm_pm_enter collapsed=1\r\n[  341.454465] timekeeping_resume() 0 0-----------------suspend tims is 0 (tv_sec and tv_nsec)\r\n[  341.458198] Enabling non-boot CPUs ...\r\n[  341.467805] CPU1 is up\r\n[  341.471267] PM: noirq resume of devices complete after 1.804 msecs\r\n[  341.477099] Resume caused by IRQ 301, qpnp_rtc_alarm\r\n[  341.481485] Resume caused by IRQ 200, qcom,smd-rpm\r\n[  341.487958] PM: early resume of devices complete after 1.509 msecs"
+ },
+ {
+  "id": "3659",
+  "parent": "3658",
+  "date": "2016-03-14T18:00:13+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@fancy：高通8939是用non stop sys counterd，不需要RTC做睡眠时间保存。不知道你这个的实现是怎么样的。"
+ },
+ {
+  "id": "3660",
+  "parent": "0",
+  "date": "2016-03-14T19:49:44+08:00",
+  "author": "jordonwu",
+  "site": "",
+  "text": "@wowo & all，\r\n\r\n请教一个遇到的问题，一个lvds屏接imx6，这个lvds除了要配置timing之外，在工作之前需要通过spi接口执行一段初始化code，搜索了下参考代码，在imx_linux-3.0.35及之前的版本里有类似spi初始化lvds/lcd屏的代码（如http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/tree/drivers/video/mxc/mxcfb_epson_vga.c?h=imx_3.0.35_4.1.0）\r\nstatic int __init epson_lcd_init(void)\r\n{\r\n\tint ret;\r\n\tret = platform_driver_register(&lcd_plat_driver);\r\n\tif (ret)\r\n\t\treturn ret;\r\n\treturn spi_register_driver(&lcd_spi_dev_driver);\r\n}\r\n\r\n但是在新版本的kernel中，这些代码都被移除掉了，我想请问下：在引入device tree之后，如果要执行spi初始化lvds panel的代码，这个是在lvds的dts部分配置还是在spi的dts部分配置？ 另外kernel中是否已经存在有类似的code？ 谢谢"
+ },
+ {
+  "id": "3661",
+  "parent": "3660",
+  "date": "2016-03-15T08:47:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jordonwu：我觉得，只要需要SPI操作，注册一个spi driver是不可少的啊。你这里说代码被移除了，无外乎两种可能：\r\n1）放到其它位置了。\r\n2）不再需要SPI初始化操作了。\r\n你再看看代码，spi的操作方式没有改变。"
+ },
+ {
+  "id": "3663",
+  "parent": "3659",
+  "date": "2016-03-15T08:49:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：是的，fancy同学并没有回答我提出的两个疑问。"
+ },
+ {
+  "id": "3669",
+  "parent": "3659",
+  "date": "2016-03-15T17:10:06+08:00",
+  "author": "fancy",
+  "site": "",
+  "text": "@passerby：你好，谢谢回复，由于我对这块目前不太熟悉，能否稍微指导一下“non stop sys counterd”在哪部分代码里面实现的？我认真学习一下，我目前是msm8974.谢谢了。"
+ },
+ {
+  "id": "3670",
+  "parent": "3669",
+  "date": "2016-03-15T17:26:00+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@fancy：static struct clocksource clocksource_counter = {\r\n\t.name\t= \"arch_sys_counter\",\r\n\t.rating\t= 400,\r\n\t.read\t= arch_counter_read,\r\n\t.mask\t= CLOCKSOURCE_MASK(56),\r\n\t.flags\t= CLOCK_SOURCE_IS_CONTINUOUS | CLOCK_SOURCE_SUSPEND_NONSTOP,\r\n};\r\n在 arm_arch_timer.c"
+ },
+ {
+  "id": "3671",
+  "parent": "3670",
+  "date": "2016-03-15T17:30:49+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@passerby：这个counter在suspend的时候不会睡眠，所以在timekeeping_resume()中检测到if ((clock->flags & CLOCK_SOURCE_SUSPEND_NONSTOP)就会通过counter中的计数来进行睡眠时间的更新。"
+ },
+ {
+  "id": "3677",
+  "parent": "3670",
+  "date": "2016-03-17T13:07:20+08:00",
+  "author": "fancy",
+  "site": "",
+  "text": "@passerby：谢谢，我看了msm8974这部分的代码，还是用的rtc去获取睡眠时间的，我遇到的问题原因是rtc_resume执行得太晚了。目前做了个规避，谢谢你的指导了。"
+ },
+ {
+  "id": "3678",
+  "parent": "3659",
+  "date": "2016-03-17T13:08:25+08:00",
+  "author": "fancy",
+  "site": "",
+  "text": "@passerby：你好，我找到问题的原因了，是rtc_resume执行太晚了引起的。谢谢了。"
+ },
+ {
+  "id": "3679",
+  "parent": "3650",
+  "date": "2016-03-17T13:09:40+08:00",
+  "author": "fancy",
+  "site": "",
+  "text": "@fancy：你好，我找到问题的原因了，是rtc_resume执行太晚了引起的。谢谢了"
+ },
+ {
+  "id": "3683",
+  "parent": "3679",
+  "date": "2016-03-17T17:29:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@fancy：好消息:-)"
+ },
+ {
+  "id": "3701",
+  "parent": "0",
+  "date": "2016-03-22T14:23:02+08:00",
+  "author": "wpch315",
+  "site": "",
+  "text": "@wowo\r\n请教一个问题，最近调串口驱动时发现使用dma的方式接收数据有问题，目前的现象是：\r\n\r\n在系统的线程都处于休眠状态的时候，dma接收有问题，我建立了一个线程一直进行while循环，这时dma接收就是OK的\r\n\r\n分析后发现可能是dma驱动中中断里调度一个tasklet时，在系统的线程都处于休眠状态的时候会有较大的延迟，我想请问一下：\r\n1.是否还有其他可能性较大的原因\r\n2.如果确实是tasklet调度的问题，什么地方的问题会导致这种情况？\r\n\r\n谢谢！"
+ },
+ {
+  "id": "3703",
+  "parent": "3701",
+  "date": "2016-03-22T17:30:55+08:00",
+  "author": "wpch315",
+  "site": "",
+  "text": "@wpch315：我把tasklet里的事放到中断里做，发现现象一样，所以排除之前的推测，现在看上去就是线程的状态会影响dma的硬件行为，搞不清楚为什么会这样，请教各位"
+ },
+ {
+  "id": "3704",
+  "parent": "3703",
+  "date": "2016-03-22T18:28:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wpch315：DMA接收有问题？具体什么表现呢？中断没有产生？还是产生了没有被响应？\r\n系统是不是进低功耗状态了？而DMA中断无法唤醒？"
+ },
+ {
+  "id": "3706",
+  "parent": "3704",
+  "date": "2016-03-23T10:15:24+08:00",
+  "author": "wpch315",
+  "site": "",
+  "text": "@wowo：中断产生并响应了，中断调度的tasklet里有打印错误信息，而且串口的中断方式接收是没有问题的"
+ },
+ {
+  "id": "3708",
+  "parent": "3706",
+  "date": "2016-03-23T13:59:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wpch315：中断产生了，那在中断里面可以接收到数据吗？你说数据不对，怎么个不对法呢？我还是怀疑是因为系统进低功耗了，没有来得及接收串口数据，而你的串口没有流控，所以数据丢了。"
+ },
+ {
+  "id": "3712",
+  "parent": "3708",
+  "date": "2016-03-23T15:16:54+08:00",
+  "author": "wpch315",
+  "site": "",
+  "text": "@wowo：中断里可以接收部分数据，同时报错，有两个错误，一个是dma传输错误，检测出这错误后读串口的状态寄存器报了第二个错误，rxfifo overrun，我也怀疑是系统进入低功耗状态后中断的响应不及时。\r\n为了验证，我把电源管理相关的选项都关闭了，比如CPUidle，dvfs，包括底层的实现也都关了，但现象一样，不确定这样做是不是可以阻止系统进入低功耗状态？我用的imx53平台，单核A8，内核是2.6"
+ },
+ {
+  "id": "3714",
+  "parent": "3712",
+  "date": "2016-03-23T15:38:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wpch315：我觉得的可以从如下的思路去查找原因：\r\n1）打开系统电源管理有关的日志输出，确认出错的这段时间内，系统的状态到底如何，是否进行了低功耗状态的切换，是哪个低功耗状态？\r\n2）根据你描述的现象，直接使用UART中断Okay，但DMA不Okay，则说明UART中断可以使系统从“这个低功耗状态”返回，而DMA中断不可以。看看CPU那些低功耗状态有可能这样做。\r\n3）试试打开uart的流控功能，应该就可以解决。"
+ },
+ {
+  "id": "3737",
+  "parent": "0",
+  "date": "2016-03-28T09:24:39+08:00",
+  "author": "wpch315",
+  "site": "",
+  "text": "找到原因了，arch idle时系统会进入low power模式，会对外设power gating，dma控制器唤醒延迟较长导致问题，把低功耗等级降下一个就好了"
+ },
+ {
+  "id": "3738",
+  "parent": "3737",
+  "date": "2016-03-28T09:46:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wpch315：恭喜恭喜，也多谢和大家分享出来~~~"
+ },
+ {
+  "id": "4014",
+  "parent": "0",
+  "date": "2016-06-01T00:04:41+08:00",
+  "author": "saber_ice",
+  "site": "",
+  "text": "偶然发现这里，感觉很不错。这里还想请教一下，作为一个初学者，想往linux驱动方向发展，从哪入手呢。"
+ },
+ {
+  "id": "4015",
+  "parent": "4014",
+  "date": "2016-06-01T08:55:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@saber_ice：论坛上有一个讨论这个事情的帖子，你可以看看：/forum/"
+ },
+ {
+  "id": "4033",
+  "parent": "4015",
+  "date": "2016-06-02T21:00:14+08:00",
+  "author": "saber_ice",
+  "site": "",
+  "text": "@wowo：谢谢wowo，也谢谢linuxer分享，给我们这些菜鸟指了条明路啊"
+ },
+ {
+  "id": "4045",
+  "parent": "0",
+  "date": "2016-06-06T17:30:33+08:00",
+  "author": "Tao",
+  "site": "",
+  "text": "有对input子系统了解比较好的么，来一份技术文档吧~"
+ },
+ {
+  "id": "4046",
+  "parent": "4045",
+  "date": "2016-06-06T22:25:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Tao：多谢关注，暂时还没有时间写，后面有时间了一定会写~~"
+ },
+ {
+  "id": "4081",
+  "parent": "0",
+  "date": "2016-06-15T18:50:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linglongqion, @callme_friend,已经把两位发表文章的权限放开了（不需要审核了），希望多分享哈~~"
+ },
+ {
+  "id": "4102",
+  "parent": "0",
+  "date": "2016-06-17T10:25:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "mobz兄，一早看到您的留言，非常感激，能用心向蜗窝提意见的人，是真心关心蜗窝的人，多谢了。\r\n我觉得，这个意见，很好、很尖锐、也很矛盾。我需要小心的回答，也欢迎更多的人留言讨论（为了方便，我把它转移到留言板了），讨论的结果，我会更新到“关于蜗窝”页面。\r\n有一点需要更正一下，蜗窝不仅仅是“一个主要针对linux内核和驱动深入研究的地方”。因为技术是相通的，不应该有界限。无论是linux kernel、还是RTOS、还是应用软件，无论是软件设计、还是硬件设计、还是产品设计，其背后的指导思想都是相同的。\r\n从表面看，蜗窝为大家分享了很多技术文章，有些文章可能帮到了某些人，但这并不是蜗窝的直接目的（因此CSDN不是蜗窝的榜样）。\r\n蜗窝的直接目的，是通过整理、分享一些文章，以便加深自己的理解，提升自己的能力。\r\n在这个基础上，如果我们整理、分享出来的这些文章，条理和逻辑足够清晰，以至于可以启发、帮助到他人，就再好不过了，就当是利己利人吧。\r\n隐藏在这背后的，就是蜗窝的理念，以及一直没敢说出来的目标（太宏大、太困难、太不切实际，因此怕被笑话），就是改变国内的技术氛围，改变从业者对待技术、对待自己所从事的工作以及对待自己的态度。\r\n怎么改变呢？从对待技术和工作的态度做起：沉得住气，细致、认真，善于总结，善于刨根问底，能够认同所从事的工作，并从中获得愉悦感和充实感。\r\n这就是蜗窝一直鼓励大家分享的原因所在，分享是到达这个目的的第一步，从不假思索的索取模式，转换为思考模式，哪怕思考的过程只有自己能懂，也足够了（达者兼济天下 穷者独善其身）。\r\n最后，就是分享的质量了，说实话，我也很矛盾。正如您所说，linuxer和我写的一些文章，虽然不是特别好，但也不算差，在百度和谷歌的搜索排名，基本上都是第一页，这是蜗窝的荣幸，但我们不应满足于此。\r\n因此，对于其他同学的分享，我们的要求很简单，原创+有自己的思考，至少能把自己写明白，最好能坚持、有进步。当然，有些可能对蜗窝有影响，希望大家宽容对待。\r\n也希望迈出第一步和大家分享的同学，把压力转化为动力，精益求精，像对待知己、恋人、孩子一样，对待自己的文字。"
+ },
+ {
+  "id": "4109",
+  "parent": "4081",
+  "date": "2016-06-17T15:35:29+08:00",
+  "author": "linglongqion",
+  "site": "",
+  "text": "@wowo：道路且长"
+ },
+ {
+  "id": "4114",
+  "parent": "4109",
+  "date": "2016-06-17T15:55:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linglongqion：且长且坚，同志仍需努力~~~"
+ },
+ {
+  "id": "4372",
+  "parent": "0",
+  "date": "2016-08-05T11:16:08+08:00",
+  "author": "likai",
+  "site": "http://4",
+  "text": "qcom,power-on@800 {\r\n\t\t\tcompatible = \"qcom,qpnp-power-on\";\r\n\t\t\treg = <0x800 0x100>;\r\n\t\t\tinterrupts = <0x0 0x8 0x0>,\r\n\t\t\t\t<0x0 0x8 0x1>,\r\n\t\t\t\t<0x0 0x8 0x4>,\r\n\t\t\t\t<0x0 0x8 0x5>;//这个代表的什么含义呢？\r\n\t\t\tinterrupt-names = \"kpdpwr\", \"resin\",\r\n\t\t\t\t\"resin-bark\", \"kpdpwr-resin-bark\";\r\n\t\t\tqcom,pon-dbc-delay = <15625>;\r\n\t\t\tqcom,system-reset;\r\n\r\n\t\t\tqcom,pon_1 {\r\n\t\t\t\tqcom,pon-type = <0>;\r\n\t\t\t\tqcom,pull-up = <1>;\r\n\t\t\t\tlinux,code = <116>;\r\n\t\t\t};\r\n\r\n\t\t\tqcom,pon_2 {\r\n\t\t\t\tqcom,pon-type = <1>;\r\n\t\t\t\tqcom,pull-up = <1>;\r\n\t\t\t\tlinux,code = <114>;\r\n\t\t\t};\r\n\t\t\tqcom,pon_3 { \r\n\t\t\t\tqcom,pon-type = <3>;\r\n\t\t\t\tqcom,support-reset = <1>;\r\n\t\t\t\tqcom,s1-timer = <6720>;\r\n\t\t\t\tqcom,s2-timer = <2000>;\r\n\t\t\t\tqcom,s2-type = <7>;\r\n\t\t\t\tqcom,pull-up = <1>;\r\n\t\t\t\tqcom,use-bark; \r\n\t\t\t};\r\n\t\t};\r\n我有一个疑问，可否帮忙解答解答。interrupts = <0x0 0x8 0x0> 代表的都是什么含义呢，非常感谢。"
+ },
+ {
+  "id": "4373",
+  "parent": "4372",
+  "date": "2016-08-05T12:27:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@likai：你可以参考对应的device tree bindings文档，例如（这里不一定是你的真实场景。另外如果找不到文档，可以直接看代码，我们不知道你的平台，具体的含义也无法确定）：\r\nDocumentation/devicetree/bindings/interrupt-controller/arm,gic.txt\r\n\r\n- #interrupt-cells : Specifies the number of cells needed to encode an\r\n  interrupt source.  The type shall be a <u32> and the value shall be 3.\r\n\r\n  The 1st cell is the interrupt type; 0 for SPI interrupts, 1 for PPI\r\n  interrupts.\r\n\r\n  The 2nd cell contains the interrupt number for the interrupt type.\r\n  SPI interrupts are in the range [0-987].  PPI interrupts are in the\r\n  range [0-15].\r\n\r\n  The 3rd cell is the flags, encoded as follows:\r\n        bits[3:0] trigger type and level flags.\r\n                1 = low-to-high edge triggered\r\n                2 = high-to-low edge triggered (invalid for SPIs)\r\n                4 = active high level-sensitive\r\n                8 = active low level-sensitive (invalid for SPIs).\r\n        bits[15:8] PPI interrupt cpu mask.  Each bit corresponds to each of\r\n        the 8 possible cpus attached to the GIC.  A bit set to '1' indicated\r\n        the interrupt is wired to that CPU.  Only valid for PPI interrupts.\r\n        Also note that the configurability of PPI interrupts is IMPLEMENTATION\r\n        DEFINED and as such not guaranteed to be present (most SoC available\r\n        in 2014 seem to ignore the setting of this flag and use the hardware\r\n        default value)."
+ },
+ {
+  "id": "4374",
+  "parent": "4373",
+  "date": "2016-08-05T15:08:36+08:00",
+  "author": "likai",
+  "site": "http://4",
+  "text": "@wowo：非常感谢，wowo的回复效率这么高。"
+ },
+ {
+  "id": "4387",
+  "parent": "0",
+  "date": "2016-08-11T14:16:55+08:00",
+  "author": "hongxiaoh",
+  "site": "",
+  "text": "cec = atomic_add_return(MAX_IN_PROGRESS, &combined_event_count);\r\nwakeup events in progress减1，registered wakeup events加1\r\n请问这个具体是怎么实现加减的？"
+ },
+ {
+  "id": "4388",
+  "parent": "4387",
+  "date": "2016-08-11T15:42:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hongxiaoh：假设combined_event_count是32bit\r\nwakeup events in progress和registered wakeup events各占16bit，即：wakeup events in progress | registered wakeup events.\r\n注：上面有一个隐含的规则：registered wakeup events > wakeup events in progress（很重要，不然会有问题）\r\n而MAX_IN_PROGRESS等于((1 << 16) - 1)，即0xffff\r\n那么combined_event_count + MAX_IN_PROGRESS = ？\r\n假设combined_event_count=0x0 0001，则为0x1 0000\r\n假设combined_event_count=0x5 0009，则为0x6 0008\r\n实际上就利用了简单的进位操作~~~"
+ },
+ {
+  "id": "4442",
+  "parent": "4102",
+  "date": "2016-08-25T12:48:32+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@wowo：Hi，我很好奇版主是从事什么行业的，具体的工作职责是什么，如何练就这样的胸怀与思想？\r\n真的很是佩服！每每想到我何时在linux 方面也能有这样的造诣！就感觉很渺茫！因为不懂所以觉得Linux 真的很神奇，程序的结构真的很值得学习！但最近找工作确又给我泼冷水，做Linux 驱动的公司一般开的工资都在2万以内，感觉和Linux 的高大上完全不符！或者是说确实自己的水平太低了！"
+ },
+ {
+  "id": "4443",
+  "parent": "4102",
+  "date": "2016-08-25T12:51:57+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@wowo：或者说版主在Linux 驱动开发这个职位给点建议！或者说在驱动这方面的职业规划是什么样的？"
+ },
+ {
+  "id": "4445",
+  "parent": "4443",
+  "date": "2016-08-26T09:53:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：大家的工作都差不多。我能建议的就是，开心就好~~"
+ },
+ {
+  "id": "4456",
+  "parent": "4445",
+  "date": "2016-08-26T17:46:35+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@wowo：版主，不可以这样，给点具体建议吧！^_^"
+ },
+ {
+  "id": "4457",
+  "parent": "4445",
+  "date": "2016-08-26T17:46:35+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@wowo：版主，不可以这样，给点具体建议吧！^_^"
+ },
+ {
+  "id": "4458",
+  "parent": "4457",
+  "date": "2016-08-26T19:44:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：哈哈，话说这个问题太不好回答了，你可以去讨论区看看：\r\n/forum/\r\n/forum/"
+ },
+ {
+  "id": "4472",
+  "parent": "4388",
+  "date": "2016-08-30T13:46:40+08:00",
+  "author": "hongxiaoh",
+  "site": "",
+  "text": "@wowo：#define pr_fmt(fmt)\t\"%s: \" fmt, __func__\r\n\r\n请问知道这句话的语法吗？？\r\n在linux lcd驱动看到的这句话。"
+ },
+ {
+  "id": "4477",
+  "parent": "4472",
+  "date": "2016-08-30T18:19:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hongxiaoh：pr_fmt是为了在printk输出的log之前，加一些关键字，一般是标识自己的模块的（一次都是放在自己模块C代码的开始处），你可以参考include/linux/printk.h中的用法，如：\r\n#define pr_info(fmt, ...) \\                                                     \r\n        printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)"
+ },
+ {
+  "id": "4517",
+  "parent": "4477",
+  "date": "2016-09-06T15:35:17+08:00",
+  "author": "hongxiaoh",
+  "site": "",
+  "text": "@wowo：您好，有没有什么方法设置   关机充电  可以进入adb 模式？？\r\n为了获取关机充电的一些log。"
+ },
+ {
+  "id": "4520",
+  "parent": "4517",
+  "date": "2016-09-06T17:23:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hongxiaoh：不知道你使用哪个版本的Android？\r\n以我了解的Android5.0为例，关机充电和正常工作，从本质上来讲，是没有什么区别的，只是运行了不同的Application（例如healthd），此时Adb的service和protocol，很有可能是存在的（依赖Android的配置），如果你需要查看日志，估计需要把相应的环境（如logcat等）启动：\r\n例如下面是我的机器在关机充电的时候的打印（没有shell、没有logcat等等）\r\n adb logcat\r\n- exec '/system/bin/sh' failed: No such file or directory (2) -\r\n\r\n具体怎么做，和Android的版本、编译、配置策略有关，具体我也不是很熟悉~~"
+ },
+ {
+  "id": "4618",
+  "parent": "0",
+  "date": "2016-09-27T16:52:03+08:00",
+  "author": "CHENYAN",
+  "site": "",
+  "text": "最近一直在研究ARM64 Linux的系统调用的HOOK方法. 记得以前X86平台下可以通过IDT寄存器获取系统调用表的基地址. 我看了ARM64的内核代码, 貌似没有类似的寄存器. 想问一下ARM64有办法获取系统调用表的基地址吗? 我对ARM64架构不是很熟悉, 能给点指导意见吗? 感谢!!!  @wowo"
+ },
+ {
+  "id": "4685",
+  "parent": "0",
+  "date": "2016-10-10T21:13:28+08:00",
+  "author": "Z-team",
+  "site": "",
+  "text": "想深入了解下linux kernel中vfs这一subsystem，但是自己读相关的源码很是费力，希望以后能有这一知识的全面介绍，很是期待。"
+ },
+ {
+  "id": "4689",
+  "parent": "4685",
+  "date": "2016-10-10T21:56:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Z-team：当前估计很难涉及这一块，毕竟人的精力是有限的，时间也是有限的......希望未来有机会吧，哈哈"
+ },
+ {
+  "id": "4700",
+  "parent": "4689",
+  "date": "2016-10-13T09:20:52+08:00",
+  "author": "驴肉火烧",
+  "site": "",
+  "text": "@linuxer：@linuxer，我对文件系统这块有一些研究，可以给你们投稿么"
+ },
+ {
+  "id": "4701",
+  "parent": "4700",
+  "date": "2016-10-13T12:12:29+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@驴肉火烧：当然可以啊，非常的欢迎，我们需要为你创建一个blog的帐号，你打算其一个什么样的名字呢？驴肉火烧吗？"
+ },
+ {
+  "id": "4706",
+  "parent": "3737",
+  "date": "2016-10-13T18:52:53+08:00",
+  "author": "bigchris",
+  "site": "",
+  "text": "@wpch315：如果是wfi 做clk gating的情况，是us的反应，power gating的反应时间一般都是100us级，如果power gating的范围比较大的话，时间会更长，这个与clk与power上电的稳定时间相关，还有就是如果有cache flush的话，其时间占比也非常大。"
+ },
+ {
+  "id": "4709",
+  "parent": "4701",
+  "date": "2016-10-14T12:30:48+08:00",
+  "author": "驴肉火烧",
+  "site": "",
+  "text": "@linuxer：好啊，就这个名字吧，驴肉火烧很好吃哦，哈哈"
+ },
+ {
+  "id": "4710",
+  "parent": "4709",
+  "date": "2016-10-14T13:17:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@驴肉火烧：已添加，用户名：驴肉火烧 ，密码：123321\r\n尽快登录改密码哦，最好把邮箱信息也补充一下～～\r\n多谢分享哦:-)"
+ },
+ {
+  "id": "5019",
+  "parent": "0",
+  "date": "2016-12-14T11:27:20+08:00",
+  "author": "yoyoriten",
+  "site": "",
+  "text": "请问下有人了解过linux下的上行组包吗？有人了解这个原理吗？现在linux内核代码中具体是怎么实现的呢？谢谢！"
+ },
+ {
+  "id": "5021",
+  "parent": "5019",
+  "date": "2016-12-14T16:01:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yoyoriten：上行组包是个什么概念？兄台的问题有点过于简洁了，呵呵"
+ },
+ {
+  "id": "5022",
+  "parent": "0",
+  "date": "2016-12-14T16:12:03+08:00",
+  "author": "lolo84",
+  "site": "",
+  "text": "有没有浅显易懂的makefile 的书写文档，貌似初学者比较懵"
+ },
+ {
+  "id": "5023",
+  "parent": "5022",
+  "date": "2016-12-14T16:42:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lolo84：说实话，关于Makefile，我一直有类似的困惑，一直……\r\n个人意见，不要试图去看什么一劳永逸的书（太琐碎，记不着），比较有效的方法是实践：\r\n1. 手头上有很多开源软件的Makefile，用尽一些方法把它们看懂（google等）。\r\n2. 动手写，例如我们的x project，用Makefile将各个软件包串起来。\r\n用的多了，自然熟能生巧。不过到最后很有可能还是记不全，不过又有什么关系呢？用到的时候去查一下就行了。"
+ },
+ {
+  "id": "5058",
+  "parent": "0",
+  "date": "2016-12-23T13:45:32+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "问个中断的问题，当代码运行在cpu A上时候，如何查看cpu B\r\n的中断是否打开？\r\n\r\n我知道查看本核的是irq_disabled()"
+ },
+ {
+  "id": "5082",
+  "parent": "0",
+  "date": "2017-01-03T23:35:06+08:00",
+  "author": "WL",
+  "site": "",
+  "text": "刚路过，看了一些文章，感觉到博主的情怀和坚持，确实难能可贵，本人也是在linux上摸爬滚打8年的工程师，目前正在从事linux驱动工作，很希望能够参与到一个为技术和产品奋斗的组织，望有机会可以拜见下！"
+ },
+ {
+  "id": "5087",
+  "parent": "5058",
+  "date": "2017-01-04T09:18:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@madang：kernel应该没有这样的接口。因为A为什么要关心B的中断使能状态呢？和它完全没有关系啊。"
+ },
+ {
+  "id": "5092",
+  "parent": "5082",
+  "date": "2017-01-04T14:02:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@WL：多谢关注及支持～～有机会的话大家可以聚聚，聊聊天，吹吹牛，呵呵。"
+ },
+ {
+  "id": "5176",
+  "parent": "0",
+  "date": "2017-01-20T13:35:29+08:00",
+  "author": "helloworld",
+  "site": "",
+  "text": "</div>helloworld><script>ce测试"
+ },
+ {
+  "id": "5177",
+  "parent": "0",
+  "date": "2017-01-20T13:36:07+08:00",
+  "author": "helloworld",
+  "site": "",
+  "text": "</div></span>helloworld><script>ce测试"
+ },
+ {
+  "id": "5182",
+  "parent": "0",
+  "date": "2017-01-23T16:22:18+08:00",
+  "author": "alibaba",
+  "site": "",
+  "text": "希望蜗窝的大牛能介绍一点跳过文件系统操作块设备的文章，网上找了一下资源太少了，"
+ },
+ {
+  "id": "5187",
+  "parent": "5182",
+  "date": "2017-01-25T09:04:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@alibaba：跳过文件系统？直接操作/dev/中的设备节点吗？不知道你要了解什么，没有资源，去kernel看看代码就行了:-)"
+ },
+ {
+  "id": "5360",
+  "parent": "0",
+  "date": "2017-03-22T20:27:18+08:00",
+  "author": "foolishungry",
+  "site": "",
+  "text": "wowo你好！目前在做一个项目，想要利用BLE设备的RSSI来检测周边的处于ISM频段的无线信号状态（类似于http://www.sharebrained.com/2011/05/24/ubertooth-spectrum-analysis-fun/）\r\n\r\n但是发现普通的BLE设备读取RSSI时，要么是通过Advertising PDU得到advertising channel的RSSI，要么是建立连接后监测该连接的RSSI。我想要实现的是持续扫描BLE各个channel的RSSI，不知道这在一般的BLE设备上能不能实现？\r\n\r\n在CC2540手册上看到了direct test mode，其中的HCI_EXT_ModemTestRxCmd似乎可行。但不知道一般的设备（如android手机）能否实现这样的对各个channel的RSSI持续采样？\r\n\r\n最后，感谢wowo！在这里学到了很多！"
+ },
+ {
+  "id": "5366",
+  "parent": "5360",
+  "date": "2017-03-23T10:58:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@foolishungry：其实从协议的角度看，需要尽量封装以屏蔽技术细节，以BLE协议为例：经过物理层的封装，在链路层就已经不再有物理channel的概念了。这样对产业化应用来说，当然是非常好的。\r\n不过，来看你的需求，你需要每一个channel（我就当作物理通道了）的RSSI，显然，这与协议封装、抽象的天性是相悖的。\r\n因此，不要指望能从成熟的、产业化的解决方案中找到答案！\r\n你的需求，随便用一个2.4GHz的tranceiver都能搞定（想利用现有的手机等蓝牙功能，就不太可能了）。"
+ },
+ {
+  "id": "5384",
+  "parent": "0",
+  "date": "2017-03-27T20:43:37+08:00",
+  "author": "Jay",
+  "site": "",
+  "text": "请教个armv8相关的问题，core实现了EL3/EL2,那么启动的时候core在EL3，这个时候的代码执行也是在EL3，那么boot代码把bootloader(uboot)load进来后，这个时候需要切换EL吗？如果不切，那么uboot同样也是执行在EL3,uboot加载kernel,(kernel 一般都是在EL1运行)，那么uboot就需要切换到EL1去吗？"
+ },
+ {
+  "id": "5386",
+  "parent": "5384",
+  "date": "2017-03-28T11:43:18+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Jay：/armv8a_arch/arm64_initialize_1.html\r\n上面这篇文章可以回答你的疑问。"
+ },
+ {
+  "id": "5404",
+  "parent": "5386",
+  "date": "2017-03-31T18:05:10+08:00",
+  "author": "Jay",
+  "site": "",
+  "text": "@linuxer：谢谢 linuxer"
+ },
+ {
+  "id": "5484",
+  "parent": "0",
+  "date": "2017-04-26T16:52:39+08:00",
+  "author": "tuonioo",
+  "site": "",
+  "text": "hi,大神你好， 最近在看 内存屏障的问题。有个问题想请教一下。\r\n    在我的理解 多数用户态软件开发设计多数情况不需要考虑memory barrier的问题。因为共享/临界资源的保护已经在多线/进程 设计时候（采用locker 之类的） 消除了cpu cashe 不同步问题。 但是在想用无锁算法的时候， 比如用__sync_add__fetch 系列函数就需要考虑memory barrier. 这个理解正确吗？\r\n    另外查了很多文档 关于__sync_synchronize。 但是 讲解都比较模糊， 说__sync_synchronize 其实就是内核的mfence(). 可是我的理解 __sync_synchronize（）针对的应该是 gcc 编译器以及cpu 而mfence 就只是针对cpu吧？"
+ },
+ {
+  "id": "5486",
+  "parent": "5484",
+  "date": "2017-04-26T19:12:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tuonioo：在我的理解 多数用户态软件开发设计多数情况不需要考虑memory barrier的问题。因为共享/临界资源的保护已经在多线/进程 设计时候（采用locker 之类的） 消除了cpu cashe 不同步问题。 但是在想用无锁算法的时候， 比如用__sync_add__fetch 系列函数就需要考虑memory barrier. 这个理解正确吗？ \r\n－－－－－－－－－－－－－\r\n同意你的观点。Linux内核中提供的同步原语都隐含了memory barrier的功能。\r\n\r\n 另外查了很多文档 关于__sync_synchronize。 但是 讲解都比较模糊， 说__sync_synchronize 其实就是内核的mfence(). 可是我的理解 __sync_synchronize（）针对的应该是 gcc 编译器以及cpu 而mfence 就只是针对cpu吧？\r\n－－－－－－－－－－－－－\r\n__sync_synchronize是full memory barrier，其实说memory barrier的时候其实就是针对CPU而言的，阻止编译器重排指令的叫做optimizer barrier。"
+ },
+ {
+  "id": "5489",
+  "parent": "5486",
+  "date": "2017-04-27T13:34:52+08:00",
+  "author": "tuonioo",
+  "site": "",
+  "text": "@linuxer：谢谢 linuxer 大神，\r\n   __sync_synchronize是full memory barrier，其实说memory barrier的时候其实就是针对CPU而言的，阻止编译器重排指令的叫做optimizer barrier。\r\n    所以 也就是说 __sync_synchronize 并不们祈祷 optimizer barrier的效果， 仅仅是一个 full mb。"
+ },
+ {
+  "id": "5490",
+  "parent": "5489",
+  "date": "2017-04-27T19:26:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tuonioo：不是这样的。\r\noptimizer barrier实际上只会被编译器感知到，对于CPU而言，它根本不知道optimizer barrier的存在，因此optimizer barrier实际上是software barrier。而memory barrier是对应CPU指令，可以被cpu感知到的，因此它是hardware barrier。任何hardware barrier都是隐含了software barrier的功能。"
+ },
+ {
+  "id": "5495",
+  "parent": "5490",
+  "date": "2017-04-28T09:38:29+08:00",
+  "author": "tuonioo",
+  "site": "",
+  "text": "@linuxer：linuxer大神谢谢， 我的问题得到了解决。"
+ },
+ {
+  "id": "5552",
+  "parent": "0",
+  "date": "2017-05-15T17:47:40+08:00",
+  "author": "omoma",
+  "site": "",
+  "text": "赞"
+ },
+ {
+  "id": "5900",
+  "parent": "0",
+  "date": "2017-08-09T17:10:19+08:00",
+  "author": "奔跑的蜗牛",
+  "site": "",
+  "text": "最近在做关于light sensor和proximity sensor的项目，对高通adsp侧的代码不熟悉，能否有大神讲解一番"
+ },
+ {
+  "id": "5907",
+  "parent": "0",
+  "date": "2017-08-15T14:30:23+08:00",
+  "author": "黄小俊",
+  "site": "",
+  "text": "wowo大神，以前在蜗窝上看到的分析UBOOT的Makefile的文章，里面有一个用Makefile构建工程的例子，现在怎么不见了？"
+ },
+ {
+  "id": "5908",
+  "parent": "5907",
+  "date": "2017-08-15T16:07:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@黄小俊：你是指这个吗？\r\n/u-boot/boot_flow_1.html\r\n或者用uboot的tag查查？\r\n/author/2/\r\n\r\n文章应该不会删的。"
+ },
+ {
+  "id": "5913",
+  "parent": "5908",
+  "date": "2017-08-16T11:14:27+08:00",
+  "author": "黄小俊",
+  "site": "",
+  "text": "@wowo：原文地址是：/u-boot/375.html\r\n在网上能搜到别人的转帖：http://www.tuicool.com/articles/J3U3Arz"
+ },
+ {
+  "id": "5914",
+  "parent": "5913",
+  "date": "2017-08-16T11:18:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@黄小俊：呵呵，这是之前一个老兄写的，后来因为一件小事一言不合就把自己的文章全部删掉了。你可以先看网上转贴的吧:-)"
+ },
+ {
+  "id": "6027",
+  "parent": "0",
+  "date": "2017-09-12T11:01:56+08:00",
+  "author": "hutian",
+  "site": "http://cnblogs.com/hutiann",
+  "text": "thanks for sharing the linux developing experience! 评论内容需包含中文?"
+ },
+ {
+  "id": "6031",
+  "parent": "6027",
+  "date": "2017-09-12T13:31:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hutian：呵呵是的，这个秘密都被你发现了，赞！！\r\n主要是很多垃圾广告留言，都是直接发一堆网址，用这种方法可以屏蔽一些～～"
+ },
+ {
+  "id": "6137",
+  "parent": "0",
+  "date": "2017-10-23T16:23:41+08:00",
+  "author": "韩应波",
+  "site": "",
+  "text": "大神你好!\r\n   我是一个前端开发人员，最近在开发一个蓝牙开锁的app，使用webapp进行开发，但遇到了难题。因为需要通过广播的方式来广播密码（我看到您的文章中有提及这种方式）。因为我对原生java代码不熟悉，所以不知道怎么来实现发送自定义数据的广播。希望能够得到您的指点。万分感谢"
+ },
+ {
+  "id": "6141",
+  "parent": "6137",
+  "date": "2017-10-24T09:28:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@韩应波：抱歉啊，我对java也不熟悉的:-("
+ },
+ {
+  "id": "6150",
+  "parent": "6141",
+  "date": "2017-10-28T11:53:17+08:00",
+  "author": "韩应波",
+  "site": "",
+  "text": "@wowo：安卓开发不就是用的java代码吗？"
+ },
+ {
+  "id": "6179",
+  "parent": "0",
+  "date": "2017-11-07T17:10:49+08:00",
+  "author": "coder",
+  "site": "",
+  "text": "怎么没有selinux的相关东西啊"
+ },
+ {
+  "id": "6181",
+  "parent": "6179",
+  "date": "2017-11-08T09:12:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@coder：精力和时间有限啊，只能想到哪写到哪了:-("
+ },
+ {
+  "id": "6195",
+  "parent": "0",
+  "date": "2017-11-14T10:49:27+08:00",
+  "author": "luke",
+  "site": "",
+  "text": "因公司网络限制，文章里的图片不能显示，看的好辛苦啊！！"
+ },
+ {
+  "id": "6198",
+  "parent": "6195",
+  "date": "2017-11-14T21:30:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@luke：可以用手机看:-)"
+ },
+ {
+  "id": "6265",
+  "parent": "0",
+  "date": "2017-11-30T10:36:34+08:00",
+  "author": "Ljm",
+  "site": "",
+  "text": "https://www.cnblogs.com/sky-heaven/p/5523367.html  我遇到了您之前遇到过的一模一样的问题，您在这个网站上面有留言。请问一下您还记得是怎么解决的吗？"
+ },
+ {
+  "id": "6334",
+  "parent": "0",
+  "date": "2017-12-10T17:33:05+08:00",
+  "author": "技术到老",
+  "site": "",
+  "text": "博主什么时候开一个音频子系统的专栏？ Sound在Linux Kernel中可单独占了一个目录，可见它的内容之庞大。"
+ },
+ {
+  "id": "6336",
+  "parent": "6334",
+  "date": "2017-12-11T09:49:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@技术到老：赞同你的观点啊。\r\n如果我能把所有的时间都花在写文章上，可能很快就可以写到sound啦。\r\n可惜业余时间有限，sound还不在计划内啊:-("
+ },
+ {
+  "id": "6405",
+  "parent": "0",
+  "date": "2017-12-21T22:36:22+08:00",
+  "author": "风露",
+  "site": "",
+  "text": "看了一年多了，感谢蜗窝"
+ },
+ {
+  "id": "6409",
+  "parent": "6405",
+  "date": "2017-12-22T16:37:29+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@风露：感谢支持！"
+ },
+ {
+  "id": "6581",
+  "parent": "0",
+  "date": "2018-03-02T10:08:16+08:00",
+  "author": "striver",
+  "site": "",
+  "text": "少了一个网络子系统文章分类，哈哈"
+ },
+ {
+  "id": "6589",
+  "parent": "0",
+  "date": "2018-03-05T12:03:34+08:00",
+  "author": "11",
+  "site": "",
+  "text": "大苏打撒旦"
+ },
+ {
+  "id": "6635",
+  "parent": "0",
+  "date": "2018-04-02T12:29:03+08:00",
+  "author": "逗逗",
+  "site": "",
+  "text": "貌似发生了自创建以来的首次整月不更新。。。。。。静等更新中。。。。。。"
+ },
+ {
+  "id": "6636",
+  "parent": "6635",
+  "date": "2018-04-02T13:41:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@逗逗：兄弟也是有心之人啊，从14年初到18年初，整整四年，确实只有上个月没有更新。想想也真令人唏嘘，时光啊……\r\n这一段确实太忙，一点时间也挤不出来，真是惭愧！！\r\n不过人在心在，可能会中断，但不会放弃，我们会尽力，多谢关注和期待~~~"
+ },
+ {
+  "id": "6650",
+  "parent": "0",
+  "date": "2018-04-05T02:01:39+08:00",
+  "author": "singlee",
+  "site": "",
+  "text": "wowo，深夜来看文章，醍醐灌顶！！！\r\n另外求微信群号，我要加群，谢谢谢谢，能发我邮箱吗"
+ },
+ {
+  "id": "6884",
+  "parent": "6581",
+  "date": "2018-08-14T09:54:15+08:00",
+  "author": "kernel_journey",
+  "site": "",
+  "text": "@striver：嗯嗯，写的真好，博主辛苦啦。期待博主出一系列网络相关的文章,另外求加微信群~~"
+ },
+ {
+  "id": "6914",
+  "parent": "0",
+  "date": "2018-08-26T20:57:25+08:00",
+  "author": "Midas_Zhou",
+  "site": "",
+  "text": "”慢下来，享受技术。“--特别喜欢这句话。 经常学习你们的博文，写得很用心。"
+ },
+ {
+  "id": "6915",
+  "parent": "6914",
+  "date": "2018-08-27T19:39:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Midas_Zhou：多谢鼓励~~"
+ },
+ {
+  "id": "6916",
+  "parent": "0",
+  "date": "2018-08-28T10:01:52+08:00",
+  "author": "Micheal Wang",
+  "site": "",
+  "text": "Hi wowo,\r\n很久没有看到你有新文章更新了，你的文章无论从技术细节还是语言表述，都难得一见的好（linuxer的文章也很好），相信像我一样从蜗窝科技获得技术补给的同行不在少数，国内能有这样一个技术平台真的难能可贵，我有段时间都像追美剧一样每过两三周都会看下你们有没有更新。\r\n很久不见@wowo更新，有种莫名的担心，像失去了什么...但愿不会像上学时迷恋的九州世界一样。\r\n\r\n祝好蜗窝科技。"
+ },
+ {
+  "id": "6917",
+  "parent": "6916",
+  "date": "2018-08-28T11:14:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Micheal Wang：我和linuxer这一段时间都很忙，需要投入较多的精力在工作上。说实话这么久没有写文章，我也是很忐忑和不安，毕竟坚持了这么多年，又有很多像您这样关心、喜爱技术的朋友们随行、支持。\r\n写这些文章，很耗时间，过去的几年里，基本上占据了我所有的业余时间。如果晚上能21：00前回到家的话，除去洗漱的时间，大概可以挤出来1个小时写，那样5天左右可以写一篇。但现在基本上都要22：30左右才能回到家，所以挤不出时间了。\r\n不过没关系，这些都是暂时的，等工作的事情稍微理顺一些了，我们还会继续的。\r\n蜗窝会一直在，只是有时会慢一些。\r\n感谢关心和支持，也祝好~"
+ },
+ {
+  "id": "6945",
+  "parent": "0",
+  "date": "2018-09-12T15:45:27+08:00",
+  "author": "ajay",
+  "site": "",
+  "text": "@wowo\r\n  什么时候写写WiFi的东西啊"
+ },
+ {
+  "id": "7129",
+  "parent": "0",
+  "date": "2019-01-10T16:44:48+08:00",
+  "author": "乐乐",
+  "site": "",
+  "text": "wowo和Linuxer大侠，好久不见更新了，甚是想念……\r\n好担心这个站会被荒废淹没掉……"
+ },
+ {
+  "id": "7132",
+  "parent": "7129",
+  "date": "2019-01-10T19:29:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@乐乐：多谢想念啊，我们会回来的，不会被荒废的~~~~"
+ },
+ {
+  "id": "7151",
+  "parent": "0",
+  "date": "2019-01-24T12:29:04+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "窝窝大神们最近半年在忙神马呢， 只剩下宋大侠在更新呀..."
+ },
+ {
+  "id": "7259",
+  "parent": "0",
+  "date": "2019-03-09T13:56:55+08:00",
+  "author": "Harvey",
+  "site": "",
+  "text": "我也是你们的粉丝，你们加油！"
+ },
+ {
+  "id": "7269",
+  "parent": "7151",
+  "date": "2019-03-12T09:11:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@hzm：最近都在为生活奔波，哈哈，会回来的。"
+ },
+ {
+  "id": "7398",
+  "parent": "0",
+  "date": "2019-05-07T18:55:43+08:00",
+  "author": "wx_oliver",
+  "site": "",
+  "text": "大神有没有用过linux的fiq？最近有个项目实时性要求很高，nuc972芯片，想来想去只能用fiq了。自己已经把timer2中断换成了fiq模式，自己的驱动工作还算正常，但影响到了其他的驱动（spi norflash），期待大神能出篇FIQ的文章呀。"
+ },
+ {
+  "id": "7444",
+  "parent": "0",
+  "date": "2019-05-28T22:11:16+08:00",
+  "author": "BeDook",
+  "site": "",
+  "text": "博主大侠\r\n    余本菜鸟，所涉不深，甚有疑云，百度不解。然机缘所至，拜读所著，颇为豁然，感激涕零！转粉哉！\r\n\r\n    话说如何注册？"
+ },
+ {
+  "id": "7446",
+  "parent": "7444",
+  "date": "2019-05-29T21:09:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@BeDook：语言功能不错哈:-)~~~\r\n多谢夸奖\r\n注册的话，其实没有必要的，反正也能留言~~~"
+ },
+ {
+  "id": "7492",
+  "parent": "0",
+  "date": "2019-06-26T23:14:27+08:00",
+  "author": "BeDook",
+  "site": "",
+  "text": "博主大侠，对Arm-v8中Cache相关的Scu以及Acp研究过么？看了官方手册，但是还是有点模糊，若研究过或了解的话能不能举个例子讲解一下"
+ },
+ {
+  "id": "7506",
+  "parent": "0",
+  "date": "2019-07-02T22:18:24+08:00",
+  "author": "Jacob",
+  "site": "",
+  "text": "博主你好，我在使用Xen加载一个设备树imx7d，设备树中没有psci这个设备节点，但是在解析设备树的时候却能找到psci节点，不知道是什么原因，是否可以给一个意见"
+ },
+ {
+  "id": "7531",
+  "parent": "0",
+  "date": "2019-07-15T05:37:12+08:00",
+  "author": "CharlesTon",
+  "site": "http://www.kankenbackpacksaleuk.com/",
+  "text": "KAP UNDER PRESSURE: A week after throwing a career-high four interceptions, Kaepernick was under pressure all day again, throwing another pick and taking six sacks.\r\nCLEVELAND (AP) 锟?The Browns were having quarterback issues the last time Thad Lewis played for them. Nothing's changed.\r\nWASHINGTON (AP) 锟?The Super Bowl champion New England Patriots will be honored at the White House.\r\n\"That designation will permit the investigation provided [url=http://www.wholesaleshoesnike.us.com/]Wholesale Shoes Nike[/url] by the league's personal conduct policy to run its course and will afford Josh the opportunity to focus on his defense against the charges,\" the statement read in part.\r\n\"I think this is much bigger than a four-game suspension for Tom Brady,\" said Gabe Feldman, a Tulane Law School professor and the director of the Sports Law Program there. \"This is part of that continuing battle for the role of the commissioner in disciplinary matters."
+ },
+ {
+  "id": "7550",
+  "parent": "0",
+  "date": "2019-07-25T19:29:02+08:00",
+  "author": "BeDook",
+  "site": "",
+  "text": "博主，您好！最近在看ARM Cortex-A9 TRM ,对这样一个问题感到困惑，即A9里的某个核对一个cache的共享空间范围访问所需的最大和最小开销该如何测量？这里的最大和最小是从什么角度衡量的呢？从内存容量还是访问路径L1 ，L2，和主存？何时最大？何时最小？博主研究过么？还望指点一二？"
+ },
+ {
+  "id": "7682",
+  "parent": "0",
+  "date": "2019-10-05T11:35:53+08:00",
+  "author": "want to",
+  "site": "",
+  "text": "<script>alert(hello)</script> hello 你好"
+ },
+ {
+  "id": "7778",
+  "parent": "0",
+  "date": "2019-12-08T14:41:09+08:00",
+  "author": "安同",
+  "site": "http://https://www.5mg.tw",
+  "text": "多谢想念啊，我们会回来的"
+ },
+ {
+  "id": "7794",
+  "parent": "7792",
+  "date": "2019-12-24T15:42:58+08:00",
+  "author": "SLX",
+  "site": "",
+  "text": "@AV：请问下你这个博客用什么做的呢，自己搭建的吗"
+ },
+ {
+  "id": "7795",
+  "parent": "7792",
+  "date": "2019-12-24T16:03:45+08:00",
+  "author": "SLX",
+  "site": "",
+  "text": "@AV：请问下你这个博客用什么做的呢，自己搭建的吗"
+ },
+ {
+  "id": "7823",
+  "parent": "0",
+  "date": "2020-01-06T16:27:34+08:00",
+  "author": "戴子天",
+  "site": "",
+  "text": "博主你好，\r\n对于初学Linux驱动的人来说，看您的博文，阅读顺序方面您有什么建议嘛？"
+ },
+ {
+  "id": "7886",
+  "parent": "0",
+  "date": "2020-02-16T22:09:36+08:00",
+  "author": "hei",
+  "site": "http://xxx",
+  "text": "写的真棒，小小的支持一下，愿您能继续加油，写出好文章。"
+ },
+ {
+  "id": "7911",
+  "parent": "0",
+  "date": "2020-03-09T14:33:43+08:00",
+  "author": "蜗牛",
+  "site": "",
+  "text": "多看看温习下"
+ },
+ {
+  "id": "7942",
+  "parent": "0",
+  "date": "2020-04-09T14:24:51+08:00",
+  "author": "twxbtx",
+  "site": "http://https://www.cnblogs.com/twxbtx/",
+  "text": "wowo大神你的蓝牙文章我受益匪浅，最近BLE5.2发布了，有一些新的技术细节，比如CIS Data 在FT点前后的ACK机制变了，有一些细节的地方我研究spec，没有看的很明白，想请教一下大神。"
+ },
+ {
+  "id": "7944",
+  "parent": "0",
+  "date": "2020-04-12T09:17:52+08:00",
+  "author": "xxyyww",
+  "site": "",
+  "text": "博主能否把IOMMU的DRIVER系统性地讲解一下呀？\r\n本人之前主要做USB,PICE的开发，但主要是WINDOWS方面的，之后，有过一些LINUX驱动的开发，有大概十几个LINUX的PATCH提交。但对于LINUX，还是停留在表面。希望博主能以及IOMMU为话题，由浅入深，讲一讲相关的LINUX DRIVER, MEMORY MANAGEMENT, MEMORY TABLE, ..."
+ },
+ {
+  "id": "7962",
+  "parent": "0",
+  "date": "2020-04-17T17:27:06+08:00",
+  "author": "cursorhu",
+  "site": "",
+  "text": "感谢作者们，Geek & Share!"
+ },
+ {
+  "id": "7973",
+  "parent": "0",
+  "date": "2020-04-27T15:30:20+08:00",
+  "author": "woshinieao",
+  "site": "",
+  "text": "我要如何加入你们，学习技术"
+ },
+ {
+  "id": "7977",
+  "parent": "0",
+  "date": "2020-05-06T14:28:10+08:00",
+  "author": "王端木子",
+  "site": "",
+  "text": "要去哪里注册呢？只看到了登录"
+ },
+ {
+  "id": "7979",
+  "parent": "0",
+  "date": "2020-05-07T14:30:49+08:00",
+  "author": "cutelinux",
+  "site": "",
+  "text": "想加入学习队列，无法注册且无法加入企鹅系列的群聊，期待解惑，谢谢！～"
+ },
+ {
+  "id": "8018",
+  "parent": "0",
+  "date": "2020-06-10T15:54:33+08:00",
+  "author": "小毛驴",
+  "site": "",
+  "text": "你好，看了您的文章受益匪浅，现在遇到一个问题，在echo mem >/sys/power/state后，一开始有wake lock,然后我把他们都写入到了wake_unlock中之后，还是无法休眠，打印是无法冻结进程，Freezing of tasks aborted after 0.003 seconds，请教下该怎么处理"
+ },
+ {
+  "id": "8098",
+  "parent": "0",
+  "date": "2020-08-18T14:51:54+08:00",
+  "author": "无非",
+  "site": "",
+  "text": "这么好的技术贴怎么不更新了呢。"
+ },
+ {
+  "id": "8100",
+  "parent": "8018",
+  "date": "2020-08-19T16:36:00+08:00",
+  "author": "雨季",
+  "site": "",
+  "text": "@小毛驴：可以一下冻结失败底下打印的log"
+ },
+ {
+  "id": "8158",
+  "parent": "0",
+  "date": "2020-12-15T00:26:02+08:00",
+  "author": "Haonan",
+  "site": "",
+  "text": "都舍不得看完这些文章，wowo们快回来吧！"
+ },
+ {
+  "id": "8372",
+  "parent": "0",
+  "date": "2021-11-15T11:45:29+08:00",
+  "author": "lowkeyway",
+  "site": "",
+  "text": "不允许注册了吗？"
+ },
+ {
+  "id": "8374",
+  "parent": "8372",
+  "date": "2021-11-16T09:35:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lowkeyway：如果你想要发表评论，不需要注册，请随意。\r\n如果你想要发表文章，需要注册，但是目前不开放注册。\r\n如果的确有发表文章的想法，请联系我们"
+ },
+ {
+  "id": "8474",
+  "parent": "0",
+  "date": "2022-01-06T15:44:25+08:00",
+  "author": "sdafs",
+  "site": "",
+  "text": "非常感谢, 一起努力, 争取也能投稿."
+ },
+ {
+  "id": "8546",
+  "parent": "0",
+  "date": "2022-02-11T16:15:39+08:00",
+  "author": "一只固执的鱼",
+  "site": "",
+  "text": "要是早点看见就好了"
+ },
+ {
+  "id": "8582",
+  "parent": "0",
+  "date": "2022-03-31T10:51:08+08:00",
+  "author": "tianyu",
+  "site": "",
+  "text": "大佬，thermal温控子系统啥时候写一写呀"
+ },
+ {
+  "id": "8636",
+  "parent": "0",
+  "date": "2022-06-30T15:06:59+08:00",
+  "author": "三变",
+  "site": "",
+  "text": "每次来都有新的收获，从uboot学到kernel wowo这都有我想要的 纯粹的技术原理"
+ },
+ {
+  "id": "8678",
+  "parent": "0",
+  "date": "2022-09-28T10:13:29+08:00",
+  "author": "三变",
+  "site": "",
+  "text": "wowo是一个团队吗？还是一个人？\r\n真的太渊博了，几乎覆盖整个底层驱动。。。"
+ },
+ {
+  "id": "8701",
+  "parent": "0",
+  "date": "2022-11-22T10:01:54+08:00",
+  "author": "飞鸟",
+  "site": "",
+  "text": "站内搜索为啥不支持了呢？"
+ },
+ {
+  "id": "8704",
+  "parent": "8701",
+  "date": "2022-11-29T09:14:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@飞鸟：抱歉哈，没来得及处理，已经修复了。\r\n感谢~~~"
+ },
+ {
+  "id": "8731",
+  "parent": "0",
+  "date": "2023-01-20T20:23:13+08:00",
+  "author": "红桃JK",
+  "site": "",
+  "text": "今天下午1点偶然发现这个网页，原本想简单看看，没想到一直看到晚上八点半。\r\n写的太好了，每部分内容都十分具体详细。\r\n直接转粉，收藏，以后慢慢看"
+ },
+ {
+  "id": "8732",
+  "parent": "8701",
+  "date": "2023-01-28T15:16:19+08:00",
+  "author": "maan008",
+  "site": "",
+  "text": "@飞鸟：wowo还在呢啊~~~ 以为你离开了啊 同事推荐的网站，受益匪浅，感谢感谢~"
+ },
+ {
+  "id": "8819",
+  "parent": "8731",
+  "date": "2023-09-13T14:56:25+08:00",
+  "author": "黑桃JK",
+  "site": "",
+  "text": "@红桃JK：捉"
+ },
+ {
+  "id": "8829",
+  "parent": "0",
+  "date": "2023-09-21T11:43:17+08:00",
+  "author": "wwlinus",
+  "site": "",
+  "text": "实际电路中大量使用电平转换芯片，一个电平转换芯片可能为多个功能芯片使用。电平转换芯片本身需要两个电源，这两个电源的开启应该由各个功能芯片控制。但在linux内核似乎没有适合于电平芯片的驱动模型。大家对这个问题有什么看法？\r\n\r\nps，这里所说的驱动模型，如电源对应regulator模型，时钟对应clk模型等。"
+ },
+ {
+  "id": "8833",
+  "parent": "0",
+  "date": "2023-10-01T22:35:47+08:00",
+  "author": "bngvpyhuyj",
+  "site": "http://www.45ur.com",
+  "text": "天堂传世真封神服务端出售www.a3sf.com776356990@qq.com墨香决战千年希望OL服务端出售 \r\n \r\n丝路传说开区大话西游开区蜀门开区机战开区剑侠情缘开区\r\n绝对女神开区传说OL开区刀剑开区弹弹堂开区科洛斯开区\r\n魔力宝贝开区武林外传开区网页游戏开区页游开区希望OL开区\r\n成吉思汗开区剑侠世界开区全民奇迹开区挑战OL开区\r\n红月开区十二之天(江湖OL)开区倚天开区dnf开区\r\n天龙开区奇迹Mu开区魔兽开区魔域开区墨香开区\r\n天堂2开区传奇3开区英雄王座开区千年开区征途开区\r\n新魔界开区骑士开区烈焰开区破天开区决战开区\r\n美丽世界开区乱勇OL开区倚天2开区完美世界开区征服开区\r\n天堂开区传世开区真封神开区劲舞团开区天上碑开区\r\n永恒之塔开区仙境RO开区诛仙开区神泣开区石器开区\r\n冒险岛开区惊天动地开区热血江湖开区问道开区密传开区\r\n火线任务(Heat Project)开区飞飞OL开区洛汗开区天之炼狱开区\r\n————————————————————————————————\r\n24小时电话扣扣服务保证客户随时找到技术员随时解决开服一条龙的各种问题,专业从事开服一条龙服务,我们用最专业的技术,贴心的售后服务,放心质量,请加入我们的开服一条龙开区行列,了解我们,信赖我们,品质来源于责任细节,客户们的满意是我们追求的目标,以诚信为本,主营业务:手游端游页游服务端版本一条龙开服+服务器租用+网站建设修改+广告宣传渠道"
+ },
+ {
+  "id": "8834",
+  "parent": "0",
+  "date": "2023-10-06T17:06:24+08:00",
+  "author": "jalen",
+  "site": "",
+  "text": "请教各位大佬个问题：\r\n   电平触发类型的中断（比如高电平触发），需要手动将电平恢复到低电平吗？如果不需要的话，怎么保证这个中断不会反复的触发呢？（个人理解，这种类型的中断，会保持触发电平，那么如果不恢复电平，退出中断后，不就立即又触发中断了吗？）"
+ },
+ {
+  "id": "8835",
+  "parent": "8834",
+  "date": "2023-10-10T17:43:10+08:00",
+  "author": "Sail",
+  "site": "",
+  "text": "@jalen：设置上升沿触发或者下降沿触发就能达到只触发一次"
+ },
+ {
+  "id": "8850",
+  "parent": "0",
+  "date": "2023-12-09T09:52:25+08:00",
+  "author": "manjaro-user",
+  "site": "",
+  "text": "请教老大一个问题，我们在thinkpad的X1笔记本上安装了manjaro,6.1的内核，最近发现休眠后唤醒的时候，笔记本的LTE4宽带网络经常不能自动恢复，需要手动执行一下“systemctl restart ModemManager”，偶然也能唤醒后自动恢复联网，在网上查了一圈也没有头绪，想请教一下老大，能不能帮忙给分析分析，万分感谢！"
+ },
+ {
+  "id": "8858",
+  "parent": "0",
+  "date": "2024-01-09T05:19:55+08:00",
+  "author": "灵药世家",
+  "site": "",
+  "text": "FM2 GHB DDK 唛可奈因可瑞敏微信sddf828\r\n听话水/乖乖水/催情/迷昏/迷幻/迷情药出售\r\n氟硝西泮蓝精灵,乙醚,春药,久光千岛片，微信SDDF828\r\n【迷昏药喷雾型800元】【迷昏药香烟型900元】【迷昏药服用型500元】【迷昏药拍肩型900元】【迷昏药盘香型900元】【迷情粉500元】【七氟烷1200元】【恩氟烷1000元】【氯仿350元】【GHB水1000元】【唛可奈因500元】【乖乖水900元】【三唑仑350元】【阿普唑仑80元】【杜冷丁250元】【艾司唑仑100元】【地西泮200元】【力月西220元】【氯硝西泮(抗癫痫)100元】【曲马多(镇痛药)80元】【日本蓝精灵500元】【氟硝西泮500元】【听话水900元】【GHB 900元】【乖乖水900元】【kkk3 1200元】【γ-羟丁酸900元】"
+ },
+ {
+  "id": "8887",
+  "parent": "0",
+  "date": "2024-04-23T12:33:39+08:00",
+  "author": "bngvcztboj",
+  "site": "http://www.70pv.com",
+  "text": "劲舞团问道密传一条龙www.43vb.com1325876192@qq.com倚天2龙驹魔钥巨商服务端出售 \r\n \r\n丝路传说开区大话西游开区蜀门开区机战开区剑侠情缘开区\r\n绝对女神开区传说OL开区刀剑开区弹弹堂开区科洛斯开区\r\n魔力宝贝开区武林外传开区网页游戏开区页游开区希望OL开区\r\n成吉思汗开区剑侠世界开区全民奇迹开区挑战OL开区\r\n红月开区十二之天(江湖OL)开区倚天开区dnf开区\r\n天龙开区奇迹Mu开区魔兽开区魔域开区墨香开区\r\n天堂2开区传奇3开区英雄王座开区千年开区征途开区\r\n新魔界开区骑士开区烈焰开区破天开区决战开区\r\n美丽世界开区乱勇OL开区倚天2开区完美世界开区征服开区\r\n天堂开区传世开区真封神开区劲舞团开区天上碑开区\r\n永恒之塔开区仙境RO开区诛仙开区神泣开区石器开区\r\n冒险岛开区惊天动地开区热血江湖开区问道开区密传开区\r\n火线任务(Heat Project)开区飞飞OL开区洛汗开区天之炼狱开区\r\n————————————————————————————————\r\n我们的团队:第一时间技术部设计与程序每天受理新加入的客户业务.我们的客服中心给您的承诺是：您的日常业务最快一小时内完成,其它类型的工作最短时间完成.聆听客户的声音,营造温暖的港湾.我们为您提供是1年365天,24小时的服务,您可以任何时间拨打我们的电话.努力做到让我们没有投诉,给您带来诚信网络平台.主营项目:手游端游页游套餐版本一条龙开区+服务器租用+网站论坛建设+广告宣传代理"
+ },
+ {
+  "id": "8889",
+  "parent": "0",
+  "date": "2024-04-24T22:27:24+08:00",
+  "author": "小明不明白",
+  "site": "",
+  "text": "请问一个问题：\r\n如何控制win10的usb接口的供电？例如cmd命令，编写程序等方法。\r\n期望的结果就是能随时让电脑的某个usb接口断电，以及随时可以开启供电。\r\n感谢任何关注与回复！"
+ },
+ {
+  "id": "9185",
+  "parent": "8850",
+  "date": "2026-03-23T20:12:22+08:00",
+  "author": "biaowang",
+  "site": "",
+  "text": "@manjaro-user：笔记本上的一般搭配了USB接口的蜂窝模块。首先怀疑是usb autosuspend有问题，唤醒后可能触发了usb reset"
+ },
+ {
+  "id": "9186",
+  "parent": "9141",
+  "date": "2026-04-23T23:15:07+08:00",
+  "author": "rte",
+  "site": "",
+  "text": "@三唑仑哪里有：发nm的广告,还尼玛是这种广告,冯死了"
+ },
+ {
+  "id": "9191",
+  "parent": "0",
+  "date": "2026-06-29T16:34:45+08:00",
+  "author": "chaicai",
+  "site": "",
+  "text": "站内搜索不支持了么？"
+ }
+]

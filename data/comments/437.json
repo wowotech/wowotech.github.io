@@ -1,0 +1,98 @@
+[
+ {
+  "id": "6696",
+  "parent": "0",
+  "date": "2018-04-24T21:30:06+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "其实我觉得这么修改并不是很好。把gpiochip_irqchip_add(gc, &iproc_gpio_irq_chip, 0,handle_simple_irq, IRQ_TYPE_NONE)中的handle_simple_irq改成handle_level_irq感觉并不是根本原因。我去看了你说的drivers/pinctrl/bcm/pinctrl-iproc-gpio.c这个驱动。如果按照你说的方法修改的话，如果某个gpio设置是边沿触发的话，那么处理函数也是handle_level_irq。处理边沿中断当时handle_edge_irq。因此，我建议的修改的方法是修改pinctrl-iproc-gpio.c文件的iproc_gpio_irq_set_type函数。在这个函数中根据中断类型，修改中断处理函数是handle_level_irq还是handle_edge_irq或许才更加合理。修改添加类似下面的代码。\r\n\r\nif (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))\r\n\tirq_set_handler_locked(d, handle_level_irq);\r\nelse if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))\r\n\tirq_set_handler_locked(d, handle_edge_irq);"
+ },
+ {
+  "id": "6697",
+  "parent": "0",
+  "date": "2018-04-25T15:03:57+08:00",
+  "author": "sharetech",
+  "site": "",
+  "text": "是的，赞同smcdef的观点"
+ },
+ {
+  "id": "6709",
+  "parent": "6696",
+  "date": "2018-04-26T20:17:51+08:00",
+  "author": "heaven",
+  "site": "",
+  "text": "@smcdef：这么一说确实，你这样的修改比较合理，否则像你说的一样，我那种修改方式仅仅只是针对电平触发处理，所以是应该根据中断类型，来去选择是handle_edge_irq还是handle_level_irq，非常感谢指出"
+ },
+ {
+  "id": "6710",
+  "parent": "0",
+  "date": "2018-04-26T21:43:59+08:00",
+  "author": "mumu",
+  "site": "",
+  "text": "这几天在RK 平台上也遇到这个bad_IRQ_report   然后dump_stack.\r\n咨询一下怎么中断号 查询中断寄存器的值"
+ },
+ {
+  "id": "6714",
+  "parent": "6696",
+  "date": "2018-04-27T17:32:30+08:00",
+  "author": "heaven",
+  "site": "",
+  "text": "@smcdef：我今天再仔细看了下代码，流程应该是这样：\r\n中断控制器怎么判断哪个是哪个handle_level_irq？\r\n中断控制器流程：\r\ngic_handle_irq\r\n    ===>handle_domain_irq\r\n        ===>__handle_domain_irq\r\n            ===>irq_find_mapping \r\n            ===>generic_handle_irq\r\n\r\nirq_find_mapping这个函数来找之前irq_create_mapping的irq映射\r\n找到返回中断号后，再去执行handle_level_irq\r\n\r\n\r\nrequest_threaded_irq\r\n    ===>__setup_irq\r\n        ==>__irq_set_trigger\r\n            ===>irq_set_type\r\n所以可以这样改，驱动注册的时候可以通过这个函数来设置自己的中断控制器需要走哪种流控处理\r\n\r\n内核也有其他驱动有类似的改法\r\ndrivers/gpio/gpio-aspeed.c\r\nstatic int aspeed_gpio_set_type(struct irq_data *d, unsigned int type)\r\n{\r\n\tu32 type0 = 0;\r\n\tu32 type1 = 0;\r\n\tu32 type2 = 0;\r\n\tu32 bit, reg;\r\n\tconst struct aspeed_gpio_bank *bank;\r\n\tirq_flow_handler_t handler;\r\n\tstruct aspeed_gpio *gpio;\r\n\tunsigned long flags;\r\n\tvoid __iomem *addr;\r\n\tint rc;\r\n\r\n\trc = irqd_to_aspeed_gpio_data(d, &gpio, &bank, &bit);\r\n\tif (rc)\r\n\t\treturn -EINVAL;\r\n\r\n\tswitch (type & IRQ_TYPE_SENSE_MASK) {\r\n\tcase IRQ_TYPE_EDGE_BOTH:\r\n\t\ttype2 |= bit;\r\n\tcase IRQ_TYPE_EDGE_RISING:\r\n\t\ttype0 |= bit;\r\n\tcase IRQ_TYPE_EDGE_FALLING:\r\n\t\thandler = handle_edge_irq;\r\n\t\tbreak;\r\n\tcase IRQ_TYPE_LEVEL_HIGH:\r\n\t\ttype0 |= bit;\r\n\tcase IRQ_TYPE_LEVEL_LOW:\r\n\t\ttype1 |= bit;\r\n\t\thandler = handle_level_irq;\r\n\t\tbreak;\r\n\tdefault:\r\n\t\treturn -EINVAL;\r\n\t}\r\n\r\n\tspin_lock_irqsave(&gpio->lock, flags);\r\n\r\n\taddr = bank_irq_reg(gpio, bank, GPIO_IRQ_TYPE0);\r\n\treg = ioread32(addr);\r\n\treg = (reg & ~bit) | type0;\r\n\tiowrite32(reg, addr);\r\n\r\n\taddr = bank_irq_reg(gpio, bank, GPIO_IRQ_TYPE1);\r\n\treg = ioread32(addr);\r\n\treg = (reg & ~bit) | type1;\r\n\tiowrite32(reg, addr);\r\n\r\n\taddr = bank_irq_reg(gpio, bank, GPIO_IRQ_TYPE2);\r\n\treg = ioread32(addr);\r\n\treg = (reg & ~bit) | type2;\r\n\tiowrite32(reg, addr);\r\n\r\n\tspin_unlock_irqrestore(&gpio->lock, flags);\r\n\r\n\tirq_set_handler_locked(d, handler);\r\n\r\n\treturn 0;\r\n}"
+ },
+ {
+  "id": "6716",
+  "parent": "6714",
+  "date": "2018-04-27T17:45:30+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@heaven：你可以详细看一下我发内容，我说修改的函数iproc_gpio_irq_set_type，实际上就是你整理的irq_set_type函数最后需要调用的接口函数。你所表述的修改方法其实就是我一开始说的。"
+ },
+ {
+  "id": "6717",
+  "parent": "6716",
+  "date": "2018-04-27T20:25:01+08:00",
+  "author": "heaven",
+  "site": "",
+  "text": "@smcdef：是的，我有仔细看的，我就是看了你的说的才去又细看了下你说的那块代码，我就是写出来流程而已，也方便自己下次回看，非常感谢你的改进方法"
+ },
+ {
+  "id": "6907",
+  "parent": "0",
+  "date": "2018-08-22T20:13:19+08:00",
+  "author": "慢慢想",
+  "site": "",
+  "text": "@heaven\r\n申请触摸屏中断的时候加上IRQF_ONESHOT是否可以解决问题？"
+ },
+ {
+  "id": "7050",
+  "parent": "0",
+  "date": "2018-11-22T14:07:15+08:00",
+  "author": "cheng",
+  "site": "",
+  "text": "你好：\r\ndesc->handle_irq应该是iproc_gpio_irq_handler吧？我是不明白怎么会是handle_level_irq。"
+ },
+ {
+  "id": "7051",
+  "parent": "7050",
+  "date": "2018-11-22T14:12:50+08:00",
+  "author": "cheng",
+  "site": "",
+  "text": "@cheng：真正让desc->handle_irq=handle_level_irq的路径应该是：\r\ngpiochip_irq_map\r\n    irq_set_chip_and_handler\r\n        irq_set_chip_and_handler_name\r\n            __irq_set_handler\r\n                __irq_do_set_handler"
+ },
+ {
+  "id": "7052",
+  "parent": "0",
+  "date": "2018-11-22T14:37:31+08:00",
+  "author": "cheng",
+  "site": "",
+  "text": "根据软中断号—>硬件终端号，在查询datasheet。"
+ },
+ {
+  "id": "7053",
+  "parent": "6907",
+  "date": "2018-11-22T16:51:07+08:00",
+  "author": "cheng",
+  "site": "",
+  "text": "@慢慢想：可以解决"
+ }
+]

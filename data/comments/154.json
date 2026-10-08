@@ -1,0 +1,66 @@
+[
+ {
+  "id": "1331",
+  "parent": "0",
+  "date": "2015-03-12T15:34:38+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "老大果然厉害啊，瞬间清晰了不少\r\n1：8454:    e92d4800     stmdb    sp!, {fp, lr}－－－将上一个函数的 fp和lr寄存器压入stack, sp=sp+8 \r\n这里应该笔误了吧，sp=sp-8\r\n2：8468:    e54b300d     strb    r3, [fp, #-13]－－－－－－保存argc\r\n这里应该是#-16？\r\n3：不知道有没有手动unwind过一个堆栈，比如我现在知道一个地址是当前的函数的sp，\r\n但是我想从这个sp的地址，不断的查看call stack，怎么样能找到这一个函数跟另一函数的交接处呢？"
+ },
+ {
+  "id": "1332",
+  "parent": "1331",
+  "date": "2015-03-12T18:32:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：1：8454:    e92d4800     stmdb    sp!, {fp, lr}－－－将上一个函数的 fp和lr寄存器压入stack, sp=sp+8\r\n这里应该笔误了吧，sp=sp-8\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n的确是写错了，应该是向低地址方向移动sp指针\r\n\r\n2：8468:    e54b300d     strb    r3, [fp, #-13]－－－－－－保存argc\r\n这里应该是#-16？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n^_^，我的程序有一个小错误，我鬼使神差的把int argc写成char argc了，如果是int argc，当然应该是#-16\r\n\r\n3：不知道有没有手动unwind过一个堆栈，比如我现在知道一个地址是当前的函数的sp，\r\n但是我想从这个sp的地址，不断的查看call stack，怎么样能找到这一个函数跟另一函数的交接处呢？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n如果知道当前函数的sp和fp，栈的回溯很简单，通过fp+4可以知道外层函数的顶部（sp），而底部（fp），可以pop current stack获得。"
+ },
+ {
+  "id": "1333",
+  "parent": "0",
+  "date": "2015-03-12T20:12:12+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "pop current stack\r\n你是说依靠压栈的时候，把fp也会压了，然后pop 刚进入这个函数时候的sp里面的fp就得到上一个的fp，对不？"
+ },
+ {
+  "id": "1334",
+  "parent": "1333",
+  "date": "2015-03-13T00:14:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：假设下面的场景A调用B函数：\r\nA()\r\n{\r\n...\r\nB()\r\n...\r\n}\r\n在B函数的一开始就会把fp_A压入B函数的stack，并且fp_B = sp_A - 4。\r\n对于B函数而言，sp_B和fp_B之间的内容就是B函数的stack frame，在B函数中想回溯上一级函数（也就是A函数）其实就是求sp_A和fp_A，fp_A在B的stack frame上，访问[fp_B, #-4]就可获取fp_A，而sp_A = fp_B + 4\r\n\r\n如果有更深入层次的函数调用，重复上面的过程，就完成了栈的回溯。当fp等于0的时候，意外着来到最外层的函数"
+ },
+ {
+  "id": "1335",
+  "parent": "1334",
+  "date": "2015-03-13T10:00:37+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：ok got it\r\nthx"
+ },
+ {
+  "id": "5213",
+  "parent": "0",
+  "date": "2017-02-12T18:08:08+08:00",
+  "author": "misakmm20001",
+  "site": "",
+  "text": "倒数第2张图  argc argv位置是不是有问题  应该在__libc_start_main栈帧上吧？  应该在lr的上边吧？\r\n__libc_start_main调用main  不应该是先把main的参数压栈  然后继续压lr和fp吗 所以main的参数应该在lr的上面吧？"
+ },
+ {
+  "id": "5215",
+  "parent": "5213",
+  "date": "2017-02-13T09:05:16+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@misakmm20001：对于ARM32而言，如果参数的数目小于4个，那么其实根本不需要把参数压栈的动作，寄存器r0～r3就完成了参数传递。因此，在__libc_start_main调用main的时候，argc argv并不是在__libc_start_main的栈上，而是通过寄存器传递。不过，在main函数中，会把r0和r1（即argc 和argv）保存在自己的栈上（类似与临时变量），因此，图片上将argc 和argv画在main函数的stack frame上。"
+ },
+ {
+  "id": "5217",
+  "parent": "5215",
+  "date": "2017-02-13T15:26:08+08:00",
+  "author": "misaka",
+  "site": "",
+  "text": "@linuxer：谢谢 明白了 估计这个还是有平台相关性的。 应该也存在我说的这种情况。"
+ }
+]

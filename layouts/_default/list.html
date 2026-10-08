@@ -1,0 +1,20 @@
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+{{ with .Content }}<div class="list-intro">{{ . }}</div>{{ end }}
+
+<ul class="post-list">
+{{ range sort .Pages "Date" "desc" }}
+  <li>
+    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    <span class="muted small">{{ .Date.Format "2006-01-02" }}</span>
+  </li>
+{{ end }}
+</ul>
+
+{{ with .Paginator }}
+<nav class="pager">
+  {{ with .Prev }}<a href="{{ .URL }}">← 上一页</a>{{ end }}
+  {{ with .Next }}<a href="{{ .URL }}" class="next">下一页 →</a>{{ end }}
+</nav>
+{{ end }}
+{{ end }}

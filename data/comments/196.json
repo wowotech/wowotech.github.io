@@ -1,0 +1,42 @@
+[
+ {
+  "id": "3668",
+  "parent": "0",
+  "date": "2016-03-15T16:56:11+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "hi wowo ,请教个问题哈，像pr_debug该怎么打开呢？"
+ },
+ {
+  "id": "3673",
+  "parent": "3668",
+  "date": "2016-03-15T20:29:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：如果你的系统定义了CONFIG_DYNAMIC_DEBUG，请参考Documentation/dynamic-debug-howto.txt。\r\n如果没有定义dynamic debug，则有两种方法：\r\n1）直接在需要打开的C文件的最上面（一定要在#include <linux/printk.h>之上），定义DEBUG，#define DEBUG。\r\n2）在对应的Makefile文件中，使用-DDEBUG，传递DEBUG开启的选项。"
+ },
+ {
+  "id": "3674",
+  "parent": "3673",
+  "date": "2016-03-16T09:36:22+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@wowo：好的，谢谢wowo"
+ },
+ {
+  "id": "7408",
+  "parent": "0",
+  "date": "2019-05-10T22:17:58+08:00",
+  "author": "ルイヴィトン",
+  "site": "http://https://www.yamamo78.com/web/louis-b001.htm",
+  "text": "ブランドコピーブランドN品情報満載買取 - ブランドコピー100%品質保証！\r\n満足保障！\r\nリピーター率100％!\r\n主な販売2019年最新作ブランド財布コピー新品！"
+ },
+ {
+  "id": "8161",
+  "parent": "0",
+  "date": "2020-12-19T04:53:07+08:00",
+  "author": "コピー財布",
+  "site": "http://https://www.bagssjp.com",
+  "text": "激安、安心、安全にお届けします、安心して買って下さいパネライコピー時計高品質のブランドコピーを超激安な価格で販売しています。\r\n人気商品コピー ブランド通販専門店。\r\n全国送料無料！\r\n当社は2020逸品が満載している好評度業界No.1ブランド コピー激安通販店です\r\n店長お薦めは以下の商品：\r\nパネライコピー時計,パネライブランドコピー,パネライN級品\r\nIWCブランドコピー,IWC N級品,IWC時計コピー, IWC ポルトギーゼ\r\nコピー財布 https://www.bagssjp.com"
+ }
+]

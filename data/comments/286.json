@@ -1,0 +1,90 @@
+[
+ {
+  "id": "6023",
+  "parent": "0",
+  "date": "2017-09-11T16:07:36+08:00",
+  "author": "lsaxl",
+  "site": "",
+  "text": "驱动里大都使用clk_get\r\n\r\n为什么还要单独维护，而不使用__clk_lookup这个接口呢"
+ },
+ {
+  "id": "6024",
+  "parent": "6023",
+  "date": "2017-09-11T16:14:07+08:00",
+  "author": "lsaxl",
+  "site": "",
+  "text": "@lsaxl：我的意思是__clk_lookup就可以找到clk，为何还使用如下两个组合\r\n原来的clk_register + clk_register_clkdev的组合变成了clk_register + of_clk_add_provider的组合"
+ },
+ {
+  "id": "6030",
+  "parent": "6024",
+  "date": "2017-09-12T13:29:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lsaxl：__clk_lookup是给consumer用的api，clk_register + clk_register_clkdev或者clk_register + of_clk_add_provider是给provider用的api，我不知道你怎么会把它们搅和在一起？"
+ },
+ {
+  "id": "6046",
+  "parent": "6030",
+  "date": "2017-09-17T11:41:29+08:00",
+  "author": "DESW",
+  "site": "",
+  "text": "@wowo：我的意思是clk_get的实现：\r\n比如使用dts注册provider后consumer使用__clk_lookup找到设备\r\n何必再of_clk_add_provider\r\n\r\nclk_get的实现为何不基于__clk_lookup（dts方式）\r\n\r\n不过我想通了，因为有好多简略版的dts，dts中不包含实际的clk"
+ },
+ {
+  "id": "6059",
+  "parent": "0",
+  "date": "2017-09-22T14:13:03+08:00",
+  "author": "向往",
+  "site": "",
+  "text": "@蜗窝 在用户层有什么办法可以查看CCF下管理的各个时钟频率的大小吗"
+ },
+ {
+  "id": "6060",
+  "parent": "6059",
+  "date": "2017-09-22T18:51:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@向往：你是指这些东西吗？\r\nshell@flo:/ $ ls /sys/kernel/debug/clk/\r\nadm0_clk\r\nadm0_p_clk\r\nafab_a_clk\r\nafab_acpu_a_clk\r\n...\r\nvcodec_p_clk\r\nvfe_axi_clk\r\nvfe_clk\r\nvfe_p_clk\r\nvpe_axi_clk\r\nvpe_clk\r\nvpe_p_clk\r\n\r\nshell@flo:/ $ ls /sys/kernel/debug/clk/vfe_clk/\r\nenable          has_hw_gating   list_rates      rate\r\nfmax_rates      is_local        measure"
+ },
+ {
+  "id": "6064",
+  "parent": "6060",
+  "date": "2017-09-23T11:45:43+08:00",
+  "author": "向往",
+  "site": "",
+  "text": "@wowo：是的，原来挂载debugfs后才能看到，谢谢蜗窝@蜗窝！"
+ },
+ {
+  "id": "6395",
+  "parent": "0",
+  "date": "2017-12-20T20:38:22+08:00",
+  "author": "MDO3054",
+  "site": "",
+  "text": "“这一份是系统结构，另外一份是逻辑解析。”\r\n另一份在哪里？"
+ },
+ {
+  "id": "6403",
+  "parent": "6395",
+  "date": "2017-12-21T11:09:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@MDO3054：另外一份没有写，哈哈......"
+ },
+ {
+  "id": "7483",
+  "parent": "0",
+  "date": "2019-06-24T01:06:52+08:00",
+  "author": "Pythonic",
+  "site": "",
+  "text": "assigned-clock-parent并不一定一一对应，clock-bindings.txt里面是这么说的“To skip setting parent or rate of a clock its corresponding entry should be set to 0, or can be omitted if it is not followed by any non-zero entry.”，clock-bindings.txt中的例子：\r\n    uart@a000 {\r\n        compatible = \"fsl,imx-uart\";\r\n        reg = <0xa000 0x1000>;\r\n        ...\r\n        clocks = <&osc 0>, <&pll 1>;\r\n        clock-names = \"baud\", \"register\";\r\n\r\n        assigned-clocks = <&clkcon 0>, <&pll 2>;\r\n        assigned-clock-parents = <&pll 2>;\r\n        assigned-clock-rates = <0>, <460800>;\r\n    };"
+ },
+ {
+  "id": "7938",
+  "parent": "0",
+  "date": "2020-04-03T19:26:32+08:00",
+  "author": "吴b",
+  "site": "http://wu-being.blog.csdn.net/",
+  "text": "我在display 平台代码中，找到pclk=devm_clk_get(dev,clk_name) 使用函数，打印出clk_name是没问题的，但是我想打印pclk的name和parent和rate，但编译提示成员没实现，有人了解是怎么回事吗？比如下面： \r\n\r\npclk=devm_clk_get(dev,clk_name); \r\nprintk(\"%s\", pclk->core->name);// build error"
+ }
+]

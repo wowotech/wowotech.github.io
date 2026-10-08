@@ -1,0 +1,602 @@
+[
+ {
+  "id": "517",
+  "parent": "0",
+  "date": "2014-10-13T18:08:11+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "又涨姿势了。开心ing"
+ },
+ {
+  "id": "518",
+  "parent": "517",
+  "date": "2014-10-13T19:48:05+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：其实这份文档没有描述解决read-modify-write的问题的发展过程。在ARM平台上，ARMv6之前，SWP和SWPB指令被用来支持对shared memory的访问：\r\n\r\nSWP <Rt>, <Rt2>, [<Rn>]\r\n\r\nRn中保存了SWP指令要操作的内存地址，通过该指令可以将Rn指定的内存数据加载到Rt寄存器，同时将Rt2寄存器中的数值保存到Rn指定的内存中去。\r\n\r\n这份文档中描述的read-modify-write的问题本质上是一个保持对内存read和write访问的原子性的问题。也就是说对内存的读和写的访问不能被打断。对该问题的解决可以通过硬件、软件或者软硬件结合的方法来进行。早期的ARM CPU给出的方案就是依赖硬件：SWP这个汇编指令执行了一次读内存操作、一次写内存操作，但是从程序员的角度看，SWP这条指令就是原子的，读写之间不会被任何的异步事件打断。具体底层的硬件是如何做的呢？这时候，硬件会提供一个lock signal，在进行memory操作的时候设定lock信号，告诉总线这是一个不可被中断的内存访问，直到完成了SWP需要进行的两次内存访问之后再clear lock信号。\r\n\r\n当然，随着技术的发展，在ARMv6之后的ARM CPU已经不推荐使用SWP这样的指令，而是提供了LDREX和STREX这样的指令。这种方法是使用软硬件结合的方法来解决原子操作问题，看起来代码比较复杂，但是系统的性能可以得到提升。其实，从硬件角度看，LDREX和STREX这样的指令也是采用了lock-free的做法。"
+ },
+ {
+  "id": "536",
+  "parent": "0",
+  "date": "2014-10-20T11:32:37+08:00",
+  "author": "常山黄豆",
+  "site": "",
+  "text": "原子操作用在什么地方？怎么使用？高手能否举个例子"
+ },
+ {
+  "id": "537",
+  "parent": "536",
+  "date": "2014-10-20T18:06:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@常山黄豆：写驱动的时候还有可以用到原子操作的。比如你的驱动中，有一个共享变量用来记录资源数目，或者事件发生的数目，或者驱动的状态等等，如果该变量被多个thread访问（有的thread增加其数目，有的thread减少其数目），那么就可以定义这个共享变量为atomic_t类型，用原子操作的API来修改这个变量就OK了"
+ },
+ {
+  "id": "538",
+  "parent": "536",
+  "date": "2014-10-20T19:27:42+08:00",
+  "author": "tiger",
+  "site": "",
+  "text": "@常山黄豆：其实博主已经在第一章源由里面讲的很清楚了，保护共享变量，以免出现意外的结果，例如我以为我已经修改了某个值，其实没有被修改。"
+ },
+ {
+  "id": "541",
+  "parent": "537",
+  "date": "2014-10-21T15:19:05+08:00",
+  "author": "常山黄豆",
+  "site": "",
+  "text": "@linuxer：@linuxer，我是这样理解的，如果我给一个全局变量做INC运算，如果不是用atomic来INC，那可能我的INC运算会被其他thread打断，甚至也对这个全局变量做了某种运算，这样导致最后这个全局变量的结果不是我预期的。我的理解对吗？"
+ },
+ {
+  "id": "543",
+  "parent": "541",
+  "date": "2014-10-21T16:31:19+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@常山黄豆：对，基本就是这个意思。不过，不仅仅是inc运算，只要涉及read-update-modify的操作都存在这个问题。简单说，原子操作就是需要read，update，modify的动作一气呵成，不能被打断"
+ },
+ {
+  "id": "1590",
+  "parent": "0",
+  "date": "2015-04-24T17:33:24+08:00",
+  "author": "puppy",
+  "site": "",
+  "text": "关于exclusive monitor大神能否再说得详细点。\r\n\r\nlocal/global monitor就是一个简单的状态机，维护 exclusive 和 open两种状态，每个CPU只有一个local monitor。\r\n\r\n那么，问题来了：local monitor同一时间只能监控一个地址XXX，还是能同时监控多个地址XXX ，YYY，ZZZ ... \r\n如果只能监控一个地址？"
+ },
+ {
+  "id": "1595",
+  "parent": "0",
+  "date": "2015-04-25T10:26:12+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "还有 %2 --> \"+Qo\" (v->counter) 跟没就没用到，在这里是什么意思呢？"
+ },
+ {
+  "id": "1596",
+  "parent": "518",
+  "date": "2015-04-25T10:32:20+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "@linuxer：linuxer见识真广。 这几天我刚看过ARM的文档，文档上说传统的SWP会在硬件层面上锁内存总线，就是lock signal，对系统性能有影响，所以ARM 11处理器开始就被exclusive monitor机制替代了。"
+ },
+ {
+  "id": "1598",
+  "parent": "1590",
+  "date": "2015-04-26T12:12:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@puppy：这一段在ARM ARM中的描述还是比较清楚的，而且比较专业，推荐可以看看原文。\r\n\r\n可同时监控的地址是可以配置的（2~512个），不同的CPU实现会有不同的配置。"
+ },
+ {
+  "id": "1599",
+  "parent": "1595",
+  "date": "2015-04-26T12:18:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@puppypyb：v->counter是一个output参数，上面的o说明该变量是一个内存操作数，上面的Q说明：对这个memory的访问是通过寄存器中保存该memory的地址从而间接访问的，我们看看%3那个input参数就明白了：\r\n\"r\" (&v->counter)"
+ },
+ {
+  "id": "1600",
+  "parent": "1596",
+  "date": "2015-04-26T12:19:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@puppypyb：客气客气，没有事情的时候我也是会翻看ARM ARM文档，了解一些ARM体系结构的东西，有空多交流啊"
+ },
+ {
+  "id": "1611",
+  "parent": "1598",
+  "date": "2015-04-27T16:25:00+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "@linuxer：thanks"
+ },
+ {
+  "id": "2449",
+  "parent": "0",
+  "date": "2015-08-12T07:02:45+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "一直一来，有一个和原语操作类似概念（临界段）代码不解，\r\ntask1:\r\n1   add_waitqueue();\r\n2   set_current_state(TASH_UNINTERRUPTIBLE);\r\n3   schedule();\r\n\r\n上面的代码是大多同步机制使用的，让线程进入阻塞的一种方式，个人的理解，对于1,2,3的所有操作应该是一个\r\n临界段，但是内核中所的代码都是这样操作。比如如果在２和３的操作中发生抢占，而获得运行的线程，正好release 相关的资源，并把task1从相应的waitqueue中移除，而当task１再次运行时，接着进行schedule，让自己让出cpu，　但此时的task１则丢失了此次的信号。不知道自己应该从哪方面去理解类似的这种场景，希望解惑！"
+ },
+ {
+  "id": "2453",
+  "parent": "2449",
+  "date": "2015-08-12T11:26:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@electrlife：我觉得内核中的semaphore和你说的场景是类似的，我们一起来看看它的代码（示意代码，我做了修改）：\r\nvoid down(struct semaphore *sem)\r\n{\r\n\traw_spin_lock_irqsave(&sem->lock, flags);－－－－加锁\r\n\r\n\tlist_add_tail(&waiter.list, &sem->wait_list);－－挂入等待队列\r\n\r\n\r\n\tfor (;;) {\r\n\r\n\t\t__set_task_state(task, state);－－－－－设定任务状态\r\n\r\n\t\traw_spin_unlock_irq(&sem->lock);－－－－解锁\r\n\r\n\t\ttimeout = schedule_timeout(timeout);－－－－－调度\r\n\r\n\t\traw_spin_lock_irq(&sem->lock);－－－－－－上锁\r\n\r\n\r\n\t}\r\n\r\n\traw_spin_unlock_irqrestore(&sem->lock, flags);－－－－解锁\r\n}\r\n\r\n从上面的代码可以看出来，1和2是临界区，被spin lock保护的。"
+ },
+ {
+  "id": "2471",
+  "parent": "0",
+  "date": "2015-08-18T21:21:13+08:00",
+  "author": "jefby",
+  "site": "http://blog.csdn.net/jefbai",
+  "text": "arm64下gcc 4.9.2，编译汇编中@开始地方出现异常\r\n```\r\n/tmp/ccd6iavd.s: Assembler messages:\r\n/tmp/ccd6iavd.s:26: Error: junk at end of line, first unrecognized character is `@'\r\n```\r\ngcc4.9不支持@注释符么？"
+ },
+ {
+  "id": "2473",
+  "parent": "2471",
+  "date": "2015-08-19T13:45:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jefby：您可以多提供一些日志，怀疑你没有用ARM的编译器，可能误用成x86的了…"
+ },
+ {
+  "id": "2474",
+  "parent": "2473",
+  "date": "2015-08-19T14:06:42+08:00",
+  "author": "jefby",
+  "site": "http://blog.csdn.net/jefbai",
+  "text": "@wowo：我是在Arm64机器上编译的，用的local gcc，应该不是这个问题\r\n\r\n#/usr/bin/gcc asm-test.c -v\r\nUsing built-in specs.\r\nCOLLECT_GCC=/usr/bin/gcc\r\nCOLLECT_LTO_WRAPPER=/usr/libexec/gcc/aarch64-redhat-linux/4.9.2/lto-wrapper\r\nTarget: aarch64-redhat-linux\r\nConfigured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++,objc,obj-c++,fortran,ada,go,lto --enable-plugin --enable-initfini-array --disable-libgcj --with-isl=/home/build/rpmbuild/BUILD/gcc-4.9.2-20141101/obj-aarch64-redhat-linux/isl-install --with-cloog=/home/build/rpmbuild/BUILD/gcc-4.9.2-20141101/obj-aarch64-redhat-linux/cloog-install --enable-gnu-indirect-function --build=aarch64-redhat-linux\r\nThread model: posix\r\ngcc version 4.9.2 20141101 (Red Hat 4.9.2-1) (GCC)\r\nCOLLECT_GCC_OPTIONS='-v' '-mlittle-endian' '-mabi=lp64'\r\n /usr/libexec/gcc/aarch64-redhat-linux/4.9.2/cc1 -quiet -v asm-test.c -quiet -dumpbase asm-test.c -mlittle-endian -mabi=lp64 -auxbase asm-test -version -o /tmp/ccHLG3ae.s\r\nGNU C (GCC) version 4.9.2 20141101 (Red Hat 4.9.2-1) (aarch64-redhat-linux)\r\n\tcompiled by GNU C version 4.9.2 20141101 (Red Hat 4.9.2-1), GMP version 6.0.0, MPFR version 3.1.2, MPC version 1.0.2\r\nGGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072\r\nignoring nonexistent directory \"/usr/lib/gcc/aarch64-redhat-linux/4.9.2/include-fixed\"\r\nignoring nonexistent directory \"/usr/lib/gcc/aarch64-redhat-linux/4.9.2/../../../../aarch64-redhat-linux/include\"\r\n#include \"...\" search starts here:\r\n#include <...> search starts here:\r\n /usr/lib/gcc/aarch64-redhat-linux/4.9.2/include\r\n /usr/local/include\r\n /usr/include\r\nEnd of search list.\r\nGNU C (GCC) version 4.9.2 20141101 (Red Hat 4.9.2-1) (aarch64-redhat-linux)\r\n\tcompiled by GNU C version 4.9.2 20141101 (Red Hat 4.9.2-1), GMP version 6.0.0, MPFR version 3.1.2, MPC version 1.0.2\r\nGGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072\r\nCompiler executable checksum: a6fe4020046dbad896213dcd0a3034ff\r\nCOLLECT_GCC_OPTIONS='-v' '-mlittle-endian' '-mabi=lp64'\r\n as -v -EL -mabi=lp64 -o /tmp/ccYexbch.o /tmp/ccHLG3ae.s\r\nGNU assembler version 2.24 (aarch64-redhat-linux) using BFD version version 2.24\r\n/tmp/ccHLG3ae.s: Assembler messages:\r\n/tmp/ccHLG3ae.s:26: Error: junk at end of line, first unrecognized character is `@'"
+ },
+ {
+  "id": "2475",
+  "parent": "2473",
+  "date": "2015-08-19T14:08:31+08:00",
+  "author": "jefby",
+  "site": "http://blog.csdn.net/jefbai",
+  "text": "@wowo：asm-test.c代码如下\r\n\r\n#include <stdio.h>\r\n\r\nint main()\r\n{\r\n\tint res = 0, input = 1;\r\n\t__asm__ __volatile__(\"@ print res=input\\n\"\r\n\t\t\" mov %1,%0\"\r\n\t\t:\"=&r\"(res)\r\n\t\t:\"r\"(input)\r\n\t\t:\"cc\"\r\n\t\t\t);\r\n\r\n\tprintf(\"%d\",res);\r\n}"
+ },
+ {
+  "id": "2476",
+  "parent": "2475",
+  "date": "2015-08-19T14:33:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jefby：你的宿主机器是ARM64？编译器是GCC？test代码是ARM汇编？我觉得还是有些奇怪啊，gcc编译ARM汇编是有问题吧，要用arm-gcc才行吧？"
+ },
+ {
+  "id": "2478",
+  "parent": "2476",
+  "date": "2015-08-19T16:07:34+08:00",
+  "author": "jefby",
+  "site": "http://blog.csdn.net/jefbai",
+  "text": "@wowo：我是在arm64上编译arm64的汇编，用的是arm64机器的local gcc编译器，你可以理解为x86编译x86的汇编，理论上应该是没有问题的。去除掉@符号开始的部分可以编译运行"
+ },
+ {
+  "id": "2480",
+  "parent": "2478",
+  "date": "2015-08-19T18:54:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jefby：明白您的意思了，我使用“arm-2012.03”或者“arm-2011.09”编译okay，但是使用“gcc-linaro-4.9-2014.11-x86_64_aarch64-linux-gnu”或者“gcc-linaro-aarch64-linux-gnu-4.8-2013.12_linux”编译都失败，可能是GCC的版本问题，但根源是什么，估计要去GNU官网上去问问。"
+ },
+ {
+  "id": "2848",
+  "parent": "0",
+  "date": "2015-10-27T09:10:37+08:00",
+  "author": "descent",
+  "site": "",
+  "text": "感謝, 解除了我對 ldrex,strex 的疑惑"
+ },
+ {
+  "id": "2850",
+  "parent": "0",
+  "date": "2015-10-27T09:16:25+08:00",
+  "author": "descent",
+  "site": "",
+  "text": "網頁似乎對 <, > 有問題, 排版有些錯亂。"
+ },
+ {
+  "id": "2855",
+  "parent": "2850",
+  "date": "2015-10-27T12:21:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@descent：已经修复，多谢提醒！"
+ },
+ {
+  "id": "3272",
+  "parent": "0",
+  "date": "2015-12-23T08:52:14+08:00",
+  "author": "jinxin",
+  "site": "http://www.linux2web.net",
+  "text": "请教一个问题：\r\n嵌入式汇编代码就不会被打断么？\r\nldrex    %0, [%3]\\n\" －－－－－－－－－－－－－－－－－－－－－－－－－－（4）\r\n\"    add    %0, %0, %4\\n\" －－－－－－－－－－－－－－－－－－－－－－－－－－（5）\r\n\"    strex    %1, %0, [%3]\\n\" －－－－－－－－－－－－－－－－－－－－－－－－－（6）\r\n这三句代码的执行不会被打断么？\r\n感谢您的回复"
+ },
+ {
+  "id": "3275",
+  "parent": "3272",
+  "date": "2015-12-23T13:24:06+08:00",
+  "author": "passenger",
+  "site": "",
+  "text": "@jinxin：你没有仔细看博主的文章哦，这里并不是通过汇编保证原子操作的，而是通过LDREX/STREX这样的exclusive机制。"
+ },
+ {
+  "id": "4230",
+  "parent": "0",
+  "date": "2016-07-11T21:41:11+08:00",
+  "author": "hjl",
+  "site": "",
+  "text": "如何是单核，多线程之间是不是存在一个bug?"
+ },
+ {
+  "id": "4231",
+  "parent": "4230",
+  "date": "2016-07-12T08:36:17+08:00",
+  "author": "hello-world",
+  "site": "",
+  "text": "@hjl：我有点看不懂你的问题，能再详细点说说吗？"
+ },
+ {
+  "id": "4232",
+  "parent": "4231",
+  "date": "2016-07-12T09:36:48+08:00",
+  "author": "hjl",
+  "site": "",
+  "text": "@hello-world：昨晚的疑问是 在单核系统下，两个线程共同访问同个变量，利用原子操作进行自加。当线程1 获得这个变量内存的访问权，这时被线程2抢占，线程2也获取这个内存的访问权，进行多次累加，当线程2再次获得访问权时，这时被线程1抢占，线程1继续之间的自加动作，并且将累加的值写回内存。\r\n\r\n上面就是场景，这种情况会导致累加结果回退，请问如何避免这种情况？？？"
+ },
+ {
+  "id": "4241",
+  "parent": "4232",
+  "date": "2016-07-12T17:48:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@hjl：如果自加操作是原子的，那么不会出现你说的问题啊。"
+ },
+ {
+  "id": "5257",
+  "parent": "0",
+  "date": "2017-02-27T11:29:18+08:00",
+  "author": "ron",
+  "site": "",
+  "text": "@linuxer: 我有个问题请教一下，arm中atomic_add/atomic_sub 这些操作是通过ldex/stex来实现的，但是atomic_set 只是通过#define atomic_set(v, i) （(（v）->counter) = (i)）来实现，那么atomic_set 不存在竞争的情况吗？"
+ },
+ {
+  "id": "5267",
+  "parent": "5257",
+  "date": "2017-02-27T19:17:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ron：atomic_add/atomic_sub 这些操作三个步骤（read-modify-write）：\r\n1. read memory to register\r\n2. add register\r\n3. update the new value to the memory\r\n\r\n对于atomic_set，只有上面的步骤3而已，一个str操作就OK了，因此不需要特别处理。"
+ },
+ {
+  "id": "5271",
+  "parent": "5267",
+  "date": "2017-02-28T14:58:49+08:00",
+  "author": "ron",
+  "site": "",
+  "text": "@linuxer：@linuxer 多谢。got it."
+ },
+ {
+  "id": "5381",
+  "parent": "0",
+  "date": "2017-03-27T11:33:23+08:00",
+  "author": "michael",
+  "site": "",
+  "text": "有些看不懂。\r\n对于原子操作，Linux内核是通过哪种原理或者机制，保证了同步？\r\n博主能否用一些常规语言来描述一下。谢谢了"
+ },
+ {
+  "id": "5382",
+  "parent": "5381",
+  "date": "2017-03-27T11:34:09+08:00",
+  "author": "michael",
+  "site": "",
+  "text": "@michael：另外，汇编语言也可以被中断打断的吧？"
+ },
+ {
+  "id": "5387",
+  "parent": "5381",
+  "date": "2017-03-28T11:47:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@michael：原子操作是和CPU ARCH相关的内容，在linux内核中提供了统一的接口，底层有各自的实现。"
+ },
+ {
+  "id": "5388",
+  "parent": "5387",
+  "date": "2017-03-28T15:07:30+08:00",
+  "author": "michael",
+  "site": "",
+  "text": "@linuxer：原子操作过程中，interrupt controller是不会响应中断的吧，包括CPU中断和外设中断?"
+ },
+ {
+  "id": "5391",
+  "parent": "5388",
+  "date": "2017-03-29T09:53:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@michael：除非你disable了interrupt controller的功能，否则它应该是会响应中断请求的，并通知到CPU，当然cpu是否响应中断是看CPU是否disable了local的中断响应，如果没有，那么cpu当然会响应异步中断事件。\r\n当然，如果原子操作只是一条指令（例如SWP指令），那么中断响应要么在该指令之前发生，要么在该指令之后发生。\r\n如果是exclusive指令来完成原子操作，那么中断是可以插入的。"
+ },
+ {
+  "id": "5392",
+  "parent": "5391",
+  "date": "2017-03-30T13:06:29+08:00",
+  "author": "michael",
+  "site": "",
+  "text": "@linuxer：感谢您的及时回复。\r\n\r\n您的文档中这样描述： 对于UP，原子操作就是通过关闭CPU中断来完成的\r\n\r\n对于UP（单核），由于原子操作是不允许打断的，所以需要关闭中断来实现吗？"
+ },
+ {
+  "id": "5405",
+  "parent": "5392",
+  "date": "2017-03-31T19:13:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@michael：我文章中的原话是：\r\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝\r\n（1）ARMv6之前的CPU并不支持SMP，之后的ARM架构都是支持SMP的（例如我们熟悉的ARMv7-A）。因此，对于ARM处理，其原子操作分成了两个阵营，一个是支持SMP的ARMv6之后的CPU，另外一个就是ARMv6之前的，只有单核架构的CPU。对于UP，原子操作就是通过关闭CPU中断来完成的。 \r\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝\r\n这里的“对于up”是指的那些只支持UP的的ARMv6之前的ARM处理器，这些ARM处理器没有原子指令支持，read-modify-write类型的操作只能是采用关中断来实现。"
+ },
+ {
+  "id": "5426",
+  "parent": "5405",
+  "date": "2017-04-04T15:18:11+08:00",
+  "author": "michael",
+  "site": "",
+  "text": "@linuxer：感谢您的回复。\r\n\r\n常说的，原子操作是最小的执行单元，执行过程中不会休眠，也不会中断。\r\n\r\n这是不是针对ARMv6之前的ARM处理器的？\r\n因为根据您的描述，从ARMv7开始，原子操作似乎可以被中断打断的。"
+ },
+ {
+  "id": "6444",
+  "parent": "0",
+  "date": "2018-01-01T23:45:35+08:00",
+  "author": "benson",
+  "site": "",
+  "text": "armv8上多核结构上，spinlock上必须每个都核都把mmu初始化后，才能用吗？"
+ },
+ {
+  "id": "6445",
+  "parent": "1598",
+  "date": "2018-01-02T00:31:18+08:00",
+  "author": "benson",
+  "site": "",
+  "text": "@linuxer：我觉得这个这是说，Granularity of Exclusive Monitor的范围是2～512个字节，也就是说假如系统的ERG=64的，那么0x00000000和0x00000000c对monitor的将就是一个地址。\r\n我觉得如果系统monitor只有一个，是否是只能监控一个ERG的范围的地址？"
+ },
+ {
+  "id": "6551",
+  "parent": "5267",
+  "date": "2018-02-10T11:29:27+08:00",
+  "author": "sgy1993",
+  "site": "",
+  "text": "@linuxer：atomic_set(v, i)----会翻译成两条汇编指令啊!\r\n例如---\r\natomic_t number = ATOMIC_INIT(1);\r\natomic_set(&number, 4);\r\n上面这条指令的反汇编是\r\n  10:\te3a02004 \tmov\tr2, #4\r\n  14:\te5832000 \tstr\tr2, [r3]\r\n这个怎么保证原子操作呢?加入 r2 = 4之后, 别的程序修改了r2.不就有问题????"
+ },
+ {
+  "id": "6552",
+  "parent": "0",
+  "date": "2018-02-10T11:42:36+08:00",
+  "author": "sgy1993",
+  "site": "",
+  "text": "对以下代码有点疑问?希望您能解疑.....\r\nstatic inline void atomic_add(int i, atomic_t *v) \r\n{ \r\n    unsigned long tmp; \r\n    int result;\r\n\r\n    prefetchw(&v->counter); －－－－－－－－－－－－－－－－－－－－－－－－－（2） \r\n    __asm__ __volatile__(\"@ atomic_add\\n\" －－－－－－－－－－－－－－－－－－（3） \r\n\"1:    ldrex    %0, [%3]\\n\" －－－－－－－－－－－－－－－－－－－－－－－－－－（4） \r\n\"    add    %0, %0, %4\\n\" －－－－－－－－－－－－－－－－－－－－－－－－－－（5） \r\n\"    strex    %1, %0, [%3]\\n\" －－－－－－－－－－－－－－－－－－－－－－－－－（6） \r\n\"    teq    %1, #0\\n\" －－－－－－－－－－－－－－－－－－－－－－－－－－－－－（7） \r\n\"    bne    1b\" \r\n    : \"=&r\" (result), \"=&r\" (tmp), \"+Qo\" (v->counter) －－－对应％0，％1，％2 \r\n    : \"r\" (&v->counter), \"Ir\" (i) －－－－－－－－－－－－－对应％3，％4 \r\n    : \"cc\"); \r\n}\r\n假如只有一个cpu, a程序想对v->counter加1操作, 执行(4)之后, 发生中断,开始执行b程序, b也要访问这个v->counter(对其进行加1操作),之前a执行了ldrex, 所以b的 strex对couter的操作是能够写进去的...此时又转回去执行a..会一直循环到执行成功,...这样从结果上看不就 加 2了吗??\r\n\r\na                          b\r\nldrex-->设置独占标记\r\n                           ldrex\r\n                           modify-->加1操作\r\n                           strex\r\nmodify-->加1操作\r\nstrex"
+ },
+ {
+  "id": "6553",
+  "parent": "6551",
+  "date": "2018-02-11T09:31:02+08:00",
+  "author": "hello-world",
+  "site": "",
+  "text": "@sgy1993：能保证：\r\n 14:    e5832000     str    r2, [r3] \r\n这条指令是原子的就OK了。"
+ },
+ {
+  "id": "6554",
+  "parent": "6552",
+  "date": "2018-02-11T09:35:17+08:00",
+  "author": "hello-world",
+  "site": "",
+  "text": "@sgy1993：执行过程如下：\r\na                          b\r\nldrex-->设置独占标记\r\n                           ldrex\r\n                           modify-->加1操作\r\n                           strex\r\nmodify-->加1操作\r\nstrex（error，retry）\r\nldrex-->设置独占标记\r\nmodify-->加1操作\r\nstrex（OK）\r\n因此，结果是对的。"
+ },
+ {
+  "id": "6555",
+  "parent": "6553",
+  "date": "2018-02-11T13:12:32+08:00",
+  "author": "sgy1993",
+  "site": "",
+  "text": "@hello-world：我觉的应该是mov r2,4执行完之后,是可能被中断打断的,但是中断处理的时候,会保存寄存器的值在堆栈上,中断处理返回来之后,r2的值会从堆栈上弹出来.这样counter的值仍然是4...(如果把4改成一个全局变量也是一样,理论上都是从内存某处取数据放到寄存器(ldr指令), 然后在str 寄存器的值-->内存)..即便ldr执行完,有中断改变了全局变量的值,但由于值已经被ldr存在寄存器里了..所以结果最终还是正确的...个人觉得原子操作应该是即便中断发生,而不影响最终结果的操作"
+ },
+ {
+  "id": "6556",
+  "parent": "6554",
+  "date": "2018-02-11T13:16:10+08:00",
+  "author": "sgy1993",
+  "site": "",
+  "text": "@hello-world：感谢回复:\r\n    a只是想加1.. 但是由于b程序能成功加1, 最终结果变量加了2...这个正常吗?"
+ },
+ {
+  "id": "6996",
+  "parent": "0",
+  "date": "2018-10-19T10:10:02+08:00",
+  "author": "弄堂小子",
+  "site": "",
+  "text": "请教下，\r\n原文中：对于UP，原子操作就是通过关闭CPU中断来完成的。\r\n  是否可以理解关闭中断有包括禁止抢占的作用，不然没法保证原子？\r\n  评论区有提到V6之前用的是SWP和SWPB指令，现在用关中断方式处理了，这两个是如何比较取舍的？"
+ },
+ {
+  "id": "7391",
+  "parent": "0",
+  "date": "2019-05-04T16:28:47+08:00",
+  "author": "yaoike",
+  "site": "",
+  "text": "请教下，原文：  硬件arbiter的限制使得CPU的写回必须是串行化的。\r\n\r\n那是不是说，受硬件arbiter的限制，不考虑其它方面，纯粹从多核CPU（比如说：8核CPU) 在写数据到 memory 这一点上，相比于单核CPU，并无优势。\r\n\r\n即单核，多核CPU 同时写同样一堆数据到 memory ，耗时一样。"
+ },
+ {
+  "id": "7417",
+  "parent": "6996",
+  "date": "2019-05-14T16:36:01+08:00",
+  "author": "xiaoai",
+  "site": "",
+  "text": "@弄堂小子：第一个问题我的理解：因为进程的调度从原始来说是依赖于中断的(往往是定时器中断)，如果关闭中断基本上就相当于是终止了进程的调度，这样多线程访问临界资源的问题就规避了。还有一种就是其他中断可能访问这种临界资源，这时候关闭了中断也就避免了并行的修改。这样就实现了原子操作。"
+ },
+ {
+  "id": "7613",
+  "parent": "0",
+  "date": "2019-08-26T12:55:29+08:00",
+  "author": "nothing",
+  "site": "",
+  "text": "a                          b \r\nldrex-->设置独占标记 \r\n                           ldrex \r\n                           modify-->加1操作 \r\n                           strex \r\n                           ldrex \r\nmodify-->加1操作 \r\nstrex\r\n                           modify-->加1操作 \r\n                           strex\r\na、b线程在同一个CPU核上，如果按照上面执行顺序发展的话，a线程的modify是否会成功？"
+ },
+ {
+  "id": "7781",
+  "parent": "7613",
+  "date": "2019-12-10T16:08:14+08:00",
+  "author": "Alex.Rowe",
+  "site": "",
+  "text": "@nothing：@nothing，提到的这个场景，a线程的modify-strex操作完成后，个人也是觉得可能会产生数据的不一致问题。谁能帮忙解决下困惑啊？\r\n\r\na                          b\r\nldrex-->设置独占标记\r\n                           ldrex\r\n                           modify-->加1操作\r\n                           strex-->清除mem_addr对应的独占标记\r\n                           ldrex-->设置mem_addr对应的独占标记\r\nmodify-->加1操作，修改的旧值\r\nstrex-->清除mem_addr对应的独占标记\r\n                           modify-->加1操作\r\n                           strex-->没有mem_addr对应的独占标记，所以执行失败"
+ },
+ {
+  "id": "7786",
+  "parent": "7781",
+  "date": "2019-12-11T13:50:17+08:00",
+  "author": "Alex.Rowe",
+  "site": "",
+  "text": "@Alex.Rowe：可能是Context switch时，软件上有clrex或dummy strex操作，所以a的strex会失败？"
+ },
+ {
+  "id": "7858",
+  "parent": "4241",
+  "date": "2020-01-26T09:41:48+08:00",
+  "author": "jhy",
+  "site": "",
+  "text": "@linuxer：Got it \r\n但是原文中atomic_add的add并不是原子的，ldrex/strex并不能完全保证原子性。"
+ },
+ {
+  "id": "7920",
+  "parent": "7786",
+  "date": "2020-03-12T17:45:15+08:00",
+  "author": "Saturn",
+  "site": "http://no",
+  "text": "@Alex.Rowe：http://infocenter.arm.com/help/topic/com.arm.doc.dht0008a/DHT0008A_arm_synchronization_primitives.pdf\r\n针对这个问题，这份文档(page:1-7)里面有描述。上下文切换的时候local monitor会重置。\r\n\r\nResetting monitors \r\nWhen an operating system performs a context switch, it must reset the local monitor to open state, to prevent false positives occurrig。"
+ },
+ {
+  "id": "8043",
+  "parent": "6556",
+  "date": "2020-07-04T16:18:10+08:00",
+  "author": "九五二七",
+  "site": "",
+  "text": "@sgy1993：@sgy1993，您好，b线程也要加1，我觉得没有问题。"
+ },
+ {
+  "id": "8044",
+  "parent": "7920",
+  "date": "2020-07-04T16:20:13+08:00",
+  "author": "九五二七",
+  "site": "",
+  "text": "@Saturn：@Saturn，您好，请教一下，按照您的回复，a线程中的strex会失败，前面的modify并没有写进memory，但由于失败跳到1b，所以下次的ldrex如果没有context switch的话是可以modify成功的是吗，而且是在b线程modify之后？也就是说atomic_add不管怎样都会更新成功，从这个层面来看，atomic_add操作就是原子的，尽管在汇编语句中可能有switch？"
+ },
+ {
+  "id": "8045",
+  "parent": "6996",
+  "date": "2020-07-04T16:24:35+08:00",
+  "author": "九五二七",
+  "site": "",
+  "text": "@弄堂小子：您的两个问题我也比较疑惑，请问有找到答案吗？"
+ },
+ {
+  "id": "8078",
+  "parent": "0",
+  "date": "2020-07-31T16:59:27+08:00",
+  "author": "wangxingxing",
+  "site": "",
+  "text": "Hi您好，想请教一下对整型变量如下的这些位操作是在哪里实现的呀：\r\nextern void _set_bit(int nr, volatile unsigned long * p);\r\nextern void _clear_bit(int nr, volatile unsigned long * p);\r\nextern void _change_bit(int nr, volatile unsigned long * p);\r\nextern int _test_and_set_bit(int nr, volatile unsigned long * p);\r\nextern int _test_and_clear_bit(int nr, volatile unsigned long * p);\r\nextern int _test_and_change_bit(int nr, volatile unsigned long * p);"
+ },
+ {
+  "id": "8132",
+  "parent": "7391",
+  "date": "2020-11-09T10:46:21+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@yaoike：忽略cache以及指令的pipeline时，耗时基本一样。"
+ },
+ {
+  "id": "8226",
+  "parent": "7920",
+  "date": "2021-05-07T20:34:23+08:00",
+  "author": "cp",
+  "site": "",
+  "text": "@Saturn：如果a b是两个硬件线程呢,a线程会成功写入?"
+ },
+ {
+  "id": "8627",
+  "parent": "0",
+  "date": "2022-06-08T11:13:03+08:00",
+  "author": "Liu",
+  "site": "",
+  "text": "这里有一个疑惑，如果关闭中断后由外部中断触发怎么办？是不是说如果系统要求很高的时候这种保证原子的方法不太实用呢"
+ },
+ {
+  "id": "8667",
+  "parent": "8627",
+  "date": "2022-08-10T18:05:23+08:00",
+  "author": "mingtian",
+  "site": "",
+  "text": "@Liu：后面的原子操作并没有关闭中断，只是通过局部检视和全局检视两种实现了原子操作"
+ },
+ {
+  "id": "8740",
+  "parent": "0",
+  "date": "2023-02-14T13:38:07+08:00",
+  "author": "testtest",
+  "site": "",
+  "text": "ldrex和strex的方案，如果三个线程竞争是不是有问题？如下场景\r\n\r\nldrex 1 => r1\t\tthread1\r\nmodify r1++\t\t\tthread1\r\nldrex 1 => r2\t\tthread2\r\nmodify r2++\t\t\tthread2\r\nstrex r2\t\t\tthread2 success\r\nldrex 2 => r3\t\tthread3\r\nmodify r3++\t\t\tthread3\r\nstrex r1\t\t\tthread1 success\r\nstrex r3\t\t\tthread3 failed\r\nldrex 2 => r3\t\tthread3\r\nmodify r3++\t\t\tthread3\r\nstrex r3\t\t\tthread3 success"
+ },
+ {
+  "id": "8753",
+  "parent": "8045",
+  "date": "2023-03-14T11:58:19+08:00",
+  "author": "double_qiang",
+  "site": "",
+  "text": "@九五二七：我的理解抢占时机可以简化成两种，一种是依赖中断发生调度时，另外一个就是当前进程主动调用schedule，显然后面这种的抢占时机肯定是不存在原子操作的"
+ },
+ {
+  "id": "8809",
+  "parent": "8740",
+  "date": "2023-08-26T20:39:25+08:00",
+  "author": "wangdl",
+  "site": "",
+  "text": "@testtest：分析的对啊，完全没问题"
+ },
+ {
+  "id": "8864",
+  "parent": "8809",
+  "date": "2024-01-25T10:25:46+08:00",
+  "author": "testtest",
+  "site": "",
+  "text": "@wangdl：就是线程1的ldrex因为线程2先strex而失效，但在线程1strex之前，其他线程如果又ldrex一次，那么线程1下来的strex是不是还是有效的？"
+ },
+ {
+  "id": "8937",
+  "parent": "3275",
+  "date": "2024-10-14T09:45:34+08:00",
+  "author": "huozi",
+  "site": "",
+  "text": "@passenger：是的，在ldrex后是会被打断，但返回原来的代码执行的时候，会执行失败，因为这时候monitor的状态是Open Access state，原来的代码继续执行后面的strex会执行失败，进而重新执行ldrex而保持原子性。"
+ },
+ {
+  "id": "8938",
+  "parent": "8864",
+  "date": "2024-10-14T10:42:30+08:00",
+  "author": "huozi",
+  "site": "",
+  "text": "@testtest：下面 nothing 的提问中应该回答了你这个问题，进程切换的时候会重置monitor为open state：\r\nWhen an operating system performs a context switch, it must reset the local monitor to open state, to prevent false positives occurrig"
+ },
+ {
+  "id": "9152",
+  "parent": "8864",
+  "date": "2025-04-03T05:25:10+08:00",
+  "author": "troy",
+  "site": "",
+  "text": "@testtest：只要ldrex-modify-strex中间插入了其它内核路径，该次的原子操作就会失败，也就是strex会失败，但atomic_add()里的汇编代码会对strex是否正确完成进行检查，如果是失败的，那么就会跳转到label 1处，再次进行ldrex-modify-strex。极端的说，如果每次ldrex-modify-strex都被插入了，atomic_add()会一直执行下去，造成死循环。"
+ },
+ {
+  "id": "9170",
+  "parent": "8078",
+  "date": "2025-09-10T18:49:12+08:00",
+  "author": "hurricane618",
+  "site": "",
+  "text": "@wangxingxing：如果是arm32\r\narch/arm/lib/xxxx.S 里面，比如set_bit在arch/arm/lib/setbit.S\r\n\r\n不同的架构会有所区别"
+ }
+]

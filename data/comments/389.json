@@ -1,0 +1,114 @@
+[
+ {
+  "id": "5821",
+  "parent": "0",
+  "date": "2017-07-19T15:04:58+08:00",
+  "author": "javier",
+  "site": "",
+  "text": "精彩文字抽象总结的非常到位，受益匪浅，感谢分享！还有一点疑惑请教， 通常DMA都是访问的连续物理地址，在CPU和DMA互操作的时候需要考虑到cache和虚实地址转换，有没有DMA有能力可以访问虚拟内存和cache的？ （ARM架构）我理解应该是可以的，但是不清楚现有的kernel有没有这样的支持。\r\n另外， DMA通常都是异步操作，所以每次传输完毕都会有相应的通知机制，如中断，所以会和中断子系统有交互。方便的话可以加入一些这方面的介绍就更完整了。"
+ },
+ {
+  "id": "5827",
+  "parent": "5821",
+  "date": "2017-07-19T22:08:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@javier：多谢建议，您说的非常对。不过牵涉到memory、中断等事情，比较复杂，还没有功力把它们融会贯通啊。会朝着这个目标努力的~~"
+ },
+ {
+  "id": "5961",
+  "parent": "0",
+  "date": "2017-08-31T13:36:37+08:00",
+  "author": "chenglei",
+  "site": "",
+  "text": "Hello,\r\n\r\n我的dma_burst_size可以支持1, 4, 8, 16, 32, 64, 128, 256，我应该如何选择呢？\r\n\r\n谢谢。"
+ },
+ {
+  "id": "5962",
+  "parent": "5961",
+  "date": "2017-08-31T14:14:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chenglei：这要看传输的双方是什么东西，你把它们摆在一张纸的两边，然后思考2分钟：怎么传可以获得最大性能？答案很快就出来了:-)"
+ },
+ {
+  "id": "5963",
+  "parent": "5962",
+  "date": "2017-08-31T14:19:18+08:00",
+  "author": "chenglei",
+  "site": "",
+  "text": "@wowo：感谢wowo。\r\n\r\n目前是UVC device功能，同步传输模式，不考虑性能，就想使数据尽可能快速的传递到host。\r\n\r\n默认是32."
+ },
+ {
+  "id": "5964",
+  "parent": "5963",
+  "date": "2017-08-31T14:47:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chenglei：哈哈，快也是性能啊。其实用多大的size，不是很好决定。\r\n\r\n假设usb iso传输的数据包大小是256（很有可能比这还大）\r\n如果burst size是256，传输的行为是这样的：\r\n   1. dma从USB读取256B数据\r\n   2. dma将这256B的数据写入到ram\r\n   ...\r\n如果burst size是32，传输的行为是这样的：\r\n   1. dma从USB读取32B的数据\r\n   2. dma将32B的数据写入memory\r\n   3. dma再从USB读取32B的数据\r\n   4. dma再将32B的数据写入memory\r\n   ...\r\n   如此反复8次。\r\n   \r\n那么问题来了，那种方法好呢？\r\n暂且不管dma和usb设备之间的事情，只看dma和memory之间的交互，是一次写入256B写1次好呢，还是一次写入32B写8次好呢？\r\n前者，dma抢到总线后，一直把数据写完才放。后者，分批次写入，意味着中间可以把总线放掉给其他人（或者其他dma）使用。\r\n是不是意味着：前者对自己好，后者对其他人好？那么你想要哪种效果呢？\r\n\r\n最后，虽然理论上是这样的，实际上怎么样呢？对系统性能影响大吗？不得而知，你可以试试。试验结果才是最有说服力的。"
+ },
+ {
+  "id": "6000",
+  "parent": "0",
+  "date": "2017-09-07T20:33:23+08:00",
+  "author": "向往",
+  "site": "",
+  "text": "终于知道busrt size的含义了，蜗窝给力；另外，我想问一下dma framework提供的dma_mag_sg是不是就是kernel实现scatter-gather的接口呢？dma_sg_map会将可能会连续的内存块合并成一个，然后供dma传输"
+ },
+ {
+  "id": "6037",
+  "parent": "0",
+  "date": "2017-09-14T09:49:24+08:00",
+  "author": "江南书生",
+  "site": "http://no",
+  "text": "老板，你好！\r\n    在DMA方面我一直有个疑问，DMA请求总线后，CPU把总线控制权交给了DMA，那么CPU不是就没法从内存读取指令和数据了吗？那么，CPU不就处于干瞪眼的状态吗？这样的话，也没法提高CPU的效率啊，还不然直接让CPU去干DMA的活呢。我的这个想法的bug，在哪里呢？"
+ },
+ {
+  "id": "6038",
+  "parent": "6037",
+  "date": "2017-09-14T10:45:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@江南书生：关于这个问题，其实是cpu architecture设计里面最核心的问题，不是一两句话可以讨论的清楚的。不过可以从下面几点去思考。\r\n你的疑问是对的，资源是有限的，肯定有争抢和效率的问题（不仅仅是memory，在memory之前还存在对总线的争抢）。但也不用过于悲观，因为（我们从CPU的视角往下说）：\r\n1）CPU不是一直在取指和取数。指令执行的过程包取指、译码和执行，译码肯定不需要访问memory，执行访问memory的概率也不会超过50%。\r\n2）复杂SoC通常有很多级的指令cache和数据cache，在顺序执行的情况下，又可以大大减少CPU访问memory的可能性，降低和DMA冲突、争抢的概率。\r\n3）复杂SoC的总线通常具有仲裁能力，可以配置CPU、DMA等访问总线的优先级，这很大程度上会影响CPU和DMA对memory的访问，如果不想CPU被影响，可以调高它的优先级，反正DMA传输可以慢慢来（见缝插针，这也是DMA设计的初衷）。\r\n4）关于CPU和DMA对memory资源的争抢，也可以通过DMA burst size进行调整。\r\n5）很多时候，系统中的memory（例如DDR），是有并发访问的能力的，可以想象成有多个可并行工作的memory，因此竞争的概率又可以降低了。\r\n6）最后再强调：DMA的性能和CPU的性能是不可调和的，需要根据实际的应用场景小心的平衡。"
+ },
+ {
+  "id": "6039",
+  "parent": "6038",
+  "date": "2017-09-14T10:50:35+08:00",
+  "author": "江南书生",
+  "site": "http://no",
+  "text": "@wowo：好的，谢谢老板，大概了解了"
+ },
+ {
+  "id": "7793",
+  "parent": "5821",
+  "date": "2019-12-24T11:24:51+08:00",
+  "author": "bsp-jiang",
+  "site": "",
+  "text": "@javier：cpu这边的虚拟内存dma无法访问吧，页表都不一样，各映射各的。\r\ncache的话，如果dma具有cache-coherent的能力，是可以访问cache的，因为它要维护cache一致性。比如cpu申请了一块cacheable的内存，然后创建map交于dma搬运，那么dma就要去维护cache的一致性。\r\n个人理解，错误请改正。"
+ },
+ {
+  "id": "7991",
+  "parent": "6039",
+  "date": "2020-05-13T11:01:38+08:00",
+  "author": "max",
+  "site": "",
+  "text": "@江南书生：传输过程中cpu和dma都可以访问内存。这里会有个总线仲裁机制。"
+ },
+ {
+  "id": "8614",
+  "parent": "6037",
+  "date": "2022-05-09T10:58:32+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@江南书生：内存之上还有cache，cache还有L1/L2/L3。很多时候cpu会从DDR 一次性load一个cacheline的内存（或数据或指令），然后CPU基于cache工作即可，此时就不需要DDR；"
+ },
+ {
+  "id": "8832",
+  "parent": "0",
+  "date": "2023-09-28T16:02:46+08:00",
+  "author": "wangjb",
+  "site": "",
+  "text": "老板，你好！  \r\n我这里遇到一个dma 直接映射物理内存的问题，是用cma的机制，我发的时间太长了，都还没有 解决，能否帮忙提供思路，非常感谢！！！\r\n 驱动qca-7850调试的结果和我写的关于A函数的内核测试模块的结果一样，我就用我的测试程序描述一下问题。\r\n  问题1  \r\n           linux 内核中 dma_addr是u64类型，size是size_t类型，  min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit)的结果是0xffffffff; \r\n                      1.1 当dma_addr=0x730bb000(alloc_pages_node分配), size=0x1000 ,关系表达式 dma_addr + size - 1 <= min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit),\r\n                                最后结果是1.\r\n                      1.2  当dma_addr=0x600000(dma_alloc_contiguous) size=0x6c0000,关系表达式 dma_addr + size - 1 <=  min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit),\r\n                                 最后结果为什么是0.\t\t\r\n  问题2\r\n                怎么用A函数通过cma机制申请直接映射物理内存？\r\n                \r\n   背景描述如下：\r\n    linux kernel 5.16.0-rc8 ------自己编译的\r\n    ubuntu 22.04  \r\n    \r\n     我用 dma_alloc_coherent函数分配DMA的相关联内存，结果分配失败，发现__dma_direct_alloc_pages函数调用dma_alloc_contiguous后能得到虚拟地址和DMA物理地址，\r\n用dma_coherent_ok检查后，发现关系表达式为假。\r\n\r\n                   return dma_addr + size - 1 <=\r\n\t\t                            min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit);\r\n，最后释放dma_alloc_contiguous申请的cma的地址空间，最后调用普通的分配内存机制alloc_pages_node，由于此时申请的\r\n空间（0x6f0000)比较大，就申请失败了。如果申请空间比较小，就能通过alloc_pages_node分配成功。\r\n相应的内核编译配置如下：\r\n\r\n1.Build the Linux kernel\r\n make menuconfig\r\n CONFIG_CFG80211_INTERNAL_REGDB=y\r\n CONFIG_CFG80211=y\r\n CONFIG_NL80211_TESTMODE=y\r\n CONFIG_FRAME_WARN=2048\r\n CONFIG_CMA_SIZE_MBYTES=512\r\n CONFIG_IRQ_REMAP=y\r\n CONFIG_DMA_CMA=y\r\n CONFIG_CMA_SIZE_SEL_MBYTES=y\r\n CONFIG_CMA_ALIGNMENT=8"
+ }
+]

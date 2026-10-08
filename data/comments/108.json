@@ -1,0 +1,234 @@
+[
+ {
+  "id": "742",
+  "parent": "0",
+  "date": "2014-11-17T18:33:08+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "因此，在这种情况下，临界区指令1的执行结果被抛弃掉，因此，实际临界区指令不会先于preempt_disable执行 \r\n这个是arm 硬件实现的吗？"
+ },
+ {
+  "id": "746",
+  "parent": "742",
+  "date": "2014-11-17T19:39:42+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：对于那些支持superscalar或者out-of-order excution的CPU，CPU core必须从一段代码中精准的找到一条指令作为发生中断的现场，该条指令（包括这条指令）之前的指令必须执行完毕，而之后的指令的运行结果必须抛弃掉（如果memory type是normal类型），这样的操作当然是ARM硬件完成的。\r\n\r\n问题：如果memory type是device type或者strong order type的，会如何处理？呵呵～～～我文章中也给出答案了"
+ },
+ {
+  "id": "3187",
+  "parent": "0",
+  "date": "2015-12-02T11:45:07+08:00",
+  "author": "randy",
+  "site": "",
+  "text": "说的围绕多个cpu对cache一致性的维护，是否可以说明下单核下mb的实现是怎么样的？"
+ },
+ {
+  "id": "3190",
+  "parent": "3187",
+  "date": "2015-12-03T08:41:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@randy：这份文档是我准备废弃的文章之一，写的太凌乱了，很容易让人误解，你可以稍微等等，后续我们重写这一篇的。"
+ },
+ {
+  "id": "4321",
+  "parent": "3190",
+  "date": "2016-07-26T17:55:49+08:00",
+  "author": "zachary",
+  "site": "",
+  "text": "@linuxer：重写的在哪里？"
+ },
+ {
+  "id": "4326",
+  "parent": "4321",
+  "date": "2016-07-27T16:53:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zachary：抱歉，写这份文档的时候不知道天高地厚，现在了解了一些反而不敢下笔了，hehe～～因此我们没有重写，只是翻译了perfbook中的几个章节，如果有兴趣可以看看。\r\n等到真正理解了memory barrier，我们再写一篇好了。"
+ },
+ {
+  "id": "5362",
+  "parent": "0",
+  "date": "2017-03-22T23:44:48+08:00",
+  "author": "adance",
+  "site": "",
+  "text": "您好，内存一致性协议比如MESI跟内存屏障有啥区别呢？内存屏障解决的问题不应该是一致性协议的内容吗"
+ },
+ {
+  "id": "5365",
+  "parent": "5362",
+  "date": "2017-03-23T09:25:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@adance：memory barrier是解决memory order问题的。例如：你写了一段c程序，从program order来看，对内存A的访问先于对内存B的访问，但是在实际cpu的执行过程中，B却先于A而执行。这种乱序一方面来自编译器，可以通过Optimization barrier进行限制，另外一方面来自cpu，这可以通过memory barrier指令来解决。\r\n\r\n一致性应该是cache coherence，和memory hierarcy相关，发生在多个master访问共享的memory资源的时候。"
+ },
+ {
+  "id": "5367",
+  "parent": "5365",
+  "date": "2017-03-23T11:07:08+08:00",
+  "author": "adance",
+  "site": "",
+  "text": "@linuxer：感谢您的回复！\r\n我们先抛开编译器优化带来的乱序，就讨论你上文第二种cpu乱序：\r\n其实你上面你讲的过程中就是基于一致性协议MESI的，\r\n我是这么理解的：以上你讲的CPU内存访问乱序其实是由于store buffer和 Invalidate Queue等结构造成的，假如没有它们，这里以你上文的store buffer例子来假设，假设没有store buffer，cpu0读取变量a的值时只能等待cpu1返回a的值并对invalidate的回应，这样的话是不是就不会有乱序了呢？\r\nInvalidate Queue也可以以此推断，但是cpu加这两个就是为了提升性能，不至于空等待，加快处理速度，所以我觉得，这种cpu内存访问乱序的问题是为了考虑性能而对一致性协议MESI只支持弱一致性，要是强一致性，理想状态下就不会有这种问题，所以这种乱序还是属于一致性范围，cpu也提供了软件层面的memory barrier指令，来满足应用某些场合强一致性的要求。\r\n请指教！"
+ },
+ {
+  "id": "5370",
+  "parent": "5367",
+  "date": "2017-03-23T16:33:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@adance：其实我对这些概念也不是理解的特别透彻，但是我的理解就是memory barrier和cache coherence protocol是两码事。"
+ },
+ {
+  "id": "5430",
+  "parent": "5370",
+  "date": "2017-04-06T22:10:44+08:00",
+  "author": "adance",
+  "site": "",
+  "text": "@linuxer：嗯...有心得可以交流...还有一个问题请教：你怎么理解虚拟地址，逻辑地址，线性地址的?有些书说逻辑地址就是虚拟地址，有些书说线性地址是虚拟地址...烦请指教"
+ },
+ {
+  "id": "5432",
+  "parent": "5430",
+  "date": "2017-04-07T16:52:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@adance：logical address和linear address是X86平台特定的术语，不适合其他平台。\r\n对于X86处理器，地址映射分成两部，logical address通过segmentation unit的映射之后变成liear address，然后通过paging unit，linear address映射成物理地址。一般的处理器都是虚拟地址通过MMU unit映射成物理地址，这是比较通用的概念，当然，也有稍微复杂一点的，例如在支持虚拟化的ARMv8中，VA到PA的mapping可以有IPA这样的一个中间level。\r\n\r\n对于虚拟地址的定义，我的理解就是在汇编指令中操作的那些地址，从这个角度看，x86平台的logical address更接近我对虚拟地址的理解。"
+ },
+ {
+  "id": "6160",
+  "parent": "746",
+  "date": "2017-11-01T18:33:24+08:00",
+  "author": "Hisenberg",
+  "site": "",
+  "text": "@linuxer：linuxer，对于“临界区指令1的执行结果被抛弃掉”，假如这条指令是对某个变量加4，或者像内存中写入一个值，那怎么抛弃结果呢？恢复该变量或内存去到初始值吗？如果不是的话，从中断回来以后，会重新执行a地址之后的指令，那是不是会造成临界区指令1被执行了2次，即变量被加了两次或者内存地址被写了2次？这是没有barrier可能造成的后果吗？"
+ },
+ {
+  "id": "6162",
+  "parent": "6160",
+  "date": "2017-11-02T12:00:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Hisenberg：这里我们需要对“指令执行”分的更细致一些：对于一个汇编指令，例如给某个内存写入一个值，它的执行过程分成两个步骤，一个是执行阶段，另外一个是执行结果的提交阶段，完成了指令的提交阶段，内存的数值才会被修改。\r\n\r\n因此，所谓“临界区指令1的执行结果被抛弃掉”是指在第一个执行阶段的结果被抛弃掉，或者说把放入到commit buffer中的执行结果抛弃掉，而这个执行结果实际上并没有真正的被提交。"
+ },
+ {
+  "id": "6164",
+  "parent": "6162",
+  "date": "2017-11-02T14:24:03+08:00",
+  "author": "Hisenberg",
+  "site": "",
+  "text": "@linuxer：再请问一下哦，那硬件会保证在中断发生的时候，“临界区指令1”的执行结果不会提交吗？或者说硬件在什么情况下会认为可以提交指令的执行结果了呢？因为如果只是时间问题的话，会不会出现这种乱序情况“临界区指令1，临界区指令2，preempt dis, preempt en”，这个时候，中断还是在a地址发生，但是前面已经执行了2条指令，并且第一条的结果已经提交了呢？"
+ },
+ {
+  "id": "6472",
+  "parent": "0",
+  "date": "2018-01-15T22:18:20+08:00",
+  "author": "pansila",
+  "site": "",
+  "text": "第一个问题，如果已经提交了，应该就属于中断发生在了下一条指令，需要把后续指令也提交的情况；第二个问题也是我想问的，乱序两条临界指令，而后禁止抢占还能救回来么？"
+ },
+ {
+  "id": "6473",
+  "parent": "6164",
+  "date": "2018-01-15T22:33:42+08:00",
+  "author": "pansila",
+  "site": "",
+  "text": "@Hisenberg：应该没法区分吧，可以提交的乱序指令CPU就会放行，如果发生中断，显然不能抛弃已提交指令，只能算作在提交指令上发生了中断，然后按照此规则执行该执行的，抛弃该抛弃的。"
+ },
+ {
+  "id": "6474",
+  "parent": "0",
+  "date": "2018-01-15T22:40:07+08:00",
+  "author": "pansila",
+  "site": "",
+  "text": "do { \r\n    获取TX FIFO状态寄存器 \r\n    barrier(); \r\n} while (TX FIFO没有ready); \r\n写TX FIFO寄存器;\r\n\r\n这里不明白，难道barrier不是应该加到循环外就可以了么\r\n\r\ndo { \r\n    获取TX FIFO状态寄存器 \r\n} while (TX FIFO没有ready); \r\nbarrier(); \r\n写TX FIFO寄存器;"
+ },
+ {
+  "id": "6481",
+  "parent": "6472",
+  "date": "2018-01-17T14:53:45+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@pansila：这份文档是很久以前写的，是在不了解CPU微架构的情况下自己的胡思乱想。实际上即便是乱序执行的CPU，其实也是顺序提交的，确定了中断命中的指令之后，CPU要做的就是把那些提前执行但为提交的指令结果进行回滚。"
+ },
+ {
+  "id": "6686",
+  "parent": "0",
+  "date": "2018-04-20T14:41:48+08:00",
+  "author": "hayden",
+  "site": "",
+  "text": "有点搞不懂，CPU的乱序执行，为什么要和中断扯上关系，那如果在执行这段代码时，CPU是乱序执行的，没有\r\n中断来，这样代码不就是按照下表最右边的CPU执行顺序一致了吗，那这个时候CPU执行的代码顺序和汇编指令\r\n的顺序不一致了？\r\n\r\n地址\t该地址的汇编指令\t        CPU的执行顺序\r\na\tpreempt_disable（）\t临界区指令1\r\na+4\t临界区指令1\t        preempt_disable（）\r\na+8\t临界区指令2\t        临界区指令2\r\na+12\tpreempt_enable\t        preempt_enable"
+ },
+ {
+  "id": "7364",
+  "parent": "0",
+  "date": "2019-04-20T11:27:21+08:00",
+  "author": "tuhh",
+  "site": "",
+  "text": "能不能将参考文献也一起列一下呢"
+ },
+ {
+  "id": "7928",
+  "parent": "6686",
+  "date": "2020-03-25T16:32:25+08:00",
+  "author": "Xavior",
+  "site": "",
+  "text": "@hayden：这里的中断只是为了说明，CPU乱序执行不会对使用barrier（）造成影响"
+ },
+ {
+  "id": "8280",
+  "parent": "0",
+  "date": "2021-08-26T16:59:11+08:00",
+  "author": "1912",
+  "site": "",
+  "text": ">当该值从memory中加载到chache 0中的cache line之后，该cache line的状态被设定为shared\r\n明明是exclusive的"
+ },
+ {
+  "id": "8675",
+  "parent": "7364",
+  "date": "2022-09-27T15:35:10+08:00",
+  "author": "blazer",
+  "site": "",
+  "text": "@tuhh：我也觉得参考文献列出来好一些，毕竟cache的这些性质俺们也不一定懂呢"
+ },
+ {
+  "id": "8713",
+  "parent": "0",
+  "date": "2022-12-04T15:11:49+08:00",
+  "author": "muzimuke",
+  "site": "",
+  "text": "\"它实际上会本cpu的进程上下文和中断上下文访问\"\r\n文中的这句话是不是写错了呀？"
+ },
+ {
+  "id": "8718",
+  "parent": "0",
+  "date": "2022-12-11T10:09:07+08:00",
+  "author": "wmzjzwlzs",
+  "site": "",
+  "text": "smp_mb实际是dmb ish，在inner shareable内的多core管用.如果是多个cluster之间的core应该是dmb osh吧？linux支持多cluster为啥smp_mb不是dmb osh？"
+ },
+ {
+  "id": "9142",
+  "parent": "0",
+  "date": "2025-02-17T09:50:10+08:00",
+  "author": "xinghuo",
+  "site": "",
+  "text": "“barrier只是保证compiler输出的汇编指令的顺序是OK的，不能确保CPU执行时候的乱序。 对这个问题的回答来自ARM architecture的内存访问模型：对于program order是A1-->A2的情况（A1和A2都是对Device或是Strongly-ordered的memory进行访问的指令），ARM保证A1也是先于A2执行的”-----我还是不明白，没有显式的硬件屏障指令的情况下，也能保证CPU执行的时候不乱序是怎么实现的？"
+ },
+ {
+  "id": "9143",
+  "parent": "8280",
+  "date": "2025-02-17T10:48:29+08:00",
+  "author": "xinghuo",
+  "site": "",
+  "text": "@1912：我也觉得是exclusive的，因为其他cache还不存在副本"
+ },
+ {
+  "id": "9166",
+  "parent": "0",
+  "date": "2025-07-22T14:40:10+08:00",
+  "author": "magina",
+  "site": "",
+  "text": "这里描述的不对，当该值从memory中加载到cache 0中的cache line之后，该cache line的状态有以下几种情况：\r\n1. 如果其他Core的Cache没有缓存该Cache Line，那么Cache 0的状态为 E, 表示独占；\r\n2. 如果其他Core的Cache有缓存该Cache Line，那么Cache 0的状态为 S, 表示共享；"
+ }
+]

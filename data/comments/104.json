@@ -1,0 +1,1098 @@
+[
+ {
+  "id": "570",
+  "parent": "0",
+  "date": "2014-10-24T17:28:41+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "又一部扛鼎之作，待老衲细细品味！"
+ },
+ {
+  "id": "571",
+  "parent": "570",
+  "date": "2014-10-24T18:54:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：不敢当，forion同学抬爱了～～～"
+ },
+ {
+  "id": "587",
+  "parent": "0",
+  "date": "2014-10-30T16:30:51+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "hi linuxer 有一处没看懂的地方：\r\n（4）该来的总会来，在step 2中我们少减了1，这里补上，其实也就是enable preempt。 \r\npreempt_count_dec(); －－－－－－－－－－－－－－－－－－－－－（4） \r\n这条指令之后，并不一定使能了preempt吧？这个只是preempt count -1；\r\npreempt count=0 才是使能了preempt吧？"
+ },
+ {
+  "id": "589",
+  "parent": "587",
+  "date": "2014-10-30T18:32:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：你说的是对的，enable preempt应该是下面一系列动作：\r\n（1）preempt count － 1\r\n（2）test preempt count， if 0 and really need reschedule， then trigger scheduler to preempt current process.\r\n\r\npreempt_count_dec仅仅是减去1而已"
+ },
+ {
+  "id": "590",
+  "parent": "587",
+  "date": "2014-10-30T18:34:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：forion同学，绝对是金牌读者啊"
+ },
+ {
+  "id": "592",
+  "parent": "590",
+  "date": "2014-10-30T21:12:04+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：不敢当，不敢当。\r\n这么好的文章不好好读简直就是暴殄天物啊！\r\n楼主要坚持啊。"
+ },
+ {
+  "id": "596",
+  "parent": "592",
+  "date": "2014-10-31T10:13:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：如果我现在的公司不倒闭的话，我应该会坚持下去的（现在我所在的公司没有那么忙，呵呵～～）。不过如果公司倒了，我要去找新的工作，那就不好说了。其实，在中国，技术大牛很多，只不过他们都没有什么时间在互联网上分享而已。"
+ },
+ {
+  "id": "598",
+  "parent": "596",
+  "date": "2014-10-31T17:15:34+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：是啊，所以找到一个好老师不容易啊。"
+ },
+ {
+  "id": "684",
+  "parent": "0",
+  "date": "2014-11-06T18:46:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "修改了强制线程化的内容，原来的理解有偏差"
+ },
+ {
+  "id": "699",
+  "parent": "0",
+  "date": "2014-11-10T13:24:41+08:00",
+  "author": "azureming",
+  "site": "",
+  "text": "Linuxer,你好，又来请教个问题；\r\n既然可以采用threaded_irq，那么所谓的bottom机制【比如softirq】是不是可以不使用了，或者他们在使用的时候各有应用场景来着？\r\n谢谢"
+ },
+ {
+  "id": "704",
+  "parent": "699",
+  "date": "2014-11-10T17:36:23+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@azureming：中断线程化是从linux的rt tree导入的一个特性，因此，threaded irq更多的是从系统实时性的角度来看待问题。\r\n\r\n如果把threaded irq handler和bottom half对比的话，可能workqueue（而不是softirq）更合适一些，毕竟work是在进程上下文中执行的，和threaded irq handler是类似的。不过虽然都是在进程上下文执行，但是，还是有不一样的，对于线程化的irq handler，其执行在一个实时进程上，也就是说本质上原来在handler在中断上下文中执行，但是现在修改为在系统中的一个rt进程中执行，所有threaded irq handler都是先于系统中的normal进程被调度执行。\r\n\r\n对于workqueue，其进程是一个普通进程，需要和很多系统中的普通的进程共同争抢cpu资源。\r\n\r\n我们来看一个场景：如果某个外设是慢速总线设备，例如I2C（呵呵，I2C总是在各种场合下出现），读取I2C上的数据不适合在interrupt handler中执行，因此，我们考虑使用workqueue。但是，如果I2C外设的FIFO很小，而系统又很繁忙，那么这种场景下使用workqueue就会丢失来自外设的数据。这时候，使用threaded irq handler会改善。当然，是否保证不丢失数据是一个系统问题，你需要仔细的设计系统中所有task的优先级\r\n\r\nsoft irq是一定需要的，它是在中断上下文执行的，只要是中断上下文，其优先级总是高过进程上下文"
+ },
+ {
+  "id": "706",
+  "parent": "704",
+  "date": "2014-11-10T18:40:21+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：这里可能还要补充一下linux调度策略以及调度器类的概念。但是我的功力还不够正确的描述出来。所以可以通俗的理解rt进程会优先于normal进程被调度执行就可以了。其实我的理解是rt进程对应的调度器类的优先级高于完全公平进程。不知道这样表述是否可以。"
+ },
+ {
+  "id": "707",
+  "parent": "706",
+  "date": "2014-11-10T22:42:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：那些内容是任务管理子系统的内容，这里我就偷懒一下吧，等到release任务管理子系统的文档再详细讲述调度器以及调度算法的内容吧"
+ },
+ {
+  "id": "708",
+  "parent": "704",
+  "date": "2014-11-11T09:18:02+08:00",
+  "author": "azureming",
+  "site": "",
+  "text": "@linuxer：我可不可以这样理解：\r\nworkqueue这个下半部和普通进程的优先级一样，所以有时候这个下半部得不到及时的执行；\r\nthreaded irq优先级高于普通进程，这点和soft irq一样（高的优先级），可以让待处理的任务得到较早的执行，相对于soft irq不能被进程抢占，threaded irq的机制则可以通过设置某些进程更高的优先级，从而获得比threaded irq更早的执行机会，从而满足特定的实时性要求。\r\nsoft irq的存在主要是为了保证这个下半部的优先执行权限，不能被进程打断？"
+ },
+ {
+  "id": "709",
+  "parent": "708",
+  "date": "2014-11-11T11:56:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@azureming：你的理解基本上是正确的，linux kernel提供了各种工具，如何正确的使用这些工具，适合自己的系统也是一个很有技术含量的工作，也就是传说中的系统设计过程。"
+ },
+ {
+  "id": "1108",
+  "parent": "0",
+  "date": "2015-01-19T17:49:03+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "写得好，一下子就全懂了"
+ },
+ {
+  "id": "1808",
+  "parent": "0",
+  "date": "2015-05-15T14:11:13+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@linuxer:   1.  thread irq handler 和 中断底半部机制是共存的吗? \r\n\r\n            2.  如果是共存的, 那么如果我在thread irq handler中使用workqueue底半部机制, 那么这个顶半部运行在哪个进程中?  底半部运行在哪个进程中?"
+ },
+ {
+  "id": "1809",
+  "parent": "1808",
+  "date": "2015-05-15T14:24:51+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@super-：希望能为我解除疑惑"
+ },
+ {
+  "id": "1810",
+  "parent": "1808",
+  "date": "2015-05-15T14:25:30+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@super-：希望能为我解除疑惑"
+ },
+ {
+  "id": "1816",
+  "parent": "1808",
+  "date": "2015-05-15T18:01:26+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@super-：中断处理分成top half和bottom half，top half在中断上下文，如果使用softirq或者tasklet这样的机制，其执行也在中断上下文，因此不能sleep，如果确有需求，那么可以采用workqueue，因为workqueue在进程上下文。\r\n\r\n如果你想要使用中断线程化的处理机制，那么top half就是irq handler，在中断上下文。bottom half都移到thread irq handler中执行，属于进程上下文\r\n\r\n  1.  thread irq handler 和 中断底半部机制是共存的吗? \r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n可以是共存的\r\n\r\n 2.  如果是共存的, 那么如果我在thread irq handler中使用workqueue底半部机制, 那么这个顶半部运行在哪个进程中?  底半部运行在哪个进程中?\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n你这样的使用实在是太诡异了，根本没有必要在thread irq handler中使用workqueue的机制，thread irq handler已经是进程上下文了，何必要使用workqueue？如果一定要这么用，那么上下文环境是这样的：top half用于不会运行于某个进程，alway是属于interrupt context，thread irq handler是运行在该irq的那个内核线程中，而在thread irq handler中queue的work运行在workqueue的进程上下文中"
+ },
+ {
+  "id": "1825",
+  "parent": "1816",
+  "date": "2015-05-18T10:24:51+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@linuxer：handle_level_irq\r\n   handle_irq_event\r\n       handle_irq_event_percpu\r\n           action->handler{return IRQ_WAKE_THREAD}\r\n              irq_wake_thread\r\n谢谢您的回复，看了下代码弄懂了。"
+ },
+ {
+  "id": "2088",
+  "parent": "0",
+  "date": "2015-06-30T17:57:18+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "in_interrupt()就是判断是否在中断上下文，是吧？在do_softirq函数中总会有下面这句\r\nif (in_interrupt())\r\n    return;\r\n那这样的话，会不会马上返回？\r\n软中断或者tasklet的执行过程中应该一直满足这个情况，那还能继续向下执行吗？就直接返回了吧？具体的中断上下文理解应该如何理解呢？定义到底是什么呢？望大牛讲解下，谢谢。"
+ },
+ {
+  "id": "2091",
+  "parent": "0",
+  "date": "2015-06-30T18:47:38+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "楼主研究过netlink吗？在硬件中断中，执行netlink的发送会产生内核的一个warning，但是可以继续执行，而且只是在中断中第一次执行netlink的发送netlink_unicast函数时，通过dmesg能看到一次内核warning，接下来的所有中断都不会再产生这个内核warning，而且所有的中断处理过程都是ok的，只是这个内核warning应该怎么处理呢？是不是必须要处理掉？\r\n内核产生的warning信息如下:\r\n\r\nWe have entered irq handle programme! GNS_ICR is 0x1\r\nnetlink:send message '76005010'.\r\n------------[ cut here ]------------\r\nWARNING: at kernel/softirq.c:159 local_bh_enable+0x7d/0xb0() (Not tainted)\r\nHardware name:  \r\nModules linked in: gns_pcie_ep(U) vfat fat usb_storage fuse autofs4 8021q garp stp llc cpufreq_ondemand acpi_cpufreq freq_table mperf ipt_REJECT nf_conntrack_ipv4 nf_defrag_ipv4 iptable_filter ip_tables ip6t_REJECT nf_conntrack_ipv6 nf_defrag_ipv6 xt_state nf_conntrack ip6table_filter ip6_tables ipv6 uinput iTCO_wdt iTCO_vendor_support microcode i2c_i801 sg e1000e ptp pps_core shpchp lpc_ich mfd_core ext4 jbd2 mbcache sd_mod crc_t10dif pata_acpi ata_generic ata_piix xhci_hcd i915 drm_kms_helper drm i2c_algo_bit i2c_core video output dm_mirror dm_region_hash dm_log dm_mod [last unloaded: scsi_wait_scan]\r\nPid: 0, comm: swapper Not tainted 2.6.32-431.el6.x86_64 #1\r\nCall Trace:\r\n <IRQ>  [<ffffffff81071e27>] ? warn_slowpath_common+0x87/0xc0\r\n [<ffffffff81071e7a>] ? warn_slowpath_null+0x1a/0x20\r\n [<ffffffff8107b5bd>] ? local_bh_enable+0x7d/0xb0\r\n [<ffffffff8146f59d>] ? sk_filter+0x9d/0xd0\r\n [<ffffffff814866e5>] ? netlink_unicast+0x195/0x320\r\n [<ffffffffa03cabb1>] ? sendnlmsg+0x131/0x160 [gns_pcie_ep]\r\n [<ffffffff810ec944>] ? __rcu_process_callbacks+0x54/0x350\r\n [<ffffffffa03cac4f>] ? gns_pci_irq+0x6f/0x280 [gns_pcie_ep]\r\n [<ffffffff810e6ec0>] ? handle_IRQ_event+0x60/0x170\r\n [<ffffffff810a266d>] ? sched_clock_cpu+0xcd/0x110\r\n [<ffffffff810e981e>] ? handle_edge_irq+0xde/0x180\r\n [<ffffffff8100faf9>] ? handle_irq+0x49/0xa0\r\n [<ffffffff81530fdc>] ? do_IRQ+0x6c/0xf0\r\n [<ffffffff8100b9d3>] ? ret_from_intr+0x0/0x11\r\n <EOI>  [<ffffffff812e09be>] ? intel_idle+0xde/0x170\r\n [<ffffffff812e09a1>] ? intel_idle+0xc1/0x170\r\n [<ffffffff814266f7>] ? cpuidle_idle_call+0xa7/0x140\r\n [<ffffffff81009fc6>] ? cpu_idle+0xb6/0x110\r\n [<ffffffff8150cbea>] ? rest_init+0x7a/0x80\r\n [<ffffffff81c26f8f>] ? start_kernel+0x424/0x430\r\n [<ffffffff81c2633a>] ? x86_64_start_reservations+0x125/0x129\r\n [<ffffffff81c26453>] ? x86_64_start_kernel+0x115/0x124\r\n---[ end trace 907b965b69105137 ]---\r\ndata0 01 is 0x4291\r\ndata0 02 is 0x2\r\ndata0 03 is 0x12345678\r\ndata0 04 is 0xedcba987\r\ndata0 05 is 0x0\r\ndata0 06 is 0x0\r\ndata0 07 is 0x0\r\nWe have entered irq handle programme! GNS_ICR is 0x2\r\nnetlink:send message '1ffb6210'.\r\ndata0 11 is 0x4291\r\ndata0 12 is 0x2\r\ndata0 13 is 0x12345678\r\ndata0 14 is 0xedcba987\r\ndata0 15 is 0x0\r\ndata0 16 is 0x0\r\ndata0 17 is 0x0"
+ },
+ {
+  "id": "2092",
+  "parent": "2091",
+  "date": "2015-06-30T18:52:34+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@Daniel Shieh：从log信息看到，只有在第一次中断中内核打印了warning信息，接下来我只贴了两三个中断中的数据打印，不过我触发过上百次，3ms每次的频率，连续回环触发中断，都没有再出现warning，数据也没什么问题。不知道这是什么原因造成的内核warning？是和软中断的开启关闭有关系吗？我总感觉问题在这里，但是又无从下手。运行环境是X86平台，centos6.5，内核版本是2.6.32.望大牛hint me。"
+ },
+ {
+  "id": "2098",
+  "parent": "2088",
+  "date": "2015-06-30T21:46:14+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@Daniel Shieh：linuxer同学最近有点忙，我先试着理解一下吧，看看能不能帮到你。\r\n本文一开篇就讲到，中断处理分为top half和bottom half。\r\ntop half是全程关中断的，因而是本质上的中断上下文，in_interrupt()判断的就是这种情况。\r\nbottom half是开中断的，是由特殊的线程处理的，其本质上是进程上下文，也就不是中断上下文了。softirq正是实现bottom half的一中方式，因而，理所当然的，do_softirq不能在中断上下文调用。"
+ },
+ {
+  "id": "2101",
+  "parent": "2092",
+  "date": "2015-06-30T22:12:13+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@Daniel Shieh：warning的原因可以从本文“5、disable/enable softirq ”中找到，简单的说，就是因为在中断上下文中调用local_bh_enable了。至于为什么是一次，因为是这样调用的：\r\nWARN_ON_ONCE(in_irq() || irqs_disabled());\r\n\r\n至于是否需要解决这个问题，我的看法是这样的：\r\nnetlink的本质，是借助socket传递数据，属于大数据传输的范畴（虽然，我猜测，您这里可能传递的数据量不大）。\r\n因此，在中断中使用netlink传输数据，本身应该不是一种规范的做法。\r\n再看netlink_unicast的实现，它调用了local_bh_enable，其实就已经假设或者暗示了，netlink操作，要放到bottom half中完成。\r\n所以，您可以考虑一下，使用bottom half来完成netlink传输。"
+ },
+ {
+  "id": "2102",
+  "parent": "2088",
+  "date": "2015-07-01T00:39:05+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：in_interrupt()就是判断是否在中断上下文，是吧？\r\n---------------------------------------------------\r\n很遗憾，不是。实际上，中断上下文包括两种情况：\r\n1、执行该中断的处理函数（或者叫做top half）\r\n2、执行软中断处理函数，执行tasklet函数，执行timer callback函数。（或者统称bottom half）\r\n对于上面的第二种情况，稍微有些复杂，其执行的现场包括：\r\n1、执行完top half，立刻启动bottom half的执行\r\n2、在softirqd这个内核线程中执行\r\n对于上面的情况1，毫无疑问，绝对的中断上下文，对于情况2，虽然是在内核线程中执行，但是我也倾向将其归入中断上下文。\r\n\r\nOK，上面就是我理解的中断上下文的含义，下面我们来看代码。\r\n\r\nin_irq()是用来判断是否在中断上下文top half的。我们一起来来看看in_irq()是如何定义的：\r\n#define in_irq()\t\t(hardirq_count())\r\n#define hardirq_count()\t(preempt_count() & HARDIRQ_MASK)\r\n也就是说，in_irq就是检查hardirq counter那4个bit的值。在中断处理过程中，irq_enter说明进入到IRQ context，而irq_exit则说明退出IRQ context。在irq_enter函数中会调用preempt_count_add(HARDIRQ_OFFSET)，为hardirq count的bit field增加1。在irq_exit函数中，会调用preempt_count_sub(HARDIRQ_OFFSET)，为hardirq count的bit field减去1。因此，只要in_irq非零，则说明在中断上下文并且处于top half部分。\r\n\r\nin_serving_softirq()是用来判断是否在中断上下文bottom half的（也可能是在softirqd中哦）\r\n\r\n\r\n我们一起来来看看in_interrupt是如何定义的：\r\n#define in_interrupt()\t\t(irq_count())\r\n#define irq_count()\t(preempt_count() & (HARDIRQ_MASK | SOFTIRQ_MASK \\\r\n\t\t\t\t | NMI_MASK))\r\nHARDIRQ_MASK和NMI_MASK都没有问题，在中断上下文，但是SOFTIRQ_MASK还是有些问题的， SOFTIRQ_MASK这8个bit分成两个部分：\r\n1、也是在进入soft irq handler之前给 softirq count加一，退出soft irq handler之后给 softirq count减去一。由于soft irq handler在一个CPU上是不会并发的，总是串行执行，因此，这个场景下只需要一个bit就够了，也就是preempt_count的bit 8。通过该bit可以知道当前task是否在sofirq context。\r\n2、由于内核同步的需求，进程上下文需要禁止softirq。这时候，kernel提供了local_bf_enable和local_bf_disable这样的接口函数。这部分的概念是和preempt disable/enable类似的，占用了bit9～15，最大可以支持127次嵌套。 \r\n\r\n因此，in_interrupt()除了包括了中断上下文的场景，还包括了进程上下文禁止softirq的场景。"
+ },
+ {
+  "id": "2103",
+  "parent": "2098",
+  "date": "2015-07-01T00:55:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@蜗蜗：最近是有点忙，你先顶着，我也快要解脱啦，唉，套用我经常说的一句话：这奏是人生啊"
+ },
+ {
+  "id": "2104",
+  "parent": "2092",
+  "date": "2015-07-01T09:07:36+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：蜗蜗同学已经讲明了原因，我这里补充一下：in_irq()是用来判断是否在top half中的，本质上local_bh_disable/local_bh_enable是用来保护临界区的，但是，其实在硬件中断的handler（top half）中，不应该调用disable/enable bottom half函数来保护共享数据，因为bottom half其实是不可能抢占top half的。至于为什么是一次？我的理解是这样的，在top half中调用disable/enable bottom half函数来保护共享数据属于没有必要的操作（但是无害，浪费一点点cpu而已），因此只是给出一次警告就OK了，要是每次都告警，那么有用的log信息会被冲刷掉。"
+ },
+ {
+  "id": "2105",
+  "parent": "2101",
+  "date": "2015-07-01T09:33:32+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@蜗蜗：首先，数据量的确不大，但是需要在中断和用户态程序传输数据，了解下来，只有netlink是最好的方式，所以采用了netlink。\r\n我的确也已经做了tasklet和work queue的中断下半部处理netlink发送数据，但是这两种方法都会直接把系统给卡死，然后系统自动重启。目前还不清楚哪里出了问题。但是在中断里直接发送数据，不采用下半部，系统不会卡死，只是会报上面那个warning。下半部导致系统卡死可能会有上面原因呢？丢给下半部的处理函数和中断中直接处理的函数时一样的。难道中断下半部中必须单独加自旋锁？"
+ },
+ {
+  "id": "2106",
+  "parent": "2104",
+  "date": "2015-07-01T09:36:25+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@linuxer：原来是这样的啊，这个报警信息内核觉得不是什么重大事故，所以警告一次就行了，是吧。谢谢大牛回复，瞬间感觉清晰了点，尤其是对中断这部分，这几天好好研究研究你们的这个系列。你们应该赶紧出书啊，你们写的东西比那些经典书看着都要爽很多。"
+ },
+ {
+  "id": "2107",
+  "parent": "2102",
+  "date": "2015-07-01T10:56:24+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@linuxer：醍醐灌顶，谢谢大牛啊"
+ },
+ {
+  "id": "2117",
+  "parent": "2106",
+  "date": "2015-07-02T00:16:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：不敢当，不敢当，虽有动笔写书的想法，不过现在时机还不成熟，我们自己还没有达到融会贯通的程度。套用我之前回复Daniel网友的话:写书是这样的过程,你自己首先是一个装满水的水库,但是准备了一桶水,给读者倒了一杯。但现在,我们只是建好了水库,还在蓄水阶段..."
+ },
+ {
+  "id": "2118",
+  "parent": "2117",
+  "date": "2015-07-02T09:55:07+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：博主现在写的东西比很多嵌入式方面书里面写的更好了，等以后博主将写的东西系统整理下，我觉得肯定是一本很好的书。"
+ },
+ {
+  "id": "2140",
+  "parent": "0",
+  "date": "2015-07-05T13:34:28+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "对于中断处理而言，linux将其分成了两个部分，一个叫做中断handler（top half），是全程关闭中断的，另外一部分是deferable task（bottom half），属于不那么紧急需要处理的事情。\r\n//----------------------------\r\n请教一下，这里“全程关闭中断”在哪里操作的，我怎么么没有找到对应代码"
+ },
+ {
+  "id": "2141",
+  "parent": "0",
+  "date": "2015-07-05T18:26:08+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "假设在临界区代码执行的时候，发生了中断，由于代码并没有阻止top half的抢占，因此中断handler会抢占当前正在执行的thread。在中断handler中，我们raise了softirq，\r\n//----------------------------------------------\r\n这里你说的raise softirq是指中断注册的时候注册的handler吗？ 还是irq_exit时候？\r\n如果是后者的话，应该不会触发softirq的。"
+ },
+ {
+  "id": "2142",
+  "parent": "2140",
+  "date": "2015-07-06T10:09:28+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madang：top half的“全程关闭中断”是由硬件完成的，当中断产生后，硬件会自动disable本cpu的中断处理，在进入中断handler之前，只要不显式的打开本cpu的中断，那么中断就是关闭的。\r\n\r\n对于旧的内核，区分fast handler和slow handler，slow handler的top half在执行前，代码会打开中断的，新的内核已经是不区分fast handler和slow handler，都是fast handler，全部是关闭中断的。"
+ },
+ {
+  "id": "2158",
+  "parent": "704",
+  "date": "2015-07-07T15:33:18+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@linuxer：soft irq是一定需要的，它是在中断上下文执行的，只要是中断上下文，其优先级总是高过进程上下文\r\n\r\n======================================================================\r\n\r\n假设，只是假设，中断长时间不来咋办？"
+ },
+ {
+  "id": "2163",
+  "parent": "2158",
+  "date": "2015-07-07T18:10:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：本来的场景不就是产生了中断，将不急迫处理的内容放到bottom half（例如softirq）中，因此，如果中断长时间不来，那么软中断也没有执行的必要啊。我是不是没有搞清楚你的问题？"
+ },
+ {
+  "id": "2261",
+  "parent": "2142",
+  "date": "2015-07-21T11:29:53+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：上面的do_softirq会调用local_irq_enable在软中断中支持硬件中断抢占，而在最后有local_irq_disable。这个时候中断被禁止了，在上面时候中断又被恢复？是在中断汇编返回的地方还是硬件自己做？"
+ },
+ {
+  "id": "2281",
+  "parent": "2261",
+  "date": "2015-07-22T00:19:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：我还没有搞明白你说的问题，do_softirq不会调用local_irq_enable啊，你说的是__do_softirq吗？"
+ },
+ {
+  "id": "2309",
+  "parent": "2281",
+  "date": "2015-07-23T15:04:17+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：是我自己想差了，我应该是问题，在top half里面调用gic的eio表示中断处理完后，这个时候GIC就会打开中断了吧？"
+ },
+ {
+  "id": "2310",
+  "parent": "2309",
+  "date": "2015-07-23T21:08:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：推荐你看看gic那篇文档，有很多硬件相关的描述。"
+ },
+ {
+  "id": "2547",
+  "parent": "2142",
+  "date": "2015-09-08T09:02:45+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "@linuxer：了解。那么哪里打开中断呢？发送eoi的时候 还是退出中断处理的时候？"
+ },
+ {
+  "id": "2552",
+  "parent": "2547",
+  "date": "2015-09-09T09:01:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madang：在执行bootom half（softirq and tasklet）之前会打开中断。如果没有pending的softirq，那么在返回中断现场的时候打开中断。"
+ },
+ {
+  "id": "2634",
+  "parent": "0",
+  "date": "2015-09-21T18:17:42+08:00",
+  "author": "Awei",
+  "site": "",
+  "text": "难道不是笔误了？\r\n local_irq_disable(); －－－－－－－打开中断"
+ },
+ {
+  "id": "2635",
+  "parent": "2634",
+  "date": "2015-09-21T21:42:11+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Awei：应该是笔误。disable当然是关闭中断了，多谢指正！"
+ },
+ {
+  "id": "2707",
+  "parent": "2552",
+  "date": "2015-09-28T17:09:02+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "@linuxer：多谢。多问一句，是由硬件完成的，还是软件代码完成的？\r\n如果是软件代码完成的，能否帮忙指点一下代码在哪里？"
+ },
+ {
+  "id": "2708",
+  "parent": "2707",
+  "date": "2015-09-28T18:02:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madang：在__do_softirq中，如下：\r\nasmlinkage __visible void __do_softirq(void)\r\n{\r\n......\r\n\r\n\tlocal_irq_enable();\r\n\r\n\t处理softirq的代码\r\n\r\n\tlocal_irq_disable();\r\n\r\n......\r\n}"
+ },
+ {
+  "id": "2711",
+  "parent": "2708",
+  "date": "2015-09-29T12:24:11+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "@linuxer：不好意思，可能我没有说清楚，我说的不是softirq，就是普通的中断。\r\n中断发生以后，硬件关闭本地cpu中断，中断结束，本地中断打开。我想问的是，最后这个中断打开是谁操作的？"
+ },
+ {
+  "id": "2714",
+  "parent": "2708",
+  "date": "2015-09-29T23:20:17+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "中断处理完毕后，并不是单纯的打开中断，而是恢复到发生中断指令的当时的现场，是软件做的。可以参考restore_user_regs（中断发生在userspace）或者svc_exit（中断发生在kernelspace）"
+ },
+ {
+  "id": "3002",
+  "parent": "0",
+  "date": "2015-11-06T08:48:23+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "问一下，IPI中断里面的 IPI_IRQ_WORK是做什么用的？\r\n貌似和两个percpu的 list 有关， 一个lazy_list，一个是raised_list"
+ },
+ {
+  "id": "3003",
+  "parent": "3002",
+  "date": "2015-11-06T12:35:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madang：这个和irq work机制相关。这个机制其实就是注册一个callback 函数，然后在hardirq context中执行。程序可以调用irq_work_queue或者irq_work_queue_on来注册callback函数，注册之后，当然要raise它，这是通过触发一次IPI来完成的。IPI_IRQ_WORK就是启这个作用的。\r\n\r\nlazy_list和raised_list都是一个per cpu的链表头，注册irq work其实就是将一个struct irq_work的实例挂入队列。根据irq work的特点，可以分成两种，一种是要求立刻执行的（立刻触发IPI），另外一种是没有什么要求的，可以在tick到来的时候调用callback函数。不同的irq work会挂入不同的链表。"
+ },
+ {
+  "id": "3006",
+  "parent": "3003",
+  "date": "2015-11-06T15:59:59+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "@linuxer：主要是什么应用场景啊？"
+ },
+ {
+  "id": "3007",
+  "parent": "3006",
+  "date": "2015-11-06T16:10:28+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "@madang：或者说这种机制有什么作用？"
+ },
+ {
+  "id": "3009",
+  "parent": "3007",
+  "date": "2015-11-06T16:49:19+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "@madang：和IPI_CALL_FUNC这个中断好像很类似啊"
+ },
+ {
+  "id": "3011",
+  "parent": "3006",
+  "date": "2015-11-06T18:47:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madang：一般而言，我们都是期望hardirq context做的事情越少越好，尽可能的把要处理的内容推导bottom half，因此，这也就注定irq work机制不会被普通的driver使用，除非你是使用优先级更高的中断（例如：X86中的NMI或者ARM中的FIQ）。这时候，在这个更高优先级的handler中不能做太多的事情，可以考虑使用irq work机制，调用irq_work_queue，将任务delay到hardirq context中。\r\n\r\n使用比hardirq更高优先级的应用场景多半是 watchdog、trace、debug什么的。例如CPU可能包括PMU（Performance Monitor Unit）这样的硬件单元，如果该硬件单元也使用普通的irq，那么在kernel代码disable irq的时候，PMU不就没有办法工作了吗？因此PMU可以考虑是那种代码不可以屏蔽的中断来驱动工作的。"
+ },
+ {
+  "id": "3012",
+  "parent": "3011",
+  "date": "2015-11-06T22:26:52+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "@linuxer：这时候，在这个更高优先级的handler中不能做太多的事情，可以考虑使用irq work机制，调用irq_work_queue，将任务delay到hardirq context中。 \r\n//---------------------------------------\r\n 这里没有看明白。 这里的“更高优先级的handler”应该指的的是 中断的handler吧，按照我的理解应该是在硬中断上下文执行的。 但是你有说“将任务delay到hardirq context中”， 如果这里 hardirq context也是硬中断上下文的话， 那岂不是有问题"
+ },
+ {
+  "id": "3013",
+  "parent": "3012",
+  "date": "2015-11-07T21:50:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madang：我的意思是从NMI context推迟到hardirq context"
+ },
+ {
+  "id": "3014",
+  "parent": "3013",
+  "date": "2015-11-09T08:27:44+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "@linuxer：对于arm这种没有NMI中断的系统，更高优先级的中断应该就是FIQ了吧。 一般FIQ也都是当做安全中断使用，kernel无法处理的。 这个时候，像pmu这种机制使用什么中断来实现呢 ？"
+ },
+ {
+  "id": "3017",
+  "parent": "3013",
+  "date": "2015-11-09T12:25:55+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：ARM的处理器可以包括安全扩展（TrustZone），也可以不包括，对于没有包括TrustZone的，linux kernel可以之间控制FIQ，对于包括TrustZone的ARM处理器，FIQ由secure monitor控制，如果内核想要使用FIQ，那么就需要有一定的方法让secure monitor将FIQ事件传递给kernel（当然，具体什么方法我也没有深入了解）。"
+ },
+ {
+  "id": "3561",
+  "parent": "0",
+  "date": "2016-02-29T17:21:48+08:00",
+  "author": "huad_",
+  "site": "",
+  "text": "大神，请教个问题：如果当前状态是，打开中断，关闭抢占。那么，在这个情况下，当前CPU上会有进程调度吗？"
+ },
+ {
+  "id": "3564",
+  "parent": "3561",
+  "date": "2016-02-29T23:22:57+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@huad_：我的理解：都已经disable了preempt，当然不会有调度了。虽然中断可以禁止抢占代码的执行，并且也许唤醒了优先级更高的进程，但是由于是禁止抢占的，因此中断返回的时候并不会发生调度。"
+ },
+ {
+  "id": "3644",
+  "parent": "2092",
+  "date": "2016-03-10T18:32:02+08:00",
+  "author": "宽",
+  "site": "",
+  "text": "@Daniel Shieh：这个问题，可以尝试使用broadcast试下？"
+ },
+ {
+  "id": "3702",
+  "parent": "0",
+  "date": "2016-03-22T17:30:52+08:00",
+  "author": "descent",
+  "site": "",
+  "text": "請問 softirq 可以指定執行在某個 cpu core 嗎？"
+ },
+ {
+  "id": "3705",
+  "parent": "3702",
+  "date": "2016-03-22T23:20:25+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@descent：应该不可以的，在哪一个CPU上raise了softirq，就在哪一个CPU上执行"
+ },
+ {
+  "id": "3890",
+  "parent": "0",
+  "date": "2016-05-06T09:55:17+08:00",
+  "author": "jinxinxin163",
+  "site": "",
+  "text": "Hi, wowo，有几个问题想和您讨论一下：\r\n1. 就网卡中断的例子来讲，假如软中断执行的时候被硬件中断打断，怎么回到之前软中断执行的代码\r\n处？软中断可不像进程那样有进程上下文！\r\n2. 软中断打断当前进程的调用路线是怎么样的？包括打断和恢复！\r\n3. 软中断处于中断上下文，但是却是由softirqd这个内核线程调度执行的（内核上下文），这不矛盾么？\r\n3.有个地方写错了吧：\r\n关本地中断实际上是禁止了top half和bottom half抢占当前进程上下文的运行\r\n关本地中断只是禁止了top half吧 ^_^"
+ },
+ {
+  "id": "3892",
+  "parent": "3890",
+  "date": "2016-05-06T10:15:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jinxinxin163：这个让linuxer同学回答你把:-)"
+ },
+ {
+  "id": "3894",
+  "parent": "3890",
+  "date": "2016-05-06T15:34:00+08:00",
+  "author": "jinxinxin163",
+  "site": "",
+  "text": "@jinxinxin163：抱歉， 第三个问题写错了：\r\n软中断处于中断上下文，但是却是由softirqd这个内核线程调度执行的（内核上下文），这不矛盾么？\r\n应该是：\r\n软中断处于中断上下文，但是却是由softirqd这个内核线程调度执行的（进程上下文），这不矛盾么？"
+ },
+ {
+  "id": "3895",
+  "parent": "2098",
+  "date": "2016-05-06T15:56:53+08:00",
+  "author": "jinxinxin163",
+  "site": "",
+  "text": "@蜗蜗：还是想请教下，既然invoke_softirq 和 do_softirq本质上都是在进程上下文运行，那是怎么保证比一般内核线程/进程更好的实时性和维持这么重要的角色的呢"
+ },
+ {
+  "id": "3896",
+  "parent": "3894",
+  "date": "2016-05-06T16:24:04+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@jinxinxin163：白天有点忙，晚上回复你，呵呵～～～"
+ },
+ {
+  "id": "3897",
+  "parent": "0",
+  "date": "2016-05-06T23:12:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "1、软中断虽然是处于中断上下文，但是仍然有current process，只不过这个softirq的执行和current进程没有一毛钱的关系。被中断打断的softirq如何恢复执行？没有什么特别的啊，就是在current的内核栈上保存现场，然后恢复不就OK了吗？\r\n2、软中断打断往往不会直接打断进程的调用线路，总是借由中断来完成，一般是中断发生，在handler中raise softirq，在irq_exit中check softirq的pending状态。\r\n3、你再仔细看看softirqd，并不是它来调度执行softirqd的，本身softirq仍然是由hardirq raise，然后再调度的，只有在一些特殊情况下，softirqd才启动执行。\r\n4、我的意思是如果关闭了中断，那么不会有中断handler，也就不会raise新的softirq，当然，我那么说可能是有些不严谨，我的意思是如果关闭了中断，那么不会新触发的softirq来抢占当前进程的执行。"
+ },
+ {
+  "id": "3898",
+  "parent": "3896",
+  "date": "2016-05-09T09:50:25+08:00",
+  "author": "jinxinxin163",
+  "site": "",
+  "text": "@linuxer：好的好的，感谢了"
+ },
+ {
+  "id": "4017",
+  "parent": "3564",
+  "date": "2016-06-01T17:27:32+08:00",
+  "author": "huad_",
+  "site": "",
+  "text": "@郭健：@郭健:谢谢你的回复！如果我主动调用schedule()，这个时候也不会有进程切换吗？"
+ },
+ {
+  "id": "4018",
+  "parent": "3705",
+  "date": "2016-06-01T18:04:11+08:00",
+  "author": "冬瓜哥",
+  "site": "",
+  "text": "@郭健：可以的。可以用ipi将软中断向其他cpu派发执行。"
+ },
+ {
+  "id": "4019",
+  "parent": "4017",
+  "date": "2016-06-01T18:52:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@huad_：OK，看起来你的调用序列如下：\r\n......\r\npreempt_disable();\r\n......\r\nschedule\r\n......\r\npreempt_enable();\r\n......\r\n\r\n其实你可以试一试的，最后你会看到这样的错误信息：\r\nBUG: scheduling while atomic:......."
+ },
+ {
+  "id": "4020",
+  "parent": "4018",
+  "date": "2016-06-01T18:59:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@冬瓜哥：能不能再说的详细一些？如何用ipi将软中断向其他CPU派发？大概的代码在哪里？"
+ },
+ {
+  "id": "4022",
+  "parent": "2098",
+  "date": "2016-06-01T21:03:56+08:00",
+  "author": "jey",
+  "site": "",
+  "text": "@蜗蜗：@蜗蜗：你上面说：\r\ntop half是全程关中断的，因而是本质上的中断上下文，in_interrupt()判断的就是这种情况。\r\nbottom half是开中断的，是由特殊的线程处理的，其本质上是进程上下文，也就不是中断上下文了。\r\n------------------------------------------------------------\r\n由上面你的回复我的理解是：是中断上下文还是进程上下文是通过有没有关闭中断来决定的\r\n我的理解正确吗？"
+ },
+ {
+  "id": "4023",
+  "parent": "4022",
+  "date": "2016-06-01T21:32:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jey：不正确。是否在中断上下文，本质上取决于CPU的处理器模式。\r\n另外，可以轻易的举出反例：进程上下文，一样可以关中断啊。"
+ },
+ {
+  "id": "4024",
+  "parent": "4022",
+  "date": "2016-06-02T00:24:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@jey：关于中断上下文和进程上下文，我的理解是这样的：\r\n1、对于内核态的程序，是否运行在进程上下文还是中断上下文，主要看当时current指向的task是否和当前执行的代码是否有直接的关系。\r\n2、如果用户进程通过系统调用进入内核，那么这时候毫无疑问是进程上下文，因为当前的内核代码执行路径就是代替用户空间进程在内核态运行，这时候随意的阻塞当前进程是OK的，不会有任何的歧义。\r\n3、如果中断打断了某个进程的执行，从而转入interrupt handler执行，这时候，current task和当前内核执行路径没有一毛钱的关系，current是无辜的，是躺枪的，异步的中断事件毫无预警的击中了current进程，从而陷入内核，这时候内核路径是不能block当前进程的，在这种情况下，内核代码执行在中断上下文。\r\n4、无论是top half还是bottom half，其本质都是中断上下文，都不能阻塞当前进程。当然，有一种特例：那就是在softirqd中执行的软中断handler，这时候的上下文实际上是进程上下文。"
+ },
+ {
+  "id": "4025",
+  "parent": "3895",
+  "date": "2016-06-02T00:40:14+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@jinxinxin163：invoke_softirq 是在中断上下文执行。\r\ndo_softirq一般来说会在进程上下文执行。\r\n\r\ninvoke_softirq 的执行过程是irq_exit----->invoke_softirq，也就是说，在top half退出的时候，如果有pending的softirq，就会调用该函数，因此invoke_softirq一般是中断上下文运行。\r\n\r\ndo_softirq的执行过程是local_bh_enable---->__local_bh_enable_ip---->do_softirq，一般用在进程上下文通过local_bh_disable和local_bh_enable保护临界区的时候使用。在临界区内产生了中断，raise了softirq，但是返回临界区的时候，不能执行softirq handler（因为disable了bottom half），因此，在立刻临界区的时候，要立刻启动那个pending softirq的处理。\r\n\r\n最后一句话总结：bottom half可以抢占进程上下文的执行，除非进程上下文显示的禁止了bottom half。"
+ },
+ {
+  "id": "4027",
+  "parent": "4019",
+  "date": "2016-06-02T10:17:50+08:00",
+  "author": "huad_",
+  "site": "",
+  "text": "@linuxer：谢谢~\r\n试验了一下，确实会提示如上BUG，并会打印堆栈错误消息。不过系统也没有挂掉。"
+ },
+ {
+  "id": "4028",
+  "parent": "4024",
+  "date": "2016-06-02T10:44:27+08:00",
+  "author": "jey",
+  "site": "",
+  "text": "@linuxer：谢谢两位大神的耐心回答"
+ },
+ {
+  "id": "4029",
+  "parent": "0",
+  "date": "2016-06-02T11:02:03+08:00",
+  "author": "jey",
+  "site": "",
+  "text": "读完本文之后让我想到了系统调用，我的理解是这样的，用户程序里通过写入swi指令来切换到特权模式，当CPU执行到swi指令时会从用户模式切换到管理模式下，并将PC值置成一个异常向量地址，这个地址上存放一个跳转指令，跳转到软中断处理程序，软中断处理程序根据swi指令后面的参数（系统调用号）找到对应的系统调用后开始执行系统调用。不知道我的理解对不对？\r\n由上面我的描述我感觉系统调用中的软中断跟本文中描述的软中断区别很大啊，能否解释一下这两种软中断的区别呢？"
+ },
+ {
+  "id": "4038",
+  "parent": "4029",
+  "date": "2016-06-03T09:07:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@jey：你把swi这条“软中断指令”和中断子系统中的“软中断机制”搞混了，这两个东西是不一样的。\r\nswi你说的已经很明白了，中断子系统中的“软中断机制”其实就是把中断处理需要执行的代码分成两个部分，一个需要尽快完成的，一个是可以推后执行的，对于那些可以推后执行的，kernel中断子系统提供了softirq的机制，让那些代码可以在中断返回user space之前执行。"
+ },
+ {
+  "id": "4039",
+  "parent": "4038",
+  "date": "2016-06-03T09:52:14+08:00",
+  "author": "jey",
+  "site": "",
+  "text": "@linuxer：我也认为他们是不一样的东西，只是想通过大牛验证一下。呵呵~\r\n多谢~"
+ },
+ {
+  "id": "4069",
+  "parent": "0",
+  "date": "2016-06-14T15:10:19+08:00",
+  "author": "weiweishuo",
+  "site": "",
+  "text": "写的非常好，看的很爽快。。。。文章不罗嗦。"
+ },
+ {
+  "id": "4184",
+  "parent": "0",
+  "date": "2016-07-04T15:13:16+08:00",
+  "author": "looper",
+  "site": "",
+  "text": "楼主，能否帮忙看看下面的问题，最近在kernel log中总会出现如下的信息：\r\nc0 BUG: sleeping function called from invalid context at /space/builder/repo/sprdroid6.0_trunk_k318_dev/kernel/mm/slub.c:1240\r\nc0 in_atomic(): 0, irqs_disabled(): 0, pid: 1, name: init\r\nc0 Preemption disabled at:[<ffffffc0009cc934>] printk+0x7c/0x8c\r\n\r\n根据看源代码，感觉进入sleep的dump流程是因为抢占被禁止了。还请楼主帮帮忙。"
+ },
+ {
+  "id": "4187",
+  "parent": "4184",
+  "date": "2016-07-04T16:38:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@looper：应该有更多的call trace吧？打出来看看。\r\n可能是你再atomic区域（中断、softirq等）中，调用了内存分配的函数（最终会调到slab_alloc），而内存分配可能会睡眠。"
+ },
+ {
+  "id": "4233",
+  "parent": "4187",
+  "date": "2016-07-12T11:12:16+08:00",
+  "author": "looper",
+  "site": "",
+  "text": "@wowo：回复晚了，下面是call trace\r\n[01-02 07:45:29.883] <3>[    8.510125] c0 BUG: sleeping function called from invalid context at /space/builder/repo/sprdroid6.0_trunk_k318_dev/kernel/mm/slub.c:1240\r\n[01-02 07:45:29.883] <3>[    8.510150] c0 in_atomic(): 0, irqs_disabled(): 0, pid: 1, name: init\r\n[01-02 07:45:29.883] <3>[    8.510170] c0 Preemption disabled at:[<ffffffc0009cc934>] printk+0x7c/0x8c\r\n[01-02 07:45:29.883] <4>[    8.510218] c0 \r\n[01-02 07:45:29.883] <4>[    8.510242] c0 CPU: 0 PID: 1 Comm: init Tainted: G        W  O   3.18.12+ #1\r\n[01-02 07:45:29.883] <4>[    8.510263] c0 Hardware name\r\n[01-02 07:45:29.884] <0>[    8.510282] c0 Call trace:\r\n[01-02 07:45:29.884] <38>[    8.510987] c4 logd.auditd: policy loaded\r\n[01-02 07:45:29.884] <4>[    8.512944] c0 [<ffffffc00008b480>] dump_backtrace+0x0/0x164\r\n[01-02 07:45:29.884] <4>[    8.512958] c0 [<ffffffc00008b600>] show_stack+0x1c/0x28\r\n[01-02 07:45:29.884] <4>[    8.512972] c0 [<ffffffc0009cd570>] dump_stack+0x74/0xb8\r\n[01-02 07:45:29.885] <4>[    8.512988] c0 [<ffffffc0000e3414>] __might_sleep+0x198/0x1a0\r\n[01-02 07:45:29.885] <4>[    8.513003] c0 [<ffffffc0001e2e68>] __kmalloc_track_caller+0x220/0x2ac\r\n[01-02 07:45:29.885] <4>[    8.513017] c0 [<ffffffc0004a8fe0>] devm_kmalloc+0x38/0x84\r\n[01-02 07:45:29.885] <4>[    8.513032] c0 [<ffffffc000666954>] of_devfreq_cooling_register_power+0xfc/0x314\r\n[01-02 07:45:29.885] <4>[    8.513060] c0 [<ffffffbffc02b27c>] kbase_devfreq_init+0x268/0x2dc [mali_kbase]\r\n[01-02 07:45:29.885] <4>[    8.513092] c0 [<ffffffbffc018658>] kbase_release_device+0x38e0/0x3c2c [mali_kbase]\r\n[01-02 07:45:29.885] <4>[    8.513106] c0 [<ffffffc0004a7610>] platform_drv_probe+0x50/0xcc\r\n[01-02 07:45:29.885] <4>[    8.513120] c0 [<ffffffc0004a52c4>] driver_probe_device+0xb4/0x3c8\r\n[01-02 07:45:29.885] <4>[    8.513132] c0 [<ffffffc0004a56dc>] __driver_attach+0xa8/0xb0\r\n[01-02 07:45:29.885] <4>[    8.513145] c0 [<ffffffc0004a3150>] bus_for_each_dev+0x68/0xac\r\n[01-02 07:45:29.885] <4>[    8.513158] c0 [<ffffffc0004a4c90>] driver_attach+0x28/0x34\r\n[01-02 07:45:29.885] <4>[    8.513170] c0 [<ffffffc0004a4894>] bus_add_driver+0x16c/0x248\r\n[01-02 07:45:29.885] <4>[    8.513183] c0 [<ffffffc0004a6074>] driver_register+0x6c/0x138\r\n[01-02 07:45:29.885] <4>[    8.513196] c0 [<ffffffc0004a7528>] __platform_driver_register+0x74/0x84\r\n[01-02 07:45:29.885] <4>[    8.513222] c0 [<ffffffbffc04b01c>] init_module+0x1c/0x28 [mali_kbase]\r\n[01-02 07:45:29.885] <4>[    8.513235] c0 [<ffffffc000082acc>] do_one_initcall+0xcc/0x1e8\r\n[01-02 07:45:29.885] <4>[    8.513248] c0 [<ffffffc00013b1cc>] load_module+0x1728/0x1e08\r\n[01-02 07:45:29.886] <4>[    8.513259] c0 [<ffffffc00013b998>] SyS_init_module+0xec/0x148\r\n[01-02 07:45:29.887] <6>[    8.513381] c0 mali 60000000.gpu: Dynamic power table: 850 MHz @ 800 mV: 124 = 124 mW\r\n[01-02 07:45:29.887] <6>[    8.513396] c0 mali 60000000.gpu: Dynamic power table: 768 MHz @ 800 mV: 112 = 112 mW\r\n\r\n\r\n楼主，在稳定性测试中经常会发现类似问题，不知道如何解决，还请帮忙看看。谢谢。"
+ },
+ {
+  "id": "4235",
+  "parent": "4233",
+  "date": "2016-07-12T13:42:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@looper：你的driver的probe函数是怎么写的？是不是有关中断、关抢占之类的？\r\n另外可以试试在___might_sleep中加打印，查一下具体的原因。\r\n        if ((preempt_count_equals(preempt_offset) && !irqs_disabled() &&        \r\n             !is_idle_task(current)) ||                                         \r\n            system_state != SYSTEM_RUNNING || oops_in_progress)                 \r\n                return;                                                         \r\n        if (time_before(jiffies, prev_jiffy + HZ) && prev_jiffy)                \r\n                return;                                                         \r\n        prev_jiffy = jiffies;"
+ },
+ {
+  "id": "4236",
+  "parent": "4235",
+  "date": "2016-07-12T13:59:28+08:00",
+  "author": "looper",
+  "site": "",
+  "text": "@wowo：这个问题是测试组在kernel log中发现的， 而且整个流程也是kernel 原生的代码。我用的kernel是3.18的。of_devfreq_cooling_register_power中确实有分配内存： devm_kzalloc(dev, sizeof(*dfc), GFP_KERNEL);  \r\n\r\n使用GFP_KERNEL这个标志分配内存是可以睡眠的，但是irqs_disabled(): 0，\r\n而preempt_count_equals(preempt_offset)=0说明是有抢占或者中断被禁止了。\r\n\r\n关键我没有头绪， 不知从何入手。 求指点。谢谢"
+ },
+ {
+  "id": "4237",
+  "parent": "4236",
+  "date": "2016-07-12T14:38:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@looper：每次都有这句话吗？\r\n[01-02 07:45:29.883] <3>[    8.510170] c0 Preemption disabled at:[<ffffffc0009cc934>] printk+0x7c/0x8c \r\n\r\n和printk有关？\r\nmali是变成模块的？\r\n再做rmmod、insmod测试？\r\nprintk可能会输出到屏幕上？"
+ },
+ {
+  "id": "4239",
+  "parent": "4237",
+  "date": "2016-07-12T15:10:33+08:00",
+  "author": "looper",
+  "site": "",
+  "text": "@wowo：具体原因不知道。应该是Android的一种叫做Monkey测试出来的。\r\n\r\n中间没有insomd,rmmod。 而mail是什么东西，我也不清楚。估计是上层的什么应用吧。\r\n\r\n在稳定性测试中还有类似的情况：\r\nBUG: sleeping function called from invalid context at /space/builder/repo/sprdroid6.0mr1_prime_k318_dev/kernel/kernel/locking/mutex.c:97\r\nin_atomic(): 0, irqs_disabled(): 128, pid: 3909, name: mali-renderer\r\n\r\n[01-01 08:56:28.356] <0>[ 2881.732806] c0 Call trace:\r\n[01-01 08:56:28.356] <4>[ 2881.735432] c0 [<ffffffc00008b480>] dump_backtrace+0x0/0x164\r\n[01-01 08:56:28.356] <4>[ 2881.735441] c0 [<ffffffc00008b600>] show_stack+0x1c/0x28\r\n[01-01 08:56:28.356] <4>[ 2881.735453] c0 [<ffffffc0009d121c>] dump_stack+0x74/0xb8\r\n[01-01 08:56:28.356] <4>[ 2881.735464] c0 [<ffffffc0000e33d4>] __might_sleep+0x158/0x1a0\r\n[01-01 08:56:28.356] <4>[ 2881.735473] c0 [<ffffffc0009d9d48>] mutex_lock+0x28/0x50\r\n[01-01 08:56:28.356] <4>[ 2881.735483] c0 [<ffffffc000740c58>] devfreq_monitor_resume+0x20/0xb0\r\n[01-01 08:56:28.356] <4>[ 2881.735494] c0 [<ffffffc000742548>] devfreq_simple_ondemand_handler+0x80/0xc4\r\n[01-01 08:56:28.356] <4>[ 2881.735502] c0 [<ffffffc000740998>] devfreq_resume_device+0x34/0x5c\r\n[01-01 08:56:28.356] <4>[ 2881.735521] c0 [<ffffffbffc014df0>] kbase_release_device+0x78/0x3b90 [mali_kbase]\r\n[01-01 08:56:28.356] <4>[ 2881.735532] c0 [<ffffffc0004acdc4>] pm_generic_runtime_resume+0x38/0x58\r\n[01-01 08:56:28.356] <4>[ 2881.735541] c0 [<ffffffc0004aec70>] __rpm_callback+0x70/0x9c\r\n[01-01 08:56:28.356] <4>[ 2881.735550] c0 [<ffffffc0004aeccc>] rpm_callback+0x30/0xa0\r\n[01-01 08:56:28.356] <4>[ 2881.735558] c0 [<ffffffc0004afff4>] rpm_resume+0x424/0x5f0\r\n[01-01 08:56:28.356] <4>[ 2881.735566] c0 [<ffffffc0004b0224>] __pm_runtime_resume+0x64/0xa0\r\n[01-01 08:56:28.356] <4>[ 2881.735582] c0 [<ffffffbffc01ea20>] kbase_platform_fake_register+0x18c/0xef8 [mali_kbase]\r\n[01-01 08:56:28.356] <4>[ 2881.735597] c0 [<ffffffbffc02868c>] kbase_pm_clock_on+0x9c/0x1ac [mali_kbase]\r\n[01-01 08:56:28.356] <4>[ 2881.735612] c0 [<ffffffbffc026dd4>] kbase_pm_do_poweron+0x24/0x3c [mali_kbase]\r\n[01-01 08:56:28.356] <4>[ 2881.735627] c0 [<ffffffbffc0295f0>] kbase_pm_update_active+0xa0/0x18c [mali_kbase]\r\n[01-01 08:56:28.356] <4>[ 2881.735642] c0 [<ffffffbffc027128>] kbase_hwaccess_pm_gpu_active+0x1c/0x2c [mali_kbase]\r\n[01-01 08:56:28.376] <4>[ 2881.735656] c0 [<ffffffbffc00d860>] kbase_pm_context_active_handle_suspend+0xbc/0xc4 [mali_kbase]\r\n[01-01 08:56:28.376] <4>[ 2881.735670] c0 [<ffffffbffc00b300>] kbase_js_sched+0x148/0x86c [mali_kbase]\r\n[01-01 08:56:28.376] <4>[ 2881.735682] c0 [<ffffffbffc0074e8>] kbase_jd_submit+0x318/0x3b4 [mali_kbase]\r\n[01-01 08:56:28.376] <4>[ 2881.735696] c0 [<ffffffbffc017318>] kbase_release_device+0x25a0/0x3b90 [mali_kbase]\r\n[01-01 08:56:28.376] <4>[ 2881.735708] c0 [<ffffffc000246d20>] compat_SyS_ioctl+0xbc/0x1688\r\n\r\n都是进入了sleep中。"
+ },
+ {
+  "id": "4240",
+  "parent": "0",
+  "date": "2016-07-12T16:13:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@looper，第二个问题就比较直接：\r\nruntime PM resume的时候（__pm_runtime_resume），会关中断（spin_lock_irqsave），但是，在resume的过程中，调到devfreq_simple_ondemand_handler-->devfreq_monitor_resume了，而在devfreq_monitor_resume中，有mutex_lock的调用。就出现上面的警告了。你查一下为什么会有这个流程。\r\nPS：mali是ARM的GPU，看情况，问题都出在相关的代码中，你可以检查一下代码。"
+ },
+ {
+  "id": "4242",
+  "parent": "4240",
+  "date": "2016-07-12T20:21:38+08:00",
+  "author": "looper",
+  "site": "",
+  "text": "@wowo：那您的意思是： 关中断之后不应该进入mutex_lock中去？ \r\n\r\n而根据打印出来的信息： in_atomic(): 0 和irqs_disabled(): 128\r\nirqs_disabled(): 128，说明中断是被屏蔽了。 in_atomic(): 0说明目前处于原子操作上下文中。\r\n\r\n而进入might_sleep的条件：\r\nif ((preempt_count_equals(preempt_offset) && !irqs_disabled() &&\r\n     !is_idle_task(current)) || oops_in_progress)\r\n\treturn;\r\n\r\n说明irqs_disabled(): 128 导致的。\r\n\r\n这个问题出现概率极高，每次测试都会出现。目前还没有解决。根据整个执行流程来看，全部是kernel原生的代码，没有自己写的代码。"
+ },
+ {
+  "id": "4243",
+  "parent": "4242",
+  "date": "2016-07-12T21:49:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@looper：是的，中断都已经关闭了，mutex_lock就已经没有调用的意义了。另外，如果lock已经被其它地方获取了，这时会发生调度，由于中断被关闭了，所以是很危险的。"
+ },
+ {
+  "id": "4244",
+  "parent": "4243",
+  "date": "2016-07-13T10:38:29+08:00",
+  "author": "looper",
+  "site": "",
+  "text": "@wowo：我不是很明白为啥关掉了中断，mutex_lock就没有调用的意义了？\r\n\r\n那该问题出现的原因是不是您说的“代码执行流程存在问题？”"
+ },
+ {
+  "id": "4526",
+  "parent": "0",
+  "date": "2016-09-07T14:09:48+08:00",
+  "author": "tree",
+  "site": "",
+  "text": "void raise_softirq(unsigned int nr)\r\n{\r\n\tunsigned long flags;\r\n\r\n\tlocal_irq_save(flags);\r\n\traise_softirq_irqoff(nr);\r\n\tlocal_irq_restore(flags);\r\n}\r\n\r\nlinuxer问个问题，既然该函数在中断处理函数中调用，这时候中断已经关闭了，那还在关闭中断，是不是多余的操作？"
+ },
+ {
+  "id": "4529",
+  "parent": "4526",
+  "date": "2016-09-07T17:39:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tree：如果你确定你的调用场景是关中断的，那么其实可以不使用raise_softirq而使用raise_softirq_irqoff。如果不确定，还是使用raise_softirq安全一些。"
+ },
+ {
+  "id": "4531",
+  "parent": "4529",
+  "date": "2016-09-07T19:49:13+08:00",
+  "author": "tree",
+  "site": "",
+  "text": "@linuxer：再咨询一个问题：\r\n既然中断分为Top Half和Bottom Half, Top Half是全程关闭中断的，在Bottom Half中打开中断。根据代码是在__do_softirq函数中调用local_irq_enable打开中断的，而在处理完soft中断之后又调用local_irq_disable关闭了中断。\r\n\r\n这样处理完整个中断后，中断还是关闭的，估计我是没找到在哪里开中断的？\r\n还请指点，谢谢。"
+ },
+ {
+  "id": "4543",
+  "parent": "4531",
+  "date": "2016-09-08T09:56:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tree：对于ARM处理器，中断状态保存在cpsr寄存器中。发生中断的时候，硬件上下文保存在内核栈上，当恢复现场的时候就会恢复cpsr的值，也就enable了中断。"
+ },
+ {
+  "id": "4639",
+  "parent": "0",
+  "date": "2016-10-01T14:45:44+08:00",
+  "author": "lucky",
+  "site": "",
+  "text": "Hi linuxer,\r\n\r\n@linuxer,您好：\r\n看了您的文章收获非常大，现有几个问题罗列出来希望指点一二，谢谢。\r\n1. 本文中提到的这个流程图：关中断：mask and ack interrupt controller-------->ack NIC-------->copy FIFO to ram------>raise softirq------>unmask interrupt controller\r\n    =>最后一步unmask interrupt controller 这个是在中断处理程序执行完由硬件操作寄存器来进行操作的吗？\r\n    irq_exit\r\n\trcu_irq_exit\r\n\t    local_irq_save(flags);\r\n\t    local_irq_restore(flags);\r\n    既然流程第一步已经进行了执行了mask，为什么rcu_irq_exit 还会进行关闭中断的操作啊？硬中断处理中关闭中断的操作是硬件实现的？\r\n\t\r\n2. 关于softirq的执行场景，目前我的理解：\r\n    1)是在中断上下文：\r\n    irq_exit\r\n\tif (!in_interrupt() && local_softirq_pending())\t//有pending softirq且没有disable_bh\r\n\t    invoke_softirq();\r\n    2)一个使用local_bh_disable和local_bh_enable来保护临界区的task，在local_bh_enable退出临界区时如有pending softirq则在该task的进程上下文执行。\r\n    3)由wakeup_softirqd 唤醒，在softirqd的进程上下文中执行。\r\n    综上所述的情况，我们说softirq和tasklet运行在中断上下文是不是有些不恰当？\r\n\t\r\n3. 关于下面这段代码有个疑问想请教一下：\r\ndo_softirq(void)\r\n    local_irq_save(flags);              //save本地中断状态，关中断\t----- a\r\n    pending = local_softirq_pending();\r\n    __do_softirq();\r\n        pending = local_softirq_pending();//获取 softirq pending 状态 ----- m\r\n        set_softirq_pending(0); \t//清除pending标志\r\n        local_irq_enable\t\t//开中断\t  ----- b\r\n        h->action(h);\t\t\t                  ----- c\r\n        local_irq_disable\t\t//关中断\t  ----- d\r\n        pending = local_softirq_pending();//重新获取 softirq pending 状态 ----- n\r\n        if (pending) { \r\n            if (time_before(jiffies, end) && !need_resched() && \r\n                --max_restart) \r\n                goto restart;\r\n            wakeup_softirqd(); \r\n        }\r\n    local_irq_restore(flags);\t\t//restore本地中断状态，开中断 ----- e\r\n\r\n在c过程中又发生了中断打断了正在执行的softirq handler，又raise了softirq，那么中断结束又返回到被打断的softirq handler，继续执行m处获取的pending softirq，执行完毕后在n处获取新的\r\npending softirq 跳转到restart那里重新处理，我的描述正确吗？\r\n\r\n谢谢！"
+ },
+ {
+  "id": "4655",
+  "parent": "4639",
+  "date": "2016-10-07T09:41:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lucky：最后一步unmask interrupt controller 这个是在中断处理程序执行完由硬件操作寄存器来进行操作的吗？ \r\n－－－－－－－－－－－\r\n这里说的mask或者ack某个IRQ number的操作是通过操作中断控制器（例如GIC）的寄存器来完成的。\r\n\r\n既然流程第一步已经进行了执行了mask，为什么rcu_irq_exit 还会进行关闭中断的操作啊？硬中断处理中关闭中断的操作是硬件实现的？ \r\n－－－－－－－－－－－－－－－\r\nrcu_irq_exit中的中断操作是成对的，分别是local_irq_save和local_irq_restore，都是操作的CPU中断，而mask操作是disable某个外设的IRQ，操作的是中断控制器，是不一样的。\r\n\r\n 综上所述的情况，我们说softirq和tasklet运行在中断上下文是不是有些不恰当？ \r\n－－－－－－－－－－－－－－\r\n这是一个见仁见智的问题，不同的人对中断上下文理解不同，我对中断上下文的理解就是当前执行那一点的current thread和当前执行路径是没有任何的关系\r\n\r\n关于第三个问题，你的描述是正确的。"
+ },
+ {
+  "id": "5345",
+  "parent": "0",
+  "date": "2017-03-21T16:21:08+08:00",
+  "author": "cade",
+  "site": "",
+  "text": "例如：softirq、tasklet、workqueue或是直接创建一个kernel thread来执行bottom half（这在旧的kernel驱动中常见，现在，一个理智的driver厂商是不会这么做的）\r\n----------------------------------------------------\r\n@linuxer，很多次提到不创建单独的thread实现bh，除了会占用pid外，还会有哪些弊端？想知道这和workqueue的优劣是什么，workqueue有更高的优先级？\r\nThanks～"
+ },
+ {
+  "id": "5349",
+  "parent": "5345",
+  "date": "2017-03-21T19:19:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@cade：为什么linux kernel要创立workqueue这种机制？因为太多的驱动有这样的需求：有些中断处理代码需要在进程上下文中执行（例如：这些代码会导致sleep）。没有workqueue这种机制，各个驱动只能是自己创建内核线程，但是毫无疑问，这样会导致资源极大的浪费（进程id是其一，还有很多其他的资源，例如内存消耗也比较大，调度器需要调度更多的thread等），在这样的背景下才有了workqueue这种机制。因此，一般情况下，驱动应该使用workqueue机制而不是创建内核线程。\r\n\r\n当然，本质上workqueue也是基于内核线程的，其实使用内核线程也不是不可以，不过需要考虑很多实现面的东西，例如是否在suspend过程中冻结该内核线程？该内核线程是绑定在一个CPU上还是为每一个cpu创建一个？当向该内核线程发送的请求太多的时候，是否串行化处理请求，还是创建更多的内核线程来处理？还有很多需要考量的东西。但是，很快你就会发现，其实这些在workqueue这样的机制中都已经有考量了。所以：为何要使用内核线程呢？内核已经有了一个“轮子”你为何还要重复创建“轮子”呢？"
+ },
+ {
+  "id": "5383",
+  "parent": "5349",
+  "date": "2017-03-27T16:35:44+08:00",
+  "author": "cade",
+  "site": "",
+  "text": "@linuxer：@linuxer\r\n感谢！\r\n其实我针对的应用场景是这样的:VR设备上传感器对latency要求尽量小（kernel-->hal : <1ms），throughput中断至少1000Hz。现在也没有找到好的测量手段，使用单独的thread总感觉比workqueue轻量，如果仅从自己模块角度而不考虑系统其他模块，单独的thread更容易控制也不会受其他模块阻塞。。。你说的哪些我还没有考虑到:-("
+ },
+ {
+  "id": "5418",
+  "parent": "5383",
+  "date": "2017-04-01T18:01:11+08:00",
+  "author": "panda",
+  "site": "",
+  "text": "@cade：在kernel/driver需要的地方增加trace_printk,将android应用层systrace数据和kernel的trace数据输出到同一个文件，然后用chrome打开trace文件，就可以很方便的测量出latency。"
+ },
+ {
+  "id": "5460",
+  "parent": "0",
+  "date": "2017-04-13T10:28:50+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "Hi  linuxer\r\n我有几个问题向您请教下：\r\n1、假如我在中断ISR中调用local_bh_disable  那是否软中断callback因为不满足!in_interrupt的条件就永远不会执行？还是可以后面调用raise_softirq（）通过ksoftirq去触发softirq？\r\n2、还有啊，执行invoke_sofrirq还有个条件就是检查local_softirq_pending,本地cpu是否有待处理的softirq是在哪里设置的？\r\n3、softirq执行时根据不同的irq number有不同的处理，是在kernel启动的过程中静态定义的callback，我现在不清楚这些callback大概做了什么事情？和我的dirver module的中断处理有什么关系？？？\r\n4、在 __local_bh_enable_ip采用SOFTIRQ_DISABLE_OFFSET－1的做法去赤星pending的softirq，是为什么啊？内核不是提供ksoftirq线程去处理了吗？如果此时有更高优先级的进程要占用cpu，该进程会被延时处理吗？\r\n\r\n问题太多了，不好意思~"
+ },
+ {
+  "id": "5463",
+  "parent": "5460",
+  "date": "2017-04-13T16:35:27+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "@cracker：Hi  linuxer\r\n再追加问个问题，\r\n5、我tp模块设置的中断触发为边沿触发，当我在触摸tp时，tp会不断给cpu发送中断信号，在某一时刻按下power让系统睡眠，发现设备可以正常休眠，为什么啊？\r\n我的理解是top half阶段内核禁止抢占，如果不断的有中断产生，cpu此时不是在generic_handle_irq中循环处理中断吗？我看边沿触发是这样处理的"
+ },
+ {
+  "id": "5725",
+  "parent": "0",
+  "date": "2017-06-23T09:17:51+08:00",
+  "author": "tczb",
+  "site": "",
+  "text": "文章写得很好,现在看起来也收获很大\r\n\r\n@linuxer, 也麻烦请教几个问题(和中断相关)，感谢：\r\n\r\n我遇到一个kenerl panic，oops如下，有几个疑惑：\r\n\r\n1. Call trace里面分2部分，以Exception stack为分界，上面的中断处理和下面的kthread，在内核中是2个线程分别在处理吗？\r\n\r\n2. 中断处理do_softirq，应该是个TIMERIRQ，回调函数是blk_mq_rq_timer，这个软中断是由内核(时钟计时)自动启动线程来调用的吗？用户态不可控？\r\n\r\n3. 如果1成立，这2个线程应该存在竞争关系？处理不当，可能会有race condition问题\r\n\r\n\r\nCall trace:\r\n[<ffffffc000350690>] blk_mq_tag_to_rq+0x34/0xc4\r\n[<ffffffc0003552d8>] bt_for_each+0x78/0x114\r\n[<ffffffc0003553e8>] blk_mq_tag_busy_iter+0x74/0x84\r\n[<ffffffc000351254>] blk_mq_rq_timer+0x68/0x138\r\n[<ffffffc0001014e0>] call_timer_fn.isra.29+0x2c/0x9c\r\n[<ffffffc000101788>] run_timer_softirq+0x238/0x2d8\r\n[<ffffffc0000a6ec0>] __do_softirq+0x110/0x25c\r\n[<ffffffc0000a72c8>] irq_exit+0x90/0xc0\r\n[<ffffffc0000f17f8>] __handle_domain_irq+0x9c/0x10c\r\n[<ffffffc00008250c>] gic_handle_irq+0x50/0xb4\r\nException stack(0xffffffc07b24f840 to 0xffffffc07b24f970)\r\nf840: 7c20d500 ffffffc0 00000000 00000080 7b24f9b0 ffffffc0 00350b80 ffffffc0\r\nf860: 80000145 00000000 ffffffff 00000000 7b24fa50 ffffffc0 0000001b 00000000\r\nf880: 00302200 00000000 00000000 00000000 7c9aa000 ffffffc0 00000038 00000000\r\nf8a0: 00000000 01000000 00000000 00000000 5d004d80 ffffffc0 00000000 00000000\r\nf8c0: 60db1478 ffffffc0 00000000 00000000 7d66d068 ffffffc0 60db1000 ffffffc0\r\nf8e0: 74733b60 ffffffc0 60da5f08 ffffffc0 60d1a208 ffffffc0 38000000 0000185c\r\nf900: 001fbfdc ffffffc0 5b06a72c 00000072 3f800000 00000000 7c20d500 ffffffc0\r\nf920: 00000011 00000000 7ffe2e00 ffffffc0 7dbff880 ffffffc0 7c9b1000 ffffffc0\r\nf940: 7b24fae0 ffffffc0 5d004cc0 ffffffc0 0091b000 ffffffc0 00000009 00000000\r\nf960: 7d642200 ffffffc0 7b24f9b0 ffffffc0\r\n[<ffffffc000085f80>] el1_irq+0x80/0xf4\r\n[<ffffffc000352ac4>] blk_mq_map_request+0xbc/0x1d4\r\n[<ffffffc000353fc8>] blk_sq_make_request+0x80/0x29c\r\n[<ffffffc000344608>] generic_make_request+0xd8/0x154\r\n[<ffffffc000344728>] submit_bio+0xa4/0x1c0\r\n[<ffffffc0001e9108>] _submit_bh+0x158/0x240\r\n[<ffffffc0001e9214>] submit_bh+0x24/0x2c\r\n[<ffffffc00029cbe4>] jbd2_journal_commit_transaction+0x9ac/0x1998\r\n[<ffffffc0002a246c>] kjournald2+0xd8/0x2ac\r\n[<ffffffc0000c5d4c>] kthread+0xe8/0x104\r\nCode: f9403000 f8765813 f9401a74 f9401e77 (f9406a95) \r\n---[ end trace 75da3e8cdd880aeb ]---\r\nKernel panic - not syncing: Fatal exception in interrupt"
+ },
+ {
+  "id": "5728",
+  "parent": "5725",
+  "date": "2017-06-23T10:02:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tczb：你的场景我猜是这样的：文件系统的日志线程愉快的运行，但是被一次timer的中断无情的插入了，因为blk的一个timer到期了，因此转到那个timer的handler中执行，在这个timer handler执行过程中，出现了严重的问题，导致kernel panic了。\r\n\r\n你的场景包括一个内核线程和timer的中断上下文（hw irq和soft irq context），没有两个线程，当然，如果你认为中断上下文也是一种“线程”，那么就两个线程好了，哈哈，不过在linux的世界不是这么玩的。中断上下文是非常轻的，其实不算是线程。"
+ },
+ {
+  "id": "5729",
+  "parent": "5728",
+  "date": "2017-06-23T10:35:00+08:00",
+  "author": "tczb",
+  "site": "",
+  "text": "@linuxer：谢谢linuxer回复；再麻烦下，还有个疑问，求详细解答下\r\n\r\n1. 那个timer中断是怎么发起的呢？由谁 什么时候触发的，和上面的日志线程有关吗\r\n\r\n不知道是不是这样：按文章的介绍，应该是硬件发起一个hard irq（这里可能是磁盘驱动），然后raise timer softirq？ timer超时是内核不断去检查么？\r\n\r\n\r\n2. 明白，但如果中断上下文有访问共享资源，也是要类似线程，加锁吧？ \r\n-------\r\n不过在linux的世界不是这么玩的。中断上下文是非常轻的，其实不算是线程。\r\n-------"
+ },
+ {
+  "id": "5731",
+  "parent": "0",
+  "date": "2017-06-25T15:06:27+08:00",
+  "author": "小学生",
+  "site": "",
+  "text": "楼主，请问为什么softirq在同一个CPU上要串行化处理呢？为什么不可以像中断那样：低优先级的softirq可以被高优先级的softirq抢占并先执行呢？是防止功能错误还是性能考虑呢？"
+ },
+ {
+  "id": "5737",
+  "parent": "5731",
+  "date": "2017-06-26T19:15:29+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@小学生：在讨论你的问题之前，我们先考虑这样的一个问题：A interrupt handler可以抢占B interrupt handler的执行吗？\r\n\r\n在2.6.35的内核之前，一个interrupt handler可以是开中断的（slow handler），或者是关中断的（fast handler），只有slow handler才会被其他的打断执行，从而引入nested interrupt handler的概念。\r\n\r\n其实在新的内核中，中断已经是不能被抢占的了，所有的interrupt handler都是fast handler，也就是说，即便是一个新的，优先级更高的中断到来，其实cpu并不会响应，要等到当前的中断handler执行完毕才会考虑响应下一个中断，所有的interrupt handler都是关中断执行的。\r\n\r\n在新的内核中，实际上是简化了interrupt handler处理，nested interrupt handler有很多坏处：\r\n1、中断栈的溢出问题不好处理\r\n2、中断延迟不确定，影响realtime\r\n3、不断的中断当前CPU处理，cache性能不佳\r\n4、内核控制路径的同步处理变得复杂\r\n......\r\n\r\nsoftirq的情况其实有点类似hardirq，你可以考虑一下。任何需要softirq抢占的场景都可以用其他方法实现。"
+ },
+ {
+  "id": "6063",
+  "parent": "0",
+  "date": "2017-09-23T11:35:31+08:00",
+  "author": "busdriver",
+  "site": "",
+  "text": "调用do_softirq函数来处理pending的softirq的时候，当前的task是不能被抢占的，因为一旦被抢占，下一次该task被调度运行的时候很可能在其他的CPU上去了（还记得吗？softirq的pending 寄存器是per cpu的）。因此，我们不能一次性的全部减掉，那样的话有可能preempt_count等于0，那样就允许抢占了。因此，这里减去了（SOFTIRQ_DISABLE_OFFSET－1），既保证了softirq count的bit field9～15被减去了1，又保持了preempt disable的状态。 \r\n______________________________\r\n这段话没看懂。do_softirq处理的是本地cpu pending的softirq，看后面讲述的do_softirq的流程，如果softirq超过2ms或者有更高优先级的任务就绪或者pending的softirq超过10次，都会激活线程softirqd，而这时候又是禁止抢占的，那么softirq将得不到执行而返回当前task吗？假如不禁止抢占，softirqd也将在本地cpu执行，返回也将在本地，当前task有可能被调度到别的cpu吗？这点不明白，谢谢解惑。"
+ },
+ {
+  "id": "6069",
+  "parent": "0",
+  "date": "2017-09-25T16:24:49+08:00",
+  "author": "linuxer_fy",
+  "site": "http://no home page yet",
+  "text": "\"NIC的中断处理过程大概包括：mask and ack interrupt controller-------->ack NIC-------->copy FIFO to ram------>handle Data in the ram----------->unmask interrupt controller\"\r\n#########\r\n由这个想到的，LINUX中针对PIC是8259A的，在do_IRQ中，先mask_and_ack_8259a,然后handle_IRQ_event,最后enable_8259a_irq（即unmask），\r\n如此一来，岂不是针对某IRQ，不可能会产生中断嵌套，即在handle_IRQ_event中，即使打开了CPU本地的中断，但8259A芯片侧依然mask该IRQ\r\n因此，LINUX中将同一IRQ上产生的嵌套中断序列化这一做法在这里不起作用了"
+ },
+ {
+  "id": "6070",
+  "parent": "0",
+  "date": "2017-09-26T13:51:02+08:00",
+  "author": "linuxer_fy",
+  "site": "http://no home page yet",
+  "text": "\"调用do_softirq函数来处理pending的softirq的时候，当前的task是不能被抢占的，因为一旦被抢占，下一次该task被调度运行的时候很可能在其他的CPU上去了（还记得吗？softirq的pending 寄存器是per cpu的）。因此，我们不能一次性的全部减掉，那样的话有可能preempt_count等于0，那样就允许抢占了。\"\r\n##############\r\n我对这一条有不同的看法。\r\ndo_softirq-> 判断 in_interrupt ->无条件禁止本地中断 --> __do_softirq -> __local_bh_disable -> 开本地中断 ->处理softirq handler\r\n所以当前task不能被抢占是指不能在正在处理softirq handler中，而由于有__local_bh_disable(即bit8为1），所以当前task永远不会被抢占。所以进程上下文调用local_bh_enable时，为了兼顾(3)中将要执行的do_softirq，而只减去 (offset -1) 是不是多余了？\r\n当前task如果在 (2)中全部减去offset，而在(3)之间被抢占的话，再次返回到当前task时，\r\n即使是在另一个CPU上运行，也不会有影响。"
+ },
+ {
+  "id": "6072",
+  "parent": "6063",
+  "date": "2017-09-26T18:39:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@busdriver：这里表面上看起来是进程抢占进程，实际上进程抢占softirq。softirq被进程抢占本身就是不合理的，在Linux的内核中，只有softirq抢占进程，没有进程抢占softirq。\r\n\r\n\r\n如果禁止抢占，那么一定会回到原来的那一点，等打开抢占的时候，调度器会决定是否执行softirqd。\r\n\r\n如果softirqd抢占了当前task，那么当前task被挂入了本cpu的run queue，在负载均衡的时候，该task还是有可能调度到其他cpu上去的。"
+ },
+ {
+  "id": "6073",
+  "parent": "6069",
+  "date": "2017-09-26T18:45:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer_fy：在旧的内核中允许中断嵌套，但是嵌套永远都是发生在不同的irq之间，同一种irq，无论过去还是现在都不会嵌套。"
+ },
+ {
+  "id": "6074",
+  "parent": "6072",
+  "date": "2017-09-26T20:08:15+08:00",
+  "author": "busdriver",
+  "site": "",
+  "text": "@linuxer：@linuxer 非常感谢！这回懂了。"
+ },
+ {
+  "id": "6075",
+  "parent": "6073",
+  "date": "2017-09-26T20:52:15+08:00",
+  "author": "linuxer_fy",
+  "site": "",
+  "text": "@linuxer：旧内核只是允许进入当前这个中断Handler时，可以通过SA_INTERRRUPT开启中断，这样别的IRQ的中断可以响应。同IRQ都不能嵌套的话，那处理同一个IRQ的handler时，__do_IRQ,当初为什么设计成串行化呢，出于什么目的?\r\n并且对于global的interrupt,同一个IRQ被Mask掉后，SMP中所有CPU也都无法产生这个IRQ的中断了，也就是说不管是单CPU还是多CPU，好像都没必要将一个IRQ的handler串行化设计阿。"
+ },
+ {
+  "id": "6077",
+  "parent": "6075",
+  "date": "2017-09-27T11:00:12+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer_fy：A IRQ可以中断A IRQ handler的执行，你觉得意义何在呢？"
+ },
+ {
+  "id": "6108",
+  "parent": "6077",
+  "date": "2017-10-13T21:08:59+08:00",
+  "author": "linuxer_fy",
+  "site": "",
+  "text": "@linuxer：我只是在这里针对LINUX的中断设计提出疑问。\r\n另外你上面提到的 “同一种irq，无论过去还是现在都不会嵌套。”\r\n这种情况是通过第一次进入A的handler是mask当前IRQ line来实现的吧\r\n我又想了想，但不确定。针对SMP场合，这里的mask IRQ line是只针对当前CPU的 local APIC还是针对SMP中所有global的？\r\n我想知道linux上实现同一个irq不会嵌套，是指当前正在处理A的CPU本地不会产生同样的中断还是说整个SMP中都不会产生，都被屏蔽掉了？\r\n总而言这，我想搞清楚，在SMP上，一个中断A产生后，是不是在这期间这个中断不可能再出现了（包括本地CPU和其他 CPU上）"
+ },
+ {
+  "id": "6775",
+  "parent": "6070",
+  "date": "2018-05-30T17:44:14+08:00",
+  "author": "searchthetruth",
+  "site": "",
+  "text": "@linuxer_fy：如果我没有记错的话在LDD3中关于tasklet的讲解中曾提到“对于tasklet来说最好保证其始终在同一个cpu上进行处理。”\r\ntasklet即是一种特殊的softirq，出于这样的角度考虑的话那么此处的（offset-1）就是一个很好方法去保证softirq始终在同一cpu上处理的方法。\r\n为何要保证tasklet始终在同一cpu上处理的深层原因目前我也不太清楚。"
+ },
+ {
+  "id": "7558",
+  "parent": "6074",
+  "date": "2019-07-30T14:56:47+08:00",
+  "author": "kuninchengdu",
+  "site": "",
+  "text": "@busdriver：一般而且，do_softirp都是raiseirqoff后，软中断执行的，为啥一直在强调taskset呢，如果不是taskset，就算do_softirq被硬中断抢占，硬中断执行完后，还是原来的cpu继续执行do_softirq吧？\r\n\r\n或者说，你的task就是指进程，进程又怎么执行soft_irq呢"
+ },
+ {
+  "id": "8066",
+  "parent": "6775",
+  "date": "2020-07-25T09:15:20+08:00",
+  "author": "停停走走",
+  "site": "",
+  "text": "@searchthetruth：softies pending bit是per cpu的，一旦被调度到别的cpu不会再执行原来那个soft irq了吧"
+ },
+ {
+  "id": "8153",
+  "parent": "0",
+  "date": "2020-12-08T16:25:13+08:00",
+  "author": "owen",
+  "site": "",
+  "text": "softirqd 会被进程抢占的吧。"
+ },
+ {
+  "id": "8727",
+  "parent": "0",
+  "date": "2022-12-28T19:00:55+08:00",
+  "author": "农夫山泉",
+  "site": "",
+  "text": "关本地中断实际上是禁止了top half和bottom half抢占当前进程上下文的运行？这个是怎么实现的，看local_irq_disable()的代码并没有关软中断/"
+ },
+ {
+  "id": "8756",
+  "parent": "8727",
+  "date": "2023-03-19T10:03:00+08:00",
+  "author": "shousi",
+  "site": "",
+  "text": "@农夫山泉：我理解是进exception的时候，硬件关闭了CPU的Interrupt位。直到irq_exit里面才主动打开。可以在qmeu里打个断点看下。"
+ },
+ {
+  "id": "8839",
+  "parent": "8153",
+  "date": "2023-10-25T17:39:08+08:00",
+  "author": "chenningjun",
+  "site": "",
+  "text": "@owen：不会，但softirqd内部 cond_resched 主动出让CPU了。\r\n按目前理解：调度抢占是针对用户态。内核态只有中断。"
+ },
+ {
+  "id": "8840",
+  "parent": "8727",
+  "date": "2023-10-26T16:13:10+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@农夫山泉：linux的软中断（invoke_softirq） 是在硬中段（top half）退出时才会执行，关了hardirq就等于关了softirq。"
+ },
+ {
+  "id": "8945",
+  "parent": "0",
+  "date": "2024-12-17T15:55:53+08:00",
+  "author": "lingkep",
+  "site": "",
+  "text": "考古到了大佬的文章 看的好爽 另外有个疑问想请教下，在__irq_exit_rcu中判断if (!in_interrupt() && local_softirq_pending());invoke_softirq();之前会执行preempt_count_sub(HARDIRQ_OFFSET);那么既然中断不能嵌套，并且已经退出了硬中断上下文，这时不就是在进程上下文吗，不明白为什么您说invoke_softirq是在中断上下文执行呢"
+ },
+ {
+  "id": "9172",
+  "parent": "8153",
+  "date": "2025-12-09T11:46:58+08:00",
+  "author": "lx",
+  "site": "",
+  "text": "@owen：应该是的，大佬的中断子系统之（五）文章中写道：“在Linux kernel中，一个外设的中断处理被分成top half和bottom half，top half进行最关键，最基本的处理，而比较耗时的操作被放到bottom half（softirq、tasklet）中延迟执行。虽然bottom half被延迟执行，但始终都是先于进程执行的。为何不让这些耗时的bottom half和普通进程公平竞争呢？因此，linux kernel借鉴了RTOS的某些特性，对那些耗时的驱动interrupt handler进行线程化处理，在内核的抢占点上，让线程（无论是内核线程还是用户空间创建的线程，还是驱动的interrupt thread）在一个舞台上竞争CPU”，我的理解就是对于耗时的软中断就是可以被高优先级的进程抢占"
+ },
+ {
+  "id": "9173",
+  "parent": "6108",
+  "date": "2026-01-11T23:12:27+08:00",
+  "author": "玖伍贰柒",
+  "site": "",
+  "text": "@linuxer_fy：ARM平台上，CPU收到中断后硬件会自动将CPSR寄存器的IRQ位置1，CPU将不会再响应中断，以此保证不会嵌套。对于其它CPU的场景，则由GIC保证，GIC对每个中断维护了一个状态机，当该中断处于active状态时，GIC不会把该中断再发给其它CPU。"
+ },
+ {
+  "id": "9192",
+  "parent": "8945",
+  "date": "2026-09-02T10:47:17+08:00",
+  "author": "deng",
+  "site": "",
+  "text": "@lingkep：如果硬中断打断的是软中断的执行，虽然硬中断退出了，但是仍然处在软中断上下文，文章可能是想表达这个吧"
+ },
+ {
+  "id": "9193",
+  "parent": "8153",
+  "date": "2026-09-02T10:55:19+08:00",
+  "author": "deng",
+  "site": "",
+  "text": "@owen：ksoftirqd真正执行do_softirq的时候应该不会，抢占入口判断当前如果是中断上下文就不会执行切换"
+ }
+]

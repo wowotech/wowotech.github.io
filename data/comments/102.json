@@ -1,0 +1,266 @@
+[
+ {
+  "id": "728",
+  "parent": "0",
+  "date": "2014-11-12T19:04:12+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "clock tree中某clock的类型是怎么确定的？\r\n\r\n我认为是根据该clock前面的时钟部件（mux、dvider、gate等）决定的。 例如mux类型的clock，是因为这个clock是某mux的输出。所以说，给你一个clock tree，怎么调用对应的注册函数（clk_register_divider还是clk_register_mux）去注册clock就要看该clock前面是什么部件。\r\n\r\nwowo怎么看？"
+ },
+ {
+  "id": "729",
+  "parent": "728",
+  "date": "2014-11-12T19:30:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@puppypyb：您的理解是对的。\r\n弄清楚这个问题，首先要定义我们这里讨论的“clock”到底是什么？clock framework把某个器件的输出定义为“clock”，就决定了clock是一个虚拟的存在。\r\n例如OSC的输出，在clock framework中可以定义为\"osc_clk\"，很显然，这个clock为fixed rate clock。那么，“osc_clk”的作用范围是什么呢？怎么派生出其它的clock呢？\r\n显然，如果某个clock不经过可以改变它的器件，包括mux、gate、divider等等，那么这个clock一直存在。只要经过某一个器件，我们就认为一个新的clock产生了。至于这个clock的类型，就是产生这个新的clock器件的类型。"
+ },
+ {
+  "id": "734",
+  "parent": "0",
+  "date": "2014-11-13T09:22:16+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "还有clk_root_list, clk_orphan_list, clkdev_add 这些都有必要给大家讲讲\r\n\r\n期待第三篇 :)"
+ },
+ {
+  "id": "735",
+  "parent": "734",
+  "date": "2014-11-13T09:46:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@puppypyb：好的，我把pm domain的先写一篇之后，再回到clock上面。多谢关注~~"
+ },
+ {
+  "id": "1768",
+  "parent": "0",
+  "date": "2015-05-12T18:15:26+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@wowo： “ 对于不能由clock framework core处理的clock，需要在driver中使用struct of_device_id进行匹配，并在初始化时，调用OF模块，查找所有的DTS匹配项，并执行合适的regitser接口，注册clock。”  对于这句话的“ 并在初始化时，调用OF模块，查找所有的DTS匹配项” 是什么意思？  在kernel下有没有具体的clock driver的例子？"
+ },
+ {
+  "id": "1769",
+  "parent": "1768",
+  "date": "2015-05-12T18:19:49+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@super-：还有 struct clk *(*clk_src_get)()这个回调函数，我的理解是在clock framework解析具体的使用clock device时，解析这个device的DTS节点的clocks属性时，需要调用这个函数向clock provider查询。"
+ },
+ {
+  "id": "1770",
+  "parent": "1769",
+  "date": "2015-05-12T18:57:50+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@super-：/*\r\n\t * Returning -EPROBE_DEFER here is inefficient due to\r\n\t * destroying work 'unnecessarily'\r\n\t */\r\n\tfor_each_available_child_of_node(dev->of_node, child) {\r\n\t\tresult = msmclk_parse_dt_node(dev, child);\r\n\t\tif (!IS_ERR(result))\r\n\t\t\tcontinue;\r\n\t\tif (!msmclk_debug)\r\n\t\t\treturn PTR_ERR(result);\r\n\t\t/*\r\n\t\t * Parse and report all errors instead of immediately\r\n\t\t * exiting. Return the first error code.\r\n\t\t */\r\n\t\tif (!rc)\r\n\t\t\trc = PTR_ERR(result);\r\n\t}\r\n那个查找所有的DTS匹配项是这个操作吗？  这个操作就是解析某个结点的所有子结点"
+ },
+ {
+  "id": "1772",
+  "parent": "1770",
+  "date": "2015-05-12T19:06:34+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@super-：&soc {\r\n        clock_rpm: qcom,rpmcc@1800000 {\r\n                compatible = \"qcom,msm-clock-controller\";\r\n                reg = <0x1800000 0x80000>;\r\n                reg-names = \"cc-base\";\r\n                #clock-cells = <1>;\r\n        };\r\n\r\n        clock_a7pll: qcom,a7pll@0xB008018 {\r\n                compatible = \"qcom,msm-clock-controller\";\r\n                reg = <0xB008018 0x9020>;\r\n                reg-names = \"cc-base\";\r\n                #clock-cells = <1>;\r\n\r\n                clock-names = \"a7_xo_a\";\r\n                clocks = <&clock_rpm clk_xo_a_clk_src>;\r\n\r\n                qcom,regulator-names = \"a7pll_vdd_dig\";\r\n                a7pll_vdd_dig-supply = <&pmd9635_s5_corner_ao>;\r\n\r\n                a7pll_vdd_dig: a7pll_vdd_dig {\r\n                        compatible = \"qcom,simple-vdd-class\";\r\n                        qcom,regulators = <&pmd9635_s5_corner_ao>;\r\n                        qcom,uV-levels =\r\n                                        <RPM_REGULATOR_CORNER_NONE>,\r\n                                        <RPM_REGULATOR_CORNER_SVS_SOC>,\r\n                                        <RPM_REGULATOR_CORNER_NOMINAL>,\r\n                                        <RPM_REGULATOR_CORNER_SUPER_TURBO>;\r\n                };\r\n        };\r\n｝；\r\n我在kernel中找到了匹配这个node的driver"
+ },
+ {
+  "id": "1773",
+  "parent": "1772",
+  "date": "2015-05-12T19:30:15+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@super-：@wowo： 我在driver 代码里没有找到调用 xxx_register() 的代码。 怎么回事？"
+ },
+ {
+  "id": "1774",
+  "parent": "1773",
+  "date": "2015-05-12T19:32:11+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@super-：这个是xx_probe()函数：\r\n\r\nstatic int msm_clock_dummy_probe(struct platform_device *pdev)\r\n{\r\n\tint ret;\r\n\r\n\tret = of_clk_add_provider(pdev->dev.of_node, of_dummy_get, NULL);\r\n\tif (ret)\r\n\t\treturn -ENOMEM;\r\n\r\n\tdev_info(&pdev->dev, \"Registered DUMMY provider.\\n\");\r\n\treturn ret;\r\n}\r\n\r\n这个是回调函数： \r\n\r\n  static struct clk *of_dummy_get(struct of_phandle_args *clkspec,\r\n\t\t\t\t  void *data)\r\n{\r\n\treturn &dummy_clk;\r\n}"
+ },
+ {
+  "id": "1776",
+  "parent": "1768",
+  "date": "2015-05-12T20:32:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@super-：super兄，你的问题比较多，我一时不知道怎么回答了啊。或者你只是自言自语，不需要我回答？呵呵。"
+ },
+ {
+  "id": "1777",
+  "parent": "1776",
+  "date": "2015-05-12T21:04:47+08:00",
+  "author": "super-",
+  "site": "",
+  "text": "@wowo：@wowo: 我现在疑惑的是static int msm_clock_dummy_probe(struct platform_device *pdev) \r\n{ \r\n    int ret; \r\n\r\n    ret = of_clk_add_provider(pdev->dev.of_node, of_dummy_get, NULL); \r\n    if (ret) \r\n        return -ENOMEM; \r\n\r\n    dev_info(&pdev->dev, \"Registered DUMMY provider.\\n\"); \r\n    return ret; \r\n} 这个函数里为什么没有类似 clk_register_divider( )的调用?"
+ },
+ {
+  "id": "1778",
+  "parent": "1774",
+  "date": "2015-05-13T08:51:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@super-：这个probe应该是一个示例性质的（dummy），不知道是否会有register接口。\r\n你可以看看其它例子，如：drivers/clk/tegra/clk-tegra114.c"
+ },
+ {
+  "id": "3569",
+  "parent": "0",
+  "date": "2016-03-01T16:13:14+08:00",
+  "author": "heavenward",
+  "site": "",
+  "text": "有个小疑问。像uart这种需要不同工作频率的设备，在get source clk时，也有可能需要不同的source clk 频率来得到正确的工作频率。如果uart的clk source是个mux clk，可以从frac，divider，fix 3种类型获取时钟频率的话，获取与fix clk不同的时钟频率时，recal 函数是会尝试从frac，divider，这2个父得到请求的时钟么？"
+ },
+ {
+  "id": "3570",
+  "parent": "3569",
+  "date": "2016-03-01T20:58:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@heavenward：recal只是用来计算当前的频率值，不会涉及clock路径的选择，如果需要使用不同的parent，还是需要通过set parent接口主动设置的。"
+ },
+ {
+  "id": "4447",
+  "parent": "0",
+  "date": "2016-08-26T14:45:20+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "之前看高通clock框架的时候，看这篇文章感觉差异挺大，就没细看。\r\n现在在移植tiny210的过程发现开机过程中获取PLL的频率出来都是0导致crash，\r\n看了一下代码懵圈了，再来看这篇文章，瞬间理解了好多~膜拜一下wowo~哈哈"
+ },
+ {
+  "id": "4452",
+  "parent": "4447",
+  "date": "2016-08-26T15:26:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：结合实际的需求去看代码，效果才是比较好的~~~"
+ },
+ {
+  "id": "4488",
+  "parent": "0",
+  "date": "2016-09-01T17:43:22+08:00",
+  "author": "Renkangshuo",
+  "site": "",
+  "text": "现在正在学习linux clock subsystem ，看了您的博客， 受益很大， 谢谢您！！！！"
+ },
+ {
+  "id": "4494",
+  "parent": "4488",
+  "date": "2016-09-02T08:45:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Renkangshuo：不客气，希望可以多交流~~~"
+ },
+ {
+  "id": "4544",
+  "parent": "0",
+  "date": "2016-09-08T14:01:24+08:00",
+  "author": "jim",
+  "site": "",
+  "text": "\"注1：上面例子中用到了两个公司的代码，方式1是三星的，方式2是全志的。说实话，全志的代码写的真漂亮，一个默默无闻的白牌公司，比三星这种国际大公司强多了。从这里，我们可以看到中国科技业的未来，还是很乐观的。\"\r\n全志的code并不全是自己写的，很大一部分都是外包给free electrons的，比如下面这个ppt的上就写着，链接：\r\nhttp://events.linuxfoundation.org/sites/events/files/slides/ripard-dmaengine.pdf\r\n我还在很多其他地方的ppt中看到过类似的owner维护sunxi soc的信息，就不一一列举了"
+ },
+ {
+  "id": "4548",
+  "parent": "4544",
+  "date": "2016-09-08T18:19:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jim：确实如此，我也是后来才知道的，呵呵~~~"
+ },
+ {
+  "id": "4845",
+  "parent": "3570",
+  "date": "2016-11-04T23:53:09+08:00",
+  "author": "zbunix",
+  "site": "",
+  "text": "@wowo：例如uart 962100频率，可以分出给uart路径有7种比较复杂，每种路径分出误差都不同，\r\n但肯定存在一种路径分出误差最小，要7种路径手工逐个计算出来？还是有现成算法代码函数呢？"
+ },
+ {
+  "id": "4846",
+  "parent": "4845",
+  "date": "2016-11-05T21:19:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zbunix：这样的算法有点复杂，没必要由kernel来做，因此没有。clock framework只是提供一种手段而已，具体用什么值，还是要人先心里有数。"
+ },
+ {
+  "id": "4977",
+  "parent": "0",
+  "date": "2016-12-06T14:58:08+08:00",
+  "author": "wink",
+  "site": "",
+  "text": "看到了我司的代码 ^_^"
+ },
+ {
+  "id": "4981",
+  "parent": "4977",
+  "date": "2016-12-06T17:04:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wink：哈哈～～"
+ },
+ {
+  "id": "6095",
+  "parent": "0",
+  "date": "2017-10-10T14:45:42+08:00",
+  "author": "小亮",
+  "site": "",
+  "text": "@wowo 现在内核又加入了 fractional-divider 类型的clock支持。\r\nhttp://www.spinics.net/lists/u-boot-v2/msg22600.html，这是加入该类型clock的patch链接"
+ },
+ {
+  "id": "6096",
+  "parent": "6095",
+  "date": "2017-10-10T16:34:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@小亮：多谢分享。能否帮忙解释一下这种类型的clock的涵义以及应用场景呢？"
+ },
+ {
+  "id": "6603",
+  "parent": "0",
+  "date": "2018-03-10T16:49:53+08:00",
+  "author": "zaixi",
+  "site": "",
+  "text": "CLK_DIVIDER_ONE_BASED，实际的divider值就是寄存器值\r\n\r\n这里有笔误，应该是实际值加上1"
+ },
+ {
+  "id": "6604",
+  "parent": "6603",
+  "date": "2018-03-10T16:57:59+08:00",
+  "author": "zaixi",
+  "site": "",
+  "text": "@zaixi：sorry，没问题，是我自己看错了"
+ },
+ {
+  "id": "7959",
+  "parent": "0",
+  "date": "2020-04-17T13:05:55+08:00",
+  "author": "xilinx-zynq",
+  "site": "",
+  "text": "clock-names = \"s_axi_lite_aclk m_axi_mm2s_aclk m_axis_mm2s_aclk\";\r\n                        clocks = <0x1 0x12 0x1 0x10 0x6 0x1 0x10 0x6>;\r\n这种clock配置怎么理解？"
+ },
+ {
+  "id": "8027",
+  "parent": "0",
+  "date": "2020-06-17T11:48:49+08:00",
+  "author": "pxpxx",
+  "site": "",
+  "text": "不是很认同方式2比方式1好，我的理解是因为时钟树是固定的，不会变化，所以没必要在设备树中分开定义，设备树只定义可能有变化的情况就可以了。现在5.x的内核都是采用方式1的形式，全志的芯片也改成方式1了。"
+ },
+ {
+  "id": "8581",
+  "parent": "0",
+  "date": "2022-03-30T11:52:57+08:00",
+  "author": "小希",
+  "site": "",
+  "text": "mux clock的parent选择只能通过回调函数.set_parent()来实现吗？\r\n“reg、shift、width，选择parent的寄存器、偏移、宽度，默认情况下，寄存器值为0时，对应第一个parent，依此类推。”这句话怎么理解呀？不就是通过给寄存器赋值来实现选择哪个时钟源吗？寄存器值为0时，对应第一个parent，这里的寄存器值0是怎么获取的，寄存器默认的复位值，还是通过什么方式给寄存器赋值为0呢？\r\n@wowo @各位大神"
+ },
+ {
+  "id": "8739",
+  "parent": "0",
+  "date": "2023-02-06T11:59:58+08:00",
+  "author": "Li Chen",
+  "site": "http://blog.linux.beauty",
+  "text": "dts需要准确的描述硬件，如果SoC的所有clk相关setting都是放在一个module，比如clk module或者某个system controller，那么就应该放在一个node里，否则应该放在自己独立的node"
+ }
+]

@@ -1,0 +1,122 @@
+[
+ {
+  "id": "777",
+  "parent": "0",
+  "date": "2014-12-01T19:18:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "Wowo同学，帮我增加一个时间子系统的类别，我搞了好一会儿也搞不定啊"
+ },
+ {
+  "id": "778",
+  "parent": "0",
+  "date": "2014-12-01T21:18:35+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "沙发.\r\n\r\nshift和mult那部分写的很详细，算的上是internet上独一份.\r\n\r\n既然刚开始写我就多句嘴。 我觉得时间子系统这部分除了工作机制外，还需要描述clock source和clock event结构的抽象模型（时钟源和硬件定时器），以及它们之间的关系，另外还有 硬件定时器／硬件计时器<-->clock source<-->clock event<-->tick device之间的关系，我认为这几者之间的关系特别容易把人搅晕。\r\n虽然clock source和clock event会存在多个，但对per cpu而言同时只有一个clock source和一个clock event在工作。如果能再描述下linux在嵌入式系统上运行最少需要几个硬件定时器和硬件计时器，那就更美妙了。\r\n期待啊..."
+ },
+ {
+  "id": "779",
+  "parent": "777",
+  "date": "2014-12-01T23:04:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：已经添加。\r\nPS：今晚我换了一个付费空间，那些乱七八糟的广告没有了。你这一篇文章的图片没有同步过来，你有空再传一下。"
+ },
+ {
+  "id": "780",
+  "parent": "779",
+  "date": "2014-12-02T09:03:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：太好了，世界终于清净了"
+ },
+ {
+  "id": "781",
+  "parent": "778",
+  "date": "2014-12-02T09:07:19+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@puppypyb：多谢您的鼓励和提醒，我们会尽量把这部分内容写的透彻又通俗易懂。\r\n\r\n时间子系统之一是综述，我现在不敢落笔，等其他完成后再启动吧。\r\n之三是clock event，之四是底层硬件驱动这是近期的打算。后续tick device、timekeeping、posix timer、hrt等都会登场的，慢慢来吧！"
+ },
+ {
+  "id": "1124",
+  "parent": "0",
+  "date": "2015-01-22T16:40:21+08:00",
+  "author": "阿孟",
+  "site": "",
+  "text": "\"另外一种叫做one shot模式，更详细的信息请参考Linux时间子系统之 \r\n（五）：tick device\"\r\n\r\n第五章 不是这个啊。  tick device这个还更吗？"
+ },
+ {
+  "id": "1127",
+  "parent": "1124",
+  "date": "2015-01-22T19:40:55+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@阿孟：应该是在Linux时间子系统之（十三）：dynamic tick。不过还没有开始写，每年到过年的时候都是特别忙，我尽量吧"
+ },
+ {
+  "id": "2562",
+  "parent": "0",
+  "date": "2015-09-12T17:05:24+08:00",
+  "author": "andyshrk",
+  "site": "",
+  "text": "拜读了这一系列文章，获益良多。想请问下，clocksource和clock event里面的rating是根据什么设定的呢？"
+ },
+ {
+  "id": "2564",
+  "parent": "2562",
+  "date": "2015-09-13T00:12:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@andyshrk：应该是根据其基于的那个HW timer的精度确定的，例如一个32kHz作为输入时钟源的HW timer精度会小于一个13MHz的hw timer，这些hw timer对应的clocksource和clock event的rating应该保持同样的关系"
+ },
+ {
+  "id": "3535",
+  "parent": "0",
+  "date": "2016-02-26T11:29:10+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "linux kernel将timer类型的硬件抽象成两个组件，一是free running的counter，另外一个是指定的counter值上产生中断的能力.\r\n请教下，“另外一个是指定的counter值上产生中断的能力”在Linux 中是不是对应clockevent，看了关于时间的一系列文章，\r\n觉得对于clocksource clockevent的抽象还是有点模糊，希望wowo再解惑下。\r\n\r\n看了驱动中关于这部分的代码，如drivers/clocksource/arm_arch_timer.c，\r\n这里面实现的clocksource timecounter，使用的好像是同一个timer，感觉不解的是如果使用同个timer，clocksource如果suspend或是\r\ndisable，那岂不是影响了timecounter的相关功能？"
+ },
+ {
+  "id": "3536",
+  "parent": "3535",
+  "date": "2016-02-26T11:34:05+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@electrlife：另外，在底层的硬件中似乎关于定时的只有一种timer的HW，在linux中，clocksource 与clockevent抽象的是不是都是timer HW，如果是为何使用两种抽象来描述一种HW，在底层的驱动中同一个timer HW会不会即是clocksource 又是clockevent？"
+ },
+ {
+  "id": "3542",
+  "parent": "3536",
+  "date": "2016-02-26T13:13:58+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@electrlife：回答你的问题需要从需求的角度入手，一个HW timer对应的驱动会面临三种需求：\r\n1、来自系统的计时的需求，换句话说系统需要知道现在是xx年xx月xx日xx时xx分xx秒xx纳秒。\r\n2、系统需要软件timer的服务。即从当前时间点开始，到xxx纳秒之后通知我做某些事情\r\n3、对某些事件之间的时间长度进行度量\r\n\r\n实际上，linux内核应对上面的三种需求，分别提出了clocksource，clockevent和timercounter的概念。到底底层的HW情况是怎样的，who care？只要能满足需求就足够了。你可以考虑只提供若干个free running的counter A1 A2....，然后提供另外一个能够产生中断的hw timer B1 B2....，可是分开的HW block又能得到什么好处呢？合在一起还能复用某些HW block呢。因此，在单核时代，大部分的HW timer都是free running的counter ＋ 产生中断的HW timer，来到多核时代，实际上这些block又可以分开，例如各个CPU core都有自己的local timer HW block，共享一个系统的HW counter。不过，无论硬件如何变，从软件需求的角度看看往往可以看到更本质的东西。"
+ },
+ {
+  "id": "3549",
+  "parent": "3542",
+  "date": "2016-02-26T16:00:22+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@郭健：可能我主要做的是底层，所以比较关注对于底层的抽象，我的理解，一般底层HW仅是timer,所谓有free running counter也应该是timer HW。不确定是否有存在free running counter？ 谢谢你的回答，如果clocksource，clockevent仅仅是依据上层需求来抽象的话，就比较容易理解了！"
+ },
+ {
+  "id": "5623",
+  "parent": "0",
+  "date": "2017-06-02T16:12:46+08:00",
+  "author": "江南书生",
+  "site": "http://no",
+  "text": "老板，你好！\r\n我想请教个问题：\r\n\r\ncycle counter是怎么初始化的？不需要注册吧？它应该与clock source是独立的吧，没什么关系吧？"
+ },
+ {
+  "id": "8868",
+  "parent": "0",
+  "date": "2024-02-29T10:31:27+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "kernel是不建议使用浮点运算的，尝试回答一下：\r\n1.使用浮点寄存器是存在竞争的，此时需要保护这些register的，包括入栈&出栈；arm64有16个128bit的浮点寄存器：q0~q15，入栈/出栈的时间和内存消耗都不小；\r\n\r\n2.竞争点有：\r\n  两个kernel-thread在同一个cpu-core上去访问这些registers，那么我们需要在task-swtich时save/restore这些registers；\r\n  同一个task在 用户态和内核态 去访问这些register；比如，用户态在使用q0，突然某种原因（syscall/irq）陷入了内核态，而内核态改写了q0但没有恢复q0，之后返回到用户态时 再使用它 就会出现各种错乱；通用的解决方 需要在进入内核态时，对所有的浮点寄存器进行save以及返回用户态时restore；或者在使用float-registers时通过kernel_neon_begin/end进行显示的save/restore；\r\n  如果中断上下文也用到浮点，不好意思，又要进行save/restore；\r\n  在arm32的内核中，CONFIG_VFPv3为每个thread定义了一套float-register；\r\n\r\n3.而如果只在用户态使用float registers，只需要考虑task-switch时进行save/restore；\r\n\r\n总结下，就是在kernel使用浮点运算 代价比较大，syscall/irq等 比task-swtich 频繁，而每次syscall进行save/restore fp是得不偿失的；"
+ }
+]

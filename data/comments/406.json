@@ -1,0 +1,146 @@
+[
+ {
+  "id": "5937",
+  "parent": "0",
+  "date": "2017-08-21T15:57:12+08:00",
+  "author": "lcbj",
+  "site": "",
+  "text": "linuxer 你好，\r\n目前遇到项目需要把异常日志压缩转存到BMC，请教内核中有现成的压缩函数供使用吗？"
+ },
+ {
+  "id": "5967",
+  "parent": "0",
+  "date": "2017-09-01T12:22:35+08:00",
+  "author": "gnx",
+  "site": "",
+  "text": "这篇文章讲/proc/meminfo讲得也不错~\r\nhttp://linuxperf.com/?p=142"
+ },
+ {
+  "id": "6101",
+  "parent": "5937",
+  "date": "2017-10-11T15:40:07+08:00",
+  "author": "TonyHo",
+  "site": "http://tonyiot.com",
+  "text": "@lcbj：内核自带了gzip，lzma，lzo等压缩，也可以自己添加lz4。\r\n具体可以根据压缩的ratio与speed自己根据情况选择。"
+ },
+ {
+  "id": "6149",
+  "parent": "0",
+  "date": "2017-10-27T22:27:16+08:00",
+  "author": "fomalhaut",
+  "site": "",
+  "text": "对buffer cache的讲解言简意赅，赞！"
+ },
+ {
+  "id": "6156",
+  "parent": "5967",
+  "date": "2017-10-31T21:28:09+08:00",
+  "author": "fomalhaut",
+  "site": "",
+  "text": "@gnx：这篇也写的相当详细！"
+ },
+ {
+  "id": "6360",
+  "parent": "0",
+  "date": "2017-12-13T15:46:50+08:00",
+  "author": "lcbj",
+  "site": "",
+  "text": "感谢解答"
+ },
+ {
+  "id": "6678",
+  "parent": "0",
+  "date": "2018-04-18T17:18:58+08:00",
+  "author": "rikeyone",
+  "site": "",
+  "text": "而在这个过程中，memory type的那些page frame被一个个的注入到各个zone的free list中，同时用totalram_pages 来记录那个时间点中空闲的page frame数量。这个点也就是伙伴系统的一个初始内存数量的起点。\r\n\r\n--------------------------------------------------------------\r\nmemory type中的page并不是都会被注入到freelist吧？因为其中是有一些和reserved type mem重合的，这部分也会受伙伴系统管理吗？即使是受管理，那也会被当作free page吗？"
+ },
+ {
+  "id": "6745",
+  "parent": "6678",
+  "date": "2018-05-11T19:21:06+08:00",
+  "author": "Zhenhua",
+  "site": "",
+  "text": "@rikeyone：是的，注入伙伴系统的是memory-reserved   除了CMA"
+ },
+ {
+  "id": "8408",
+  "parent": "0",
+  "date": "2021-12-13T14:50:43+08:00",
+  "author": "xiaobingqiu",
+  "site": "",
+  "text": "linuxer 您好，我想问一下kfree一定能释放成功吗？如果失败了，会怎么处理呀？"
+ },
+ {
+  "id": "8409",
+  "parent": "0",
+  "date": "2021-12-13T14:52:58+08:00",
+  "author": "xiaobingqiu",
+  "site": "",
+  "text": "我统计了一下linux中kmalloc和kfree的次数，发现kfree远远大于kmalloc"
+ },
+ {
+  "id": "8418",
+  "parent": "8409",
+  "date": "2021-12-14T06:57:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@xiaobingqiu：理论上kmalloc和kfree应该是一一对应的。你统计的是linux中运行时的kmalloc和kfree的次数吗？"
+ },
+ {
+  "id": "8419",
+  "parent": "8408",
+  "date": "2021-12-14T07:06:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@xiaobingqiu：怎么定义成功？怎么定义失败？double free算是失败吗？\r\n如果内存管理模块本身不存在问题，那么kfree的失败应该用户调用接口的问题，那么需要提供机制检测到这种用户使用接口的bug。\r\n当然也可能内存管理模块本身存在bug，那么debug就OK了，不需要做什么特别处理。"
+ },
+ {
+  "id": "8421",
+  "parent": "8418",
+  "date": "2021-12-14T10:02:34+08:00",
+  "author": "xiaobingqiu",
+  "site": "",
+  "text": "@linuxer：对，我是在调用kmalloc的时候将申请的内存的大小记下来，kfree的时候将释放的内存记下来，(并且会记录调用次数)，用于统计kmalloc一共申请了多少内存，但是发现kfree的值大于kmalloc的值，在统计过程中发现kfree调用的次数远远大于kmalloc，所以我就怀疑是不是kfree没有释放成功，然后多次循环调用。"
+ },
+ {
+  "id": "8422",
+  "parent": "8419",
+  "date": "2021-12-14T10:09:56+08:00",
+  "author": "xiaobingqiu",
+  "site": "",
+  "text": "@linuxer：我的简单理解是：成功是指将申请的内存加入到了空闲链表中，失败是指没有将其加入到空闲链表中。double free应该是使用错误了。"
+ },
+ {
+  "id": "8423",
+  "parent": "8421",
+  "date": "2021-12-14T21:55:20+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@xiaobingqiu：建议看看是否有double free的bug"
+ },
+ {
+  "id": "8426",
+  "parent": "8423",
+  "date": "2021-12-14T22:14:03+08:00",
+  "author": "xiaobingqiu",
+  "site": "",
+  "text": "@linuxer：inuxer，您好，非常感谢您能回答我的问题，我感觉应该是我的理解有问题，我今下午又测试了一下，发现kmalloc申请的次数大于kfree的次数，但是发现最后统计的使用的内存还是小于0；\r\nused: -4842552(总的内存)\r\nmalloc_num:  219211（申请的次数）\r\nfree_num: 188045（释放的次数）\r\n我计算的是实际分配的内存，目前主要是没有啥思路来检测是哪里出的问题，（有可能还是没有很好的理解内存机制导致的）。\r\n代码中添加的方式是：\r\nkmalloc:\r\n       struct kmem_cache *s;\r\n    void * res = NULL;\r\n\r\n\tif (unlikely(size > KMALLOC_MAX_CACHE_SIZE)) {\r\n\t\tres = kmalloc_large(size, flags);\r\n        if (res ) {\r\n            all_bytes += 1 << (get_order(size) + PAGE_SHIFT);\r\n\t\t\tmalloc_num ++;\r\n        }\r\n        return res;\r\n\t}\r\n\r\n\ts = kmalloc_slab(size, flags);\r\n\r\n\tif (unlikely(ZERO_OR_NULL_PTR(s)))\r\n\t\treturn s;\r\n    \r\n\tres = slab_alloc(s, flags, _RET_IP_);\r\n\t\r\n    if (res) {\r\n        all_byte += s->size;\r\n\t\tmalloc_num ++;\r\n    }\r\n\t\r\n\ttrace_kmalloc(_RET_IP_, res, size, s->size, flags);\r\n\r\n\tkasan_kmalloc(s, res, size, flags);\r\n    return res;\r\nkfree: \r\n    struct page *page;\r\n\tvoid *object = (void *)x;\r\n\tsize_t size = 0;\r\n\ttrace_kfree(_RET_IP_, x);\r\n\t\r\n\tif (unlikely(ZERO_OR_NULL_PTR(x)))\r\n\t\treturn;\r\n\r\n\tpage = virt_to_head_page(x);\r\n\tif (unlikely(!PageSlab(page))) {\r\n       \r\n\t\tkfree_hook(x);\r\n\t\t__free_pages(page, compound_order(page));\r\n        all_bytes -= 1 << (compound_order(page) + PAGE_SHIFT); \r\n\t\tfree_num ++;\r\n\t\treturn;\r\n\t}\r\n\tsize = page->slab_cache->size;\r\n\tslab_free(page->slab_cache, page, object, NULL, 1, _RET_IP_);\r\n\tall_bytes -= size;\r\n\tfree_num ++;"
+ },
+ {
+  "id": "8430",
+  "parent": "8426",
+  "date": "2021-12-15T17:36:06+08:00",
+  "author": "xiaobingqiu",
+  "site": "",
+  "text": "@xiaobingqiu：linuxer您好，问题找到了，是我实现的有问题，我少统计了__kmalloc申请的内存。（O(∩_∩)O哈哈~），再次感谢，谢谢。"
+ },
+ {
+  "id": "8444",
+  "parent": "8422",
+  "date": "2021-12-25T10:20:39+08:00",
+  "author": "cjw",
+  "site": "",
+  "text": "@xiaobingqiu：kasan/slab  quarantine 会先把内存放在隔离期里，不会马上加回空闲链表"
+ }
+]

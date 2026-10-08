@@ -1,0 +1,634 @@
+[
+ {
+  "id": "368",
+  "parent": "0",
+  "date": "2014-08-29T16:41:38+08:00",
+  "author": "sea",
+  "site": "",
+  "text": "---------------------------------------------------------------------------------------------------\r\naction指向一个struct irqaction的链表。如果一个interrupt request line允许共享，那么该链表中的成员可以是多个，否则，该链表只有一个节点。\r\n---------------------------------------------------------------------------------------------------\r\n虽然说知道interrupt request line允许共享，但是一直理解不了这个概念。对于连接到物理设备的irq怎么实现interrupt request line共享呢，什么情况下会存在一个irq_desc下有多个irq_action？或者说interrupt request line共享只存在于多中断控制器级联的情况下，还是其它的情况？希望博主解答一下，谢谢！"
+ },
+ {
+  "id": "369",
+  "parent": "368",
+  "date": "2014-08-29T17:15:06+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@sea：hi sea\r\n我先回复一下，然后等群主来了，在给你更专业的回复。\r\n我想你可能没有搞明白中断级联跟中断共享这两个概念。\r\n级联的中断控制器，连接到上一级的中断控制器是一根线，但是从cpu的角度，子中断控制器的各个中断线，也就是HW IRQ Number 都有唯一明确的irq number的，这个irq number就是你request_irq的时候用到的irq number，理解中断级联，你要看群主的第二篇文章 irq domain\r\n2：中断共享，说的是共享中断号，所以在request_irq的时候\r\nrequest_irq(unsigned int irq, irq_handler_t handler, unsigned long flags,const char *name, void *dev)\r\n用同一个irq number，通过flag IRQF_SHARED来表明是共享中断，然后通过最后的参数void *dev来互相区分,然后是在irq handler里面通过void *dev，来区分实际是那个外设发来的中断。如果我没有记错，好像之前的按键驱动习惯用共享中断。"
+ },
+ {
+  "id": "371",
+  "parent": "368",
+  "date": "2014-08-29T19:15:59+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@sea：forion同学讲的很好，我简单补充两句，呵呵～～～有点领导范儿哦。\r\n如果中断控制器可以支持足够多的interrupt source，那么在两个外设间共享一个interrupt request line是不推荐的，毕竟有一些额外的开销（发生中断的时候要逐个询问是不是你的中断，软件上就是遍历action list啦），因此外设的irq handler中最好是一开始就启动判断，看看是否是自己的中断，如果不是，返回IRQ_NONE,表示这个中断不归我管。\r\n早期PC时代，使用8259中断控制器，级联的8259最多支持15个外部中断，但是PC外设那么多，因此需要irq share。现在，ARM平台上的系统设计很少会采用外设共享IRQ方式，毕竟一般ARM SOC提供的有中断功能的GPIO非常的多，足够用的。\r\n当然，如果确实需要两个外设共享IRQ，那也只能如此设计了。对于HW，中断控制器的一个interrupt source的引脚要接到两个外设的interrupt request line上，怎么接？直接连接可以吗？当然不行，对于低电平触发的情况，我们可以考虑用与门连接中断控制器和外设：\r\n                 ---------\r\n                 |        |----------Device 1 interrupt request line\r\ninterrupt－－－－|    &   |\r\nsource           |        |----------Device 2 interrupt request line\r\n                  --------\r\n\r\n只要任意一个设备的interrupt request line有低电平信号，就可以在中断控制器的interrupt source信号线上产生低电平，从而触发中断。"
+ },
+ {
+  "id": "373",
+  "parent": "371",
+  "date": "2014-08-29T19:18:55+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：完了，上面用字符画的电路图很失败，不过，大家应该会明白的"
+ },
+ {
+  "id": "377",
+  "parent": "0",
+  "date": "2014-08-31T13:32:16+08:00",
+  "author": "sea",
+  "site": "",
+  "text": "非常感谢。意思就是外设共享是需要外设间电路设计的支持的，不过你的图我还真没怎么看懂，我可以这样理解吗:\r\n比如两个按键共享一个irq，那这两个按键分别至少需要两根线，其中一根线用来进行&逻辑并连接到中断控制器来触发中断，而另外一条线则直接连接到CPU的gpio，以便中断触发时,遍历对应irq_action来查询两条线的状态以确定是哪个按键触发的中断。\r\n\r\n或者就是具有中断共享功能的中断控制器，两个按键直接连接到特定的端口就实现了中断共享，当中断发生时，遍历irq_action通过读取中断控制器的某个寄存器的值来确定时哪个按键触发的中断。\r\n总而言之，中断共享需要形成闭环，必须要有中断触发和中断触发源state查询两个部分。\r\n以上只是我个人的愚见，不知道正确不？ps:发表评论不能贴图啊！"
+ },
+ {
+  "id": "378",
+  "parent": "373",
+  "date": "2014-08-31T13:33:52+08:00",
+  "author": "sea",
+  "site": "",
+  "text": "@linuxer：不好意思，没点回复。"
+ },
+ {
+  "id": "379",
+  "parent": "378",
+  "date": "2014-09-01T08:59:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@sea：不要在意，都是形式而已。我的回复在上面。\r\nBTW，我在有的浏览器上看上面的字符图片是对的，不过现在用的是火狐，看到的就是错位的，不知道怎么回事"
+ },
+ {
+  "id": "380",
+  "parent": "377",
+  "date": "2014-09-01T09:05:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@sea：我的意思是这样的。中断控制器的每一个interrupt source都是一个实际的物理铜线，而每个device的interrupt request信号也是一个实际的物理铜线，一对一当然简单，但是如果要共享，那么需要一对二。与门是两个输入，一个输出，输出接到中断控制器，两个输入分别接两个设备的interrupt request信号（这是在两个设备都是低电平触发而言，如果不是这样，需要相应进行电路设计）。\r\n对于与门，只要输入端有一个逻辑0（低电平），那么输出就是0（低电平），只有两个device的interrupt request信号都是逻辑1（高电平），输出才是逻辑1（高电平），正好符合了我们这里的设计场景"
+ },
+ {
+  "id": "381",
+  "parent": "380",
+  "date": "2014-09-01T10:13:49+08:00",
+  "author": "sea",
+  "site": "",
+  "text": "@linuxer：知道了，谢谢！"
+ },
+ {
+  "id": "490",
+  "parent": "0",
+  "date": "2014-09-30T15:52:54+08:00",
+  "author": "海",
+  "site": "",
+  "text": "拜读！"
+ },
+ {
+  "id": "615",
+  "parent": "0",
+  "date": "2014-11-04T17:26:24+08:00",
+  "author": "chunhai",
+  "site": "",
+  "text": "感谢博主的分享，\r\n有个小错误。\r\n对于GIC而言，SPI是N-N mode，而SGI和PPI是1-N mode。  \r\n这句话 有误。 SPI， PPI 是 1-N， SGI 是N-N 的。"
+ },
+ {
+  "id": "618",
+  "parent": "615",
+  "date": "2014-11-04T19:18:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@chunhai：多谢您的提醒，是笔误，我的本意是“SPI是1-N mode，而SGI和PPI是N-N mode”，我已经修改了相关的描述。\r\n\r\nPS：你建议的修改也是有问题的（SPI， PPI 是 1-N， SGI 是N-N 的），anyway，感谢你的提醒"
+ },
+ {
+  "id": "686",
+  "parent": "615",
+  "date": "2014-11-06T20:20:34+08:00",
+  "author": "chunhai",
+  "site": "",
+  "text": "@chunhai：我也是仔细的查了一下。\r\nSPI PPI属于 peripheral interrupts \r\n\r\n也是是SPI PPI，N-1的意思我是这样理解的。只有一个CPU 去响应中断，其他的CPU 是不响应中断的，即使是其他的CPU同时响应了，但是过不到锁，也是只有一个CPU 处理中断。\r\n不知我的理解对吗？\r\n\r\nIn a multiprocessor implementation, the GIC handles:\r\n— SGIs using an N-N model, where the acknowledgement of an interrupt by one processor\r\nhas no effect on the state of the interrupt on other CPU interfaces\r\n— peripheral interrupts using a 1-N model, where the acknowledgement of an interrupt by\r\none processor removes the pending status of the interrupt on any other targeted\r\nprocessors, see Implications of the 1-N model on page 3-8.\r\nIn a multiprocessor implementation, the GIC uses a 1-N model to handle peripheral interrupts that target\r\nmore than one processor. This means that when the GIC recognizes an interrupt acknowledge from one of\r\nthe target processors it clears the pending state of the interrupt on all the other targeted processors. This\r\nmodel means an interrupt can be handled by the first available processor. However, the interrupt might\r\ngenerate an interrupt exception on more than one of the targeted processors, for example if two of the\r\ntargeted processors recognize the interrupt exception request from the GIC at similar times.\r\nWhen multiple target processors attempt to acknowledge the interrupt, the following can occur:\r\n• A processor reads the ICCIAR and obtains the interrupt ID of the interrupt to be serviced, see\r\nInterrupt Acknowledge Register (ICCIAR) on page 4-56. More than one target processor might have\r\nobtained this interrupt ID, if the processors read their ICCIARs at very similar times. The system\r\nInterrupt Handling and Prioritization\r\nARM IHI 0048A Copyright © 2008 ARM Limited. All rights reserved. 3-9\r\nUnrestricted Access Non-Confidential\r\nmight require software on the target processors to ensure that only one processor runs its interrupt\r\nservice routine. A typical mechanism to achieve this is implementing a lock on the interrupt service\r\nroutine (ISR), in shared memory. This might operate as follows:\r\n— each target processor that obtains the interrupt ID from its read of the ICCIAR runs a\r\nsemaphore routine, attempting to obtain a lock on the ISR corresponding to the specified ID\r\nvalue\r\n— if a processor fails to obtain the lock it does no further processing of the interrupt, but writes\r\nthe interrupt ID to its ICCEOIR, see End of Interrupt Register (ICCEOIR) on page 4-59\r\n— the processor that obtains the lock handles the interrupt and then writes the interrupt ID to its\r\nICCEOIR.\r\n• A processor reads the ICCIAR and obtains the interrupt ID 1023, indicating a spurious interrupt. The\r\nprocessor can return from its interrupt service routine without writing to its ICCEOIR.\r\nThe spurious interrupt ID indicates that the original interrupt is no longer pending, typically because\r\nanother target processor is handling it."
+ },
+ {
+  "id": "689",
+  "parent": "686",
+  "date": "2014-11-07T11:01:43+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@chunhai：我们在PPI的mode上有些不同的意见，我又仔细的阅读了GIC的规范文档，这份文档是这样描述的：\r\n1-N model的定义是 Only one processor handles this interrupt. The system must implement a mechanism to determine which processor handles an interrupt that is programmed to target more than one processor.\r\nN-N model的定义是：All processors receive the interrupt independently. When a processor acknowledges the interrupt,the interrupt pending state is cleared only for that processor. The interrupt remains pending for the other processors.\r\n我觉得PPI是符合N-N model定义的，各个processor是独立的收到中断的，PPI的register是banked，因此，ack其一不影响其他。因此我认为PPI是N-N mode。\r\n\r\n\r\n在ARM官方发布的IHI0048B_b_gic_architecture_specification.pdf的3.1.1章节，有下面的内容：\r\nIn a multiprocessor implementation the GIC handles:\r\n• software generated interrupts (SGIs) using the GIC N-N model\r\n• peripheral (hardware) interrupts using the GIC 1-N model.\r\n\r\nPPI属于peripheral interrupt，因此看起来你是对的，但是在该文档的3.2章节，有一处的描述如下：\r\nIn a multiprocessor implementation, the GIC handles:\r\n— PPIs and SGIs using the GIC N-N model, where the acknowledgement of an interrupt by one processor has no effect on the state of the interrupt on other CPU interfaces\r\n— SPIs using the GIC 1-N model, where the acknowledgement of an interrupt by one processor removes the pending status of the interrupt on any other targeted processors\r\n\r\n从这里看，我的结论是对的。\r\n\r\n不过，我认为我们不必纠结于属于哪一个mode，关键是理解PPI的硬件行为即可。"
+ },
+ {
+  "id": "879",
+  "parent": "0",
+  "date": "2014-12-10T20:01:45+08:00",
+  "author": "zengzhl",
+  "site": "",
+  "text": "仰望博主。很多芯片资料里面介绍ARM中断号，有的代码+32，有的又不加，请问有什么区别，以及什么时候+32？"
+ },
+ {
+  "id": "880",
+  "parent": "879",
+  "date": "2014-12-11T10:08:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zengzhl：我不是很清楚你的问题，你能否给出更多的细节？ 比如哪一个芯片资料？具体的代码片段..."
+ },
+ {
+  "id": "1279",
+  "parent": "0",
+  "date": "2015-03-04T14:26:13+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "最近处理一个共享中断的case，共享中断确实如楼主所说，来了中断要调用一遍所有的挂在这个中断号下面的，irq handler。也就是下面的描述\r\n（发生中断的时候要逐个询问是不是你的中断，软件上就是遍历action list啦），因此外设的irq handler中最好是一开始就启动判断，看看是否是自己的中断，如果不是，返回IRQ_NONE,表示这个中断不归我管。\r\n \r\n容易出问题的地方就是，最好在irq handler中最好是一开始就启动判断，如果这个判断设计有误，比如不是自己的中断，还会跑自己的后面的handler，那么就有可能引入诡异的问题。"
+ },
+ {
+  "id": "1309",
+  "parent": "0",
+  "date": "2015-03-09T09:22:43+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "有过这样的需求request_irq的时候并不想中断函数被立即调用。所以我一般情况是，在request-irq之前，先disable-irq。请问这样可以吗？我看过源代码，没有发现可能引起异常的部分。"
+ },
+ {
+  "id": "1310",
+  "parent": "1309",
+  "date": "2015-03-09T16:18:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@heziq：request IRQ和hardware enable，应该是两个逻辑，只有hardware enable了，才有可能产生中断。因此一般的做法是：在probe中request IRQ，在需要使用设备时，enable它，中断产生。"
+ },
+ {
+  "id": "1311",
+  "parent": "1310",
+  "date": "2015-03-09T16:34:34+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "@wowo：@wowo：难道在probe中，request IRQ后，必须后面在加个enable IRQ， 我注册的中断函数才会被执行吗？我看见所有的源代码都是probe完以后，就等irq发生。我的意思是：我reqest IRq 后，不想立即调用我的中断处理函数。 等我需要的时候在打开中断，响应中断。有什么方法不？"
+ },
+ {
+  "id": "1312",
+  "parent": "1311",
+  "date": "2015-03-09T16:36:00+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "@heziq：“我看见所有的源代码都是probe完以后，就等irq发生。”有误，源代码中request IRQ 以后"
+ },
+ {
+  "id": "1313",
+  "parent": "1309",
+  "date": "2015-03-09T18:03:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@heziq：是否在request_irq的时候enable该irq是一个option，由其中断描述符的NOAUTOEN这个flag决定的，具体可以参考代码：\r\n\r\nif (irq_settings_can_autoenable(desc))\r\n\tirq_startup(desc, true);\r\n\r\n在request-irq之前调用disable irq也没有问题，前提是正确初始化了硬件和中断描述符。不过针对你的需求，我倒是觉得你可以调用set_irq_flags来设定IRQF_NOAUTOEN这个flag"
+ },
+ {
+  "id": "1314",
+  "parent": "1311",
+  "date": "2015-03-09T18:37:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@heziq：我想表达的是：\r\n中断handler是否被调用，有两个因素决定：一是irq是否enable，这是由irq的接口决定的；二是产生中断的设备是否可以产生中断，例如uart，是否enable了UART的收发功能。\r\n大多数时候，设备驱动关注的是后一种，通过控制设备的行为，控制是否产生中断。"
+ },
+ {
+  "id": "1315",
+  "parent": "1313",
+  "date": "2015-03-09T18:41:03+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "@linuxer：高实在是高！\r\n\r\nstatic int sirfsoc_uart_startup(struct uart_port *port)\r\n{\r\n\tstruct sirfsoc_uart_port *sirfport\t= to_sirfport(port);\r\n\tunsigned int index\t\t\t= port->line;\r\n\tint ret;\r\n\tset_irq_flags(port->irq, IRQF_VALID | IRQF_NOAUTOEN);\r\n\tret = request_irq(port->irq,\r\n\t\t\t\tsirfsoc_uart_isr,\r\n\t\t\t\t0,\r\n\t\t\t\tSIRFUART_PORT_NAME,\r\n\t\t\t\tsirfport);\r\n\tif (ret != 0) {\r\n\t\tdev_err(port->dev, \"UART%d request IRQ line (%d) failed.\\n\",\r\n\t\t\t\t\t\t\tindex, port->irq);\r\n\t\tgoto irq_err;\r\n\t}\r\n\tstartup_uart_controller(port);\r\n\tenable_irq(port->irq);\r\nirq_err:\r\n\treturn ret;\r\n}"
+ },
+ {
+  "id": "1316",
+  "parent": "1313",
+  "date": "2015-03-09T18:42:11+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "@linuxer：完全如你所料！"
+ },
+ {
+  "id": "1665",
+  "parent": "1315",
+  "date": "2015-05-01T22:22:47+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@heziq：你找的这段代码来自于CSR，(reviewer是出书的某位大牛)。\r\n事实上如果你搜索kernel代码的话，会发现很少有人调用IRQF_NOAUTOEN这个flag，所有调用它的都是1级或者2级interrupt controller，唯一的例外就是CSR的这份uart代码，所以我觉得它没有参考价值。\r\n\r\n      从这个函数来看，申请中断和开启中断中间只隔了一个uart controller的初始化函数。那么如果把startup_uart_controller(port)函数放到最前面，等这个函数把uart硬件初始化好了之后，再调用request_irq函数来注册中断，这样子就不需要IRQF_NOAUTOEN了。 \r\n      request_irq的注释里面已经说明了，这个函数返回之后，handler就有可能马上被调用。如果硬件还没有准备好，说明你注册中断时间点很有可能不合理。"
+ },
+ {
+  "id": "1670",
+  "parent": "1665",
+  "date": "2015-05-02T20:59:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@buyit：非常赞同，如果有奇奇怪怪的代码存在，很有可能是流程上有问题。"
+ },
+ {
+  "id": "1681",
+  "parent": "1665",
+  "date": "2015-05-03T22:22:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：IRQF_NOAUTOEN这个flag绝非为“普通”设备而打造，也不是给那些“文艺”类型的设备使用，它是为那些“2B”设备而产生的。这些设备会产生spurious interrupt，撰写driver的时候需要：\r\n1、申请中断的时候不要打开中断\r\n2、当期待中真正中断要来的时候调用enable_irq\r\n3、处理完成后disable之\r\n\r\n普通的request_irq不能满足这类奇葩设备的要求"
+ },
+ {
+  "id": "1688",
+  "parent": "1681",
+  "date": "2015-05-04T10:26:03+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：理解。\r\nheziq 找的例子貌似不属于这种2b设备，看起来更像是代码逻辑的问题。"
+ },
+ {
+  "id": "3538",
+  "parent": "0",
+  "date": "2016-02-26T11:46:04+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "关于irq_desc->handle_irq，通过文章看是有：边沿触发、电平触发等类型。\r\n但是它是在哪里被赋值呢？\r\n（1）通过查看内核和GIC初始化，只看到分配了irq_desc，并将irq_desc->handle_irq初始化为handle_bad_irq，而不是文章里介绍的边沿触发、电平触发处理函数；\r\n（2）在驱动程序申请中断时，调用request_threaded_irq()；而这个函数也未看到设置irq_desc->handle_irq。\r\n\r\n我搜源码，一般只看到gpio控制器有调用irq_set_handler(handle_edge_irq)；而在uart设备上未看到这样的设置？当这个uart设备中断时，程序走到irq_desc->handle_irq()时，到底调用的是哪个函数？\r\n\r\nW(b)\tvector_irq\r\n\tvector_irq:\r\n\t\t__irq_usr\r\n\t\t\tirq_handler\r\n\t\t\t\tldr\tr1, =handle_arch_irq  //已初始化为gic_handle_irq\r\n\t\t\t\tldr\tpc, [r1]\r\n\t\t\t\t||\r\n\t\t\t\t\\/\r\n\t\t\t\tgic_handle_irq()\r\n\t\t\t\t\thandle_IRQ(irqnr, regs)\r\n\t\t\t\t\t\t\tdesc->handle_irq(irq, desc);"
+ },
+ {
+  "id": "3554",
+  "parent": "3538",
+  "date": "2016-02-26T21:51:06+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@callme_friend：基本上，边沿触发、电平触发这些属于硬件中断的属性，对于一个HW Interrupt而言，它附属于某一个interrupt controller（irq domain），有类型（SPI/PPI等），有ID，有属性（上升沿或者电平触发），而这些信息最好的方法就是通过device tree的方法传递给kernel。\r\n\r\n你的问题是关于irq_desc->handle_irq的设定，而所谓irq_desc是和IRQ number息息相关的，IRQ number就是virtual interrupt ID。哪里设定handle_irq呢？固定设定当然不好了，最好的方法就是驱动初始化的时候根据device tree传递的信息来相应的进行初始化。\r\n\r\n一般驱动初始化的过程如下（仅仅说中断相关的内容）：\r\n1、分配一个IRQ number\r\n2、建立IRQ number到HW Interrupt ID之间的mapping（在某个irq domain上）\r\n3、注册IRQ number对应的handler\r\n\r\nirq_desc->handle_irq在上面所说的第二步设定，怎么进行IRQ number到HW Interrupt ID之间的mapping呢？是通过struct irq_domain数据结构中的struct irq_domain_ops操作函数集中的map成员函数来完成的。从名字就可以退出其功能，就是建立IRQ和HW interrupt ID映射关系的时候调用的。在这个函数中，知道IRQ number，可以找到中断描述符，知道HW interrupt的ID以及属性，因此也知道如何设定irq_desc->handle_irq。\r\n\r\n对于GIC而言，这个函数是gic_irq_domain_map，你可以看看。\r\n\r\n当然，我上面说的方法我认为是最好的方式，不过，内核中也有一些遗留的代码是固定设定的（在中断控制器驱动中一次性设定），最终应该会被慢慢淘汰掉。"
+ },
+ {
+  "id": "3556",
+  "parent": "3554",
+  "date": "2016-02-27T06:55:08+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@郭健：针对你上面说的“一般驱动初始化的过程”：\r\n1、分配一个IRQ number -----------这个应该是early_irq_init()和gic_init_bases()时建立irq_desc[]或radix树\r\n2、建立IRQ number到HW Interrupt ID之间的mapping（在某个irq domain上）\r\n       -------------这一步貌似是gic初始化的时候建立的吧？而且这里没有看到设置irq_desc->handle_irq呀？irq_desc->handle_irq在何处赋值是我要问的核心问题。\r\n3、注册IRQ number对应的handler -------这一步应该是request_irq完成吧？"
+ },
+ {
+  "id": "3559",
+  "parent": "3556",
+  "date": "2016-02-28T23:15:37+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@callme_friend：1、不是的，early_irq_init()是中断描述符初始化，gic_init_bases是具体的中断控制器驱动初始化，我们这里说的是一个特定的设备驱动的IRQ的初始化，在过去，都是静态定义的，现在推荐使用device tree的方法动态分配。你可以参考drivers/of/irq.c文件\r\n\r\n2、gic_irq_domain_map--->irq_set_chip_and_handler中会设定irq_desc->handle_irq。\r\n\r\n3、是的"
+ },
+ {
+  "id": "3562",
+  "parent": "3559",
+  "date": "2016-02-29T17:22:41+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@郭健：1、嗯，大神的device tree也看了几遍了，还要继续看几遍。\r\n2、还是关于irq_desc->handle_irq何时赋值的问题，我刚开始问的也是这个问题。\r\n《gic_irq_domain_map--->irq_set_chip_and_handler中会设定irq_desc->handle_irq。》---------------gic_irq_domain_map这个函数是在哪里被调用呢？\r\n您的上篇文章《Linux kernel的中断子系统之（二）：IRQ Domain介绍》里提及是在irq_of_parse_and_map()里建立；但是我用si搜索3.17内核，调用这个函数的设备驱动不算多。irq_of_parse_and_map()的合适调用时机是哪里？放在驱动的probe函数里合适吗？"
+ },
+ {
+  "id": "3565",
+  "parent": "3562",
+  "date": "2016-02-29T23:32:20+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@callme_friend：其实基本上驱动也不会直接调用这些借口函数，这些接口函数多半进行了封装。例如：对于platform bus上的设备，其驱动的probe函数可以使用下面的代码：\r\n......\r\n\tadc->irq = platform_get_irq(pdev, 1);\r\n\tif (adc->irq <= 0) {\r\n\t\tdev_err(dev, \"failed to get adc irq\\n\");\r\n\t\treturn -ENOENT;\r\n\t}\r\n\r\n\tret = devm_request_irq(dev, adc->irq, s3c_adc_irq, 0, dev_name(dev),\r\n\t\t\t\tadc);\r\n\tif (ret < 0) {\r\n\t\tdev_err(dev, \"failed to attach adc irq\\n\");\r\n\t\treturn ret;\r\n\t}\r\n......\r\n\r\nplatform_get_irq这个函数可以看一看，然后你就明白了。"
+ },
+ {
+  "id": "3568",
+  "parent": "3565",
+  "date": "2016-03-01T16:09:21+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@郭健：在platform_get_irq()里确实看到最终调用了map，初始化了irq_desc->handle_irq。\r\n我又有个疑问：在of_platform_populate()里，把dts解析出的node转化为platform设备时，也会调用domain_ops的map，也会初始化irq_desc->handle_irq；这样是不是和驱动的probe函数里有重复执行map的可能？\r\n我跟的代码是3.17版本：\r\nzynq_init_machine()-->\r\n\tof_platform_populate()-->\t\t\t\t\t\t\t\t\t\t//创建平台设备\r\n\t\tof_platform_bus_create()-->\r\n\t\t\tof_platform_device_create_pdata()-->\r\n\t\t\t\tof_device_alloc()-->\r\n\t\t\t\t\tof_irq_to_resource_table()-->\r\n\t\t\t\t\t\tof_irq_to_resource()-->\r\n\t\t\t\t\t\t\tirq_of_parse_and_map()-->\r\n\t\t\t\t\t\t\t\tirq_create_of_mapping()-->\r\n\t\t\t\t\t\t\t\t\tirq_create_mapping()-->\r\n\t\t\t\t\t\t\t\t\t\tirq_domain_associate()-->\r\n\t\t\t\t\t\t\t\t\t\t\t//即gic_irq_domain_map:里面初始化irq_desc->handle_irq\r\n\t\t\t\t\t\t\t\t\t\t\tdomain->ops->map()\t\r\n我的dts如下：\r\n\tgpio0: gpio@e000a000 {\r\n\t\tcompatible = \"xlnx,zynq-gpio-1.0\";\r\n\t\t#gpio-cells = <2>;\r\n\t\tclocks = <&clkc 42>;\r\n\t\tgpio-controller;\r\n\t\tinterrupt-parent = <&intc>;\r\n\t\tinterrupts = <0 20 4>;\r\n\t\treg = <0xe000a000 0x1000>;\r\n\t};\r\n对应的驱动代码：\r\nstatic struct platform_driver zynq_gpio_driver = {\r\n\t.probe = zynq_gpio_probe,\r\nzynq_gpio_probe()\r\n\tplatform_get_irq()-->\r\n\t\tof_irq_get()-->\r\n\t\t\tirq_create_of_mapping()-->\r\n\t\t\t\tirq_create_mapping(domain,hwirq)-->\r\n\t\t\t\t\tirq_domain_associate()-->\r\n\t\t\t\t\t\t//即gic_irq_domain_map:里面初始化irq_desc->handle_irq\r\n\t\t\t\t\t\tdomain->ops->map()\t//gic_irq_domain_map\r\n-------------------------------------------------------------\r\n上述gpio节点，会不会在of_platform_populate()和zynq_gpio_probe()时，被先后调用？那hw irq到virq的映射岂不是发生两次？"
+ },
+ {
+  "id": "3571",
+  "parent": "3565",
+  "date": "2016-03-01T23:01:14+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@郭健：你可以再仔细看看irq_create_mapping的代码，虽然其名字是创建映射，但是该函数首先是通过HW interrupt ID来找virtual interrupt ID，如果存在，则不需要创建，直接返回virtual interrupt ID，因此，映射不会创建两次的。"
+ },
+ {
+  "id": "3576",
+  "parent": "0",
+  "date": "2016-03-03T17:37:29+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "貌似不能再回复了，重启一层。\r\nirq_create_mapping()确实不会重复建立映射，看的不仔细~~\r\n（1）我按照大神思路去看了3.17内核的gpio（基于zynq）部分初始代码，确实在probe()函数里新建了gpio irq的domain。但是这个过程很不优雅：因为在dts的gpio部分，没有看到如下所示、包含interrupt-controller的内容：\r\ngpf: gpf {\r\n\tgpio-controller;\r\n\t#gpio-cells = <2>;\r\n\tinterrupt-controller;\r\n\t#interrupt-cells = <2>;\r\n};\r\n上面这个node是明确表明这是一个interrupt-controller，所以在内核init_IRQ时，应该就会建立domain吧？\r\n而我的这个zynq的dts文件关于gpio的部分如下：\r\ngpio0: gpio@e000a000 {\r\n\tcompatible = \"xlnx,zynq-gpio-1.0\";\r\n\t#gpio-cells = <2>;\r\n\tclocks = <&clkc 42>;\r\n\tgpio-controller;\r\n\tinterrupt-parent = <&intc>;\r\n\tinterrupts = <0 20 4>;\r\n\treg = <0xe000a000 0x1000>;\r\n};\r\n------------------------------------------------------\r\n这里并没有看到interrupt-controller属性，但是probe函数里居然新建了irq domain，总感觉别扭？\r\n（2）通过上面的dts差异，结合大神的《GPIO子系统系列》文章，我在该dts中没看到关于pin bank、pin ctrl的描述，是不是可以认定它没有完整的支持GPIO子系统？"
+ },
+ {
+  "id": "3580",
+  "parent": "3576",
+  "date": "2016-03-04T12:40:25+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@callme_friend：支持GPIO type的中断控制器有两种方法：\r\n一、irq chip driver的方法，需要：\r\n1、device tree中对应的node有interrupt-controller的属性\r\n2、在drivers/irqchip目录下增加对应的irq chip driver的代码（driver）。需要定义IRQCHIP_DECLARE，以便可以匹配device tree中的节点（device）\r\n\r\n二、使用platform driver的方法，需要：\r\n1、定义platform driver和of_match_table数据结构\r\n2、device tree中的节点会变成platform中的device\r\n3、利用驱动模型的机制，让device和driver匹配并在probe函数中进行中断控制器的初始化。\r\n\r\n哪种好呢？我喜欢第一种，但是内核中大部分的平台都是使用了第二种方法，具体为什么可能需要再仔细考虑一下。"
+ },
+ {
+  "id": "3583",
+  "parent": "3580",
+  "date": "2016-03-04T15:39:13+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@郭健：站在dts角度，第二种方法您觉得别扭吗？\r\n明明没有指定interrupt-controller属性，却莫名其妙的建立irq domain，有点奇怪的感觉。"
+ },
+ {
+  "id": "3584",
+  "parent": "3580",
+  "date": "2016-03-04T15:40:14+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@郭健：另外，大神的《GPIO子系统》还继续整不？"
+ },
+ {
+  "id": "3587",
+  "parent": "3584",
+  "date": "2016-03-04T18:10:24+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@callme_friend：本来不想搞了，不过最近思路有些变化。原来总想搞一些高大上，什么调度器啦，RCU啦，多么cool，最近打算搞一些人民群众喜闻乐见的，和具体工作相关的各种硬件驱动的frame work。因此，GPIO应该会继续整的。\r\n\r\nBTW，这位帅哥，如果你有兴趣，可以一起整啊"
+ },
+ {
+  "id": "3593",
+  "parent": "3587",
+  "date": "2016-03-05T18:06:50+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@郭健：兴趣是有，就是能力不足，我离大神水平太远太远！\r\n那些高大上的文章，我们其实也很喜闻乐见的，我都浏览过，只是还不完全理解，暂时不能和大神交流。\r\n本人还很期待大神的关于VFS、网络子系统的神作。\r\n系统对用户的接口是fs，通过vfs，再深入到设备驱动，应该很high；另外网络子系统也是我有兴趣的方向~！\r\n大神的文章像大百科全书一样，而且都是基于新内核，再次膜拜！！！"
+ },
+ {
+  "id": "3628",
+  "parent": "689",
+  "date": "2016-03-09T18:44:54+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@linuxer：这里对于N-N的这种中断方式的应用场景感到迷惑，我的理解是如果这种中断发生了，那么中断程序无法识别该handler是否已经处理，也即这次中断可能会引发重复的handle,难道真的这种一个中断需要执行多次的需求？"
+ },
+ {
+  "id": "3634",
+  "parent": "3628",
+  "date": "2016-03-09T22:52:35+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@electrlife：一个简单的例子就是应用在percpu的中断，比如说一个4核系统，每个cpu core都有自己的local timer产生中断，送达自己的CPU。"
+ },
+ {
+  "id": "3689",
+  "parent": "0",
+  "date": "2016-03-18T16:12:24+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "从驱动子系统一路看过来，对于中断子系统有点疑问，中断控制器一般也说也是一类设备，应该算是平台设备，所以我觉得中断子系统应该也是类似使用设备驱动模型的方式来实现，但这段时间学习下来，似乎没有看到设备驱动模型的身影，不知是否我理解有偏差。如其它的子系统，一般也都是基本设备的驱动模型来的，比如I2C，USB，SPI等，难道中断控制器不可以实现成设备驱动模型的结构吗？或者更进一步，设备驱动模块适应哪些方面的抽象，或是对于哪些场景有限制？？"
+ },
+ {
+  "id": "3690",
+  "parent": "3689",
+  "date": "2016-03-18T17:08:21+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@electrlife：我很喜欢这个问题，多谢！\r\n\r\n我的理解是这样的，诚然，interrupt controller从实际的物理拓扑结构上看，的确是和其他的HW block（例如USB device controller什么的）没有什么不同，如果驱动USB device controller的软件使用了platform bus、platform device以及platform driver的模型，那么interrupt controller的驱动也应该使用类似的方法。但是，interrupt controller是很特殊的一个HW block，它应该在所有的设备驱动初始化之前ready，毕竟每一种driver都需要中断子系统提供的服务。因此，中断子系统的初始化（init_IRQ）必须先于驱动模型初始化（driver_init）执行，这样，首先初始化的中断驱动如何利用驱动模型呢？"
+ },
+ {
+  "id": "3691",
+  "parent": "3690",
+  "date": "2016-03-18T18:38:25+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@郭健：多谢回复，这样理解有点道理，比如clocksource clock_dev_event等也是如此，但是对regulator好像不适用，我觉得regulator应该是系统比较早启动的一类设备。\r\n除非regulator是较后的启动！"
+ },
+ {
+  "id": "4012",
+  "parent": "0",
+  "date": "2016-05-31T14:49:01+08:00",
+  "author": "奔跑的蜗牛",
+  "site": "",
+  "text": "hi 各位大神，\r\n看了你们的文件，收益匪浅，你写的文章，我其实已经看过好机会了，之前只是大概的看看，没有这么认真的研读。这次认真的研读了下，有去思考，所以，有些疑问。\r\n1 highlevel irq-events handle(desc->handle_irq) interrupt domain抽象的handler，应该是执行这个interrupt controller相关的动作，那具体是哪些呢，能麻烦举个例子吗。\r\n2 specifier handler这个是完成哪些任务呢？\r\n3 用户注册的handler，这个就是用户想要完成的任务了，没什么好说的。\r\n还有，这3个之间有的执行流程有什么关系吗？"
+ },
+ {
+  "id": "4013",
+  "parent": "4012",
+  "date": "2016-05-31T16:29:07+08:00",
+  "author": "奔跑的蜗牛",
+  "site": "",
+  "text": "@奔跑的蜗牛：不好意思，通过后面几篇的阅读，已经理解了。谢谢。"
+ },
+ {
+  "id": "4194",
+  "parent": "0",
+  "date": "2016-07-05T21:34:15+08:00",
+  "author": "joeychen",
+  "site": "",
+  "text": "请教： 设备驱动中断在哪里设置绑定的cpu？"
+ },
+ {
+  "id": "4198",
+  "parent": "4194",
+  "date": "2016-07-06T10:30:27+08:00",
+  "author": "hello-world",
+  "site": "",
+  "text": "@joeychen：通过irq_set_affinity接口可以设定啊"
+ },
+ {
+  "id": "4514",
+  "parent": "3691",
+  "date": "2016-09-05T15:39:05+08:00",
+  "author": "吴晓鹏",
+  "site": "",
+  "text": "@electrlife：@郭健：郭健兄说的是一方面的原因，也存在另一方面的原因：历史遗留问题。\r\nLinux早期的版本，跟arch相关的硬件操作都会放在arch里面，随着soc越来越多，arch/arm里面已经非常冗余和混乱了，通过关注新内核动向，arch/arm里面的硬件操作会逐渐由系统退化成驱动，这样显得更加清晰标准。例如从linux-3.10之后arch/arm64已经没有arch/arm里面拥有很多mach相关的操作，同样irq已经移到了driver下，后面的内核版本cpuidle也是逐渐退化成驱动了，在后面硬件驱动逐渐跟arch撇清关系，例如irq-gic-v3.c，用硬件的版本号来区分。不知道我的理解是否正确，欢迎大家吐槽。"
+ },
+ {
+  "id": "4515",
+  "parent": "4514",
+  "date": "2016-09-06T09:08:59+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@吴晓鹏：你说的非常的对，irq chip的驱动是一种普通的设备驱动，应该放到drivers目录下，不过不是electrlife要问的问题，他的疑问是irq chip为何不使用platform这样的设备模型的方式来实现。"
+ },
+ {
+  "id": "4952",
+  "parent": "0",
+  "date": "2016-12-02T15:30:25+08:00",
+  "author": "理查德1030",
+  "site": "",
+  "text": "请教：\r\nerr = request_irq(irqdesc->hwirq, irqdesc->handler, \\\r\n                  irqdesc->flags, irqdesc->name, irqdesc->dev_id);\r\nerr return -22;\r\n疑问：为什么75没有占用，我还是注册不上，我需要继续修改哪些东西呢？\r\n说明：\r\n(1)hwirq是芯片手册看描述的gpio bank中断号75，flags=0，dev_id=(void *)0\r\n\r\n（2）cat /proc/interrupts 看了一下，未发现中断号被占用。\r\n如下是系统已有的中断被hisi sdk有些模块占用，没有源码，所以不知道SDK中做了什么。。\r\n{\r\n           CPU0       CPU1       \r\n 29:       3080        464       GIC  29  arch_timer\r\n ......\r\n 45:         52          0       GIC  45  himci\r\n ......\r\n 70:          0          0       GIC  70  JPEGU_0\r\n 71:          0          0       GIC  71  IVE\r\n 80:          0          0       GIC  80  FISHEYE\r\n}\r\n（3）我想自己实现一个gpio中断，irq_chip已初始化，irq_domain也做了初始化(可能初始化不对)，irq_domian用的是radix tree,但hisi3519的中断子系统是几级GIC也不清楚。\r\n（4）内核版本linux3.18.y, 芯片ARM-hisi3519v101."
+ },
+ {
+  "id": "4954",
+  "parent": "4952",
+  "date": "2016-12-02T16:12:22+08:00",
+  "author": "理查德1030",
+  "site": "",
+  "text": "@理查德1030：/proc/irq/目录下已经有芯片手册所有终端号命名的文件，是不是表示irq_domain已经做了初始化？只要实现struct irq_chip和request_irq,。但为什么75就是返回-22，换个未被占用的号48返回成功，/proc/interrupts也会添加（虽然不起作用）。"
+ },
+ {
+  "id": "5134",
+  "parent": "0",
+  "date": "2017-01-12T00:23:55+08:00",
+  "author": "Peter",
+  "site": "",
+  "text": "刚接触Interrupt子系统，就被该文章吸引了，超赞. 当前这边文章中提到了GIC中断描述符的创建及初始化( irq_set_irq_type函数中)，那GPIO类型的中断描述符又是怎么创建和初始化的呢？ 还望大神指点. 感谢."
+ },
+ {
+  "id": "5135",
+  "parent": "5134",
+  "date": "2017-01-12T10:06:59+08:00",
+  "author": "hello-world",
+  "site": "",
+  "text": "@Peter：你可以看看_gpiochip_irqchip_add这个函数的实现就明白了"
+ },
+ {
+  "id": "5142",
+  "parent": "5135",
+  "date": "2017-01-13T14:50:48+08:00",
+  "author": "Peter",
+  "site": "",
+  "text": "@hello-world：@hello-world, 谢谢，在irq_create_mapping函数中看到了."
+ },
+ {
+  "id": "5221",
+  "parent": "0",
+  "date": "2017-02-15T10:45:49+08:00",
+  "author": "loren",
+  "site": "",
+  "text": "博主，请教一个问题：\r\n在不重新编译kernel，也不修改IDT表（安全性、稳定性考虑）的情况下，我想在driver中动态分配一个vector number用来做IPI的中断vector，有什么办法可以做到吗？\r\n我有参考pci_enable_msi()的实现，但是由于里面用到的assingn_irq_vector()函数没有EXPORT出来，所以我没办法使用。我看assign_irq_vector()函数主要是将以irq为参数来分配对应的vector，并将两者的关系记录到vector_irq[]数组中。\r\nkernel version为3.16.0.\r\n非常感谢！"
+ },
+ {
+  "id": "5222",
+  "parent": "5221",
+  "date": "2017-02-15T22:29:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@loren：在驱动中使用IPI还是比较少见的，呵呵~~我对ARM平台比较熟悉，在ARM平台上，IPI都是专用的，不能分配。"
+ },
+ {
+  "id": "5485",
+  "parent": "0",
+  "date": "2017-04-26T17:46:24+08:00",
+  "author": "善昆",
+  "site": "",
+  "text": "在已经知道hw irq的时候，我想绕过dts方式，有办法获取虚拟irq号吗？"
+ },
+ {
+  "id": "5487",
+  "parent": "5485",
+  "date": "2017-04-26T19:14:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@善昆：当然可以，自己分配一个就OK了，当然，你需要自己创建mapping。当然，不建议用这么底层的接口。"
+ },
+ {
+  "id": "5488",
+  "parent": "5487",
+  "date": "2017-04-26T21:00:22+08:00",
+  "author": "善昆",
+  "site": "",
+  "text": "@linuxer：因为特殊需求不能重编译内核，所以没有办法通过修改dts入手，也是因为追查到了irq_create_mapping函数，才阅读了本篇文章。但是这个函数domain参数一直不知道该如何获取，本想自己创建一个irq_desc,但是发现alloc_desc函数还是需要node...\r\n不知道有没有方法获得这个domain,或许可以通过已经存在与dts中断里设备找到CIG的domain吧"
+ },
+ {
+  "id": "5732",
+  "parent": "0",
+  "date": "2017-06-26T09:53:57+08:00",
+  "author": "于长河",
+  "site": "",
+  "text": "您好linuxer,我有个疑问：在local_irq_disable中最终是对cpsr寄存器的I位置位，那么这个local是怎样体现出来的呢？是不是在一个多核cpu中其中每一核都有一个独立的cpsr寄存器"
+ },
+ {
+  "id": "5734",
+  "parent": "5732",
+  "date": "2017-06-26T11:53:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@于长河：当然了，cpsr寄存器是per cpu的，每一个cpu core都有自己的cpsr寄存器。"
+ },
+ {
+  "id": "5735",
+  "parent": "5734",
+  "date": "2017-06-26T14:11:44+08:00",
+  "author": "于长河",
+  "site": "",
+  "text": "@linuxer：明白了，谢谢"
+ },
+ {
+  "id": "6106",
+  "parent": "0",
+  "date": "2017-10-13T14:52:55+08:00",
+  "author": "linuxer_fy",
+  "site": "http://no home page yet",
+  "text": "我有个疑问。不知道是放到(二)IRQ Domain一文中，还是这篇中。估且放这里吧。\r\nARM的不是很熟悉。就X86上来说，多级联interrupt controller中（例A和B），它们是和CPU通过系统数据总线来传递HW interrupt ID的。又由于每个irq domain可能有重复编号的ID，所以才有了domain来抽象和识别。但是\r\n(1)A和B是独立各自向CPU传递HW ID的话，如果A和B同时发生中断，需要传递HW ID,如何解决冲突。硬件处理？此情况下是否会有中断丢失？\r\n(2)在CPU只收到HW interrupt ID的情况下，系统还要配合HW情报去翻译成合适的irq number,\r\n也就是每次都要“遍历”整个irq domain list，且还要能处理不同类型的interrupt controller芯片\r\n(3)我记得X86上两片8259a级联时(每片8259支持0~7个IRQ Line)，可以直接产生0~15个中断号，即2片8259可以直接组合在数据总线上将0~15中断号(相当于HW interrupt ID)传递给CPU，此时CPU并不需要再去翻译成irq number了，因为HW interrupt ID是唯一的，不重复。\r\n如果2片 8259设计成domain的方式，那就要系统额外去识别：\r\n(二)IRQ Domain一文中最后：\r\n“2、具体如何在中断处理过程中，将HW interrupt ID转成IRQ number\r\n（2）根据HW 寄存器信息和irq domain信息获取HW interrupt ID\r\n”\r\n这里“根据HW寄存器信息”就是看8259A芯片的中断请求寄存器中相应的bit位是否有中断存在？"
+ },
+ {
+  "id": "6117",
+  "parent": "0",
+  "date": "2017-10-17T15:52:48+08:00",
+  "author": "magichouse",
+  "site": "",
+  "text": "@linuxer\r\n本节主要描述的是第一种，也就是控制CPU的中断。当进入high level handler的时候，CPU的中断是关闭的（硬件在进入IRQ processor mode的时候设定的）。\r\n------------------------------------------------\r\nhi，请教一下，进入high level handler时，cpu的中断是关闭的，这一点是硬件设定的？还是软件设定的？\r\n再次打开的时机是什么？"
+ },
+ {
+  "id": "6120",
+  "parent": "6117",
+  "date": "2017-10-18T11:44:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@magichouse：这个比较严谨的回答是，要视具体的arch而定，不过对arm来说（这里以arm64为例），是arm的core（硬件）做的，具体可参考下面的资料：\r\n\r\nDDI0487A_d_armv8_arm.pdf\r\n======================================\r\n...\r\n\r\nD1.10 Exception entry\r\n\r\nOn taking an exception to AArch64 state:\r\n    ...\r\n    • All of PSTATE.{D, A, I, F} are set to 1. See Process state, PSTATE on page D1-1434.\r\n    ...\r\n\r\ntype ProcState is (\r\n    ...\r\n    bits (1) I, // IRQ mask bit\r\n    ...\r\n)"
+ },
+ {
+  "id": "6845",
+  "parent": "0",
+  "date": "2018-07-13T17:21:09+08:00",
+  "author": "ailon",
+  "site": "",
+  "text": "在多路服务器中，每个CPU都有一个uart控制器，在CPU角度来看每个uart的irq都是一样的，那我应该如何区分到底是哪个一个uart控制器来的中断呢，现在的内核版本是不是没有对这方面的考虑"
+ },
+ {
+  "id": "7114",
+  "parent": "6845",
+  "date": "2018-12-28T17:30:06+08:00",
+  "author": "Lambert",
+  "site": "http://l2h.site",
+  "text": "@ailon：说下个人理解：\r\n\r\n每个UART的中断输出都是连接到同一个中断控制器吗？\r\n如果是的话，应该是不同的中断引脚，其硬件中断编号必定不同。\r\n\r\n如果不是，中断控制器是多个，那么中断Domain不同。\r\n\r\n更甚，多个UART share一个中断Pin，那么就要看中断控制器本身有没有区分方法，知道是哪一路过来的中断"
+ },
+ {
+  "id": "7258",
+  "parent": "3576",
+  "date": "2019-03-09T11:58:55+08:00",
+  "author": "wangyunqian",
+  "site": "",
+  "text": "@callme_friend：三年过去了，说下我的理解：定不定义interrupt-controller属性，跟在哪里创建 irq domain没有什么关系吧。像gic的irq domain也是在init的时候创建的呀。dts里的interrupt-controller只是表示本node是一个中断控制器的node。如果gpio的node不添加该关键字，使用gpio中断的设备没有办法利用device tree提供的标准机制，比如说就不能在设备的node里面定义interrupts关键字，就必须在自己的驱动里面调用gpio_to_irq()来获取中断号。以上是我的个人理解，还请帮忙指正！"
+ },
+ {
+  "id": "8265",
+  "parent": "0",
+  "date": "2021-08-08T17:31:23+08:00",
+  "author": "poolloop",
+  "site": "",
+  "text": "您好，在中断相关的文章中，偶尔会看到“mask”这个动作。\r\n我的问题是，一般所说的“mask这个动作”是全局的（影响所有的cpu）呢，还是仅仅影响当前local cpu的呢？\r\n在不同的架构下（arm/x86）是否都有一样的意义，谢谢！"
+ },
+ {
+  "id": "8492",
+  "parent": "0",
+  "date": "2022-01-16T00:32:27+08:00",
+  "author": "Alexander",
+  "site": "",
+  "text": "你好，请问x86平台的irq_dmain怎么和io apci机制连接起来的？一直搞不懂"
+ },
+ {
+  "id": "8579",
+  "parent": "0",
+  "date": "2022-03-24T23:11:20+08:00",
+  "author": "Toni",
+  "site": "",
+  "text": "有没有关于PCIE MSI中断的一些介绍？"
+ },
+ {
+  "id": "8694",
+  "parent": "0",
+  "date": "2022-10-26T20:29:14+08:00",
+  "author": "刘",
+  "site": "",
+  "text": "第一个问题就是：为何irq_set_chip接口函数使用irq_get_desc_lock来获取中断描述符，而irq_set_irq_type这个函数却需要irq_get_desc_buslock呢？其实也很简单，irq_set_chip不需要访问底层的irq chip（也就是interrupt controller），但是irq_set_irq_type需要。设定一个IRQ的trigger type最终要调用desc->irq_data.chip->irq_set_type函数对底层的interrupt controller进行设定。这时候，问题来了，对于嵌入SOC内部的interrupt controller，当然没有问题，因为访问这些中断控制器的寄存器memory map到了CPU的地址空间，访问非常的快，因此，关闭中断＋spin lock来保护中断描述符当然没有问题，但是，如果该interrupt controller是一个I2C接口的IO expander芯片（这类芯片是扩展的IO，也可以提供中断功能），这时，让其他CPU进行spin操作太浪费CPU时间了（bus操作太慢了，会spin很久的）。肿么办？当然只能是用其他方法lock住bus了（例如mutex，具体实现是和irq chip中的irq_bus_lock实现相关）。一旦lock住了slow bus，然后就可以关闭中断了（中断状态保存在flag中）。\r\n\r\nirq_get_desc_buslock  lock住了bus时也有调用raw_spin_lock_irqsave\r\nstruct irq_desc *\r\n__irq_get_desc_lock(unsigned int irq, unsigned long *flags, bool bus,\r\n\t\t    unsigned int check)\r\n{\r\n\tstruct irq_desc *desc = irq_to_desc(irq);\r\n\r\n\tif (desc) {\r\n\t\tif (check & _IRQ_DESC_CHECK) {\r\n\t\t\tif ((check & _IRQ_DESC_PERCPU) &&\r\n\t\t\t    !irq_settings_is_per_cpu_devid(desc))\r\n\t\t\t\treturn NULL;\r\n\r\n\t\t\tif (!(check & _IRQ_DESC_PERCPU) &&\r\n\t\t\t    irq_settings_is_per_cpu_devid(desc))\r\n\t\t\t\treturn NULL;\r\n\t\t}\r\n\r\n\t\tif (bus)\r\n\t\t\tchip_bus_lock(desc);\r\n\t\traw_spin_lock_irqsave(&desc->lock, *flags);\r\n\t}\r\n\treturn desc;\r\n}"
+ },
+ {
+  "id": "8786",
+  "parent": "0",
+  "date": "2023-05-26T20:18:03+08:00",
+  "author": "立志学linux",
+  "site": "",
+  "text": "有没有大佬知道，high level handler 和 通过request_threaded_irq注册的那个的handler（也就是irq_desc->irqaction->handler）是什么关系呀"
+ },
+ {
+  "id": "8787",
+  "parent": "8786",
+  "date": "2023-05-29T15:44:50+08:00",
+  "author": "5song",
+  "site": "",
+  "text": "@立志学linux：一般handle_irq()会进行如下操作，可参考(kernel/irq/chip.c: void handle_edge_irq(struct irq_desc *desc))：\r\n\r\n调用中断描述符中的底层chip driver进行mask以及中断ACK回调，进行IRQ flow control\r\n调用handle_irq_event向上发送中断事件，遍历描述符里的action list，并执行action->handler回调（request_threaded_irq可以绑定该handler）, 执行完action->handler后，要么中断已经处理完成，要么就执行__irq_wake_thread唤醒我们绑定的\r\nirq thread处理函数(也就是我们常说的上半部处理函数)"
+ }
+]

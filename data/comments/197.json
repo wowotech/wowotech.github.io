@@ -1,0 +1,98 @@
+[
+ {
+  "id": "2159",
+  "parent": "0",
+  "date": "2015-07-07T17:33:22+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "（b）中断返回software interrupt context，也就是中断抢占软中断上下文的场景\r\n=============================================\r\n楼主好，这句我有些疑问\r\n\r\n软中断的执行环境不就是 中断上下文吗？ 这时候中断不是被关闭的吗? 为什么中断还能产生呢？"
+ },
+ {
+  "id": "2162",
+  "parent": "2159",
+  "date": "2015-07-07T18:06:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：中断上下文是一个统称，包括hard interrupt context和software interrupt context，在hard interrupt context中（也就是top half中）是关闭中断的，在其他情况下，都是开中断的"
+ },
+ {
+  "id": "3407",
+  "parent": "0",
+  "date": "2016-01-15T21:31:24+08:00",
+  "author": "wowo_man",
+  "site": "",
+  "text": "该driver的tasklet处于running状态，并且TASKLET_STATE_SCHED已经被清除\r\n===================================================================\r\n为什么不run完了再清除TASKLET_STATE_SCHED标志？这样就不用多加一个TASKLET_STATE_RUN判断了。是为了不想丢失 tasklet吗？如果是不想丢失的话，那为什么tasklet_schedule的时候判断已经shed了就直接返回了不设个pending位？"
+ },
+ {
+  "id": "4523",
+  "parent": "3407",
+  "date": "2016-09-07T00:57:27+08:00",
+  "author": "我爱芒果叶",
+  "site": "",
+  "text": "@wowo_man：确实是不想丢失，准确地说是不想在此tasklet正在执行时丢失。\r\ntasklet_schedule如果遇到TASKLET_STATE_SCHED标志已经被设置，并意味着真正地丢失，因为此tasklet已经被调度了，处在调度状态的此tasklet在执行时也就响应了后面这个“丢失”的调度请求。"
+ },
+ {
+  "id": "4524",
+  "parent": "4523",
+  "date": "2016-09-07T00:59:49+08:00",
+  "author": "我爱芒果叶",
+  "site": "",
+  "text": "@我爱芒果叶：打错字了。\r\n“并不意味着真正地丢失”"
+ },
+ {
+  "id": "8248",
+  "parent": "0",
+  "date": "2021-06-22T17:57:27+08:00",
+  "author": "小葱aaaa",
+  "site": "",
+  "text": "楼主好：\r\ntasklet调度有延迟，该如何修改代码？\r\n高通通过tasklet来处理ISP的中断，使能高通camera 的metadata功能，camera是60fps，这时候，正常情况，每隔16ms就会打印出isp中断被调度的log.但是当出到一定帧数时，就会出现一段时间内tasklet没有被调度到，导致该帧metadata无法接收到。\r\n谢谢！"
+ },
+ {
+  "id": "8490",
+  "parent": "0",
+  "date": "2022-01-15T17:18:06+08:00",
+  "author": "冰霜圣诞节",
+  "site": "",
+  "text": "关于tasklet串行化的问题，请问如果cpu0在执行回调函数之前响应了另一个中断，这个时候只有run置位，是不是isr也会成功执行tasklet的提交，并raise新的软中断信号，待前一个回调函数执行完毕，第二个同样的回调函数也会再执行一次？"
+ },
+ {
+  "id": "8578",
+  "parent": "4523",
+  "date": "2022-03-22T11:17:21+08:00",
+  "author": "抚泪",
+  "site": "",
+  "text": "@我爱芒果叶：我理解:除了不\"丢失\"，还保证了一个中断不会打断\"自己\"。"
+ },
+ {
+  "id": "9147",
+  "parent": "0",
+  "date": "2025-02-28T15:37:22+08:00",
+  "author": "linux-fan",
+  "site": "",
+  "text": "一、前言 \r\n1、推迟到top half执行完毕 \r\n -> 这里typo,应该是bottom half?"
+ },
+ {
+  "id": "9174",
+  "parent": "0",
+  "date": "2026-01-12T00:11:46+08:00",
+  "author": "玖伍贰柒",
+  "site": "",
+  "text": "softirq那篇文章中，linuxer贴出了asmlinkage void __do_softirq(void)函数的代码，在开始处理软中断之前，调用了local_irq_enable()来打开本地中断响应。"
+ },
+ {
+  "id": "9175",
+  "parent": "9174",
+  "date": "2026-01-12T00:13:45+08:00",
+  "author": "玖伍贰柒",
+  "site": "",
+  "text": "@玖伍贰柒：是为了回复这个问题：\r\nschedule\r\n2015-07-07 17:33\r\n（b）中断返回software interrupt context，也就是中断抢占软中断上下文的场景\r\n=============================================\r\n楼主好，这句我有些疑问\r\n\r\n软中断的执行环境不就是 中断上下文吗？ 这时候中断不是被关闭的吗? 为什么中断还能产生呢？"
+ },
+ {
+  "id": "9176",
+  "parent": "3407",
+  "date": "2026-01-12T00:30:24+08:00",
+  "author": "玖伍贰柒",
+  "site": "",
+  "text": "@wowo_man：TASKLET_STATE_SCHED标志 + 你说的pending位也是个solution，但我觉得当前的SCHED + RUN标志位方案更优雅，原因有二：\r\n1. tasklet的调度和执行是分开的，每个标志各司其职，逻辑更清晰；\r\n2. SCHED + RUN标志位只引入了一个变量state，更简洁清爽；"
+ }
+]

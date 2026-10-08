@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>页面不存在 · {{ site.Title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="wrap">
+  <h1>页面不存在</h1>
+  <p id="hint">看起来这个地址已经不在了。正在尝试按旧地址找回……</p>
+  <p><a href="/">返回首页</a> · <a href="/forum/index.html">讨论区存档</a></p>
+</main>
+
+<script>
+// 兜住老站三种写法：/分类/别名.html、/分类/gid.html、/?post=gid。
+// 前两种在新站大多按 url/aliases 直接命中；命中不了的多半是「分类前缀写错」
+// 或「缺 .html 后缀」的外来链接（搜索引擎里就有不少），这里按 slug 找回。
+const GID2URL = {{ hugo.Data.urlmap | jsonify }};
+const SLUG2URL = {{ hugo.Data.slugmap | jsonify }};
+(function () {
+  const q = new URLSearchParams(location.search);
+  let gid = q.get('post') || q.get('gid');
+  const m = location.pathname.match(/\/([^\/]+?)(\.html?)?$/);
+  if (!gid && m) {
+    const seg = m[1];
+    if (/^\d+$/.test(seg)) gid = seg;                 // 纯数字段当作文章 id
+    const hit = SLUG2URL[seg.toLowerCase()];          // 其余按 slug 找回
+    if (hit) { location.replace(hit); return; }
+  }
+  if (gid && GID2URL[gid]) {
+    location.replace(GID2URL[gid]);
+    return;
+  }
+  document.getElementById('hint').textContent =
+    '这个地址没有对应的内容。可以回到首页按分类浏览，或到讨论区存档里搜索。';
+})();
+</script>
+</body>
+</html>

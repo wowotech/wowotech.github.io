@@ -1,0 +1,642 @@
+[
+ {
+  "id": "324",
+  "parent": "0",
+  "date": "2014-08-20T11:16:34+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "=========================\r\n每个interrupt controller都可以产生一个HW interrupt，我们可以在该interrupt controller范围内对该HW interrupt ID（根据其在Interrupt controller中物理特性）进行编号。但这个编号仅仅限制在本interrupt controller范围内\r\n=========================\r\n这里没法体会到这几句话的寓意，一个HW interrupt，进行编号，不太理解是什么意思。\r\n我的理解每个interrupt controller都可以产生一个HW interrupt，但是是这个interrupt controller的上一级的interrupt controller对这个HW interrupt进行编号啊。\r\n最上面一级是GIC"
+ },
+ {
+  "id": "325",
+  "parent": "324",
+  "date": "2014-08-20T11:26:40+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@forion：GIC是唯一一个可以产生多个HW interrupt的 是这么理解吗？"
+ },
+ {
+  "id": "326",
+  "parent": "325",
+  "date": "2014-08-20T12:00:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：是我写错了，我已经修改了相关的描述。\r\n\r\n多谢你的review！文档的peer review绝对是必要的，多提comments，有些文字也许是我表述不清楚"
+ },
+ {
+  "id": "327",
+  "parent": "0",
+  "date": "2014-08-20T14:06:51+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "因此所有的GPIO中断只有一个IRQ number，在该通用GPIO中断的irq handler中进行deduplex，将各个具体的GPIO中断映射到其相应的IRQ number上\r\n==============================\r\n那gpio controller的IRQ number跟具体的GPIO中断的IRQ number有什么关系呢？\r\n==============================\r\n另外我一直有个疑问也在这里提出来一下吧，就是现在的gpio controller，也做成了一个irq的 controller，我一直的理解，gpio controller只会有一个IRQ number，也就是说有一根线连接到root的irq conroller上面。但是所有的有中断功能的gpio口一般系统都会分配一个IRQ number，这个IRQ number就是比如request_irq所使用的IRQ number。但是从CPU的角度，比如一个gpio中断触发了，我cpu检测到的是gpio contoller的中断号，然后再gpio contoller的handler里面再找出是那个具体的gpio口，然后可能有很多级，最后转换成最终的IRQ number，也就是request_irq()里面用的的那个中断号。我的理解有问题吗？？"
+ },
+ {
+  "id": "328",
+  "parent": "327",
+  "date": "2014-08-20T15:56:36+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：看来你也是一个老驱动工程师了，你描述的应该是过去内核采取的方法。我在2.6.23内核上工作过一段时间，用的是PXA270的平台。其IRQ number是这么分配的：\r\n0～63，对应SOC上interrupt controller的64个中断源\r\n64开始的128个IRQ分配给了GPIO对应的中断源\r\n\r\n当然IRQ=10那个中断比较特殊，它表示是一个普通的GPIO中断。该中断不能被request，在系统初始化的时候只是设定了了highlevel irq event handler。代码如下：\r\nset_irq_chained_handler(IRQ_GPIO_2_x, pxa_gpio_demux_handler);\r\n\r\n所有普通的GPIO对应的IRQ number也可以自由的request，但是，系统不能直接转换成对应的IRQ number，中断系统总是发现是IRQ=10的中断被触发了，因此调用 pxa_gpio_demux_handler，看看具体是哪一个发生了中断，转换成对应的IRQ number，然后直接调用desc_handle_irq来处理该irq\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n上面是过去式。对于新的内核，首先不会有静态定义的IRQ number（当然，有些SOC还保留了arch/arm/mach-xxx/include/mach/irqs.h文件，但不是内核推荐的方式），具体的驱动的IRQ number是动态分配的。在驱动程序初始化的时候，可以通过irq_of_parse_and_map函数分析该设备的device tree中和中断相关内容（获取该设备使用哪一个interrupt controller，哪一个HW interrupt ID，触发类型为何），并创建映射。在这种情况下，发生了一个GPIO中断，可以直接被翻译成对应的IRQ number（不需要一个通用GPIO中断，然后demux）"
+ },
+ {
+  "id": "329",
+  "parent": "328",
+  "date": "2014-08-20T16:08:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：不对不对，我又思考了一下，还是需要demux的。我们假设下面的架构：\r\nsoc interrupt controller <-------> GPIO interrupt controller\r\n\r\n最终的翻译过程需要两步，首先是root interrupt controller对应的irq domain，将HW interrupt ID（GPIO interrupt controller对应的那个）翻译成gpio controller的IRQ number。之后，进入GPIO irq domain，继续执行第二阶的翻译，获取最终的IRQ number"
+ },
+ {
+  "id": "336",
+  "parent": "329",
+  "date": "2014-08-21T20:40:31+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：作为一个工作4年的小菜鸟，不敢在您面前称作老工程师啊。:)\r\n感觉您比那个伟东山，宋宝华之流都厉害啊。你要是开讲座，卖视频或者去培训学校，那不照样是大赚啊？\r\nanyway，还是感谢您的分享。\r\n博主加油！\r\n后续的文章我会继续默默的review，然后提问题的。就麻烦您回答啦。"
+ },
+ {
+  "id": "337",
+  "parent": "336",
+  "date": "2014-08-21T22:30:14+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：不敢当，不敢当~~~我也只是一只比你工作经验多几年的普通工程师而已（我99年毕业，从2.4内核做到2.6内核，现在到3.14内核，不过，话说回来，像我这么老的工程师的确不多啊）\r\n我特地百度了一下你提及的那两个人，原来还可以买视频啊，真是让我大跌眼镜。不过说起培训机构，我一直都是挺有兴趣的（本质上，我这人好为人师，嘿嘿），不过一般而言，在公司赚的会比当培训老师多一些，唉，目前还没有达到财务自由，还需要出卖劳动力啊。"
+ },
+ {
+  "id": "338",
+  "parent": "337",
+  "date": "2014-08-21T23:11:29+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：卖视频是比培训机构更为自由的一种经营模式啊，像个体户。这么浮躁的社会环境 ，您能这么静心，不容易啊，让人佩服."
+ },
+ {
+  "id": "339",
+  "parent": "338",
+  "date": "2014-08-22T08:58:59+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：如果能卖视频赚钱养活自己当然好，可是卖出一份之后不就在网上传开了吗？不就没有办法继续卖了吗？我是有些置疑这种培训模式是否能够盈利。\r\n视频培训当然好，方便，不过还是面对面的授课效果比较好，可以互动。\r\n\r\n大家都是说整个社会环境比较浮躁，不过这是由这个时代决定的，当前的中国正处在高速发展的过程中，等到10年后，发展平稳的时候，注定是要从繁华归于平静。这个小站就是希望能汇聚一些愿意静下心来，研究内核和各种技术。我倒是愿意每天阅读内核，写写文章，不过那种理想的生活暂时还比较远"
+ },
+ {
+  "id": "340",
+  "parent": "0",
+  "date": "2014-08-22T09:51:05+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "这个回复的次数是不是有上限？卖视频是卖的那种加密的，不过他最开始是免费开放一期，然后让大家感觉听一听感觉不错，然后就卖，剩下的视频是加密的，必须要买他的授权才能看.没有授权的,视频能下载,但是不能播放.而且那个加密的播放器,也不能翻录,如果翻录的话,会有你的id啊,他就知道是你翻录的,此类的.大体就是这个套路.哈哈~~~"
+ },
+ {
+  "id": "342",
+  "parent": "340",
+  "date": "2014-08-22T10:28:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：恩，学了一招。"
+ },
+ {
+  "id": "343",
+  "parent": "340",
+  "date": "2014-08-22T12:54:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@forion：同一个回复的层数确实有限制，不然回复多了，一直右缩进，就不好看了。"
+ },
+ {
+  "id": "489",
+  "parent": "0",
+  "date": "2014-09-30T14:18:45+08:00",
+  "author": "海",
+  "site": "",
+  "text": "拜读！多谢分享！"
+ },
+ {
+  "id": "557",
+  "parent": "0",
+  "date": "2014-10-23T15:10:43+08:00",
+  "author": "linxi_hnh",
+  "site": "",
+  "text": "@linuxer，文章写的真好。\r\n1 针对接口部分的第1篇章：是不是少了irq_domain_legacy_revmap（）这个接口函数？？\r\n2 针对hw irq number和 gpio之间的对应关系，我有一个疑问，若hw irq number和gpio之间是一一对应的。例如hw irq number为34，对应的gpio号为5; hwirq number为35是对应的gpio号为6.这样的对应关系，可以采用irq domain的架构吗？调用哪一个接口函数比较好？？\r\n3 针对hwirq number和irq number的对应，我现在晕晕糊糊的。"
+ },
+ {
+  "id": "561",
+  "parent": "557",
+  "date": "2014-10-23T19:38:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linxi_hnh：多谢！\r\n1、irq_domain_legacy_revmap（）函数的legacy已经说明这是一个要被废弃的接口。在最新的3.14内核中，我没有找到它\r\n2、irq domain是应对HW interrupt ID和IRQ number之间的关系，实际上，irq domain并不关心GPIO的编码。你说的这个场景应该是GPIO type的interrupt controller的实现，一般而言，GPIO type的interrupt controller要关注HW interrupt到GPIO之间的映射，例如HW interrupt ID＝0，对应GPA中的0号GPIO，HW interrupt ID＝1，对应GPA中的1号GPIO，......，使用哪一种irq domain是和你如何规划IRQ number到HW interrupt ID之间的映射相关的，一般而言，我们会采用线性映射方式的\r\n3、呵呵，其实很简单啊，你可以再具体说说那里比较迷糊，我可以进一步表述"
+ },
+ {
+  "id": "1161",
+  "parent": "0",
+  "date": "2015-02-03T16:53:59+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "楼主能否分析一下irq_gic_v3.c的代码？有许多疑惑想和大神交流一下。"
+ },
+ {
+  "id": "1170",
+  "parent": "1161",
+  "date": "2015-02-05T00:00:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：我正在写一个编译、链接和加载的文章，既然你有兴趣，那我先完成手头的这篇，然后再写如irq_gic_v3.c的代码分析文章好了"
+ },
+ {
+  "id": "1350",
+  "parent": "338",
+  "date": "2015-03-17T19:36:07+08:00",
+  "author": "ikirin1979",
+  "site": "",
+  "text": "@forion：浮华过去，市场会认可您的价值的。"
+ },
+ {
+  "id": "1374",
+  "parent": "0",
+  "date": "2015-03-23T13:53:27+08:00",
+  "author": "强",
+  "site": "",
+  "text": "@linuxer 文章中有两个地方不是很清楚，能解答下吗？\r\n第一个：\r\n对于root GIC \r\n        hwirq_base = 16; \r\n        gic_irqs = 系统支持的所有的中断数目－16。之所以减去16主要是因为root GIC的0～15号HW interrupt 是for IPI的，因此要去掉。也正因为如此hwirq_base从16开始 \r\n\r\n#这里说的IPI是什么意思？看gic的文档这里说的是SGI，IPI是什么，这两个是一个东西吗？\r\n\r\n第二个问题：\r\nindex 0～15对应的IRQ无效 \r\n\r\n16号IRQ  <------------------>16号HW interrupt ID \r\n\r\n17号IRQ  <------------------>17号HW interrupt ID \r\n\r\n\r\n#这里是说HW interrupt 和 IRQ number 从16号中断开始，是一一对应的意思吗？\r\n\r\n我在device tree  中申请了这样一个中断\r\ninterrupts = <0  4 0x4>\r\n然后我用\r\ninterrupt = platform_get_resource(dev->pdev, IORESOURCE_IRQ, 0);\r\n并将interrupt->start 发现其值是36，\r\n\r\n这里就有了两个疑问，\r\n一：申请的是4号中断，4号中断在0-15号中断区间，映射到linux IRQ number 变成了36呢？差值是32\r\n二：类似的，我又申请了<0 31 0x4>中断，打印出来interrupt->start 是63，差值是32，\r\n\r\n请linuxer有空解答下哈。"
+ },
+ {
+  "id": "1375",
+  "parent": "1374",
+  "date": "2015-03-23T15:00:00+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@强：我先回答一下你吧\r\n-------------------------------\r\n#这里说的IPI是什么意思？看gic的文档这里说的是SGI，IPI是什么，这两个是一个东西吗？ \r\nInter-processor interrupts (IPI) can, for example, be used for interrupt-driven communication between CPUs in an SMP system. The GIC implements IPI using 16 software interrupts. To generate an IPI, an MPCore CPU must write to the primary GIC's Software Interrupt register specifying an interrupt ID in the range 0 to 15 and which CPU(s) will receive the interrupt.\r\n从上面来看，SGI跟IPI是同一个东西\r\n-----------------------------------------------------\r\n\r\n#这里是说HW interrupt 和 IRQ number 从16号中断开始，是一一对应的意思吗？\r\nhw interrrupt指的是硬件的中断号我的理解这里指的是 实际接到gic上面的硬件中断线，IRQ number其实指的是软件中断号。这两个应该是一一对应的。当然如果接到gic的只是一个子的中断控制器，比如gpio中断控制器，那么任意一个gpio的IRQ number，跟这个hw interrupt并不是一一对应的。\r\n\r\n---------------------------------------\r\n3：在dt里面写的是SPI,Shared Peripheral Interrupt ，你通过dt 解出来的中断号是要+32的，因为我的理解，物理上，他是接到SPI上，SPI就是从32开始"
+ },
+ {
+  "id": "1377",
+  "parent": "1375",
+  "date": "2015-03-23T15:23:19+08:00",
+  "author": "强",
+  "site": "",
+  "text": "@tigger：@trigger 回复的好快啊，非常感谢，基本明白了，特别是第三问题，一直没想明白，今天算是解惑了。\r\n\r\n支持你们。"
+ },
+ {
+  "id": "1378",
+  "parent": "1377",
+  "date": "2015-03-23T15:37:14+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@强：my pleasure\r\n可以等linuxer来了再给个更详细的解释。我的理解可能有偏差。"
+ },
+ {
+  "id": "1387",
+  "parent": "1378",
+  "date": "2015-03-23T23:32:52+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：顶，多谢tigger同学的回答，我就不补充了，呵呵"
+ },
+ {
+  "id": "1396",
+  "parent": "0",
+  "date": "2015-03-24T15:14:07+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "hi linuxer\r\nhint = hwirq % nr_irqs;－－－－－－－分配一个IRQ 描述符以及对应的irq number\r\n这里的nr_irqs需要设置吗？我看默认值是64，这个值是不是要设置成实际的硬件支持的所有的硬件中断的个数呢？\r\n我还是有点没有搞明白这里hint的作用，"
+ },
+ {
+  "id": "1399",
+  "parent": "1396",
+  "date": "2015-03-24T17:45:26+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@tigger：这个nr_irqs=NR_IRQS\r\n那这个宏就是一个预定义的咯，根据不同的系统写死的一个中断个数咯"
+ },
+ {
+  "id": "1401",
+  "parent": "1399",
+  "date": "2015-03-24T19:04:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：中断描述符（interrupt descriptor）有两种组织形式：\r\n1、组织成静态数组\r\n2、组织成Radix tree\r\n如果组织成静态数组，那么NR_IRQS就是系统中的total的IRQ的数目，最大的irq ID就是NR_IRQS-1了。当引入radix tree之后，事情变得复杂一些，NR_IRQS是预先分配的IRQ数目（估计是为了兼容旧的驱动）。\r\n在中断子系统的代码中经常需要一个当前系统中的最大的IRQ number的值，在单纯而美好的静态数组时代，NR_IRQS就够用了，在引入Radix tree后以及CONFIG_SPARSE_IRQ这样的配置项后，系统中IRQ number的最大值是一个变化的值，随着IRQ number的分配而不断变化，因此内核引入了一个变量来跟踪当前系统中IRQ number的最大值，这个变量就是nr_irqs。在初始化的时候，由于固定分配了NR_IRQS个IRQ number，因此nr_irqs被初始化成NR_IRQS"
+ },
+ {
+  "id": "1402",
+  "parent": "0",
+  "date": "2015-03-24T19:16:38+08:00",
+  "author": "tastier",
+  "site": "",
+  "text": "您好，看了您的文章，对应到自己做的项目，有两个个小问题请教。\r\n1. 对于两个级联的8259A芯片，HW interupt ID是如何编码的？手册对两个级联芯片的中断输入管脚标有IRQ0~IRQ15，这个是编码吗？\r\n2. 内核里的request_irq()函数的第一个参数irq，这个是文中的IRQ number吗？"
+ },
+ {
+  "id": "1403",
+  "parent": "1396",
+  "date": "2015-03-24T19:18:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：nr_irqs这个值随着中断描述符的分配（irq_alloc_descs）而扩展（当然，也有可能不增加，主要看分配的IRQ number是否大于nr_irqs），如何分配IRQ number是通过一个bitmap进行管理的，每次分配IRQ number从bitmap的的0bit开始搜索不是一个好主意，hint是一个可能是一个更合适的值。"
+ },
+ {
+  "id": "1411",
+  "parent": "1402",
+  "date": "2015-03-25T11:40:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tastier：为了回答你的问题，我特地下载了8259A的datasheet来看，实际上，8259A支持8个interrupt，当两个8259A进行级联的时候，就形成了两个IRQ Domain，这两个domain的HW interrupt是可以重复的。\r\n回到你的具体问题：1. 对于两个级联的8259A芯片，HW interupt ID是如何编码的？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n我认为每个8259A都是根据自己硬件引脚IR0~IR7进行HW interrupt ID的编码,对应HW interrupt ID 0～HW interrupt ID 7\r\n\r\n2. 内核里的request_irq()函数的第一个参数irq，这个是文中的IRQ number吗？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n是的\r\n\r\n我是搞ARM的，对X86的东西不是那么熟悉，上面是我的观点，请参考"
+ },
+ {
+  "id": "1422",
+  "parent": "1403",
+  "date": "2015-03-26T14:23:45+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：为什么在gic初始化的时候，已经给所有的irq都初始化了desc，我们在这里还是要再申请一次呢？\r\nirq_base = irq_alloc_descs(irq_start, 16, gic_irqs,  numa_node_id()); －－－－－－－（e）"
+ },
+ {
+  "id": "1431",
+  "parent": "1422",
+  "date": "2015-03-27T12:15:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：我没有明白你的问题，在初始化的时候，gic driver会调用irq_alloc_descs一次性的分配了若干个中断描述符，因此nr_irqs也会一次性的进行的扩展。\r\nirq_alloc_descs最终会调用alloc_descs函数分配若干desc，当然，对于静态数据类型的，不会真正分配，仅仅是站上那个位置而已，对于CONFIG_SPARSE_IRQ的那种，的确会分配desc的内存并插入到radix tree中。\r\n\r\n对于gic driver，一直都是初始化分配desc啊"
+ },
+ {
+  "id": "1433",
+  "parent": "1431",
+  "date": "2015-03-27T14:51:33+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：我是说 为什么irq_create_mapping 里面又会再分配一次呢？"
+ },
+ {
+  "id": "1435",
+  "parent": "1433",
+  "date": "2015-03-27T15:45:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：看，沟通还是需要成本的，我的理解是这样的：\r\n对于目前版本的GIC driver，其实它采用了一个比较丑陋的方法：\r\n1、调用irq_alloc_descs一次性的分配了若干个中断描述符\r\n2、调用irq_domain_add_legacy一次性的创建所有的irq number到HW interrupt ID的映射。\r\n也就是说，gic driver初始化之后就一切搞定了，分配好了irq descriptor，创建了映射关系。\r\n\r\n而在具体的驱动程序中，虽然有机会调用irq_create_mapping 来创建mapping，不过由于mapping已经存在，因此不会再次分配了"
+ },
+ {
+  "id": "1436",
+  "parent": "1435",
+  "date": "2015-03-27T15:49:28+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：晓得啦，原来上面有写，可能是当时忽略了。确实是会检查一次。\r\n我之所以有这个疑问是因为我看完这一篇，又读了一下gic的代码，发现gic里面是已经初始化了一遍的，就突然想到这里为什么又分配一遍，忘记了这里其实肯定应该有检查的。kernel 这种历经多年的代码，是不会犯这样的错误的 ^_^\t\r\n/* Check if mapping already exists */\r\n\tvirq = irq_find_mapping(domain, hwirq);\r\n\tif (virq) {\r\n\t\tpr_debug(\"-> existing mapping on virq %d\\n\", virq);\r\n\t\treturn virq;\r\n\t}"
+ },
+ {
+  "id": "1438",
+  "parent": "1411",
+  "date": "2015-03-28T22:44:59+08:00",
+  "author": "tastier",
+  "site": "",
+  "text": "@linuxer：非常感谢您的回答，在看了您的回答之后，我又经过几天的学习，产生了如下几个问题。\r\n\r\n1. 对于内核中的request_irq()函数，最终调用了request_threaded_irq()函数，但内核源码对于request_threaded_irq函数第一个参数irq的描述是：@irq: Interrupt line to allocate，意思是分配一个中断信号线，不是IRQ number？\r\n我理解Interrupt line应该是HW interrupt ID吧，不知对不对？\r\n\r\n2. 我看其它很多关于中断的文章都有中断向量这个概念，不知中断向量和IRQ number的区别在哪里？\r\n与此对应的是，中断描述符表（IDT）和中断描述符（struct irq_desc）。我看过这种描述：“当中断或异常发生时，CPU通过查中断向量号对应IDT的表项决定动作”。您在下一篇文章中这样描述：“通过IRQ number就可以获取对应的中断描述符。调用中断描述符中的highlevel irq-events handler来进行中断处理就OK了”。这里定义了一个struct irq_desc类型的数组，它和IDT的区别是什么？\r\n\r\n3. 在您的文章中，引用的代码和定义的概念是否针对ARM，X86不是很适用（有的适用有的不适用，尤其是一些代码，我没有接触过ARM）？\r\n\r\n期待您的回复。"
+ },
+ {
+  "id": "1441",
+  "parent": "1438",
+  "date": "2015-03-29T23:14:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tastier：1、我觉得这里的内核注释有些模糊，本质上request_threaded_irq函数第一个参数irq就是就是IRQ number（virtual interrupt ID），这个ID其实是和实际的interrupt request line是没有关系的，只是在irq domain的范围内有映射关系而已。我同意你的说法，interrupt line、interrupt request line或者HW interrupt ID都是类似的概念，如果我是中断子系统的维护者，我会修改这里的注释\r\n\r\n2、所谓向量，当然就不是标量，呵呵~~~有点像是废话。标量是一维的，或者说是一个数值量。向量是向量空间的一个元素，说起来有些抽象，我们可以以三维实数坐标空间R3（3应该是上标）为例，（x,y,z）就是R3中的一个元素，当然x，y，z都是实数。\r\n我们再来看中断。对于计算机系统而言，中断就是硬件或者软件向CPU发出的一种信号，希望CPU可以暂停当前程序的执行，转而处理该事件。\r\n根据上面对向量和中断的理解，我们可知中断向量一定就是一组数据了，这一组数据表示了在发生中断后，CPU的各个寄存器（包括PC、状态寄存器和通用寄存器）需要加载的内容。对于ARM，中断向量只有一个地址（interrupt handler的地址）需要加载给CPU的r15寄存器（对于X86，需要加载CS和IP这两个寄存器，我都有些忘记了，好像是这样吧）\r\nOK，应该可以进入中断向量表了，所谓中断向量表就是一个table，保存了若干的中断向量而已。中断向量表是一个通用的概念，在X86上，它具体就是体现为中断描述符表。对于ARM，中断向量表更经常的被称为异常向量表。对于ARM,代码如下：\r\n----------------------------------------------\r\n.section .vectors, \"ax\", %progbits\r\n__vectors_start:\r\n    W(b)    vector_rst\r\n    W(b)    vector_und\r\n    W(ldr)    pc, __vectors_start + 0x1000\r\n    W(b)    vector_pabt\r\n    W(b)    vector_dabt\r\n    W(b)    vector_addrexcptn\r\n    W(b)    vector_irq ---------------------------IRQ Vector\r\n    W(b)    vector_fiq ---------------------------FRQ Vector\r\n-------------------------------------------------------------\r\n和传统意义上的中断相关的只有两项，毫无疑问，这是不够的，因此，在ARM上进行了两次的跳转，也就是说，一个外设中断发生了，首先跳转到IRQ vector，然后由它再根据当前中断控制器的状态，获取了IRQ number，最终完成了到具体interrupt handler的跳转。\r\n有些处理器不是这样的，对于X86，其中断向量表很大，分的很细（例如除0产生的异常也占有一个vecotr），每一个外设中断都是占用一个中断向量表的entry。\r\n--------------\r\n我看过这种描述：“当中断或异常发生时，CPU通过查中断向量号对应IDT的表项决定动作”。\r\n--------------这段话应该适用于类似像X86这样的中断向量表设计的CPU，更具体的内容我明天查阅x86的中断处理再回复你\r\n\r\n3、没有错，我的文档都是for ARM的，我对X86不是那么熟悉。如果你是搞X86的，那么大家可以多交流互通有无。"
+ },
+ {
+  "id": "1447",
+  "parent": "1441",
+  "date": "2015-03-30T22:48:58+08:00",
+  "author": "tastier",
+  "site": "",
+  "text": "@linuxer：谢谢您的耐心回复，虽然我的问题表述都不是很清楚。\r\n看了您的回复，对几个概念的理解真是如梦初醒，在阅读内核源码就明白多了。\r\n\r\n我目前做的小项目是基于AMD x86 cpu的，用到了中断，正在努力学习，还希望能和您这样经验丰富的大牛多多交流。"
+ },
+ {
+  "id": "1783",
+  "parent": "1375",
+  "date": "2015-05-13T18:06:59+08:00",
+  "author": "wang",
+  "site": "",
+  "text": "@tigger：@linuxer: 刚开始看linux的中断，这个SPI是什么东西？"
+ },
+ {
+  "id": "1784",
+  "parent": "1387",
+  "date": "2015-05-13T18:07:59+08:00",
+  "author": "wang",
+  "site": "",
+  "text": "@linuxer：@linuxer: 刚开始看linux的中断，这个SPI是什么？"
+ },
+ {
+  "id": "1785",
+  "parent": "1784",
+  "date": "2015-05-13T22:21:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wang：请参考/irq_subsystem/gic_driver.html"
+ },
+ {
+  "id": "1884",
+  "parent": "561",
+  "date": "2015-05-27T17:03:28+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：liuxer，有点疑问是关于gpio interrupt contronller和HW interrupt id的。\r\n1、HW interrupt id是直接从寄存器里面读取到的中断线号吗？\r\n2、现在很多都采用gpio type interrupt controller做的request_irq，我们一般是向gpio号申请中断。这个中断号和HW interrupt id怎么联系起来的。"
+ },
+ {
+  "id": "1885",
+  "parent": "1884",
+  "date": "2015-05-27T18:15:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：1、HW interrupt id是直接从寄存器里面读取到的中断线号吗？ \r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n是的，中断控制器对自己管控的interrupt request line进行编码其实就是HW interrupt ID，一般而言都是读取中断状态寄存器可以转换成HW interrupt ID\r\n\r\n\r\n2、现在很多都采用gpio type interrupt controller做的request_irq，我们一般是向gpio号申请中断。这个中断号和HW interrupt id怎么联系起来的。\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n驱动调用的request_irq使用的irq我们称之IRQ number或者virtual interrupt ID，这个ID和硬件没有任何的关系，可以任意分配。\r\n当然，对于老的系统，实际上还是固定分配的，即在初始化的时候就建立的了GPIO number、HW interrupt ID和IRQ Number之间的关系，因此，驱动才可以直接使用GIO 号来申请中断。"
+ },
+ {
+  "id": "2108",
+  "parent": "0",
+  "date": "2015-07-01T11:36:33+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "西安出差两周，终于能继续看这么美妙的文章了，真是写的好，万分膜拜，其实这些都不是我自己工作业务相关的，我就是喜欢内核，闲了就自己看源码，可惜汇编不咋地，一到硬件层面的驱动需要各种查汇编语法"
+ },
+ {
+  "id": "2116",
+  "parent": "2108",
+  "date": "2015-07-02T00:12:31+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@SleepDeXiang：欢迎，欢迎，不论什么工作性质，只要保持一颗对linux kernel的热爱之心就OK了，把这个网站办成一个喜欢钻研linux kernel代码的集中营就是我们最大的心愿"
+ },
+ {
+  "id": "2257",
+  "parent": "0",
+  "date": "2015-07-21T10:01:39+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "额，终于明白DT下platform device建立时的resource提取的IRQ原来是irq_of_parse_and_map后的。还一直以为就是interrupt cells里面的hw irq num,原来做了map处理。"
+ },
+ {
+  "id": "2259",
+  "parent": "0",
+  "date": "2015-07-21T10:19:52+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "请问，那如果还是使用老是的板级描述符\r\nresource = {\r\n.start = IRQ_EINT（irq_num）。\r\n}\r\n这里的还是用实际的物理中断号码？还是？，总不可能自己去映射关联吧。这种模式是直接被淘汰了？"
+ },
+ {
+  "id": "2265",
+  "parent": "1431",
+  "date": "2015-07-21T14:49:52+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@linuxer：alloc_descs这个貌似非smp下，是不重新malloc的吗，直接用的那个irq_desc全局数组。那要是用了SMP，是费用在alloc_desc一次吗？"
+ },
+ {
+  "id": "2280",
+  "parent": "2265",
+  "date": "2015-07-22T00:07:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@gzz：alloc_descs这个函数和SMP没有关系，适合CONFIG_SPARSE_IRQ这个配置项有关，如果配置了CONFIG_SPARSE_IRQ，那么需要动态分配，否则使用irq_desc全局数组，静态分配"
+ },
+ {
+  "id": "2282",
+  "parent": "2259",
+  "date": "2015-07-22T00:30:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@gzz：这种老的模式当然也支持，不过在device tree出现后已经不推荐使用了，如果的确想使用，可以参考platform_get_resource的实现。在resource的定义中有关于irq resource的类型，其start成员和end成员都是定义的irq number（virtual interrupt number），而“IRQ_EINT（irq_num）”中的irq_num是HW interrupt ID，本身arch/arm/mach-xxx/include/mach/irqs.h中定义的一大堆IRQ_XXX就是将HW interrupt ID映射到irq number的宏定义，也就是建立了irq number和HW interrupt ID之间的映射关系。"
+ },
+ {
+  "id": "2284",
+  "parent": "0",
+  "date": "2015-07-22T10:41:47+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "假设我有一个二级的中断是SPI32要注册，挂在一级的20上。那也就是我这个二级 32号中断注册的时候直接以irq=20 request就行吗？request_irq会去帮我找帮handle放到到对应的irq_desc吗。\r\n如果有多级了，这个irq_desc内核又是如何维护的呢？"
+ },
+ {
+  "id": "2298",
+  "parent": "2284",
+  "date": "2015-07-23T00:31:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@gzz：假设我有一个二级的中断是SPI32要注册，挂在一级的20上。那也就是我这个二级 32号中断注册的时候直接以irq=20 request就行吗？\r\n---------------------------------------\r\n当然不行。\r\n唉，看来我的文档还是写的不行啊，我通篇都是在将irq number和HW interrupt ID的东西，我觉得自己讲的很清楚了，不过读者似乎不是这样的，郁闷。\r\n\r\n1、对于老的方式而言，IRQ都是固定的，在driver初始化的时候可以通过传统的方法xxx_get_resource的方法获得irq number，这种方式都已经固定了所有的irq desc，因此irq desc也是一个静态表格而已。一旦获取了irq number，就可以调用request_irq来申请中断了\r\n2、对于使用device tree的情况，一般可以通过of_irq_get的方式（Note：一般不会直接调用该函数，你的driver模型会封装的，例如如果你的设备是挂接到platform bus上的时候，可以使用platform_get_irq来获取irq number），一旦获取了irq number，就可以调用request_irq来申请中断了\r\n\r\n描述硬件中断编号需要两个因素：irq domain和HW interrupt ID。根据你描述的例子，实际上硬件中断编号有两个，分别是：\r\n1、一级irq domain的HW interrupt ID 52，也就是SPI20\r\n2、二级irq domain的HW interrupt ID 64，也就是SPI32\r\n二级irq domain的SPI32在注册的时候当然不能直接注册，因为这里描述都是硬件中断编号，不是irq number，必须申请irq number的资源并建立映射（当然，也可以在中断控制器初始化的时候一次性创建所有的映射，不过那也不是推荐的方式）。\r\n\r\n如果有多级了，这个irq_desc内核又是如何维护的呢？\r\n------------------------------------------------\r\nirq_desc或者说irq number是和复杂的硬件拓扑没有关系的，关于中断描述符有一份专门的文档描述，可以参考"
+ },
+ {
+  "id": "2299",
+  "parent": "2298",
+  "date": "2015-07-23T09:08:40+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@linuxer：thanks。你可能没有理解我的意思。就是说像ARM，他一般gic_init_base的时候已经做好一个controller的domain的irq和hw的映射。就比如现在SPI32要注册了，arm简单点一般irq num就是硬件中断号64了。那我的疑问是一级假如也有一个SPI32号硬件中断（对应于irq 64）被注册了呢？那内核是怎么request的时候是如何去区分相同的一级和二级的irq.还是说这样就直接报错，不运行呢？还是说这种级联情况下，应该不会存在这个问题？所以我就想是不是irq_desc会给每个domain来分组啥的。\r\n谢谢，菜鸟不是很懂。"
+ },
+ {
+  "id": "2499",
+  "parent": "0",
+  "date": "2015-08-28T00:54:24+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "关于本文章最后的“中断处理过程”：\r\n我依照源码（linux-3.17），是如下的执行路径：\r\nvector_irq:\r\n\t__irq_svc:\r\n\t\tirq_handler\r\n\t\t\tldr\tr1, =handle_arch_irq\t//handle_arch_irq已初始化为gic_handle_irq\r\n\t\t\tldr\tpc, [r1]\r\n\t\t\t||\r\n\t\t\t||\r\n\t\t\t\\/\r\n\t\t\tgic_handle_irq()\r\n\t\t\t\thandle_IRQ(irqnr, regs)\r\n\t\t\t\t\tgeneric_handle_irq(irq);\r\n\t\t\t\t\t|\tstruct irq_desc *desc = irq_to_desc(irq);\r\n\t\t\t\t\t|\tgeneric_handle_irq_desc(irq, desc);\r\n\t\t\t\t\t|\t\tdesc->handle_irq(irq, desc);\r\n（1）咋一看，没有发现处理GIC级联的情况呀？\r\n（2）对于级联，我猜是这样的：先进行root gic上的处理；然后发现是个级联点，则将domain转到次级gic，然后调用函数处理。不知道是否正确？\r\n（3）如果（2）中的猜测正确，那次级gic初始化时必定要向root GIC的某line申请一个响应函数，根据代码看应该是gic_handle_cascade_irq()函数，在该函数里我没发现转换domaim的代码。请问是哪里的问题？\r\n\r\n谢谢linuxer。"
+ },
+ {
+  "id": "2502",
+  "parent": "2499",
+  "date": "2015-08-28T10:01:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：linux-3.17中gic_handle_irq的代码如下：\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\nstatic void __exception_irq_entry gic_handle_irq(struct pt_regs *regs)\r\n{\r\n\tu32 irqstat, irqnr;\r\n\tstruct gic_chip_data *gic = &gic_data[0];\r\n\tvoid __iomem *cpu_base = gic_data_cpu_base(gic);\r\n\r\n\tdo {\r\n\t\tirqstat = readl_relaxed(cpu_base + GIC_CPU_INTACK);\r\n\t\tirqnr = irqstat & GICC_IAR_INT_ID_MASK;\r\n\r\n\t\tif (likely(irqnr > 15 && irqnr < 1021)) {\r\n\t\t\tirqnr = irq_find_mapping(gic->domain, irqnr);\r\n\t\t\thandle_IRQ(irqnr, regs);\r\n\t\t\tcontinue;\r\n\t\t}\r\n\t\tif (irqnr < 16) {\r\n\t\t\twritel_relaxed(irqstat, cpu_base + GIC_CPU_EOI);\r\n#ifdef CONFIG_SMP\r\n\t\t\thandle_IPI(irqnr, regs);\r\n#endif\r\n\t\t\tcontinue;\r\n\t\t}\r\n\t\tbreak;\r\n\t} while (1);\r\n}\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\nirq_find_mapping是将hw interrupt ID转变成IRQ Number（当然是在root gic对应的irq domain上了），之后调用handle_IRQ处理这个IRQ。如果是级联的情况，那么root gic解析的这个IRQ对应的handler就是gic_handle_cascade_irq（你的猜测是对的），代码如下：\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\nstatic void gic_handle_cascade_irq(unsigned int irq, struct irq_desc *desc)\r\n{\r\n\tstruct gic_chip_data *chip_data = irq_get_handler_data(irq);\r\n\tstruct irq_chip *chip = irq_get_chip(irq);\r\n\tunsigned int cascade_irq, gic_irq;\r\n\tunsigned long status;\r\n\r\n\tchained_irq_enter(chip, desc);\r\n\r\n\traw_spin_lock(&irq_controller_lock);\r\n\tstatus = readl_relaxed(gic_data_cpu_base(chip_data) + GIC_CPU_INTACK);\r\n\traw_spin_unlock(&irq_controller_lock);\r\n\r\n\tgic_irq = (status & 0x3ff);\r\n\tif (gic_irq == 1023)\r\n\t\tgoto out;\r\n\r\n\tcascade_irq = irq_find_mapping(chip_data->domain, gic_irq);\r\n\tif (unlikely(gic_irq < 32 || gic_irq > 1020))\r\n\t\thandle_bad_irq(cascade_irq, desc);\r\n\telse\r\n\t\tgeneric_handle_irq(cascade_irq);\r\n\r\n out:\r\n\tchained_irq_exit(chip, desc);\r\n}\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n同样的，irq_find_mapping将hw interrupt ID转变成IRQ Number（当然是在second gic对应的irq domain上了，传递给irq_find_mapping的domain参数是和上次不一样的）"
+ },
+ {
+  "id": "2574",
+  "parent": "0",
+  "date": "2015-09-15T01:11:39+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "关于级联的中断处理，我认为博文漏掉了一个domain如何衔接的片段。\r\nvoid gic_handle_irq(struct pt_regs *regs)\r\n{\r\n\tstruct gic_chip_data *gic = &gic_data[0];\r\n\tvoid __iomem *cpu_base = gic_data_cpu_base(gic);\r\n\r\n\tirqstat = readl_relaxed(cpu_base + GIC_CPU_INTACK);\r\n\tirqnr = irqstat & GICC_IAR_INT_ID_MASK;\r\n\t\r\n\tirqnr = irq_find_mapping(gic->domain, irqnr);\r\n\thandle_IRQ(irqnr, regs);\t\r\n\t\tgeneric_handle_irq(irq)\r\n\t\t\tdesc->handle_irq(irq, desc);  //对于级联，应是gic_handle_cascade_irq()\r\n}\r\n void gic_handle_cascade_irq(unsigned int irq, struct irq_desc *desc)\r\n{    //gic_handle_cascade_irq()传递进来的参数是root GIC的级联点的virq号\r\n\tstruct gic_chip_data *chip_data = irq_get_handler_data(irq);-------------（1）\r\n\tstruct irq_chip *chip = irq_get_chip(irq);\r\n\tunsigned int cascade_irq, gic_irq;\r\n\tunsigned long status;\r\n\r\n\tstatus = readl_relaxed(gic_data_cpu_base(chip_data) + GIC_CPU_INTACK);  //此处居然是次级 GIC的读取操作了\r\n\tgic_irq = (status & 0x3ff);\r\n\r\n\tcascade_irq = irq_find_mapping(chip_data->domain, gic_irq);\r\n\r\n\tgeneric_handle_irq(cascade_irq);\r\n\t\tdesc->handle_irq(irq, desc);\r\n}\r\n\r\n对于gic_handle_cascade_irq()中的处理，没显式看到domain的转换代码。之前一直卡在这里。\r\n对于（1）代码，才是转换domain的关键；因为在次级GIC初始化的时候，有如下代码：\r\nif (parent) {\r\n\tgic_cascade_irq(gic_cnt, irq);\r\n\t\t\tif (irq_set_handler_data(irq, &gic_data[gic_nr]) != 0)--------(2)\r\n\t\t\t\tBUG();\r\n\t\t\tirq_set_chained_handler(irq, gic_handle_cascade_irq);\r\n}\r\n代码（2）中，是将次级GIC_DATA保存在上级GIC的级联点对应的irq_desc中。以此来保证代码（1）中domain转换。"
+ },
+ {
+  "id": "2575",
+  "parent": "2574",
+  "date": "2015-09-15T08:45:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：是的，多谢补充！有什么心得都可以在这里分享^_^"
+ },
+ {
+  "id": "2993",
+  "parent": "0",
+  "date": "2015-11-03T22:52:02+08:00",
+  "author": "hb775",
+  "site": "",
+  "text": "楼主您好，非常高兴您能分享。我最近也在看Linux 中断子系统的一些基本实现原理（工作需要移植Linux系统到自己公司的SOC上），对整个系统有大概的了解，但是并未深入，看了您的文章很有收获，谢谢！"
+ },
+ {
+  "id": "3521",
+  "parent": "0",
+  "date": "2016-02-24T11:30:42+08:00",
+  "author": "菜鸟",
+  "site": "",
+  "text": "hi linuxer,\r\n如果系统中有对个domain ， 他们的关系是怎么的呢？ 如gic 的一个domain， 和 gpio对应生成的中断 domain。\r\n是彼此独立还是 gic 为root ？ 其他为级联？ 在中断发生时我只能追踪到gic domain handler，而无法看到调用其他domain的 handler 。"
+ },
+ {
+  "id": "3522",
+  "parent": "3521",
+  "date": "2016-02-24T12:46:43+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@菜鸟：irq domain的结构类似linux系统中文件系统的结构，是树状结构，其根节点连接到了CPU，而叶节点连接到了设备。当设备发生了中断事件后，会通过各级的中断控制器反馈给CPU，而kernel的中断子系统会处理这个中断事件，通过各级的irq domain将HW interrupt ID翻译成virtual interrupt ID，也就是IRQ number。\r\n\r\n看你的场景，涉及两个domain，一个是GIC irq domain，应该是root，另外一个是GPIO controler的irq domain。对于GIC irq domain而言，他完成的任务就是根据当前的硬件情况将GPIO controller（也是一个interrupt controller）对应的HW interrupt ID翻译成virtual interrupt ID从而调用其handler。\r\n\r\n在GPIO controller驱动初始化的时候，会建立其irq domain并且通过irq_set_chained_handler设定该设备的中断处理函数。而GPIO domain的处理都是在这个GPIO controller（或者说GPIO type的中断控制器）中的中断处理函数完成的。\r\n\r\n换句话说：中间节点的中断控制器（IRQ DOMAIN）都是有两个角色，一个是做为连接到上一级的中断控制器的普通设备（因此有IRQ number，有其对应的handler），另外一个是interrupt controller，对应irq domain，负责翻译其负责的HW interrupt ID。"
+ },
+ {
+  "id": "3524",
+  "parent": "3522",
+  "date": "2016-02-25T13:14:53+08:00",
+  "author": "菜鸟",
+  "site": "",
+  "text": "@郭健：我能这样理解吗， 暂且不知道gpio 的中断 domain 和 GIC 的domain在物理上是不是连级，但是在逻辑上可以看成连级？\r\n对gpio domain中的handler处理也是从这里irq_domain_associate调用的吗？"
+ },
+ {
+  "id": "3529",
+  "parent": "3524",
+  "date": "2016-02-25T19:09:26+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@菜鸟：GPIO中断控制器物理上是连接到GIC中断控制器的某一个interrupt request line上，因此，物理上也是级联的。除非你的硬件拓扑结构是所有的GPIO中断都是分别连接到若干GIC中断控制器的若干的interrupt request line上，我估计一般的硬件设计不会这样的。\r\n\r\nirq_domain_associate和handler处理无关，这个函数只是建立一个HW interrupt ID和virtual interrupt ID之间的映射，在一个中断触发之前，其mapping就建立了。"
+ },
+ {
+  "id": "3675",
+  "parent": "0",
+  "date": "2016-03-16T22:38:42+08:00",
+  "author": "z",
+  "site": "",
+  "text": "@linuxer：你好，\r\n有个问题没想明白，对于domain级联以及使用radix tree的情况，比如中断1,2,3连在root domain A，中断4,5,6连在domain B，那么domain A和B它所对应的revmap_tree是同一个还是各自有自己的revmap_tree呢？\r\n因为我看gic_handle_irq中通过hwid去找irq的时候直接去root domain中找domain->revmap_tree；\r\n如果是这样的话他们的domain->revmap_tree是在哪里赋值的呢？\r\n谢谢"
+ },
+ {
+  "id": "3684",
+  "parent": "3675",
+  "date": "2016-03-17T18:26:24+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@z：那么domain A和B它所对应的revmap_tree是同一个还是各自有自己的revmap_tree呢？ \r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n各自有各自的\r\n\r\n因为我看gic_handle_irq中通过hwid去找irq的时候直接去root domain中找domain->revmap_tree； \r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\ngic_handle_irq函数是什么？是真个系统的中断处理函数，因此，当中断发生后调用gic_handle_irq函数的时候，当然要从root irq domain开始了，你说是吧。\r\n\r\nsecondary gic和root gic有级联关系，那么实际上secondary gic有双重身份，，一个是做为连接到root gic上的普通设备（因此有IRQ number，有其对应的handler），另外一个是interrupt controller，对应irq domain，负责翻译其负责的HW interrupt ID。\r\n\r\n我们假设场景如下：设备D连接到secondary gic的125号硬件中断上，而secondary gic连接到root gic的75号硬件中断上。当设备D产生中断的时候，CPU首先看到的是root gic上的75号中断（在gic_handle_irq函数中处理），然后才进入secondary gic的irq doamin（在gic_handle_cascade_irq函数中处理）。"
+ },
+ {
+  "id": "3687",
+  "parent": "0",
+  "date": "2016-03-18T14:51:58+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "请教下啊，在我的arch/arm目录中，为什么找不到vector_irq的相关定义，这个函数定义在哪里？"
+ },
+ {
+  "id": "3688",
+  "parent": "3687",
+  "date": "2016-03-18T16:01:00+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@electrlife：哈哈， 找到了，原来是宏vector_stub定义的"
+ },
+ {
+  "id": "4496",
+  "parent": "0",
+  "date": "2016-09-02T10:04:40+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "Hi,linuxer:\r\n\r\n目前遇到如下WARNING和error，但不知道如何去分析根本，可以指点一下吗？\r\n\r\nlog如下：\r\n\r\n[    2.213782] Driver 'mmcblk' needs updating - please use bus_type methods\r\n[    2.213879] sdhci: Secure Digital Host Controller Interface driver\r\n[    2.213894] sdhci: Copyright(c) Pierre Ossman\r\n[    2.213997] sdhci-pci 0000:00:01.0: SDHCI controller found [8086:1190] (rev 1)\r\n[    2.214050] ------------[ cut here ]------------\r\n[    2.214085] WARNING: CPU: 1 PID: 1 at /home/andrei/work/resin/resin-edison/build/tmp/work-shared/edison/kernel-source/kernel/irq/irqdomain.c:284 irq_domain_associate+0x1a3/0x200()\r\n[    2.214100] error: virq0 is already associated\r\n[    2.214111] Modules linked in:\r\n\r\n[    2.214142] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 3.19.5-yocto-standard #1\r\n[    2.214156] Hardware name: Intel Corporation Merrifield/BODEGA BAY, BIOS 466 2014.06.23:19.20.05\r\n[    2.214169]  00000000 00000000 f6e0fc00 c19f08d7 f6e0fc40 f6e0fc30 c1253157 c1c24014\r\n[    2.214219]  f6e0fc5c 00000001 c1c23f40 0000011c c12a4563 c12a4563 f6c05e00 f675e480\r\n[    2.214267]  00000000 f6e0fc48 c12531c3 00000009 f6e0fc40 c1c24014 f6e0fc5c f6e0fc7c\r\n[    2.214314] Call Trace:\r\n[    2.214349]  [<c19f08d7>] dump_stack+0x4b/0x75\r\n[    2.214375]  [<c1253157>] warn_slowpath_common+0x87/0xc0\r\n[    2.214402]  [<c12a4563>] ? irq_domain_associate+0x1a3/0x200\r\n[    2.214426]  [<c12a4563>] ? irq_domain_associate+0x1a3/0x200\r\n[    2.214449]  [<c12531c3>] warn_slowpath_fmt+0x33/0x40\r\n[    2.214475]  [<c12a4563>] irq_domain_associate+0x1a3/0x200\r\n[    2.214502]  [<c12a45ff>] irq_domain_associate_many+0x3f/0xa0\r\n[    2.214528]  [<c19f559d>] ? mutex_unlock+0xd/0x10\r\n[    2.214551]  [<c19ecb88>] ? __irq_alloc_descs+0xe8/0x1b0\r\n[    2.214578]  [<c12a46a2>] irq_create_strict_mappings+0x42/0x50\r\n[    2.214605]  [<c12338fa>] mp_map_pin_to_irq+0x1ca/0x200\r\n[    2.214631]  [<c1233f40>] mp_map_gsi_to_irq+0x90/0xc0\r\n[    2.214658]  [<c184fb59>] intel_mid_pci_irq_enable+0x59/0x80\r\n[    2.214683]  [<c1850390>] pcibios_enable_device+0x30/0x40\r\n[    2.214708]  [<c1618f6f>] do_pci_enable_device+0x4f/0xd0\r\n[    2.214732]  [<c1619e4d>] pci_enable_device_flags+0x9d/0xe0\r\n[    2.214757]  [<c1619ee2>] pci_enable_device+0x12/0x20\r\n[    2.214782]  [<c17dc4b2>] sdhci_pci_probe+0xd2/0x950\r\n[    2.214810]  [<c161bb5f>] pci_device_probe+0x6f/0xd0\r\n[    2.214834]  [<c13ba2a5>] ? sysfs_create_link+0x25/0x50\r\n[    2.214860]  [<c16ada0f>] driver_probe_device+0x7f/0x3c0\r\n[    2.214885]  [<c161ba92>] ? pci_match_device+0xd2/0x100\r\n[    2.214910]  [<c16ade09>] __driver_attach+0x79/0x80\r\n[    2.214933]  [<c16add90>] ? __device_attach+0x40/0x40\r\n[    2.214955]  [<c16abdaf>] bus_for_each_dev+0x4f/0x80\r\n[    2.214979]  [<c16ad51e>] driver_attach+0x1e/0x20\r\n[    2.215001]  [<c16add90>] ? __device_attach+0x40/0x40\r\n[    2.215024]  [<c16ad157>] bus_add_driver+0x157/0x240\r\n[    2.215049]  [<c1e01c8f>] ? sdhci_drv_init+0x1b/0x1b\r\n[    2.215072]  [<c1e01c8f>] ? sdhci_drv_init+0x1b/0x1b\r\n[    2.215095]  [<c16ae56d>] driver_register+0x5d/0xf0\r\n[    2.215119]  [<c1351cce>] ? kfree+0x9e/0x1d0\r\n[    2.215144]  [<c15eb7d0>] ? kvasprintf+0x40/0x50\r\n[    2.215168]  [<c161ab9a>] __pci_register_driver+0x4a/0x50\r\n[    2.215192]  [<c1e01ca3>] sdhci_driver_init+0x14/0x16\r\n[    2.215216]  [<c120044a>] do_one_initcall+0xaa/0x1e0\r\n[    2.215239]  [<c1e01c8f>] ? sdhci_drv_init+0x1b/0x1b\r\n[    2.215263]  [<c1dcc4e3>] ? repair_env_string+0x12/0x54\r\n[    2.215288]  [<c126d0a9>] ? parse_args+0x299/0x510\r\n[    2.215317]  [<c1dccbeb>] kernel_init_freeable+0x147/0x1ef\r\n[    2.215345]  [<c1273a63>] ? preempt_count_sub+0xb3/0x110\r\n[    2.215368]  [<c127262d>] ? finish_task_switch+0x5d/0xd0\r\n[    2.215392]  [<c19eb630>] kernel_init+0x10/0xe0\r\n[    2.215415]  [<c19f7441>] ret_from_kernel_thread+0x21/0x30\r\n[    2.215436]  [<c19eb620>] ? rest_init+0x80/0x80\r\n[    2.215476] ---[ end trace 96410e869c63de19 ]---\r\n[    2.215566] flis_addr mapped addr: f8498900\r\n[    2.215694] sdhci-pci 0000:00:01.0: rte_addr mapped addr: f849c000\r\n[    2.317076] mmc0: BKOPS_EN bit is not set\r\n[    2.324368] mmc0: new HS200 MMC card at address 0001\r\n[    2.325192] mmcblk0: mmc0:0001 H4G1d� 3.64 GiB \r\n[    2.332236]  mmcblk0: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11\r\n[    2.337906] mmc0: SDHCI controller on PCI [0000:00:01.0] using ADMA"
+ },
+ {
+  "id": "4497",
+  "parent": "4496",
+  "date": "2016-09-02T15:24:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@cracker：错误信息已经给出来了，就是virq等于0的那个中断描述符已经和某个irq domain的hw interrupt id绑定了，不能再次绑定。"
+ },
+ {
+  "id": "4562",
+  "parent": "4497",
+  "date": "2016-09-13T11:05:27+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "@linuxer：Hi，linuxer，\r\n你说的很对。但我还是有疑问。 \r\nvirq = irq_find_mapping(domain, hwirq);\r\n    if (virq) {\r\n        return virq;\r\n    } \r\n unsigned int irq_find_mapping(struct irq_domain *domain,\r\n 552                   irq_hw_number_t hwirq)\r\n{ \r\n 554     struct irq_data *data;\r\n 555   \r\n              。。。。。。。。。。。\r\n 561   \r\n 562     if (hwirq < domain->revmap_direct_max_irq) {\r\n 563         data = irq_domain_get_irq_data(domain, hwirq);\r\n 564         if (data && data->hwirq == hwirq)  \r\n 565             return hwirq;\r\n 566     }\r\n            。。。。。。。。。。。。。。。\r\n\r\n 573     data = radix_tree_lookup(&domain->revmap_tree, hwirq);\r\n 574     rcu_read_unlock();   \r\n 575     return data ? data->irq : 0;\r\n\r\n这里如果virq为0说明data为NULL还是data->irq = 0？如果data->irq = 0是不是配置的mapping映射是不对的？"
+ },
+ {
+  "id": "4563",
+  "parent": "4562",
+  "date": "2016-09-14T23:25:39+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@cracker：看你上面栈的回溯，错误应该是发生在驱动初始化的过程中（irq_domain_associate），和irq_find_mapping无关。"
+ },
+ {
+  "id": "5228",
+  "parent": "0",
+  "date": "2017-02-17T19:47:07+08:00",
+  "author": "hxj",
+  "site": "",
+  "text": "您好，我想问一下，在ARM架构下，我已经知道了HW interrupt ID 为26，在驱动程序中通过哪个函数得到irq number呢？\r\n还是说在3.14内核中不推荐用resource的方式来定义硬件中断号？"
+ },
+ {
+  "id": "5233",
+  "parent": "5228",
+  "date": "2017-02-21T09:17:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@hxj：1、在DTS中描述该设备的HW Interrupt相关信息\r\n2、如果是platform device，那么直接调用platform_get_irq_byname或者platform_get_irq即可获得IRQ number\r\n3、如果不是platform device，那么需要调用更底层一些的接口函数。"
+ },
+ {
+  "id": "6025",
+  "parent": "0",
+  "date": "2017-09-11T21:13:24+08:00",
+  "author": "kernel_123",
+  "site": "",
+  "text": "假设系统中就只有一个gic-400\r\ngic:interrupt-controller@1000000 {\r\n\tcompatible = \"arm,cortex-a15-gic\", \"arm,cortex-a9-gic\";\r\n\t#interrupt-cells = <3>; \r\n\t#address-cells = <0>; \r\n\tinterrupt-controller;\r\n\treg =   <0x0 0x10201000 0x1000>,\r\n    \t<0x0 0x10202000 0x1000>,\r\n    \t<0x0 0x10204000 0x2000>,\r\n    \t<0x0 0x10206000 0x2000>;\r\n\tinterrupts = <1 9 0xf04>;\r\n}; \r\n比如上述的gic是这样的配置的，然后在pin-ctrl中引用gic作为parent\r\npinctrl@10000000 {\r\n    gpe0: gpe0 {\r\n        gpio-controller;\r\n        #gpio-cells = <2>; \r\n\r\n        interrupt-controller;\r\n        #interrupt-cells = <2>; \r\n        interrupt-parent = <&gic>;\r\n        interrupts = <0 0 0>, <0 1 0>, <0 2 0>, <0 3 0>,\r\n                 <0 4 0>, <0 5 0>, <0 6 0>, <0 7 0>;\r\n};\r\n\r\n那这样的话，系统中的中断树就是如下样子：\r\n　\t　　　　　　　    gic\r\n\t\t\t|\r\n             32 33 ... 67  68 69  ... \r\n\t\t\t    |\r\n                      xxx_irq_chip\r\n\t\t\t    |\t\t\t　\r\n\t\t\t  连接设备\r\n\r\n问题1: 上面描述的也是一种级联情况，gic初始化的时候只会调用一次gic_of_init函数，分配irq_domain, 建立映射。\r\n\t　　那gic_of_init中的这种情况会不会调用到？\r\n\t　　　if (parent) {\r\n\t\t　irq = irq_of_parse_and_map(node, 0);\r\n\t\t　gic_cascade_irq(gic_cnt, irq);\r\n\t　　　}\r\n\r\n问题2: 在pin_ctrl驱动中也看到了，先分配每个bank的irq domain, 建立映射。然后接着去初始化pin ctrl所对应的gpio, 去建立hwirq到vir irq之间的映射。\r\n　　　但是每个bank设置了__irq_do_set_handler，　同时pin ctrl也设置了对应的__irq_do_set_handler，同时gic controller也有对应的irq_handler.\r\n      那这样一来，当接在pin_ctrl上的外设产生中断后，中断的处理流程是怎么样的？　是从gic的irq_handler -> pin_ctrl　-> bank -> 对应驱动的中断处理函数？\r\n\r\n\r\n　　"
+ },
+ {
+  "id": "6107",
+  "parent": "0",
+  "date": "2017-10-13T14:57:49+08:00",
+  "author": "linuxer_fy",
+  "site": "http://no home page yet",
+  "text": "\"\r\n（1）首先找到root interrupt controller对应的irq domain。\r\n（2）根据HW 寄存器信息和irq domain信息获取HW interrupt ID\r\n\"\r\n--------------\r\n（2)中的表述，有点绕人。\r\nHW interrupt ID不是在CPU收到中断信号时，就获取到了吗？\r\n(2)中CPU根据irq domain获取HW interrupt ID如何理解？"
+ },
+ {
+  "id": "6249",
+  "parent": "6107",
+  "date": "2017-11-28T14:30:27+08:00",
+  "author": "linuxer_fy",
+  "site": "http://no home page yet",
+  "text": "@linuxer_fy：自己回答：\r\n发生中断，首先从root interrupt controller的寄存器得到HW interrupt ID\r\n经过irq_find_mapping得到IRQ number,再得到IRQ handler 进行处理\r\n如果该IRQ handler是对应一个串级的interrupt controller，则继续上述1-4\r\n每次都从当前interrupt controller的寄存器得到HW interrupt ID\r\n\r\n如有不对，请指正。"
+ },
+ {
+  "id": "6762",
+  "parent": "0",
+  "date": "2018-05-24T17:34:11+08:00",
+  "author": "WL__Linux",
+  "site": "",
+  "text": "博主的技术已经达到了敬仰的水平了：\r\n我问两个简单的问题呢\r\n（1）对于级联的中断控制器，您在上面的问题回答中说道\r\n“同样的，irq_find_mapping将hw interrupt ID转变成IRQ Number（当然是在second gic对应的irq domain上了，传递给irq_find_mapping的domain参数是和上次不一样的）”\r\n那么第二次的IRQ Number会和第一次的IRQ Num重合吗，还是在上一级的末尾进行继续申请。\r\n（2）最近做开发遇到这样的问题，我通过gpio_to_irq()这个函数得到gpio0-gpio5-31的中断号，gpio1-0与gpio1-0的差值为33，多个那个中断号使谁的呢\r\n（3）获取到gpio5_31的中断号为232  而  芯片手册中的网卡ID分别为（73,74）通过函数读到的中断号为238，写的中断号为239，那么他之前的中断号不是连续的吗"
+ },
+ {
+  "id": "7205",
+  "parent": "6762",
+  "date": "2019-02-26T11:56:08+08:00",
+  "author": "melo",
+  "site": "",
+  "text": "@WL__Linux：这个我可以做个尝试解释下。\r\n驱动里最常见gpio_to_irq函数，追下去也是会跑到irq_create_mapping函数处，而内部这里wowo也讲了，会用irq_find_mapping来判断是否已经映射。\r\n那么这里为什么会这么处理呢，什么情况会提前在你驱动申请前就映射，什么情况是在你驱动申请时才需要映射？\r\n\r\n这个根据我的理解，是因为设备树使用习惯导致的。\r\n内核起来的时候,start_kernel->init_IRQ->irqchip_init->of_irq_init\r\nof_irq_init会扫描设备树，并根据里面配置的级联中断信息按顺序做好映射的工作。(这个wowo也提到啦)。\r\n但是我们还有的驱动，在使用gpio中断的时候，没有使用interrupts属性，而是在设备里简单的自定了一个中断gpio号，然后在驱动里取出gpio号，再手动的申请。\r\n\r\n这两者的区别，会导致再分配的虚拟中断号中间可能被填充了包括pmic等其他申请的虚拟中断号。所以这里就是使用了interrupts属性，就会提前分配。如果没有使用，那么就只能根据驱动加载顺序依次动态申请了"
+ },
+ {
+  "id": "8386",
+  "parent": "0",
+  "date": "2021-11-29T15:29:30+08:00",
+  "author": "test",
+  "site": "",
+  "text": "问个问题,级联的irq如何设置affinity?  直接在父节irq号上使用affinity吗?"
+ },
+ {
+  "id": "8800",
+  "parent": "0",
+  "date": "2023-08-02T11:34:20+08:00",
+  "author": "sleep",
+  "site": "",
+  "text": "我是初学者，首先感觉大佬很强，文章写的也很细，但少了点框架性的概述，感觉文章结构，内容组织和语句上可以改进下。文章开始我觉得可以先描述下interrupt-controller，irq-domain，irq-desc等几个对象的组织方式和对应关系或所属关系，稍稍具象化一点，不然一直说添加domain，添加映射其实是比较难以理解这个概念的，脑子里没有这几个对象的数据结构组织关系。\r\n\r\n还有比如说：\r\n“在second GIC初始化之后，该irq domain的HW interrupt ID和IRQ number的映射关系已经建立”\r\n紧接着：\r\n“3、在各个硬件外设的驱动初始化过程中，创建HW interrupt ID和IRQ number的映射关系”\r\n\r\n这个应该意思是HW interrupt ID和IRQ number在不同的阶段都可以进行映射(gic初始化或者device初始化）对吧。这里没有相关说明，单纯2各生硬句子让人有点混乱。\r\n\r\n大佬可能是对从中断子系统和设备子系统初始化过程都很熟悉，所以有些高估我这种菜鸟的知识储备程度吧。当然都是菜鸡发言哈，还是感谢和敬仰大佬实力和分享精神的。"
+ },
+ {
+  "id": "8873",
+  "parent": "2299",
+  "date": "2024-03-27T15:09:43+08:00",
+  "author": "aly",
+  "site": "",
+  "text": "@gzz：文章说的比较明白了，我理解你说的64号中断是硬件中断号。硬件中断号在级联情况下的确是会重复的，但驱动里用的是软件中断号，linux在启动时帮你映射好的。软件中断号不会重复，你可以在驱动代码里通过irq_of_parse_and_map或者platform_get_irq获取软件中断号"
+ }
+]

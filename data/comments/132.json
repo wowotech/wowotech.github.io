@@ -1,0 +1,130 @@
+[
+ {
+  "id": "1227",
+  "parent": "0",
+  "date": "2015-02-26T15:57:21+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "为什么我感觉timer里面的概念这么多？结构体也太多了点吧。\r\n读到现在依然没有一个明确的思绪。"
+ },
+ {
+  "id": "1230",
+  "parent": "1227",
+  "date": "2015-02-27T08:27:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：我写的也有些凌乱，最好是先写一个软件框架。不过这份文档需要我把时间子系统中的各个模块分析后再整理会好些。等忙过这一阵，好好的整理一下就OK了。\r\n文章需要打磨，往往第一版都是非常粗鄙的，慢慢来吧"
+ },
+ {
+  "id": "1231",
+  "parent": "1230",
+  "date": "2015-02-27T09:48:12+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：看文档也需要之前有个大体的认识，我也在慢慢了解整个框架。等我把所有文章都读了一遍，再回来读第二遍的时候应该就好得多。\r\n这个不着急，慢慢来。"
+ },
+ {
+  "id": "1238",
+  "parent": "0",
+  "date": "2015-02-28T15:15:28+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "/* Current CLOCK_REALTIME time in seconds */\r\nu64\t\t\txtime_sec;\r\n/* Clock shifted nano seconds */\r\nu64\t\t\txtime_nsec;\r\n\r\n为什么这里的注释是说shifted nano seconds\r\n\r\n另外 Current CLOCK_REALTIME time in seconds  这句话怎么理解呢？是说当前的墙上时间转换成了xtime_sec 秒吗？"
+ },
+ {
+  "id": "1239",
+  "parent": "0",
+  "date": "2015-02-28T16:09:49+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "（1）根据从RTC中获取的时间值来初始化timekeeping中的real time clock，如果没有获取到正确的RTC时间值，那么缺省的real time（wall time）就是linux epoch。\r\n\r\n这里我看也就只是初始化了tv_sec/tv_nsec 这两个变量\r\n你说的缺省的linux epoch 是因为【NTP协议使用的基准点是：1900年1月1日0点0分0秒（UTC）】\r\n所以才把这两个变量赋值为0的吗？"
+ },
+ {
+  "id": "1240",
+  "parent": "0",
+  "date": "2015-02-28T16:13:06+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "hi，我现在看的是高通的android包，高通是linux 3.10内核但是发现和你讲的有所区别。\r\nread_persistent_clock()读的时候读的是dummy_clock_access，这里总是对struct timespec *ts填充0。\r\n睡眠时间的补偿并不是在timekeeping_resume/timekeeping_suspend里做的，而是在rtc_suspend/rtc_resume时调用\r\ntimekeeping_inject_sleeptime实现的。\r\nread_persistent_clock()看起来在ARM中往往都是dummy_clock_access（为0）的，linux启动时从RTC中读取时间和睡眠时间的补偿都是在其他的模块中做的。"
+ },
+ {
+  "id": "1241",
+  "parent": "1240",
+  "date": "2015-02-28T16:28:09+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@passerby：hi 兄弟\r\n看一下这个code，\r\nstatic clock_access_fn __read_persistent_clock = dummy_clock_access;\r\nstatic clock_access_fn __read_boot_clock = dummy_clock_access;;\r\n\r\nvoid read_persistent_clock(struct timespec *ts)\r\n{\r\n\t__read_persistent_clock(ts);\r\n}\r\n\r\nvoid read_boot_clock(struct timespec *ts)\r\n{\r\n\t__read_boot_clock(ts);\r\n}\r\n\r\nint __init register_persistent_clock(clock_access_fn read_boot,\r\n\t\t\t\t     clock_access_fn read_persistent)\r\n{\r\n\t/* Only allow the clockaccess functions to be registered once */\r\n\tif (__read_persistent_clock == dummy_clock_access &&\r\n\t    __read_boot_clock == dummy_clock_access) {\r\n\t\tif (read_boot)\r\n\t\t\t__read_boot_clock = read_boot;\r\n\t\tif (read_persistent)\r\n\t\t\t__read_persistent_clock = read_persistent;\r\n\r\n\t\treturn 0;\r\n\t}\r\n\r\n\treturn -EINVAL;\r\n}\r\n然后上面的两个函数指针__read_persistent_clock /__read_boot_clock，是在register_persistent_clock 函数里面进行赋值。你会在你的rtc driver里面看到register_persistent_clock 这个函数，当然有可能只对一个函数指针进行了赋值"
+ },
+ {
+  "id": "1242",
+  "parent": "1241",
+  "date": "2015-02-28T16:34:51+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@tigger：我在全部代码里搜索了，这个register_persistent_clock注册函数在代码中没有得到调用，所以当timekeeping_init调用的还是dummy_clock_access。"
+ },
+ {
+  "id": "1244",
+  "parent": "1242",
+  "date": "2015-02-28T16:51:00+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@passerby：如果这样的话，可能他用了其他的方式来实现。\r\n手头没有msm的code，没法分析。"
+ },
+ {
+  "id": "1260",
+  "parent": "1238",
+  "date": "2015-03-02T11:29:18+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：我修改了对xtime_sec和 xtime_nsec的描述，请帮忙看看是否有帮助。"
+ },
+ {
+  "id": "1261",
+  "parent": "1239",
+  "date": "2015-03-02T11:35:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：time line有很多条，例如人类熟悉的墙上时间。我们说2015年3月2号...都是一个基于该timeline上时间原点（0年0月0分，耶稣诞生的时间点）的一个偏移。\r\n\r\n对于内核中的real time clock，其时间原点就是0秒，0纳秒。转换到人类熟悉的墙上时间time line的时候就是1970年1月1日0点0分0秒，即linux epoch"
+ },
+ {
+  "id": "1262",
+  "parent": "1240",
+  "date": "2015-03-02T12:06:45+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：我描述的都是基于3.14内核。本质上，这是和linux 时间子系统和rtc驱动模块之间交互相关，具体的交互内容包括：\r\n1、linux 时间子系统中time keeping模块初始值的获取\r\n2、睡眠时间的补偿\r\n3、RTC精度的补偿（一般而言，rtc的精度不高，在时间子系统running的情况下，可以考虑使用xtime的时间来sync RTC的值）\r\n....\r\n\r\n具体的实现方法可能会有多种，不过哪一种才是结构最优雅的呢？\r\n我的想法是：RTC这样的驱动模块最好是比较独立的，最好是根本不知道时间子系统的存在。不同的系统上，其RTC的chip可能是不同的，都是需要具体的驱动工程师撰写代码来支持，最好的方法是定义一些call back函数，插入内核就OK了。让rtc驱动来调用时间子系统的接口函数总觉得有点怪怪的，同时也对驱动工程师提出更多的要求（必须了解系统层面的知识）。\r\n当然，linux kernel运行在多种cpu体系结构上，针对某个cpu体系结构而言，又有各种不同的硬件系统设计，因此实际中应该会有很多异常状况（例如timekeeping模块初始化的时候可能rtc driver还没有ready），对于系统工程师而言，我们要找到理想和现实之间的平衡。"
+ },
+ {
+  "id": "1382",
+  "parent": "0",
+  "date": "2015-03-23T21:48:09+08:00",
+  "author": "cainiao",
+  "site": "",
+  "text": "请教一个问题，假如android手机关机了，系统时钟的时间停止不动，也就是开机时间还是之前开机的时间，问题可能会出现在哪里呢？如果手机重启，时间恢复到了1970年，问题可能出现在哪里呢？最近在研究rtc相关问题，期待linuxer大神回复！"
+ },
+ {
+  "id": "8593",
+  "parent": "0",
+  "date": "2022-04-25T17:39:06+08:00",
+  "author": "orangeboyye",
+  "site": "",
+  "text": "七 2 (4)最后一句：如果delta_delta大于2秒，突然结束了，是不是少写了半句话？"
+ },
+ {
+  "id": "8594",
+  "parent": "8593",
+  "date": "2022-04-26T06:47:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@orangeboyye：应该是，但时间过于久远了，现在都忘记要写什么了。"
+ },
+ {
+  "id": "8784",
+  "parent": "0",
+  "date": "2023-05-18T16:32:18+08:00",
+  "author": "laoyekang",
+  "site": "",
+  "text": "推荐一个油管视频 对于此模块各个时间的计算有一个初步介绍 对理解此模块各种公式计算有帮助\r\nwww.youtube.com/watch?v=E1uyXn0kBAc"
+ }
+]

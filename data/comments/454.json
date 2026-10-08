@@ -1,0 +1,122 @@
+[
+ {
+  "id": "7160",
+  "parent": "0",
+  "date": "2019-01-28T15:11:20+08:00",
+  "author": "yuan",
+  "site": "",
+  "text": "有一个 typo: copy_{to,from}_user()最终的实现就是利用了mencpy() => memcpy()"
+ },
+ {
+  "id": "7162",
+  "parent": "7160",
+  "date": "2019-01-28T17:12:27+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@yuan：细心，为你点个赞。"
+ },
+ {
+  "id": "7163",
+  "parent": "0",
+  "date": "2019-01-29T21:17:55+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "访问非法用户空间地址的时候，通过.fixup修复...需要做这种修复的地方岂不是很多？一句代码就要修复一次感觉有点多呀... 楼主有无对各种fixup的总结讲解呢~"
+ },
+ {
+  "id": "7164",
+  "parent": "0",
+  "date": "2019-01-29T22:37:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "用memory copy取代copy_{to,from}_user()是绝对禁止的，没有地址检查（access_ok）会引起安全问题。在4.13内核中有一个惨痛的案例：waitpid系统调用使用了unsafe版本的copy_to_user，遗漏了access_ok，从而导致了安全漏洞，而黑客可以利用该漏洞轻松的让普通进程获取root权限。\r\n\r\n另外，当你想使用memory copy取代copy_{to,from}_user()的时候，你潜意识中做了一些假设。以32位系统为例，1G：3G的地址空间分配（高端1G内核空间在所有进程之间共享）并不是唯一的选择，也许4G:4G也未尝不可。假如系统配置是4G：4G，那么memory copy是无法取代copy_{to,from}_user()的。"
+ },
+ {
+  "id": "7165",
+  "parent": "7163",
+  "date": "2019-01-29T22:48:55+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hzm：为何会很多呢？我们只需要考虑内核空间访问用户空间的情况。而这种情况主要集中在内核空间和用户空间数据的交互接口。例如，copy_to_user()接口上，也并不是需要对每一条指令fixup，只需要对访问用户空间地址的指令fixup。所以，总的来说并不是太多。"
+ },
+ {
+  "id": "7166",
+  "parent": "7164",
+  "date": "2019-01-29T22:50:34+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@linuxer：感谢，郭大侠补充。所以，我们一定要规范编程。"
+ },
+ {
+  "id": "7172",
+  "parent": "0",
+  "date": "2019-01-31T15:39:07+08:00",
+  "author": "nstcl",
+  "site": "",
+  "text": "“针对copy_{to,from}_user()汇编代码中每一处用户空间地址访问的指令都会创建一个entry”这个创建是如何实现的呢？谢谢"
+ },
+ {
+  "id": "7174",
+  "parent": "7172",
+  "date": "2019-01-31T19:01:57+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@nstcl：https://elixir.bootlin.com/linux/v4.18/source/arch/arm64/lib/copy_to_user.S#L65\r\n\r\n上面的链接是__arch_copy_to_user()汇编代码实现。注意，9998 标号的位置就是fixup address。因此，需要构建 entry 就离不开这个9998。所以，你看下，__arch_copy_to_user()上半部分的汇编，是一堆宏定义。注意几个包含9998数字的几个宏。\r\n\r\n下面需要做的事情就是展开这些宏吧。"
+ },
+ {
+  "id": "7175",
+  "parent": "7164",
+  "date": "2019-02-01T10:39:13+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@linuxer：大侠连评论都这么精彩，含金量爆表！\r\n4G:4G的分配之前都没想过，不过通过arm的（TTBR0/TTBR1）确实可以实现。\r\n那么弱弱的问一下，x86也可以做4G:4G的分配吗？通过什么实现呢？"
+ },
+ {
+  "id": "7177",
+  "parent": "7175",
+  "date": "2019-02-02T19:07:39+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@bsp：https://lwn.net/Articles/39283/\r\nhttps://lwn.net/Articles/86715/\r\n\r\n这里有一些信息可以参考一下。4G/4G split patch是在特定场景下有意义（32bit CPU，内存配置非常大的情况），但是会引入性能问题（在系统调用的时候还需要切换地址空间），因此，现在这种地址空间分法也就几乎没有人提起了。"
+ },
+ {
+  "id": "7183",
+  "parent": "7174",
+  "date": "2019-02-14T11:52:29+08:00",
+  "author": "nstcl",
+  "site": "",
+  "text": "@smcdef：感谢"
+ },
+ {
+  "id": "7215",
+  "parent": "0",
+  "date": "2019-03-02T03:56:29+08:00",
+  "author": "leoxu",
+  "site": "",
+  "text": "pagefault处理的官方的文档，基于x86\r\nhttps://www.kernel.org/doc/Documentation/x86/exception-tables.txt"
+ },
+ {
+  "id": "7329",
+  "parent": "0",
+  "date": "2019-03-21T11:50:44+08:00",
+  "author": "紫书海",
+  "site": "http://www.zishuhai.com",
+  "text": "如此好文章一定要留下名啊"
+ },
+ {
+  "id": "7388",
+  "parent": "0",
+  "date": "2019-04-30T14:45:57+08:00",
+  "author": "schspa",
+  "site": "",
+  "text": "最后，我想说，即使在某些情况下memcpy()可以正常工作。但是，这也是不推荐的，不是良好的编程习惯。在用户空间和内核空间数据交互上，我们必须使用类似copy_{to,from}_user()的接口。为什么类似呢？因为还有其他的接口用于内核空间和用户空间数据交互，只是没有copy_{to,from}_user()出名。例如：{get,put}_user()。\r\n\r\n<< 如果直接使用memcpy，会有安全漏洞，直接给了用户空间程序向内核任意地址写入，读取内容的能力。"
+ },
+ {
+  "id": "7390",
+  "parent": "7388",
+  "date": "2019-05-02T21:14:17+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@schspa：是啊！所以我一直不推荐使用memcpy()啊！但是，总还是有驱动开发者在用。"
+ }
+]

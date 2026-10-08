@@ -1,0 +1,258 @@
+[
+ {
+  "id": "970",
+  "parent": "0",
+  "date": "2014-12-29T15:42:45+08:00",
+  "author": "ecwmin",
+  "site": "",
+  "text": "\"Auto Sleep跟Wake Lock是一对冤家，一个没事就让系统休眠，一个偏不让系统休眠...如果Driver不想让PM Core逮着机会就休眠，就干脆别让系统休眠，而是先把自己的事情处理完了再说.\"\r\n写的真形象，多谢博主分享。"
+ },
+ {
+  "id": "977",
+  "parent": "970",
+  "date": "2014-12-30T10:24:48+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "@ecwmin：谢谢肯定，大家多多讨论，一个人的观点毕竟有限"
+ },
+ {
+  "id": "978",
+  "parent": "0",
+  "date": "2014-12-30T10:39:18+08:00",
+  "author": "haichunzhao",
+  "site": "",
+  "text": "Wake Count/Wake Souce最好还是写成WakeUp Count/WakeUp Source。\r\n》wake count的目的是为了解决同步问题，也即是为了解决”在睡眠的过程中，接收到事件而想退出睡眠“的问题\r\n这是其中一个方面；还有一方面决定是否发起睡眠动作。如果动作是由用户空间发起的，首先去读取wakeup count值，然后检测用户空间是否准备好睡眠，将读取的wakeup count值再写入节点，如果成功，再向/sys/power/state中写入sleep。"
+ },
+ {
+  "id": "979",
+  "parent": "978",
+  "date": "2014-12-30T15:51:23+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "@haichunzhao：嗯嗯，回头改了。"
+ },
+ {
+  "id": "1117",
+  "parent": "0",
+  "date": "2015-01-21T16:08:31+08:00",
+  "author": "yang",
+  "site": "",
+  "text": "01-01 00:54:39.863 D/PowerManagerNotifier(  866): mGoToSleepBroadcastDone - sendNextBroadcast\r\n01-01 00:29:13.659 V/kernel  ( 3449): <6>[ 1836.671959] PM: suspend entry 2014-12-31 16:54:39.872099731 UTC\r\n01-01 00:29:13.659 V/kernel  ( 3449): <6>[ 1836.671968] PM: Syncing filesystems ... done.\r\n01-01 00:29:13.672 V/kernel  ( 3449): <6>[ 1836.685205] Freezing user space processes ... (elapsed 0.002 seconds) done.\r\n01-01 00:29:13.674 V/kernel  ( 3449): <6>[ 1836.686529] [ALS/PS] ltr559_irq_handler, in\r\n01-01 00:29:13.674 V/kernel  ( 3449): <6>[ 1836.687035] [ALS/PS] ltr559_schedwork, status=0X33\r\n01-01 00:29:13.674 V/kernel  ( 3449): <6>[ 1836.687041] [ALS/PS] ltr559_schedwork, ps interrupt\r\n01-01 00:29:13.675 V/kernel  ( 3449): <6>[ 1836.687345] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.\r\n01-01 00:29:13.675 V/kernel  ( 3449): <6>[ 1836.687616] [ALS/PS] read_ps_adc_value, ps_val=174\r\n01-01 00:29:13.675 V/kernel  ( 3449): <6>[ 1836.687636] [ALS/PS] report_ps_input_event_zte, ps far\r\n01-01 00:29:13.676 V/kernel  ( 3449): <6>[ 1836.688350] [ALS/PS] report_ps_input_event_zte, adc_value=174,default_ps_lowthresh=185,default_ps_highthresh=214\r\n01-01 00:29:13.676 V/kernel  ( 3449): <6>[ 1836.689101] Suspending console(s) (use no_console_suspend to debug)\r\n01-01 00:29:13.680 V/kernel  ( 3449): <6>[ 1836.693195] fb_notifier_callback.\r\n01-01 00:29:13.680 V/kernel  ( 3449): <6>[ 1836.693206] mdss_dsi_event_handler: event=7\r\n01-01 00:29:13.681 V/kernel  ( 3449): <6>[ 1836.693222] fb_notifier_callback.\r\n01-01 00:29:13.682 V/kernel  ( 3449): <6>[ 1836.694800] ltr559_suspend\r\n01-01 00:29:13.699 V/kernel  ( 3449): <6>[ 1836.711522] PM: suspend of devices complete after 21.136 msecs\r\n01-01 00:29:13.700 V/kernel  ( 3449): <6>[ 1836.713124] PM: late suspend of devices complete after 1.594 msecs\r\n01-01 00:29:13.703 V/kernel  ( 3449): <6>[ 1836.715527] PM: noirq suspend of devices complete after 2.396 msecs\r\n01-01 00:29:13.703 V/kernel  ( 3449): <6>[ 1836.715532] Disabling non-boot CPUs ...\r\n01-01 00:29:13.705 V/kernel  ( 3449): <4>[ 1836.717235] IRQ39 no longer affine to CPU2\r\n01-01 00:29:13.706 V/kernel  ( 3449): <6>[ 1836.718347] CPU0:msm_cpu_pm_enter_sleep mode:3 during suspend\r\n01-01 00:29:13.706 V/kernel  ( 3449): <6>[ 1836.718347] Enabled clocks:\r\n01-01 00:29:13.706 V/kernel  ( 3449): <6>[ 1836.718347] \txo_a_clk_src:2:2 [19200000]\r\n01-01 00:29:13.706 V/kernel  ( 3449): <6>[ 1836.718347] \tbimc_msmbus_a_clk:1:1 [532938752] -> bimc_a_clk:1:1 [532938752]\r\n01-01 00:29:13.706 V/kernel  ( 3449): <6>[ 1836.718347] \tpcnoc_keepalive_a_clk:1:1 [19200000] -> pcnoc_a_clk:1:1 [19200000\r\n\r\nwowo,我遇到一个问题，上述log，系统在suspend过程中ltr559驱动上报了一个消息，但这个消息未及时传递到上层，只能在下一次其他中断源唤醒系统后才处理ltr559的消息。\r\n已经设定了irq_enable_wake(irq);但是没设IRQF_NO_SUSPEND标志。我加上IRQF_NO_SUSPEND标志会有改善吗？\r\n谢谢"
+ },
+ {
+  "id": "1118",
+  "parent": "0",
+  "date": "2015-01-21T16:31:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "从日志里面可以看到ltr559的中断已经被处理了（ltr559_irq_handler），但是handler中schedule了一个thread，而此时系统在suspend的过程中，已经没有机会调度了。所以这种情况irq_enable_wake(irq)和IRQF_NO_SUSPEND是解决不了的。需要使用Wakeup events framework，阻止系统suspend，具体可以参考“/pm_subsystem/wakeup_events_framework.html”中的描述。"
+ },
+ {
+  "id": "1119",
+  "parent": "1117",
+  "date": "2015-01-21T16:31:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yang：sorry,忘了在帖子下面回复了。"
+ },
+ {
+  "id": "1120",
+  "parent": "1118",
+  "date": "2015-01-22T10:38:50+08:00",
+  "author": "yang",
+  "site": "",
+  "text": "@wowo：是的，加了pm_wakeup_event才可以"
+ },
+ {
+  "id": "1317",
+  "parent": "0",
+  "date": "2015-03-10T09:49:50+08:00",
+  "author": "xuchu",
+  "site": "",
+  "text": "请教个问题，在suspend的时候我做了disable irq,resume的时候我做了enable irq的动作。但出现系统唤醒后，有中断来了，一直没有进中断处理函数，这个中断一直处于pending状态？？？"
+ },
+ {
+  "id": "1318",
+  "parent": "1317",
+  "date": "2015-03-10T10:55:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xuchu：可以先确定一下，这个时候IRQ是否处于enable状态？"
+ },
+ {
+  "id": "1319",
+  "parent": "1318",
+  "date": "2015-03-10T11:06:58+08:00",
+  "author": "xuchu",
+  "site": "",
+  "text": "@wowo：恩，这个时候IRQ是处于enable状态，中断也有触发，就是没有进入中断处理函数"
+ },
+ {
+  "id": "1320",
+  "parent": "1319",
+  "date": "2015-03-10T11:39:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xuchu：系统行为是什么样子的？是不是在别的中断处理函数中出不来了？不然的话，如果中断处于pending状态了，没理由不调用handler。或者cat /proc/interrupts，查看一下各个中断的状态。"
+ },
+ {
+  "id": "1337",
+  "parent": "1320",
+  "date": "2015-03-13T20:36:35+08:00",
+  "author": "xuchu",
+  "site": "",
+  "text": "@wowo：刚才复现了这个问题，发现中断被mask掉了，但有调用enable_irq,为什么还被mask掉了呢？"
+ },
+ {
+  "id": "1338",
+  "parent": "1337",
+  "date": "2015-03-13T21:02:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xuchu：可能是enable和disable调用不对称，或者代码里面可能有同步问题。可以从这个思路去查一下。"
+ },
+ {
+  "id": "1339",
+  "parent": "1338",
+  "date": "2015-03-13T21:36:57+08:00",
+  "author": "xuchu",
+  "site": "",
+  "text": "@wowo：enable和disable对称我check了，请教两个问题：\r\n1.驱动中仅仅申请完irq,这个时候irq默认是enable还是disable?\r\n2.你提到的可能有同步问题是指？我还没理解。。"
+ },
+ {
+  "id": "1340",
+  "parent": "0",
+  "date": "2015-03-13T22:20:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "1.驱动中仅仅申请完irq,这个时候irq默认是enable还是disable? \r\n    enable\r\n2.你提到的可能有同步问题是指？我还没理解。。\r\n    从你的信息中（复现了问题），说明这个问题不是必现的？？如果不必现，那么正常逻辑应该没问题，会不会是enable时没有原子操作，导致结果异常？"
+ },
+ {
+  "id": "1341",
+  "parent": "1340",
+  "date": "2015-03-13T22:23:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wowo：另外，除了你显式的调用enable/disable，在suspend/resume的过程中，也可能会被irq模块调用。你查一下。"
+ },
+ {
+  "id": "1344",
+  "parent": "1341",
+  "date": "2015-03-14T11:26:58+08:00",
+  "author": "xuchu",
+  "site": "",
+  "text": "@wowo：好的，多谢。"
+ },
+ {
+  "id": "2219",
+  "parent": "1118",
+  "date": "2015-07-15T14:46:02+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "@wowo：但是handler中schedule了一个thread，而此时系统在suspend的过程中，已经没有机会调度了。\r\n\r\n=====================================================\r\nwowo，我的理解是：\r\nltr559_schedwork\r\n可以看到handler中schedule的thread能够被调度了。\r\nreport_ps_input_event_zte, ps far \r\n并且调度中能上报中断，只是现在用户空间进程被冻结了，所以上层无法理睬这个input event而已。"
+ },
+ {
+  "id": "2221",
+  "parent": "2219",
+  "date": "2015-07-15T15:52:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：我想当然的认为freeze之后，内核线程无法调度了，事实还真不一定是这样。是不是您所说的这个样子，我也不太确定。我没有看过源码，不知道ltr559_schedwork是否是在线程中打印的。"
+ },
+ {
+  "id": "2223",
+  "parent": "0",
+  "date": "2015-07-15T17:40:32+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo，当CPU从睡眠被唤醒时。PC指针会指向0还是？寄存器上下文这些东东是怎么被恢复的？我们在suspend之前将这些信息保存在那些地方的呢？"
+ },
+ {
+  "id": "2225",
+  "parent": "2223",
+  "date": "2015-07-15T19:37:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：这个和具体平台的实现有关，有的平台，resume之后，会继续执行。有的平台，会保存回来的地址，然后让CPU core直接断电，resume后，重新执行，并跳转到保存的地址。"
+ },
+ {
+  "id": "2702",
+  "parent": "0",
+  "date": "2015-09-25T15:12:34+08:00",
+  "author": "edwin.yan",
+  "site": "",
+  "text": "wowo你好，我现在调试的Android的内核版本是3.14，在suspend过程中跑到input子系统时会一直卡住无法休眠，通过调试找到的原因是在卡在进入input子系统suspend时的input_dev_release_keys()这个函数中，当系统注册了带按键功能的驱动时，在suspend的时候就会遇到驱动的wakelock锁从而无法suspend，不知wowo和linuxer大神有何建议修改？（注：input_dev_release_keys（）函数在内核3.14版本中由resume函数提前到了suspend中，由于在suspend设备之前已经关闭了进程和线程，所以此函数中的lock锁上层无法响应解锁，所以会一直卡住，因为Google官方的内核也就使用到3.10版本，所以也不知道这个是不是系统的bug）"
+ },
+ {
+  "id": "2703",
+  "parent": "2702",
+  "date": "2015-09-25T17:44:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@edwin.yan：之前我们是不是在邮件中讨论过这个事情？其实我对input子系统不是很了解，您描述的这种情况，我有一些疑问：\r\n1. input_dev_release_keys中，模拟的按键up事件，会经过具体的driver吗？\r\n2. input_dev_release_keys中，模拟的按键up事件，会试图上报wakeup event吗？\r\n\r\n我觉得，对driver来说，它只会在检测到event和上报event之间，拿wakeup锁。上报之后，就会relex这个锁。所以，我还是建议，你确定一下最终阻止系统休眠的event到底是哪一个？例如，执行如下命令：\r\ncat /sys/kernel/debug/wakeup*"
+ },
+ {
+  "id": "4449",
+  "parent": "0",
+  "date": "2016-08-26T15:04:53+08:00",
+  "author": "hongxiaoh",
+  "site": "",
+  "text": "请问 这个Enable clocks该怎么看?   是谁在睡眠中 没有关闭时钟呢？\r\n最近发现suspend后，电流很大，发现有时钟没关，但是对时钟的log 不清楚。\r\n\r\nEnabled clocks:\r\n01-01 00:29:13.706 V/kernel  ( 3449): <6>[ 1836.718347]     xo_a_clk_src:2:2 [19200000]\r\n01-01 00:29:13.706 V/kernel  ( 3449): <6>[ 1836.718347]     bimc_msmbus_a_clk:1:1 [532938752] -> bimc_a_clk:1:1 [532938752]\r\n01-01 00:29:13.706 V/kernel  ( 3449): <6>[ 1836.718347]     pcnoc_keepalive_a_clk:1:1 [19200000] -> pcnoc_a_clk:1:1 [19200000"
+ },
+ {
+  "id": "4451",
+  "parent": "4449",
+  "date": "2016-08-26T15:25:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hongxiaoh：建议你可以去代码里面找一下打印对应的地方，如果实在找不到，说一声我帮你找:-)"
+ },
+ {
+  "id": "4453",
+  "parent": "4451",
+  "date": "2016-08-26T16:08:52+08:00",
+  "author": "hongxiaoh",
+  "site": "",
+  "text": "@wowo：这么快回复。微信5元饮料已发。\r\nxiaoelectron\r\n再次感谢。"
+ },
+ {
+  "id": "6713",
+  "parent": "0",
+  "date": "2018-04-27T17:29:02+08:00",
+  "author": "leasy",
+  "site": "",
+  "text": "wowo我想问下如果查看唤醒源。\r\nAndroid7.0平台，看log发现进入深度休眠前会先尝试进入sleep，最终退出（大概5秒）后，第二次进入sleep后持续稳定，直至用户去唤醒他。我不知道是什么方便导致的第一次sleep很快就退出了。第一次sleep的log如下：\r\n[  828.004427] PM: suspend entry 2018-04-27 09:07:12.854119570 UTC\r\n[  828.004445] PM: Syncing filesystems ... done.\r\n[  828.026200] PM: Preparing system for mem sleep\r\n[  828.028988] Freezing user space processes ... \r\n[  828.082561] Error: returning -512 value\r\n[  828.086992] (elapsed 0.057 seconds) done.\r\n[  828.087022] Freezing remaining freezable tasks ... (elapsed 0.008 seconds) done.\r\n[  828.095523] PM: Entering mem sleep\r\n[  828.095540] Suspending console(s) (use no_console_suspend to debug)\r\n[  828.164952] PM: suspend of devices complete after 65.764 msecs\r\n[  828.171029] PM: late suspend of devices complete after 6.050 msecs\r\n[  828.181415] PM: noirq suspend of devices complete after 10.366 msecs\r\n[  828.181578] Disabling non-boot CPUs ...\r\n[  828.189844] migrate_irqs: 15775 callbacks suppressed\r\n[  828.189851] IRQ7 no longer affine to CPU1\r\n[  828.189857] IRQ8 no longer affine to CPU1\r\n[  828.189865] IRQ9 no longer affine to CPU1\r\n[  828.189872] IRQ10 no longer affine to CPU1\r\n[  828.189880] IRQ11 no longer affine to CPU1\r\n[  828.189886] IRQ12 no longer affine to CPU1\r\n[  828.189894] IRQ13 no longer affine to CPU1\r\n[  828.189901] IRQ14 no longer affine to CPU1\r\n[  828.189908] IRQ15 no longer affine to CPU1\r\n[  828.189916] IRQ16 no longer affine to CPU1\r\n[  828.279435] Suspended for 0.000 seconds\r\n[  828.280625] Enabling non-boot CPUs ...\r\n[  828.288770] CPU1 is up\r\n[  828.297005] CPU2 is up\r\n[  828.303590] CPU3 is up\r\n[  828.314480] CPU4 is up\r\n[  828.322787] CPU5 is up\r\n[  828.331437] CPU6 is up\r\n[  828.339823] CPU7 is up\r\n[  828.343668] PM: noirq resume of devices complete after 2.891 msecs\r\n[  828.350323] PM: early resume of devices complete after 2.737 msecs\r\n[  828.481451] PM: resume of devices complete after 131.102 msecs\r\n[  828.486712] PM: Finishing wakeup.\r\n[  828.486725] Restarting tasks ... done.\r\n[  828.579814] PM: suspend exit 2018-04-27 09:07:17.502919464 UTC\r\n\r\n其中migrate_irqs: 15775 callbacks suppressed这log在第二次sleep的时候没打印，也不清楚是为什么。"
+ },
+ {
+  "id": "7603",
+  "parent": "0",
+  "date": "2019-08-21T08:00:44+08:00",
+  "author": "arara",
+  "site": "",
+  "text": "系统suspend时会调用设备的RPM suspend吗"
+ },
+ {
+  "id": "7620",
+  "parent": "0",
+  "date": "2019-08-28T11:18:00+08:00",
+  "author": "nowar",
+  "site": "",
+  "text": "IRQF_NO_SUSPEND这个标志的中断源在系统已经睡下去的时候还会持续发出中断吗？睡下后是不根本就不触发了还是触发但是cpu不处理？"
+ },
+ {
+  "id": "7622",
+  "parent": "7620",
+  "date": "2019-08-28T11:51:11+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@nowar：IRQF_NO_SUSPEND 仅仅是STR 的时候，不关闭中断。这并不代表具有唤醒系统的能力。如果需要唤醒系统。请调用 enable_irq_wake()，同时 drop 这个 flag。因为这两个玩意是水火不容。"
+ },
+ {
+  "id": "7623",
+  "parent": "7622",
+  "date": "2019-08-28T13:44:22+08:00",
+  "author": "nowar",
+  "site": "",
+  "text": "@smcdef：我知道IRQF_NO_SUSPEND没有唤醒的能力。问的是它在STR以后（已经睡下去了）， 这个时候它还有中断发出来吗？"
+ }
+]

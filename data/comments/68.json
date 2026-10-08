@@ -1,0 +1,410 @@
+[
+ {
+  "id": "249",
+  "parent": "0",
+  "date": "2014-07-23T10:01:03+08:00",
+  "author": "foiron",
+  "site": "http://meiyou",
+  "text": "hi linuxer 是不是标题要修改一下，没有发表gpio系统2，直接先发表系统之3吗"
+ },
+ {
+  "id": "251",
+  "parent": "249",
+  "date": "2014-07-23T10:24:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@foiron：gpio系统2还在我的计算机里面呢，完成了50％，我是2和3一起写，3先写完成了，2是描述pin control subsystem的软件框架，还没有完成"
+ },
+ {
+  "id": "252",
+  "parent": "0",
+  "date": "2014-07-23T10:25:37+08:00",
+  "author": "foiron",
+  "site": "http://meiyou",
+  "text": "ok，先阅读3！学习了：）"
+ },
+ {
+  "id": "253",
+  "parent": "252",
+  "date": "2014-07-23T10:35:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@foiron：一共五篇：\r\n1、框架\r\n2、pin control subsystem\r\n3、pin controller driver\r\n4、GPIO subsystem\r\n5、GPIO controller driver\r\n\r\n其实对于新的内核的机制，我也是边看代码边理解，大家一起学习吧"
+ },
+ {
+  "id": "314",
+  "parent": "0",
+  "date": "2014-08-18T10:11:32+08:00",
+  "author": "欧丽源",
+  "site": "http://www.ouliyuan.net/",
+  "text": "学习了 很不错啊 嘿嘿"
+ },
+ {
+  "id": "318",
+  "parent": "314",
+  "date": "2014-08-18T12:20:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@欧丽源：多谢鼓励，其实这个专题的文档写的不是很好。只是GPIO以及pin control属于边缘地带，我不是那么的关注在这个主题上，如果有机会还是要回来再修正一些内容的"
+ },
+ {
+  "id": "471",
+  "parent": "0",
+  "date": "2014-09-27T22:25:42+08:00",
+  "author": "perr",
+  "site": "",
+  "text": "看2和3看的起鸡皮疙瘩...果断是好用难懂的东西.继总线抽象模型后的又一个大坎."
+ },
+ {
+  "id": "567",
+  "parent": "318",
+  "date": "2014-10-24T14:03:54+08:00",
+  "author": "常山黄豆",
+  "site": "",
+  "text": "@linuxer：我的android4.4版本的kernel里面samsung_pinctrl_parse_dt函数与你文章不一样，看到这里我没法再看下去了，是我的kernel太旧了吗？另外\r\n4、GPIO subsystem \r\n5、GPIO controller driver \r\n这两篇文章还没有发布吧？什么时候发布？谢谢！"
+ },
+ {
+  "id": "568",
+  "parent": "318",
+  "date": "2014-10-24T14:16:04+08:00",
+  "author": "常山黄豆",
+  "site": "",
+  "text": "@linuxer：楼主的kernel是3.14版本的吧，android4.4的kernel是3.8版本的。"
+ },
+ {
+  "id": "572",
+  "parent": "567",
+  "date": "2014-10-24T19:00:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@常山黄豆：我这里的代码分析都是基于3.14内核的，如果不是的话，可能是对不上的。\r\n\r\n另外，说来惭愧，因为工作比较忙，实际上我所有的业余时间都用在写文档了，但是，最近对中断子系统和内核同步更感兴趣，写起来比较有快感，因此，GPIO这部分就荒废了，恐怕最近都不会发布这两份文档了，抱歉，抱歉！"
+ },
+ {
+  "id": "2082",
+  "parent": "0",
+  "date": "2015-06-30T15:50:02+08:00",
+  "author": "wxia2010",
+  "site": "",
+  "text": "ID从0开始，依次加一。根据例子中的定义，state ID等于0（名字是active）的state对应pinctrl-0属性，state ID等于1（名字是idle）的state对应pinctrl-1属性。\r\n\r\n和定义似乎有冲突\r\n\r\n pinctrl-names = \"sleep\", \"active\";－－－－－－（1） \r\n        pinctrl-0 = <pin-config-0-a>;－－－－－－－－－－－－－－（2） \r\n        pinctrl-1 = <pin-config-1-a pin-config-1-b>;         \r\n    };"
+ },
+ {
+  "id": "2099",
+  "parent": "2082",
+  "date": "2015-06-30T21:51:15+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@wxia2010：多谢提醒，这里应该是笔误，我们会尽快改正。谢谢~~~"
+ },
+ {
+  "id": "2371",
+  "parent": "0",
+  "date": "2015-07-30T07:22:10+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "很好的文章，linux新手，热情很高，感觉这里正是我一直要找的地方！\r\n\r\n想提几点建议，对于我样的新手来说：\r\n１，能否在描述每个子系统时，先从应用的角度对其进行概括性的描述\r\n２，能否对子系统中的各个接口进行简单分类的描述，比如：从芯片厂商的角度来讲述子模块，从其它设备驱动角度描述，从用户空间角度描述，因为对于我这样的新手经常迷失在各种struct中，不知其实际的使用场景，所以理解起来有些难度，比如pinctrl pinctrl_dev两个结构，\r\n\r\n另，关于gpio子系统中关于pinctrl－single这块有时间博主帮忙解答下，先谢了！"
+ },
+ {
+  "id": "2375",
+  "parent": "2371",
+  "date": "2015-07-30T09:21:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@electrlife：人的精力有限，我们很难维护那么多的内核子系统，GPIO subsystem被抛弃了，不过还是多谢你的建议，在后续写文档的时候，我们会考虑的"
+ },
+ {
+  "id": "3120",
+  "parent": "253",
+  "date": "2015-11-25T09:33:57+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@linuxer：这个系列感觉干货很多，麻雀虽小，五脏俱全，这样的切入点更容易让我们读者理解，建议linuxer有时间了，把这个系列补全吧，期待您的文章，每一系列文章就像一部作品一样。非常感谢有您这样的大牛给我们指路，带我们深入kernel。"
+ },
+ {
+  "id": "3123",
+  "parent": "572",
+  "date": "2015-11-25T13:34:41+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@linuxer：linuxer大牛，我觉得这个子系统还是比较重要的，麻雀虽小，五脏俱全，等您不忙别的子系统后，是不是回来把这个系列完善一下呢？我觉得这是深入进内核一个相对比较容易的切入点，别的子系统都要复杂一些。\r\n非常感谢你们的劳动成果，受益良多，嘻嘻。"
+ },
+ {
+  "id": "3140",
+  "parent": "3123",
+  "date": "2015-11-26T10:25:05+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：多谢你的建议！我应该会在某个时间点再回来的。"
+ },
+ {
+  "id": "3796",
+  "parent": "0",
+  "date": "2016-04-06T15:38:02+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "有一点不是很明白，比如你在DTS中把某个 PIN组 配置了内部上拉电阻屏蔽。那么屏蔽这个动作在什么时候有效？是在系统解析设备树后就直接有效或者pinctrl控制器注册之后。还是说在驱动中使用了特定的api获取了设备树资源才开始有效。\r\n\r\n还有如下把一个PIN既单独组成了一个引脚组，在设备节点中又用了2种方法去引用它，这里会有什么问题吗？\r\n\r\n       gpio2_bq20745{\r\n            bq20745_d:bq20745_d{\r\n                rockchip,pins =<GPIO2_B1> ;\r\n                rockchip,pull = <VALUE_PULL_DISABLE>;\r\n            };\r\n        };\r\n2.rk3128-fireprime.dts中加入：\r\n&bq20745 {\r\n    status = \"okay\";\r\n    compatible = \"duwa,bq20745\";\r\n    irq_charge_plugin = <&gpio0 GPIO_D6 IRQ_TYPE_EDGE_BOTH>;\r\n    irq_gpio_off = <&gpio2 GPIO_B1 IRQ_TYPE_EDGE_FALLING>;\r\n    irq_gpio_charge_level = <&gpio3 GPIO_C1 IRQ_TYPE_EDGE_FALLING>;\r\n\r\n    pinctrl-names = \"default\";\r\n    pinctrl-0 = <&bq20745_d>;\r\n};"
+ },
+ {
+  "id": "3797",
+  "parent": "3796",
+  "date": "2016-04-06T16:03:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@emeralddream：第一个问题，是在driver probe的时候：\r\ndriver_probe_device\r\n        really_probe\r\n                pinctrl_bind_pins\r\n                        pinctrl_select_state\r\n                                ...\r\n第二个问题，不是很明白您的意思。"
+ },
+ {
+  "id": "3799",
+  "parent": "3797",
+  "date": "2016-04-06T16:26:46+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "@wowo：pinctrl控制器驱动的probe？\r\n\r\n第二个问题针对gpio2_b1,在设备节点中有\r\n irq_gpio_off = <&gpio2 GPIO_B1 IRQ_TYPE_EDGE_FALLING>; \r\n\r\n pinctrl-names = \"default\"; \r\n    pinctrl-0 = <&bq20745_d>; \r\n这2个都是对该pin的引用，这样做是不是重复了？"
+ },
+ {
+  "id": "3801",
+  "parent": "3799",
+  "date": "2016-04-06T19:21:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@emeralddream：是各个device driver的probe。\r\n如果有重复，就是后设置的那个生效。"
+ },
+ {
+  "id": "3977",
+  "parent": "0",
+  "date": "2016-05-25T17:30:00+08:00",
+  "author": "Ryan",
+  "site": "",
+  "text": "我用Source Insight 看内核代码：\r\n在drivers\\pinctrl\\Pinconf.h中有一行代码：#if defined(CONFIG_PINCONF) && defined(CONFIG_DEBUG_FS)\r\n想问一下各位：CONFIG_PINCONF，CONFIG_DEBUG_FS这些宏是那里定义呢？\r\n\r\n我在整个代码下执行：grep -nr \"CONFIG_PINCONF\"\r\ndrivers/pinctrl/Makefile:7bj-$(CONFIG_PINCONF)                += pinconf.o\r\ndrivers/pinctrl/pinconf.h:14:#ifdef CONFIG_PINCONF\r\ndrivers/pinctrl/pinconf.h:61:#if defined(CONFIG_PINCONF) && defined(CONFIG_DEBUG_FS)\r\ninclude/linux/pinctrl/pinconf.h:15:#ifdef CONFIG_PINCONF\r\n\r\n只找到上面的内容。\r\n\r\nCONFIG_PINCONF，CONFIG_DEBUG_FS这些宏是那里定义呢？\r\n内核中还有很多类似这样的宏定义，请问都是在那定义呢？"
+ },
+ {
+  "id": "3978",
+  "parent": "3977",
+  "date": "2016-05-25T18:26:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Ryan：把“CONFIG_”去掉，再grep，你会发现惊喜的:-)"
+ },
+ {
+  "id": "3981",
+  "parent": "3978",
+  "date": "2016-05-25T18:59:41+08:00",
+  "author": "Ryan",
+  "site": "",
+  "text": "@wowo：@wowo,\r\n想问一下，在最终生成的用来编译内核的.config文件中的类似CONFIG_PINCONF＝y这样的东西，可以在.c文件中使用吗？就是像：\r\n#if defined(CONFIG_PINCONF)"
+ },
+ {
+  "id": "3982",
+  "parent": "3981",
+  "date": "2016-05-25T19:27:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Ryan：可以的。\r\nPS：你可以简单的试试，例如：\r\n#if defined(CONFIG_PINCONF)\r\n    I'am a wrong code;\r\n#endif\r\n呵呵"
+ },
+ {
+  "id": "3983",
+  "parent": "3982",
+  "date": "2016-05-25T19:44:13+08:00",
+  "author": "Ryan",
+  "site": "",
+  "text": "@wowo：OK,非常感谢前辈指点。看了您的好多文章，一个明显的感觉就是每一个子系统都写的非常系统全面。真心受教了。"
+ },
+ {
+  "id": "3984",
+  "parent": "3983",
+  "date": "2016-05-25T19:56:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Ryan：不必客气~~"
+ },
+ {
+  "id": "4131",
+  "parent": "0",
+  "date": "2016-06-22T09:20:18+08:00",
+  "author": "XXX",
+  "site": "",
+  "text": "膜拜~"
+ },
+ {
+  "id": "4764",
+  "parent": "3801",
+  "date": "2016-10-20T21:25:38+08:00",
+  "author": "狂奔的乌龟",
+  "site": "",
+  "text": "@wowo：@wowo\r\n1、是各个device driver的probe。 \r\n     ---关于这个，是在dtsi中配置成pinctrl-names = \"default\"时才配置吧？如果pinctrl-names配置成其他的名字，在device driver的probe中不配置吧？pinctrl_bind_pins函数如下：\r\n    dev->pins->default_state = pinctrl_lookup_state(dev->pins->p,\r\n                PINCTRL_STATE_DEFAULT);\r\n    ret = pinctrl_select_state(dev->pins->p, dev->pins->default_state);\r\n2、如果我在dtsi中配置pinctrl-names = \"idle\"，那么这个idle的配置什么时候生效呢？"
+ },
+ {
+  "id": "4782",
+  "parent": "0",
+  "date": "2016-10-26T17:36:15+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "Hi,linuxer, \r\n如下dts配置，gpio65同时是支持中断的\r\n 539         pmx_ts_int_active {\r\n 540             ts_int_active: ts_int_active {\r\n 541                 mux {\r\n 542                     pins = \"gpio65\";\r\n 543                     function = \"gpio\";\r\n 544                 };\r\n 545 \r\n 546                 config {\r\n 547                     pins = \"gpio65\";\r\n 548                     drive-strength = <8>;\r\n 549                     bias-pull-up;\r\n 550                 };\r\n 551             };\r\n 552         }; \r\n\r\n但是会进入这里\tif (test_bit(FLAG_USED_AS_IRQ, &desc->flags)) {\r\n\t\tgpiod_err(desc,\r\n\t\t\t  \"%s: tried to set a GPIO tied to an IRQ as output\\n\",\r\n\t\t\t  __func__);\r\n\t\treturn -EIO;\r\n\t}\r\n请问怎么回事啊？如何解决啊"
+ },
+ {
+  "id": "4786",
+  "parent": "4782",
+  "date": "2016-10-26T21:52:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cracker：你的代码贴的好像不全，可以在讨论区里面多贴一些:-)"
+ },
+ {
+  "id": "4788",
+  "parent": "4786",
+  "date": "2016-10-27T11:01:09+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "@wowo：112         goodix_ts@5d {\r\n113             compatible = \"goodix,gt9xx\";\r\n114             reg = <0x5d>;\r\n115             interrupt-parent = <&tlmm>;\r\n116             interrupts = <65 0x2008>;\r\n117             vdd_ana-supply = <&pm8937_l10>;\r\n118             vcc_i2c-supply = <&pm8937_l5>;\r\n119             goodix,rst-gpio = <&tlmm 64 0x00>;\r\n120             goodix,irq-gpio = <&tlmm 65 0x2008>;\r\n121             pinctrl-names = \"pmx_ts_active\",\"pmx_ts_suspend\",\"pmx_ts_release\";\r\n122             pinctrl-0 = <&ts_int_active &ts_reset_active>;\r\n123             pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;\r\n124             pinctrl-2 = <&ts_release>;\r\n\r\n这是tp device node，pin state配置在上面就不贴了。\r\n然后驱动中\t如下代码获取pin\r\ngtp_int_gpio = of_get_named_gpio(np, \"goodix,irq-gpio\", 0);\r\n\tgtp_rst_gpio = of_get_named_gpio(np, \"goodix,rst-gpio\", 0);\r\n然后设置gtp_int_gpio输出低电平：gpio_direction_output(gtp_int_gpio, 0);\r\n最后会调到这里来\r\nstatic int _gpiod_direction_output_raw(struct gpio_desc *desc, int value)\r\n{\r\n\tstruct gpio_chip\t*chip;\r\n\tint\t\t\tstatus = -EINVAL;\r\n\r\n\t/* GPIOs used for IRQs shall not be set as output */\r\n\t\r\n\tif (test_bit(FLAG_USED_AS_IRQ, &desc->flags)) {\r\n\t\tgpiod_err(desc,\r\n\t\t\t  \"%s: tried to set a GPIO tied to an IRQ as output\\n\",\r\n\t\t\t  __func__);\r\n\t\treturn -EIO;\r\n\t}\r\n\r\n\t/* Open drain pin should not be driven to 1 */\r\n\tif (value && test_bit(FLAG_OPEN_DRAIN,  &desc->flags))\r\n\t\treturn gpiod_direction_input(desc);\r\n\r\n\t/* Open source pin should not be driven to 0 */\r\n\tif (!value && test_bit(FLAG_OPEN_SOURCE,  &desc->flags))\r\n\t\treturn gpiod_direction_input(desc);\r\n\r\n\tchip = desc->chip;\r\n\tif (!chip->set || !chip->direction_output) {\r\n\t\tgpiod_warn(desc,\r\n\t\t       \"%s: missing set() or direction_output() operations\\n\",\r\n\t\t       __func__);\r\n\t\treturn -EIO;\r\n\t}\r\n\r\n\tstatus = chip->direction_output(chip, gpio_chip_hwgpio(desc), value);\r\n\tif (status == 0)\r\n\t\tset_bit(FLAG_IS_OUT, &desc->flags);\r\n\ttrace_gpio_value(desc_to_gpio(desc), 0, value);\r\n\ttrace_gpio_direction(desc_to_gpio(desc), 0, status);\r\n\treturn status;\r\n}\r\n\r\n从log看，test_bit(FLAG_USED_AS_IRQ, &desc->flags)这里为真，所以直接退出，pin设置失败。而且此时i2c读写也是失败的。现在不知到是什么原因导致的。\r\n然后修改dts如下：\r\n539         pmx_ts_int_active {\r\n540             ts_int_active: ts_int_active {\r\n541                 mux {\r\n542                     pins = \"gpio65\";\r\n543                     function = \"gpio\";\r\n544                 };\r\n545\r\n546                 config {\r\n547                     pins = \"gpio65\";\r\n548                     drive-strength = <8>;\r\n549                     //bias-pull-up;\r\n                       + bias-disable；\r\n550                 };\r\n551             };\r\n552         }; \r\n发现i2c通讯正常，驱动可以work，但是设置pin仍然失败，原因同上。这种问题该如何避免"
+ },
+ {
+  "id": "4791",
+  "parent": "4788",
+  "date": "2016-10-28T09:11:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cracker：这里你实际问了2个问题。\r\n1）从log看，test_bit(FLAG_USED_AS_IRQ, &desc->flags)这里为真，所以直接退出，pin设置失败。\r\n这个问题的表面现象是：这个pin（goodix,irq-gpio）是用来做中断的，你却要把它配置为输出，当然不可以（输出了怎么接中断）。\r\n具体出错的因果关系，你可以看看“<&tlmm 65 0x2008>;”的含义，tlmm是一个GPIO controller？其中有一个字段和&desc->flags（FLAG_USED_AS_IRQ）有关？\r\n\r\n2）ts_int_active配置为上拉（bias-pull-up）时I2c通信失败。\r\n这个gpio（GPIO65）到低是用来做什么的，我不太清楚（SCL？SDA？）。你可以检查一下，对照着原理图，应该是在上拉的时候，影响了信号的质量。把上拉去掉就ok。\r\n这在I2C中很正常，有时候同样的软件，板子稍微动一下，I2C就可能通信失败。"
+ },
+ {
+  "id": "4793",
+  "parent": "4791",
+  "date": "2016-10-28T09:33:03+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "@wowo：1）<&tlmm 65 0x2008> 这里tlmm如下：\r\n&soc {\r\n  15     tlmm: pinctrl@1000000 {\r\n  16         compatible = \"qcom,msm8937-pinctrl\";\r\n  17         reg = <0x1000000 0x300000>;\r\n  18         interrupts = <0 208 0>;\r\n  19         gpio-controller;\r\n  20         #gpio-cells = <2>;\r\n  21         interrupt-controller;\r\n  22         #interrupt-cells = <2>;\r\n  23 \r\n  24         pmx-uartconsole {\r\n  25             uart_console_active: uart_console_active {\r\n  26                 mux {\r\n  27                     pins = \"gpio4\", \"gpio5\";\r\n  28                     function = \"blsp_uart2\";\r\n  29                 };\r\n...........................\r\n539         pmx_ts_int_active {\r\n540             ts_int_active: ts_int_active {\r\n541                 mux {\r\n542                     pins = \"gpio65\";\r\n543                     function = \"gpio\";\r\n544                 };\r\n545\r\n546                 config {\r\n547                     pins = \"gpio65\";\r\n548                     drive-strength = <8>;\r\n549                     //bias-pull-up;\r\n                       + bias-disable；\r\n550                 };\r\n551             };\r\n552         }; \r\n 怎么看是否与FLAG_USED_AS_IRQ这个flag有关\r\n2）GPIO65只要是用来中断，该该模块reset是需要GPIO65设置为输出（出错在这里），reset后再设为输入使能中断"
+ },
+ {
+  "id": "4796",
+  "parent": "4793",
+  "date": "2016-10-28T10:39:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cracker：要看代码，tlmm 65 0x2008，后面两个数到低是什么意思。"
+ },
+ {
+  "id": "5397",
+  "parent": "4793",
+  "date": "2017-03-31T10:42:32+08:00",
+  "author": "edison.jiang",
+  "site": "",
+  "text": "@cracker：哥们，这个说跟pinctrl和gpio一点关系也不有，是不可能的。这个是goodix的一个问题，是跟他们的初始化TP的时序有关系，你可以去问一个gooidx"
+ },
+ {
+  "id": "6368",
+  "parent": "4782",
+  "date": "2017-12-15T21:12:14+08:00",
+  "author": "floater",
+  "site": "",
+  "text": "@cracker：请问一下这个问题最终怎么解决的？"
+ },
+ {
+  "id": "6394",
+  "parent": "6368",
+  "date": "2017-12-20T18:57:16+08:00",
+  "author": "Smile",
+  "site": "",
+  "text": "@floater：3.18.5之后的内核对这GPIO的控制有做调整，可以参考：https://github.com/torvalds/linux/commit/d468bf9ecaabd3bf3a6134e5a369ced82b1d1ca1"
+ },
+ {
+  "id": "6518",
+  "parent": "0",
+  "date": "2018-01-31T10:30:05+08:00",
+  "author": "chenchuangchn",
+  "site": "",
+  "text": "\"state有两种，标识，一种就是pinctrl-names定义的字符串列表，另外一种就是ID。ID从0开始，依次加一。根据例子中的定义，state ID等于0（名字是active）的state对应pinctrl-0属性，state ID等于1（名字是idle）的state对应pinctrl-1属性。\"\r\n    ——大神，1.既然上面的例子了定义了pinctrl-names = \"sleep\", \"active\";那为什么state ID等于0时的名字对应的是active，不应该是字符串列表中的第一个(sleep)吗,看上去好像pinctrl-names没啥用啊。 2.没理解dts中的那个字段是state, pinctl-x的x是state ID吗？"
+ },
+ {
+  "id": "6728",
+  "parent": "2099",
+  "date": "2018-05-03T14:56:06+08:00",
+  "author": "xtzt",
+  "site": "",
+  "text": "@蜗蜗：现在是2018年了，也没有修改\r\n\r\n这篇博文不错，希望早点修改，尽量完美！"
+ },
+ {
+  "id": "6732",
+  "parent": "6728",
+  "date": "2018-05-04T09:58:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@xtzt：已经修改，多谢！我当时估计是没有看到这个评论，^_^"
+ },
+ {
+  "id": "7158",
+  "parent": "0",
+  "date": "2019-01-26T11:11:36+08:00",
+  "author": "独夜舟",
+  "site": "",
+  "text": "看不懂怎么办。哭"
+ },
+ {
+  "id": "8136",
+  "parent": "0",
+  "date": "2020-11-13T15:59:56+08:00",
+  "author": "x",
+  "site": "",
+  "text": "看不懂正常"
+ },
+ {
+  "id": "8634",
+  "parent": "0",
+  "date": "2022-06-28T19:39:33+08:00",
+  "author": "DonGe",
+  "site": "http://www.dongni.work",
+  "text": "Pinctrl子系统就给我看晕了"
+ },
+ {
+  "id": "8642",
+  "parent": "0",
+  "date": "2022-07-15T18:29:22+08:00",
+  "author": "王传琪",
+  "site": "http://https://blog.csdn.net/A_wangc",
+  "text": "各位大佬好！\r\n\r\n    我在看pinctrl_register注册的时候有个疑问，就是pinctrl子系统也是一个platform driver，这样他也是走的标准的driver注册流程。会进入到really_probe这个函数，然后也会调用pinctrl_bind_pins，去绑定和设置默认io，但这个时候pinctrl是还没有执行probe的，也就是pinctrl_register还没有注册，那就在pinctrldev_list这列表里面是找不到pinctrl_dev，这样好像会导致pinctrl驱动会加载失败呀。\r\n    看了好久，还是没有找到是怎么对这个进行处理的，望各位大佬指点一二"
+ },
+ {
+  "id": "8643",
+  "parent": "8642",
+  "date": "2022-07-15T18:34:58+08:00",
+  "author": "王传琪",
+  "site": "http://https://blog.csdn.net/A_wangc",
+  "text": "@王传琪：感觉前面描述的有点问题，改一下。 \r\n    我在看pinctrl_register注册的时候有个疑问，就是pinctrl driver也是一个platform driver，走的标准的driver注册流程。会进入到really_probe这个函数，然后也会调用pinctrl_bind_pins，去绑定和设置默认io，但这个时候pinctrl driver是还没有执行probe的，也就是pinctrl_register是没有执行的，那就在pinctrldev_list这列表里面是找不到pinctrl_dev，那pinctrl_bind_pins在get_pinctrl_dev_from_of_node是找不到pinctrl_dev，这样好像会导致pinctrl驱动会加载失败呀。"
+ },
+ {
+  "id": "8647",
+  "parent": "8643",
+  "date": "2022-07-21T11:04:59+08:00",
+  "author": "王传琪",
+  "site": "",
+  "text": "@王传琪：这几天加打印信息看了一下，找不到设备返回ENODEV，但pinctrl_bind_pins只有在出现EPROBE_DEFER和EINVAL才会返回错误，其他错误都被忽略了，直接返回0，然后继续进行really_probe剩下的流程，只不过不会设置pin而已。那这样pinctrl里面添加的默认设置看来是不会初始化的，要用还是要加到对应的驱动上面"
+ },
+ {
+  "id": "8651",
+  "parent": "8647",
+  "date": "2022-07-25T09:46:53+08:00",
+  "author": "王传琪",
+  "site": "",
+  "text": "@王传琪：纠正上面评论，在注册pinctrl设备的时候 pinctrl_register 函数会调用 pinctrl_enable 里面的 pinctrl_claim_hogs 会设置引脚默认状态，这样看是会设置引脚默认状态的"
+ },
+ {
+  "id": "8659",
+  "parent": "0",
+  "date": "2022-07-29T18:09:57+08:00",
+  "author": "zxl",
+  "site": "",
+  "text": "serial@50000000 { \r\n        ……\r\n        pinctrl-names = \"default\";\r\n        pinctrl-0 = <0x2 0x3>;\r\n    };\r\n该serial device只定义了一个state就是default，对应pinctrl-0属性定义。pinctrl-0是一个句柄（phandle）列表，每个句柄指向一个pin configuration。0x2对应上节中的uart0-data节点，0x03对应uart0-fctl 节点，也就是说，这个串口有两种配置，一种是从gph bank中的第一个和第二个GPIO pin引出，另外一个是从gph bank中的第8个和第9个GPIO pin引出。\r\n\r\n------\r\n从上面的分析 “这个串口有两种配置”， 这两种配置是需要二选一的。\r\n但是在pinctrl_select_state ->pinctrl_commit_state 接口中，是要解析出default state的所有配置并全部使能的。 这样的话，default state的phandle列表就应该不能配置成互斥的pin group了吧"
+ },
+ {
+  "id": "8660",
+  "parent": "8659",
+  "date": "2022-07-29T18:11:25+08:00",
+  "author": "zxl",
+  "site": "",
+  "text": "@zxl：大老们，\r\n   请帮助解惑以下。 谢谢"
+ },
+ {
+  "id": "8683",
+  "parent": "8659",
+  "date": "2022-10-09T11:19:40+08:00",
+  "author": "补零补零补零",
+  "site": "",
+  "text": "@zxl：通过代码分析一下，本人菜鸡，谨慎阅读\r\n\r\n---creat_pinctrl\r\n对于其他的设备使用pinctrl子系统来设置引脚，获取pinctrl 时解析设备树的步骤是这样的，\r\n循环获取pinctrl-n，通过state = 0 ，依次解析各个state --- pinctrl_dt_to_map 函数\r\n\t1.获取pinrctrl-0 对应的phandle数组\r\n\t2.通过state的值读取pinctrl-names，也就是这个状态名字\r\n\t3.遍历步骤1获取的phandle数组去得到对应的设备树节点然后解析 --- dt_to_map_one_config 函数\r\n\r\ndt_to_map_one_config 函数中，具体怎么解析的呢\r\n    1.通过传入的由phandle得到的设备数节点的父节点去得到pinctrl_dev ，从而得到pinctrl驱动里的设置的回调\r\n\t2.通过pinctrl_dev->desc->pctlops->dt_node_to_map 函数来解析，这里看出解析过程由厂家提供，但看到共同点都是会填充好pinctrl_map 这个结构体，\r\n\t这个结构体就是这个state的一个phandle的配置信息，当然他可能有多个，看看他是怎么处理的\r\n\t3.拿着这个生成的pinctrl_map 跑dt_rember_or_free_map 函数\r\n\t4.在这个函数里补充好这个pinctrl_map的状态名字和对应的设备名字，然后定义个pinctrl_dt_map结构体变量，用他来存好我们的pinctrl_map和pctldev_dev等信息，然后挂在pinctrl的dt_maps上\r\n\t\r\n然后还得看一下pinctrl里面的state以及state里的settings是怎么生成的\r\n看函数add_setting\r\n1.根据map的名字看是不是有对应的state，根据名字来比较，没有就创建一个\r\n2.如果map的type是PIN_MAP_TYPE_DUMMY_STATE 就到此结束，也就是只创建了对应的state而没有创建对应的setting\r\n3.根据map的type来获取function和group对应的selector ，来定位对应group，map里面存了function、group、pin的名字，根据名字获取对应的id、selector然后存到setting里面\r\n4.最后把填充好的setting挂到对应state的链表上\r\n\r\n总的来说就是从设备树解析出来的每一个map都落实为了pinctrl里对应state 的settings链表上的一个setting节点，要注意的是当map的type为PIN_MAP_TYPE_DUMMY_STATE 时不会生成对应的setting节点；\r\n\r\n---pinctrl_select_state\r\n---pinctrl_commit_state\r\n确实也是根据设置的state来依次执行它的setting，或为引脚复用，或为引脚配置\r\n\r\n\r\n通过分析代码流程看到，从设备树解析出来的每一个map都落实为了pinctrl里对应state 的settings链表上的一个setting节点，\r\n要注意的是当map的type为PIN_MAP_TYPE_DUMMY_STATE 时不会生成对应的setting节点，对于这个问题可能得看一下平台的dt_node_to_map 函数是怎么写的，看看map也就是setting的type是如何设置的\r\n快速浏览了一下 samsung_dt_node_to_map 函数，似乎对map->type的赋值只有PIN_MAP_TYPE_MUX_GROUP和PIN_MAP_TYPE_CONFIG_GROUP，那要是phandle数组里的设备树节点解析出来的map的type都是复用，\r\n那设置这个状态的时候确实会设置两组复用，但是具体还是得把三星这个函数逻辑理清楚才能下定论，然后一般一个项目某个设备用的引脚应该再项目初就定好了吧。。。\r\n\r\n总结：慎用"
+ }
+]

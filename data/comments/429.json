@@ -1,0 +1,122 @@
+[
+ {
+  "id": "6663",
+  "parent": "0",
+  "date": "2018-04-15T16:46:55+08:00",
+  "author": "Johnson",
+  "site": "",
+  "text": "很实用 很实用 打call !!!"
+ },
+ {
+  "id": "6664",
+  "parent": "0",
+  "date": "2018-04-15T17:04:31+08:00",
+  "author": "Johnson",
+  "site": "",
+  "text": "Dear smcdef  \r\n\r\n在阅读您的文章时，您举得如下案例，有一个疑问：\r\n\r\n我帮他确定问题原因是dts章reg属性的地址是0xc0。这是一个大于0x7f的值。在i2c总线注册驱动的时候会解析当前总线下的所有device。然后注册所有的从设备。就是这里的地址检查出了问题，因此这个device没有注册上。 \r\n\r\n请问：为何reg属性地址大于0x7f ，地址检查会出问题，这背后的逻辑您能简单说下吗？"
+ },
+ {
+  "id": "6666",
+  "parent": "6664",
+  "date": "2018-04-15T23:11:37+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@Johnson：从linux4.15抽出部分代码。i2c地址有7bit和10bit，针对7bit地址，自然不能大于7f，检测代码如下。\r\nof_i2c_register_device->i2c_check_addr_validity\r\nint i2c_check_addr_validity(unsigned addr, unsigned short flags)\r\n{\r\n\tif (flags & I2C_CLIENT_TEN) {\r\n\t\t/* 10-bit address, all values are valid */\r\n\t\tif (addr > 0x3ff)\r\n\t\t\treturn -EINVAL;\r\n\t} else {\r\n\t\t/* 7-bit address, reject the general call address */\r\n\t\tif (addr == 0x00 || addr > 0x7f)\r\n\t\t\treturn -EINVAL;\r\n\t}\r\n\treturn 0;\r\n}"
+ },
+ {
+  "id": "6670",
+  "parent": "0",
+  "date": "2018-04-16T15:15:48+08:00",
+  "author": "DarkCom",
+  "site": "",
+  "text": "我最近正在学习IIO子系统及其驱动的相关东西，但是学的不是很懂。看了您关于子系统的文章获益匪浅，请问您对IIO这方面有了解吗？以后能写一篇关于IIO的文章吗？还是已经有了但我没有找到...谢谢"
+ },
+ {
+  "id": "6673",
+  "parent": "0",
+  "date": "2018-04-17T20:02:42+08:00",
+  "author": "essaypinglun 作家",
+  "site": "",
+  "text": "有设备驱动程序，您可以在其中找到Linux驱动程序开发并获得Promer设备，通过该设备可以使用此模型享受核心逻辑设计。 你也可以从抽象模型中获得帮助。"
+ },
+ {
+  "id": "6684",
+  "parent": "0",
+  "date": "2018-04-20T10:01:05+08:00",
+  "author": "lcbj",
+  "site": "",
+  "text": "请教下，如果引脚配置为输入，那么类似gpios = <2 GPIO_ACTIVE_XXX>中的GPIO_ACTIVE_XXX是不是无所谓配高配低？"
+ },
+ {
+  "id": "6690",
+  "parent": "6684",
+  "date": "2018-04-22T17:36:17+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@lcbj：取决你调用什么接口以及如何配置。例如下面的函数。\r\nint gpiod_get_value(const struct gpio_desc *desc)\r\n{\r\n\tint value;\r\n\r\n\tVALIDATE_DESC(desc);\r\n\t/* Should be using gpio_get_value_cansleep() */\r\n\tWARN_ON(desc->gdev->chip->can_sleep);\r\n\r\n\tvalue = gpiod_get_raw_value_commit(desc);\r\n\tif (value < 0)\r\n\t\treturn value;\r\n\r\n\tif (test_bit(FLAG_ACTIVE_LOW, &desc->flags))\r\n\t\tvalue = !value;\r\n\r\n\treturn value;\r\n}\r\n看看这个if (test_bit(FLAG_ACTIVE_LOW, &desc->flags))value = !value;你的疑问可以通过全局搜索FLAG_ACTIVE_LOW，或者你的driver调用的接口追踪函数是否用到该flag"
+ },
+ {
+  "id": "6704",
+  "parent": "0",
+  "date": "2018-04-26T12:17:45+08:00",
+  "author": "Vernon",
+  "site": "",
+  "text": "很喜欢这种讲解风格，点到为止，又给我们指条明路"
+ },
+ {
+  "id": "6774",
+  "parent": "0",
+  "date": "2018-05-30T14:41:30+08:00",
+  "author": "davidlamb",
+  "site": "",
+  "text": "这种文章很好！"
+ },
+ {
+  "id": "6858",
+  "parent": "0",
+  "date": "2018-07-31T14:44:32+08:00",
+  "author": "Teddy",
+  "site": "",
+  "text": "谢谢，写的很棒，记住这些用法，调试驱动的时候就能事半功倍了。"
+ },
+ {
+  "id": "7921",
+  "parent": "0",
+  "date": "2020-03-16T18:06:40+08:00",
+  "author": "Since",
+  "site": "",
+  "text": "写的很棒，都是经验之谈"
+ },
+ {
+  "id": "8224",
+  "parent": "6666",
+  "date": "2021-04-28T15:50:36+08:00",
+  "author": "qingsda",
+  "site": "",
+  "text": "@smcdef：这么简单的问题你也有脸问？"
+ },
+ {
+  "id": "8699",
+  "parent": "0",
+  "date": "2022-11-16T16:36:06+08:00",
+  "author": "凉冰",
+  "site": "",
+  "text": "什么时候出一篇致入门小白的一封信啊，好多的点到为止，小白真就点到为止了。"
+ },
+ {
+  "id": "8770",
+  "parent": "0",
+  "date": "2023-04-11T20:02:59+08:00",
+  "author": "一只卤蛋",
+  "site": "",
+  "text": "作者现在不更新了么，还是换了平台了呢，有没有朋友知道的"
+ },
+ {
+  "id": "8836",
+  "parent": "0",
+  "date": "2023-10-15T20:26:21+08:00",
+  "author": "xiaotonga",
+  "site": "",
+  "text": "驱动节点通过sysfs暴露给用户，通过sysfs可以查看驱动节点信息，打call"
+ }
+]

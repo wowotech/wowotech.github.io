@@ -1,0 +1,66 @@
+[
+ {
+  "id": "4554",
+  "parent": "0",
+  "date": "2016-09-10T17:29:06+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "囧，“以后“X Project”和u-boot有关的image格式，将统一使用FIT uImage。”，没早点看到这篇文章，结果做了FIT和传统uImage的兼容。唉。代码传上去了，要不要回退掉?\r\n然后\r\n“虽然可以指定多个Image，但只要其中的某一个（或者多个）Image不存在，make uImage就无法执行成功。”\r\n所以，我暂时就先建了一个目录its，然后搞个fit_uImage_tiny210.its给tiny210用，不然没法搞。\r\n等wowo找到解决办法了再改哈哈。"
+ },
+ {
+  "id": "4555",
+  "parent": "4554",
+  "date": "2016-09-10T21:10:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：不用回退。我们这个项目主要是学习linux开发的过程，我们只要知道怎么回事就行了，以后有需求的时候，可以快速使用就ok了。\r\n关于FIT的方式，我这里的表述更多的是指ARM64，对于arm，其实代价蛮大的，先不用也行。\r\n后面可以考虑.its文件动态生成的方式~~"
+ },
+ {
+  "id": "4556",
+  "parent": "4555",
+  "date": "2016-09-10T22:25:03+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "@wowo：哈哈，wowo的表述确实没有怎么照顾arm~可惜手头上没有arm64的板子~\r\n不过验证过了，arm上确实也是可以用，主要就是its的差异。\r\n还有个问题，为什么ARM64没有zImage？Image比zImage大的多了。我用FIT试了zImage格式的kernel，确实可以用，但是解压不是在uboot里面解压的，还是zImage自解压。"
+ },
+ {
+  "id": "4557",
+  "parent": "4555",
+  "date": "2016-09-10T22:25:46+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "@wowo：动态生成的想法确实很赞，不过感觉要很强的脚本编程的功底吧"
+ },
+ {
+  "id": "4558",
+  "parent": "4557",
+  "date": "2016-09-11T21:02:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：动态生成也不麻烦，就是几个echo而已～～～～"
+ },
+ {
+  "id": "4559",
+  "parent": "4558",
+  "date": "2016-09-12T10:54:12+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "@wowo：哦哦，误解为是在一个its的基础上通过脚本去改，也对，回头试一下直接echo的方法~"
+ },
+ {
+  "id": "4565",
+  "parent": "0",
+  "date": "2016-09-15T19:05:12+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "hi,wowo\r\n尝试做了一个自动生成its脚本，在tiny210验证过是可以用的。您有空的时候可否帮忙在bubblegum平台上试一下。\r\n测试步骤如下\r\n（1）build同步一下切换到tiny210分支\r\n（2）config.mk里面改一下对应的配置\r\nBOARD_NAME=bubblegum\r\nBOARD_ARCH=arm64\r\nUIMAGE_LOADADDR=0x00080000\r\nUIMAGE_ENTRYADDR=0x00080000\r\nDTB_NAME=actions/s900-bubblegum.dtb\r\n（3）执行make kernel-img\r\n（4）在out/fit目录下会生成fit_uImage.its  xprj_uImage.itb。然后帮忙测试一下这个xprj_uImage.itb在您的bubblegum这个板子上是否可用？\r\n十分感谢~"
+ },
+ {
+  "id": "4566",
+  "parent": "4565",
+  "date": "2016-09-16T21:36:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：好的，多谢分享~~\r\n我大概看了一下tiny210分支的build的脚本，已经很完善了，等有空了，我要把tiny210的分支，合并到主分支上:-)"
+ }
+]

@@ -1,0 +1,218 @@
+[
+ {
+  "id": "4640",
+  "parent": "0",
+  "date": "2016-10-01T23:33:44+08:00",
+  "author": "unicornx",
+  "site": "",
+  "text": "请问博主的这些文章引用的内核源码的版本是多少？是基于一个内核版本写的还是不同，是否可以说明方便我们阅读时参考对应，谢谢。"
+ },
+ {
+  "id": "4646",
+  "parent": "4640",
+  "date": "2016-10-04T16:26:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@unicornx：文章开头一般都写了:-)"
+ },
+ {
+  "id": "4657",
+  "parent": "0",
+  "date": "2016-10-07T16:20:57+08:00",
+  "author": "fomalhaut",
+  "site": "",
+  "text": "PFN(page frame number)，而不是FPN?"
+ },
+ {
+  "id": "4658",
+  "parent": "4657",
+  "date": "2016-10-07T18:48:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@fomalhaut：多谢指正"
+ },
+ {
+  "id": "4873",
+  "parent": "0",
+  "date": "2016-11-15T22:11:15+08:00",
+  "author": "huyhcs",
+  "site": "",
+  "text": "博主您好，我最近也读到了这一部分，并尝试了在我自己的电脑上访问所有内存物理页所对应的page结构。内核版本4.7.4，内存模型配置了CONFIG_SPARESE_MEM以及SPARSEMEM_VMEMMAP,物理内存是4G。但是在访问vmemmap数组的时候，发现它是不连续的，中间有段地址对内核来说是非法地址。具体的来说就是，vmemmap数组的第中对应物理地址3G+256M ~ 4G范围物理页的pgae指针是非法的。也就是vmemmap数组的0~0x3ffff和0x100000~0x130000各项是可以访问，而中间0x40000~0xfffff各项是不可访问的。不知道这是为什么？和您说得section有关系吗？"
+ },
+ {
+  "id": "4875",
+  "parent": "4873",
+  "date": "2016-11-16T09:27:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@huyhcs：你的物理内存的布局是怎样的？\r\n在配置了CONFIG_SPARSEMEM_VMEMMAP的情况下，发现一个section，才会建立该section对应在vmemmap数组中的映射，这时候，这些item才能被访问。你说的这种情况多半是映射还没有建立，或者说，0x40000~0xfffff各项对应的内存暂时是不可见的。"
+ },
+ {
+  "id": "5631",
+  "parent": "0",
+  "date": "2017-06-06T19:43:17+08:00",
+  "author": "cdbdyx",
+  "site": "",
+  "text": "例如，对以某个节点（node）上的processor而言，访问local memory要比访问那些remote memory花的时间长。\r\n应该是时间短吧？"
+ },
+ {
+  "id": "5723",
+  "parent": "5631",
+  "date": "2017-06-22T18:19:27+08:00",
+  "author": "ttjj",
+  "site": "",
+  "text": "@cdbdyx：应该是短。Under NUMA, a processor can access its own local memory faster than non-local memory"
+ },
+ {
+  "id": "5727",
+  "parent": "0",
+  "date": "2017-06-23T09:45:57+08:00",
+  "author": "小B",
+  "site": "",
+  "text": "你好，有一个相关的问题请教：\r\n我在用一块ARM（CortexA7）板子，板子上用两个CPU分别运行T-Kernel和Linux，Linux内核加载地址在内存后半部（高地址），但是现在想访问内核加载地址以前的内存（地址小于内核加载地址）。本以为SPARSEMEM可以解决这个问题，但是内核加载地址以前的内存仍被忽略。。。请问可有什么解决办法。。。\r\n下面是启动时输出的log：\r\nOF: fdt:Ignoring memory block 0x60000000 - 0x6a000000"
+ },
+ {
+  "id": "5920",
+  "parent": "5727",
+  "date": "2017-08-18T10:32:43+08:00",
+  "author": "小亮",
+  "site": "",
+  "text": "@小B：1.确定你访问的地址在内核空间吗，如果不是，需要进行内存映射才能访问。\r\n2.确定你内核中的物理内存的范围。"
+ },
+ {
+  "id": "6289",
+  "parent": "0",
+  "date": "2017-12-06T11:11:57+08:00",
+  "author": "lcbj",
+  "site": "",
+  "text": "“例如，对以某个节点（node）上的processor而言，访问local memory要比访问那些remote memory花的时间长。”\r\n这里笔误吧，访问local memory响应时间应该更短。"
+ },
+ {
+  "id": "6295",
+  "parent": "6289",
+  "date": "2017-12-07T08:54:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lcbj：已修正，多谢！"
+ },
+ {
+  "id": "6797",
+  "parent": "0",
+  "date": "2018-06-12T15:13:36+08:00",
+  "author": "tigerbear",
+  "site": "",
+  "text": "请教个问题，对于sparsemem来说，看起来即使section不存在也需要为它建立struct page数组？假如一个section是1G大小的话，这样是不是说一个section要多耗费1G/4K × 64（struct page的大小）=16M，即使这个section不存在？"
+ },
+ {
+  "id": "6817",
+  "parent": "0",
+  "date": "2018-06-22T11:06:15+08:00",
+  "author": "kevin",
+  "site": "",
+  "text": "博主，你好，请问一下虚拟地址空间的大小取决于什么？目前在网上看了很多资料，大部分资料对虚拟内存空间和物理内存空间的描述都不确切、相互矛盾，都否详细指点一下，多谢啦！"
+ },
+ {
+  "id": "7048",
+  "parent": "6817",
+  "date": "2018-11-21T18:11:01+08:00",
+  "author": "tidow",
+  "site": "",
+  "text": "@kevin：取决于地址总线的宽度。"
+ },
+ {
+  "id": "7057",
+  "parent": "0",
+  "date": "2018-11-27T10:49:53+08:00",
+  "author": "别说郁闷",
+  "site": "",
+  "text": "楼主有段描述有点疑惑：\"不过，现在由于内存越来越大，对于32位系统，4G的物理地址空间已经无法满足内存的需求，因此会有high memory这个概念，后续会详细描述。\"\r\n\r\n\r\n就说3+1的情况下吧，不是因为kernel无法线性映射大于1g的物理内存，才会有high memory的概念吗？"
+ },
+ {
+  "id": "7063",
+  "parent": "7057",
+  "date": "2018-11-30T09:03:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@别说郁闷：是的，我原文写的不严谨，多谢了。\r\n对于32位系统，4G的地址空间其实内核可以映射1G（3：1的情况），而1G空间中作为direct mapping的只有896M，不能direct mapping的内存就是high memory，只能是动态映射到剩余的128M虚拟地址上去。"
+ },
+ {
+  "id": "7104",
+  "parent": "0",
+  "date": "2018-12-22T17:24:25+08:00",
+  "author": "蠢仔杰",
+  "site": "",
+  "text": "想请教一下，对于SparseMen的管理模式，现在ARM64在Sparsemem.h中，设置#define SECTION_SIZE_BITS 30;这个值应该是一个section的大小。这个值是否可以修改呢？因为现在我的系统只有64M，但是一个SECTION设置的大小是1G，这样会存放很多无用的page的结构体，会占有内存，比如现在就占用了16M的ReserveMem。查看内核配置，似乎没有提供这个接口。"
+ },
+ {
+  "id": "7888",
+  "parent": "0",
+  "date": "2020-02-18T17:43:57+08:00",
+  "author": "Aero",
+  "site": "",
+  "text": "PAGE_SHIFT，页帧号\r\n内核地址，无论是虚拟的还物理的，其都由两部分组成。往往是高N位是页号，低M位是页内的偏移量。\r\n当我们将地址中的低M位偏移量抛弃不用，高N位的页号，移到右端，得到这个结果称页帧号。\r\n移动位以在页帧数和地址之间转换是一个常用操作。宏PAGE_SHIFT， 告诉我们要右移多少位得到页帧号。"
+ },
+ {
+  "id": "7917",
+  "parent": "6817",
+  "date": "2020-03-12T16:53:43+08:00",
+  "author": "Mindshare",
+  "site": "",
+  "text": "@kevin：虚拟地址的空间取决于软件需要吧，看你的应用需要多少地址"
+ },
+ {
+  "id": "7918",
+  "parent": "6817",
+  "date": "2020-03-12T17:03:47+08:00",
+  "author": "Mindshare",
+  "site": "",
+  "text": "@kevin：虚拟地址的空间取决于软件需要吧，看你的应用需要多少地址"
+ },
+ {
+  "id": "8016",
+  "parent": "0",
+  "date": "2020-06-09T20:37:24+08:00",
+  "author": "鱼儿",
+  "site": "",
+  "text": "在平坦模型和不连续模型中，都有pg_list node节点，并以此可以与zone区域联系，在sparse模型中，struct mem_section中并没有与zone产生连续的元素，那在sparse模型中，zone是如何使用的呢"
+ },
+ {
+  "id": "8221",
+  "parent": "0",
+  "date": "2021-04-21T12:35:15+08:00",
+  "author": "明天",
+  "site": "",
+  "text": "为什么我看linux内核代码第一个PFN是PFN_UP(x)\t(((x) + PAGE_SIZE-1) >> PAGE_SHIFT)  应该是下一个啊"
+ },
+ {
+  "id": "8340",
+  "parent": "0",
+  "date": "2021-10-21T22:11:32+08:00",
+  "author": "test",
+  "site": "",
+  "text": "只要这个section没有映射到物理地址就没有消耗吧，只是消耗了一个页表项而已。"
+ },
+ {
+  "id": "8919",
+  "parent": "0",
+  "date": "2024-08-02T11:46:56+08:00",
+  "author": "lw",
+  "site": "",
+  "text": "sparse模型和disconti模型没看出来有什么本质区别啊"
+ },
+ {
+  "id": "9151",
+  "parent": "0",
+  "date": "2025-03-17T11:18:24+08:00",
+  "author": "gh",
+  "site": "",
+  "text": "Linux 内核在 sparse 内存模型基础上实现了vmemmap 优化， vmemmap完全可以替换 sparse，为何还需要 sparse 存在？"
+ },
+ {
+  "id": "9184",
+  "parent": "9151",
+  "date": "2026-03-09T14:52:00+08:00",
+  "author": "凌云行者",
+  "site": "",
+  "text": "@gh：vmemmap只是加速了pfn和struct page之间的转换，整个sparse内存模型也不止是做了这个转换而已。比如vmemmap只映射真正存在的物理内存，kernel要知道哪一段地址真正有物理内存还是得依赖sparse内存模型的吧"
+ }
+]

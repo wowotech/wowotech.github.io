@@ -1,0 +1,50 @@
+[
+ {
+  "id": "6677",
+  "parent": "0",
+  "date": "2018-04-18T17:06:40+08:00",
+  "author": "renyule",
+  "site": "",
+  "text": "似乎明白了点，总结的很棒"
+ },
+ {
+  "id": "6685",
+  "parent": "6677",
+  "date": "2018-04-20T11:05:08+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@renyule：谢谢。一起交流"
+ },
+ {
+  "id": "7242",
+  "parent": "0",
+  "date": "2019-03-07T16:49:18+08:00",
+  "author": "anlin",
+  "site": "",
+  "text": "\"当引用计数为0时，kobject核心会调用kobject_release()，最后会调用kobj_type->release(kobj)来完成对象的释放。可是具体对象的释放，最后却通过kobj->kobj_type->release()来释放\",这句话里面，前面的一个“kobj_type->release(kobj)”，是不是应该为“kobj->release(kobj)”？"
+ },
+ {
+  "id": "8186",
+  "parent": "0",
+  "date": "2021-01-19T16:50:45+08:00",
+  "author": "kevin",
+  "site": "",
+  "text": "请教一下：kobject_add向kset.list中添加kobj->entry的事件是不是不会调用uevent通知用户kset的变化，只有kobject添加之后的状态修改才会调用uevent"
+ },
+ {
+  "id": "8443",
+  "parent": "0",
+  "date": "2021-12-24T17:16:27+08:00",
+  "author": "伊斯科明",
+  "site": "",
+  "text": "说实话，还是没懂为什么有的目录是kset对象，而有的是kobject对象"
+ },
+ {
+  "id": "8646",
+  "parent": "8443",
+  "date": "2022-07-20T21:51:21+08:00",
+  "author": "xyy",
+  "site": "",
+  "text": "@伊斯科明：有通知和没通知的区别"
+ }
+]

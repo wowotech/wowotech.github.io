@@ -1,0 +1,122 @@
+[
+ {
+  "id": "5212",
+  "parent": "0",
+  "date": "2017-02-10T08:54:17+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "虽然没时间看，但是也要很赞一下。"
+ },
+ {
+  "id": "5523",
+  "parent": "0",
+  "date": "2017-05-06T20:32:46+08:00",
+  "author": "chappie",
+  "site": "",
+  "text": "我是在《深入理解计算机系统》这本书看到TLB缓存是虚拟寻址的，然后想确认下进程间切换要切出TLB。然后就谷歌到这里来了。题主完美解决了我的疑问。非常赞！！！"
+ },
+ {
+  "id": "5653",
+  "parent": "0",
+  "date": "2017-06-10T18:24:22+08:00",
+  "author": "小学生",
+  "site": "",
+  "text": "楼主，对于这句：“答案是在下一次进程切换中。因为一旦内核线程被schedule out，并且切入一个新的进程C，那么在switch_mm，切入到C进程地址空间的时候，所有之前的残留都会被清除掉（因为有load cr3的动作）”，如果切入的进程还是A task呢，因为这时候不会flush tlb，那之前其他CPU修改过了的地址映射关系什么时候在当前CPU上体现呢？是根据cpu_tlbstate.state==TLBSTATE_LAZY来判断是否需要flush吗？"
+ },
+ {
+  "id": "5657",
+  "parent": "5653",
+  "date": "2017-06-12T17:33:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@小学生：如果切入的进程还是A task呢?\r\n-----------------------------\r\n这时候进程切换的时候仍然会调用switch_mm(oldmm, mm, next);当然，oldmm和mm是相同的。你可以看看X86如何实现这个函数的，答案也就自然出来了。"
+ },
+ {
+  "id": "6418",
+  "parent": "0",
+  "date": "2017-12-25T11:37:34+08:00",
+  "author": "crystal736",
+  "site": "",
+  "text": "一直有一个问题困扰我，我看的是mips架构相关的linux代码。在用户访问未映射的虚拟地址时会出现page fault，tlb miss会进行tlb重填(mips是tlb软件充填)，但是在充填过程中会访问页表，如果此时页表未建立，不是又发生一次page fault？页表是放在mips的kseg哪个区，页表自身需要映射吗？还有在get_free_pages返回的地址应该是在哪个kseg区？"
+ },
+ {
+  "id": "6422",
+  "parent": "0",
+  "date": "2017-12-26T18:09:27+08:00",
+  "author": "crystal736",
+  "site": "",
+  "text": "有个问题请教下：\r\n    在缺页异常do_page_fault函数中会分配页面，如果分配页面失败会怎么办呢？在do_anonymous_page函数中分配内存是调用alloc_page(GFP_HIGHUSER);而GFP_HIGHUSER包含____GFP_WAIT,是不是分配失败会进入睡眠状态或者一直在waiting？但是在异常处理函数里面一直waiting不太合适吧？这一点想不明白，还请指教"
+ },
+ {
+  "id": "6426",
+  "parent": "6422",
+  "date": "2017-12-27T19:30:15+08:00",
+  "author": "hello-world",
+  "site": "",
+  "text": "@crystal736：在缺页异常的处理过程中，如果分配page frame失败，那么进程会进入sleep状态，之后在适当的时间（例如页面回收之后有充足的free page）唤醒该进程。"
+ },
+ {
+  "id": "6583",
+  "parent": "0",
+  "date": "2018-03-02T14:29:18+08:00",
+  "author": "lanxinyuchs",
+  "site": "",
+  "text": "\"如果要切入的next task B是内核线程，那么我们也暂时不需要flush TLB，因为内核线程不会访问usersapce\"那如果是内核要执行copy_from_user呢，也不需要访问userspace的地址吗，就是小于0xC0000000的虚拟地址部分？"
+ },
+ {
+  "id": "6586",
+  "parent": "6583",
+  "date": "2018-03-03T22:54:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lanxinyuchs：内核线程没有用户空间，怎么执行copy_from_user？"
+ },
+ {
+  "id": "7005",
+  "parent": "0",
+  "date": "2018-10-29T12:53:57+08:00",
+  "author": "初学者",
+  "site": "",
+  "text": "这边不是很懂\r\n\r\n原文: \"在x86支持PCID（X86术语，相当与ARM的ASID）的情况下会怎样呢？也会在load cr3的时候flush掉所有的本地CPU上的 local tlb entry吗？其实在linux中，由于TLB shootdown，普通的linux并不支持PCID（KVM中会使用，但是不在本文考虑范围内），因此，对于x86的进程地址空间切换，它就是会有flush local tlb entry这样的side effect。\"\r\n\r\n所以是说x86在多核情况下支持PCID，但是因为TLB shootdown，所以还是需要flush local tlb entry (透过IPI)。单核就不会有side effect，这样吗?"
+ },
+ {
+  "id": "7006",
+  "parent": "7005",
+  "date": "2018-10-29T13:22:46+08:00",
+  "author": "初学者",
+  "site": "",
+  "text": "@初学者：另外是，在多核情况下，看起来不管有没有支持PCID，都会有TLB shootdown，所以PCID在多核情况下是没有什么明显的好处的吗?"
+ },
+ {
+  "id": "7514",
+  "parent": "0",
+  "date": "2019-07-08T16:16:29+08:00",
+  "author": "七爷不舔屁眼",
+  "site": "",
+  "text": "完美解决疑问，非常感谢！"
+ },
+ {
+  "id": "7619",
+  "parent": "0",
+  "date": "2019-08-28T10:12:28+08:00",
+  "author": "futureland",
+  "site": "",
+  "text": "楼主请教个问题：\r\n    借用4.1的图，TLB的维护由软件触发，那必然会有延时。如果A0修改了映射关系，在A2中的TLB缓存还没有被flush时，A2会继续维护之前的映射关系，我理解在这种前提下有以下几种情况：\r\n    1. A0 unmap 一段空间[1,2]，这时A2继续访问[1,2]会访问到无效的page而并不会造成崩溃；\r\n    2. A0和A2如果都在内核态，通过vmalloc相关的系列操作，也应该有以上的情况。\r\n\r\n    不知道这些情况是否真实存在，内核中是如何处理？"
+ },
+ {
+  "id": "8115",
+  "parent": "7619",
+  "date": "2020-09-17T11:44:28+08:00",
+  "author": "菜鸟学习linux",
+  "site": "",
+  "text": "@futureland：“A2继续访问[1,2]会访问到无效的page而并不会造成崩溃”，理解有问题吧，a2的tlb的缓存不invalid的话，A2访问[1,2]会tlb hit，这样会造成，A2的查询到的地址映射还是之前未修改的，修改过的映射还躺在内存里。"
+ },
+ {
+  "id": "8116",
+  "parent": "0",
+  "date": "2020-09-17T11:48:06+08:00",
+  "author": "菜鸟学习linux",
+  "site": "",
+  "text": "很棒，虽然没看过代码，但基本上也了解了linux在进程切换mmu页表是如何切换的。。。\r\n有个问题，kernel可以借用用户的mmu页表，那么硬件上是如何控制用户态访问不到kernel空间的"
+ }
+]

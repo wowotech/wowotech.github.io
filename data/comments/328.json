@@ -1,0 +1,18 @@
+[
+ {
+  "id": "5915",
+  "parent": "0",
+  "date": "2017-08-16T17:53:55+08:00",
+  "author": "raceant",
+  "site": "",
+  "text": "hi wowo,\r\n最近测试用到从initrd启动，不进一步挂载root文件系统，之前ubuntu上是通过init脚本去挂载的，修改后即可。\r\n现在有个板子使用的是buildroot，选择通过busybox的init启动，进到initrd后一直尝试挂载rootfs，不能取消，\r\n你遇见过这种情况么？"
+ },
+ {
+  "id": "5919",
+  "parent": "5915",
+  "date": "2017-08-17T18:42:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@raceant：busybox有源码，你去看看实现就可以了，我都五六年没折腾过busybox了，都记不清了～～～"
+ }
+]

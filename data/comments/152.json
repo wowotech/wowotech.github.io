@@ -1,0 +1,18 @@
+[
+ {
+  "id": "7578",
+  "parent": "0",
+  "date": "2019-08-08T14:10:31+08:00",
+  "author": "leon_unique",
+  "site": "",
+  "text": "想请教下驱动模块在加载至系统中时，模块内部各sections在内存中是如何布局的？例如，A.ko模块内部有4个text段，分别为.text，.unlikely.text，.init.text，.exit.text，这四个代码段的长度均超过0x10000。A.ko在内存中的装载地址为0xffffff8000b58000，当由于直接或间接的原因导致内核panic时，调用栈中的某一地址为0xffffff8000b58ff0，在不结合代码及上下文的情况下如何定位该地址落在哪一个text段中？"
+ },
+ {
+  "id": "7584",
+  "parent": "7578",
+  "date": "2019-08-10T18:11:01+08:00",
+  "author": "leon_unique",
+  "site": "",
+  "text": "@leon_unique：Fixed, 参考kernel/module.c"
+ }
+]

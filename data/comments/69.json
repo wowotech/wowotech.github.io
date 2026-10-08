@@ -1,0 +1,346 @@
+[
+ {
+  "id": "258",
+  "parent": "0",
+  "date": "2014-07-27T20:41:04+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "hi linuxer 请教个问题，一般来说u boot会对一部分或者全部的pin初始化，然后进入kernel又会chongx初始化还是只是初始化u boot没有初始化的部分。\r\n另外是不是要讲一下pin power domain的概念，因为调试驱动的时候经常遇到比如 touch panel i2c 是1.8v 还是2.8v电压domain这样的问题。"
+ },
+ {
+  "id": "259",
+  "parent": "258",
+  "date": "2014-07-28T11:38:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：你问了一个看似简单，实际上比较复杂的问题。我们可以把系统启动分成若干段：\r\n1、HW power up sequence。这是和各个pin的default状态相关的\r\n2、ROM代码过程\r\n3、bootloader过程\r\n4、OS kernel各个driver初始化过程\r\n\r\n如何在上述的过程初始化全部pin的状态需要考虑的factor包括：\r\n1、不影响UI表现\r\n2、电源管理的考虑\r\n3、代码整洁，易于维护\r\n\r\n有些pin是连接到一些UI相关的硬件（例如LCD背光控制，LED灯），对这些pin要格外的关注，这有可能导致一些软件无法解决的问题，例如我们用某个pin来控制LCD的backlight，但是该pin上电的缺省状态是ouput，high，这样就会打亮LCD背光，但是，由于软件还没有机会参与控制，LCD模组的显示是完全随机的。我们实际希望的行为当然是初始化好了LCD的内容（比如显示个公司的logo什么的）再打开LCD的背光，但是，硬件行为就是这样，即便是我们在bootloader中的最开始的代码就将该pin 设为低电平，用户也可以感知到LCD的背光亮了一下又灭了，用户体验非常不好。当然，这是硬件工程师在进行硬件设计的时候就要考虑的问题。\r\n在不影响用户体验的前提下，其他的因素可以酌情考虑。有些人喜欢在bootloader阶段让软件初始化所有的pin的状态（称之为safe state）。例如：系统中有一个RF模块，一个pin可以控制RF模块的供电，那么如果能够在bootloader中尽快的关闭这个RF模块，实际上这样是对功耗是有利的，在AP需要的时候才控制该pin，打开RF模块的供电。当然，从软件工程师的角度看，我当然希望一个driver相关的内容都锁定在一个特定的区域内，比较所有和某个driver控制的内容都在linux 的driver中，而不是散布在系统中的各个地方。\r\n\r\n顺便说一句，实际上pin control是个系统的东西，除了和各个driver交互，还和内核中设备模型、电源管理模块有关系，比GPIO subsystem复杂多了。这个星期如果有时间我要重新整理一下上周发布的三篇文档，有时候写的太匆忙，欠考虑（这违背了蜗窝的原则，慢下来，享受科技）。\r\npin power domain是电源管理的一部分，电源管理是个庞然大物，如果你有兴趣，我先把这部分排入下月的schedule好了"
+ },
+ {
+  "id": "260",
+  "parent": "259",
+  "date": "2014-07-28T16:06:25+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：电源管理涉及的东西太多了，我估计你要是写也要搞很久，能不能先把中断子系统写完呢？哈哈，因为最近在搞这几个方面。ps：因为我之前搞kernel里面与体系架构无关的东西稍微多一点，具体深入到driver层次，看的代码少一点。最近在搞drive的模块，所以也跟着您写的文档一点点的了解，各个driver子系统的架构以及代码，以及硬件特性。所以如果可以的话，先写完中断子系统如何？:)"
+ },
+ {
+  "id": "261",
+  "parent": "260",
+  "date": "2014-07-28T18:04:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：也行，我都想先暂停GPIO subsystem的描述了，这部分比较简单，没有什么好写的，等以后有心情再写。中断子系统的确值得一写，有很多值得品味的东西，之前写的GIC的代码分析文档比较孤单，如果再给上2～3篇文档，中断子系统可以描述的比较清楚了。"
+ },
+ {
+  "id": "263",
+  "parent": "261",
+  "date": "2014-07-28T18:56:34+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：对啊，理解中断对理解整个linux kernel很有帮助啊。静候佳作 ：）"
+ },
+ {
+  "id": "694",
+  "parent": "0",
+  "date": "2014-11-10T10:51:55+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "samsung的这个pin跟gpio系统耦合的太严重了，代码架构看起来也不整洁，我想这也是楼主不想写的原因吧。代码看起来没有快感。"
+ },
+ {
+  "id": "695",
+  "parent": "694",
+  "date": "2014-11-10T11:48:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：一直觉得三星的代码写的不好……"
+ },
+ {
+  "id": "697",
+  "parent": "694",
+  "date": "2014-11-10T12:54:28+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：三星的代码的确不怎么样，三星的硬件实例稍强，不过三星处理器的datasheet写的也不怎么样。ARM arch中，TI的不错，让人惊奇的是：全志的代码也非常的规整......"
+ },
+ {
+  "id": "700",
+  "parent": "697",
+  "date": "2014-11-10T14:59:09+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：全志是linaro的成员，他们的代码好像放到了linux的upstream上面了。而且我听说因为全志的板子比较便宜，很多欧洲的发烧友会玩他们的板子，测试出来问题，也会提交patch。这么看来代码规整也不足为奇，因为要放到linux的mainline上面，代码是要做很久的整理。"
+ },
+ {
+  "id": "702",
+  "parent": "700",
+  "date": "2014-11-10T16:33:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：还是和ARM SOC VENDOR的软件维护者的观念有关，三星的代码也是在mainline中啊，不过仍然不是很理想"
+ },
+ {
+  "id": "703",
+  "parent": "700",
+  "date": "2014-11-10T17:08:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：我倒觉得，Tigger所说的这些，只是“果”，并不是“因”。"
+ },
+ {
+  "id": "705",
+  "parent": "703",
+  "date": "2014-11-10T18:24:39+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：那么最主要的应该也是 写代码的普通的工程师的素质，这么说来全志的工程师水平不错哦"
+ },
+ {
+  "id": "802",
+  "parent": "0",
+  "date": "2014-12-03T16:45:22+08:00",
+  "author": "fighter",
+  "site": "",
+  "text": "写的非常好，期待新作~"
+ },
+ {
+  "id": "1105",
+  "parent": "0",
+  "date": "2015-01-17T15:30:04+08:00",
+  "author": "smart",
+  "site": "",
+  "text": "在学习gpio_keys的时候，无意间发现了这块儿宝地，本以为已经掌握了一点儿驱动的知识了，但是，看完文章发现，我依然还是个小白！感觉我这读者与作者的高度，差的不止一座珠穆朗玛峰。"
+ },
+ {
+  "id": "1106",
+  "parent": "1105",
+  "date": "2015-01-18T23:18:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@smart：这位同学过奖了，很多时候，我们原以为是珠穆朗玛峰，上去之后，却发现只是一个小山头而已。学海无涯，唯有努力啊！共勉！"
+ },
+ {
+  "id": "1484",
+  "parent": "0",
+  "date": "2015-04-09T15:36:11+08:00",
+  "author": "tong",
+  "site": "",
+  "text": "我发现在pinctrl_register的时候会把自身也创建一个struct pinctrl结构，由struct pinctrl_dev 内部指针p指向该结构。pinctrl自身申请者个struct pinctrl结构的目的是什么。\r\n\r\n/**\r\n * pinctrl_register() - register a pin controller device\r\n * @pctldesc: descriptor for this pin controller\r\n * @dev: parent device for this pin controller\r\n * @driver_data: private pin controller data for this pin controller\r\n */\r\nstruct pinctrl_dev *pinctrl_register(struct pinctrl_desc *pctldesc,\r\n\t\t\t\t    struct device *dev, void *driver_data)\r\n{\r\n\tstruct pinctrl_dev *pctldev;\r\n\tint ret;\r\n\r\n\tif (!pctldesc)\r\n\t\treturn NULL;\r\n\tif (!pctldesc->name)\r\n\t\treturn NULL;\r\n\r\n\tpctldev = kzalloc(sizeof(*pctldev), GFP_KERNEL);\r\n\tif (pctldev == NULL) {\r\n\t\tdev_err(dev, \"failed to alloc struct pinctrl_dev\\n\");\r\n\t\treturn NULL;\r\n\t}\r\n\r\n\t/* Initialize pin control device struct */\r\n\tpctldev->owner = pctldesc->owner;\r\n\tpctldev->desc = pctldesc;\r\n\tpctldev->driver_data = driver_data;\r\n\tINIT_RADIX_TREE(&pctldev->pin_desc_tree, GFP_KERNEL);\r\n\tINIT_LIST_HEAD(&pctldev->gpio_ranges);\r\n\tpctldev->dev = dev;\r\n\tmutex_init(&pctldev->mutex);\r\n\r\n\t/* check core ops for sanity */\r\n\tif (pinctrl_check_ops(pctldev)) {\r\n\t\tdev_err(dev, \"pinctrl ops lacks necessary functions\\n\");\r\n\t\tgoto out_err;\r\n\t}\r\n\r\n\t/* If we're implementing pinmuxing, check the ops for sanity */\r\n\tif (pctldesc->pmxops) {\r\n\t\tif (pinmux_check_ops(pctldev))\r\n\t\t\tgoto out_err;\r\n\t}\r\n\r\n\t/* If we're implementing pinconfig, check the ops for sanity */\r\n\tif (pctldesc->confops) {\r\n\t\tif (pinconf_check_ops(pctldev))\r\n\t\t\tgoto out_err;\r\n\t}\r\n\r\n\t/* Register all the pins */\r\n\tdev_dbg(dev, \"try to register %d pins ...\\n\",  pctldesc->npins);\r\n\tret = pinctrl_register_pins(pctldev, pctldesc->pins, pctldesc->npins);\r\n\tif (ret) {\r\n\t\tdev_err(dev, \"error during pin registration\\n\");\r\n\t\tpinctrl_free_pindescs(pctldev, pctldesc->pins,\r\n\t\t\t\t      pctldesc->npins);\r\n\t\tgoto out_err;\r\n\t}\r\n\r\n\tmutex_lock(&pinctrldev_list_mutex);\r\n\tlist_add_tail(&pctldev->node, &pinctrldev_list);\r\n\tmutex_unlock(&pinctrldev_list_mutex);\r\n\r\n\tpctldev->p = pinctrl_get(pctldev->dev);"
+ },
+ {
+  "id": "1703",
+  "parent": "0",
+  "date": "2015-05-04T22:28:54+08:00",
+  "author": "wqzh0804",
+  "site": "",
+  "text": "这三篇文章太高端，表示很难理解。转入嵌入式快一年了，但是看了这几篇文章，表示很打击信心。在工作中，也没有用过这种方法去控制gpio，一般是去控制寄存器。能否给个建议，让我好好看懂这几篇文章。还有，发现这个数据结构很复杂。"
+ },
+ {
+  "id": "1849",
+  "parent": "0",
+  "date": "2015-05-22T11:31:35+08:00",
+  "author": "常山黄豆",
+  "site": "",
+  "text": "我遇到pinctrl的问题：两个设备先后对同一个gpio的进行devm_pinctrl_get_select()；后面一次select会失败，提示“could not request pin 3 on device ****”，有冲突。我尝试在每次devm_pinctrl_get_select()；后面增加devm_pinctrl_put()来释放该pinctrl，但是不是每次都能释放，还是有冲突。请教下，devm_pinctrl_put()不能成功释放pinctrl吗？"
+ },
+ {
+  "id": "1851",
+  "parent": "1849",
+  "date": "2015-05-22T12:30:55+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@常山黄豆：抱歉，我目前主要的精力放在时间子系统、中断子系统和内核同步这三个主题上，其他的部分暂时没有精力维护了，见谅"
+ },
+ {
+  "id": "1853",
+  "parent": "0",
+  "date": "2015-05-22T17:29:54+08:00",
+  "author": "odriver",
+  "site": "",
+  "text": "博主您好！我有一块arm开发板（zynq芯片）。但是我看它的linux系统中没有使用pinctrl这个子系统。在这种情况下您觉得linux系统会怎么处理引脚复用这部分功能呢？我一直没有找到这个linux系统配置引脚复用的代码。希望能给点指导，谢谢！"
+ },
+ {
+  "id": "1950",
+  "parent": "1849",
+  "date": "2015-06-10T11:45:09+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@常山黄豆：这个不是put不成功！！！你丫就没认真看楼主写的，来，搬个小板凳坐下，哥给你分析哈你丫为啥会出现pin-3被占用，有一段代码你没注意：第六章的really_probe函数中调了pinctrl_bind_pins这个函数，这个函数中你看看干了些啥，get，select都有了吧，没有put吧，在你的第一个设备成功probe之前以前已经做了一次pinctrl_get，引用计数会加你，你驱动又pinctrl_get一次，引用计数变成2，你put一次又变成1，当然其他驱动想get的时候必然失败啊，来，哥告诉你解决办法，在really_probe函数中把pinctrl_bind_pins这怂删掉了就行，所有问题都解决了，就这样放心的修改内核原生代码，没问题的！不要感谢哥，哥只是活雷锋"
+ },
+ {
+  "id": "1953",
+  "parent": "1484",
+  "date": "2015-06-10T11:51:27+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@tong：这个是在pinctrl-controller自己probe时，你可以在这个驱动配置一些管脚功能啊，跟其他驱动是一样的，在dts（设备树）文件中这个pinctrl-controller节点下，你可以写几个pinctrl属性，如pinctrl-names；  pinctrl-0 = {pin0 pin1}等 ，这样pinctrl-controller驱动就跟其他驱动一样可以使用pinctrl自己提供的功能了啊，又一个不认真看代码的，尼玛，就这样能学习好么，差评！楼主写这么多很不容易了"
+ },
+ {
+  "id": "1960",
+  "parent": "1484",
+  "date": "2015-06-10T11:56:33+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@tong：你丫贴的代码，下边有个if条件判断看见没，关键在那，非要装作看不见，贴上来一把质问楼主么"
+ },
+ {
+  "id": "1961",
+  "parent": "0",
+  "date": "2015-06-10T11:58:00+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "呀，刷屏了，不好意思楼主 网不好  我不是来踢馆的"
+ },
+ {
+  "id": "1962",
+  "parent": "1961",
+  "date": "2015-06-10T12:19:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@SleepDeXiang：没关系，我已经删掉多余的了。\r\nPS：好久没见过这么欢乐的工程师了啊，看到评论后笑的我肚子疼啊，哈哈。也希望@常山黄豆和@tong 两位莫介意哈~~"
+ },
+ {
+  "id": "1965",
+  "parent": "697",
+  "date": "2015-06-10T14:40:12+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@linuxer：三丧代码真不行，可以看那个pinctrl-single.c，这个是写的挺好，就是尼玛有个严重问题，哥都不想吐槽了，很严重的内存泄漏，哎！！！"
+ },
+ {
+  "id": "2312",
+  "parent": "0",
+  "date": "2015-07-25T09:02:12+08:00",
+  "author": "随风",
+  "site": "",
+  "text": "您好，请问这两个结构体：\r\nstruct pinctrl_setting_mux {\r\n\tunsigned group;\r\n\tunsigned func;\r\n};\r\nstruct pinctrl_setting_configs {\r\n\tunsigned group_or_pin;\r\n\tunsigned long *configs;\r\n\tunsigned num_configs;\r\n};\r\n和这两个结构体：\r\nstruct pinctrl_map_mux {\r\n\tconst char *group;\r\n\tconst char *function;\r\n};\r\nstruct pinctrl_map_configs {\r\n\tconst char *group_or_pin;\r\n\tunsigned long *configs;\r\n\tunsigned num_configs;\r\n};\r\n有什么关联？看起来成员都差不多，谢谢"
+ },
+ {
+  "id": "2313",
+  "parent": "0",
+  "date": "2015-07-25T21:44:59+08:00",
+  "author": "netilovefm",
+  "site": "",
+  "text": "hi, I want to ask something // 金\r\n   \r\n        for (config = 0; config < size; config++) { －－－－－－－－－－－（5） \r\n            phandle = be32_to_cpup(list++);\r\n            /* Look up the pin configuration node */ \r\n            np_config = of_find_node_by_phandle(phandle); －－－－－－（6）\r\n\r\nin (6) , usually find gpio controller or processor's gpio controller node is it right ? \r\nin this node, has pin's configure infotrmation is it right? \r\n\r\nspi,i2c etc device driver calls pinctrl_dt_to_map() or pinctrl_get() once in their driver source ? \r\nI confused. pinctrl_register() is for gpio controller and is called first , after calling pinctrl_register() , spi,i2c etc other driver source call pinctrl_get(->pincrl_dt_to_map)\r\nthen pctl_dev is one. spi, i2c etc uses this pctl_dev  is it rigtht?\r\n\r\n\r\nlastly \r\n\r\n  np_pctldev = of_get_next_parent(np_pctldev);－－－－－－－（1） \r\n\r\nwhat is usually np_pctldev's parent ? I try to find this , but I can't find .... \r\n\r\nanswer this question , using chinese or english plz"
+ },
+ {
+  "id": "2318",
+  "parent": "0",
+  "date": "2015-07-27T10:08:05+08:00",
+  "author": "fucker",
+  "site": "",
+  "text": "linuxer 大神：\r\n  \r\n    请接收小弟的膜拜~！\r\n    \r\n   (__)　\r\n　 /oo\\\\________\r\n　 \\　/　　　　 \\---\\\r\n 　 \\/　　　 /　 \\　 \\\r\n 　　　\\\\_|___\\\\_|/　　*\r\n 　　　  ||　 YY|  \r\n 　　　  ||　　||  　"
+ },
+ {
+  "id": "2321",
+  "parent": "2313",
+  "date": "2015-07-27T10:46:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@netilovefm：Sorry, we want to focus on the following items recently:\r\n1. power management\r\n2. device model\r\n3. time subsystem\r\n4. interrupt subsystem\r\n\r\nso, I have not too much time to help answer your GPIO subsystem question, maybe others can help......."
+ },
+ {
+  "id": "2355",
+  "parent": "0",
+  "date": "2015-07-29T11:45:38+08:00",
+  "author": "cinmun",
+  "site": "",
+  "text": "貌似现在是Android天下了  纯嵌入式linux开发越来越少 pin control 在Android里貌似都是厂商自己定义的 不在这个目录下管理"
+ },
+ {
+  "id": "3510",
+  "parent": "0",
+  "date": "2016-02-22T15:10:30+08:00",
+  "author": "andy01011501",
+  "site": "",
+  "text": "有没有移动客户端啊？"
+ },
+ {
+  "id": "3511",
+  "parent": "3510",
+  "date": "2016-02-22T16:02:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@andy01011501：抱歉，还没有。曾经搞过一个微信公众号，但懒懒往上面贴文章的，也就没有公布出来。"
+ },
+ {
+  "id": "3518",
+  "parent": "3511",
+  "date": "2016-02-23T16:06:10+08:00",
+  "author": "andy01011501",
+  "site": "",
+  "text": "@wowo：哦，你的网站很不错，顶一下！"
+ },
+ {
+  "id": "3519",
+  "parent": "3518",
+  "date": "2016-02-24T08:45:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@andy01011501：谢谢，欢迎常来~~"
+ },
+ {
+  "id": "5073",
+  "parent": "0",
+  "date": "2016-12-30T15:10:10+08:00",
+  "author": "thatwas",
+  "site": "",
+  "text": "请问在解析pinctrl的group的信息的函数里有这么一行代码：\r\ngrp->pins[i] = bank->pin_base + (m.mux.goff - 0x0A) * 8 + m.mux.off;\r\ngrp->data[i].func = m.mode;\r\n这个pins为什么要这么处理？？\r\n拜托了，一直想不明白"
+ },
+ {
+  "id": "5074",
+  "parent": "0",
+  "date": "2016-12-30T15:34:17+08:00",
+  "author": "thatwas",
+  "site": "",
+  "text": "我明白了，哈哈"
+ },
+ {
+  "id": "5372",
+  "parent": "1950",
+  "date": "2017-03-24T15:18:52+08:00",
+  "author": "justin-wjb",
+  "site": "",
+  "text": "@SleepDeXiang：你的回复太逗了~~~"
+ },
+ {
+  "id": "5822",
+  "parent": "0",
+  "date": "2017-07-19T16:27:39+08:00",
+  "author": "随风律动",
+  "site": "",
+  "text": "去掉pinctrl_bind_pins的话，管脚复用怎么配置？"
+ },
+ {
+  "id": "5826",
+  "parent": "5822",
+  "date": "2017-07-19T22:06:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@随风律动：可以参考一下这篇文章：/gpio_subsystem/pinctrl-driver-summary.html"
+ },
+ {
+  "id": "6220",
+  "parent": "2312",
+  "date": "2017-11-20T10:41:01+08:00",
+  "author": "Bruce",
+  "site": "",
+  "text": "@随风：pinctrl_map_mux  是直接从dts解析出来的，group和function直接用dts里的字符表示；\r\npinctrl_setting_mux 是通过pinctrl_map转换而来的，group和function用index表示，作为pinctrl的pin state 直接配置数据，在配置的时候在全局group和function数据库中很方便通过index获取对应的数据。\r\n\r\npinctrl_map是dts的代码表示\r\npinctrl_setting是pin state配置的代码表示\r\n\r\n以上仅是个人理解，欢迎讨论!"
+ },
+ {
+  "id": "7505",
+  "parent": "0",
+  "date": "2019-07-02T15:14:16+08:00",
+  "author": "jizai888",
+  "site": "",
+  "text": "好牛的网站！"
+ },
+ {
+  "id": "7675",
+  "parent": "0",
+  "date": "2019-09-29T15:08:03+08:00",
+  "author": "wulala",
+  "site": "",
+  "text": "linuxer前辈好，请教如果一个pin脚硬件设计上涉及到他两种以上复用功能，我们不同的driver层能动态的切换这个pin脚的复用功能吗？"
+ }
+]

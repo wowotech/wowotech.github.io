@@ -1,0 +1,138 @@
+[
+ {
+  "id": "4532",
+  "parent": "0",
+  "date": "2016-09-07T21:24:55+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "hi,wowo,有几个疑问请教一下：\r\n1、make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) $(KERNEL_DEFCONFIG)\r\nifeq ($(BOARD_ARCH), arm64)\r\nKERNEL_DEFCONFIG=xprj_defconfig\r\nendif\r\n不是很明白这样改的意义是什么，毕竟不同平台可能会有区别，比如s5pv210就要配置上CONFIG_ARCH_S5PV210这个选项。\r\n2、从代码上看，bootm_decomp_image，uboot会把kernel部分再搬移到load地址上？\r\n所以说kernel.itb必须避开kernel可能的load区域，对吗？\r\n3、compression，二进制文件的压缩格式，u-boot会按照执行的格式解压；\r\n这个意思是，原来zImage上有一段解压代码，现在放在uboot解压？\r\n还是说mkimage的时候，会进行压缩，然后uboot中会对其进行解压？所以生成kernel镜像的时候其实不需要进行压缩？"
+ },
+ {
+  "id": "4533",
+  "parent": "0",
+  "date": "2016-09-07T21:39:15+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "另外，还有一个问题，假设我加一个arm的kernel配置到fit_uImage.its中，make uImage的时候，会因为原来的./out/linux/arch/arm64/boot/Image并不存在导致编译错误。\r\n这种情况下，wowo有没有什么建议来做兼容比较合适，重新弄个fit_uImage.its文件吗？\r\n刚学习FIT，问题比较多~谢谢wowo~~"
+ },
+ {
+  "id": "4535",
+  "parent": "4532",
+  "date": "2016-09-07T21:52:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：问题1：因为ARM64架构，完全依赖device tree，也就是说，在不考虑kernel size的情况下，可以把所有的driver编译到kernel中，然后利用dtb文件区分，从这个角度看，一个config文件应该能够满足需求。如果不能，则要思考自己的软件设计是否有问题。当然arm架构，就另当别论了。\r\n问题2：是的，itb文件不能放在load地址上，不然会报错。稍后我会发一篇实践的文章，其中涉及到这里了。\r\n问题3：mkimage不会压缩，而是你的Image文件可以自行压缩，u-boot会在跳转前帮你解压。"
+ },
+ {
+  "id": "4536",
+  "parent": "4533",
+  "date": "2016-09-07T21:54:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：你要建立一个自己的image节点，然后把你的image的路径放进去，例如：\r\nkernel@5 { \r\n    description = \"ooonebook  kernel\"; \r\n    data = /incbin/(\"./your path\"); \r\n    type = \"kernel\"; \r\n    ...\r\n};"
+ },
+ {
+  "id": "4537",
+  "parent": "4535",
+  "date": "2016-09-07T22:16:08+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "@wowo：谢谢wowo解答~"
+ },
+ {
+  "id": "4538",
+  "parent": "4536",
+  "date": "2016-09-07T22:18:02+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "@wowo：类似这样加的，\r\n        kernel@arm64 {\r\n            description = \"Unify(TODO) ARM64 Linux kernel\";\r\n            data = /incbin/(\"./out/linux/arch/arm64/boot/Image\");\r\n            type = \"kernel\";\r\n            arch = \"arm64\";\r\n            os = \"linux\";\r\n            compression = \"none\";\r\n            load = <0x00080000>;\r\n            entry = <0x00080000>;\r\n        };  \r\n        kernel@arm {\r\n            description = \"Unify(TODO) ARM64 Linux kernel\";\r\n            data = /incbin/(\"./out/linux/arch/arm/boot/Image\");\r\n            type = \"kernel\";\r\n            arch = \"arm\";\r\n            os = \"linux\";\r\n            compression = \"none\";\r\n            load = <0x30080000>;\r\n            entry = <0x30080000>;\r\n        };  \r\n但是会报错\r\n/home/xys0610/code/project-x/build/out/u-boot/tools/mkimage -f /home/xys0610/code/project-x/build/fit_uImage.its /home/xys0610/code/project-x/build/out/xprj_uImage.itb\r\nFATAL ERROR: Couldn't open \"./out/linux/arch/arm64/boot/Image\": No such file or directory\r\n似乎这样子兼容不了"
+ },
+ {
+  "id": "4539",
+  "parent": "4538",
+  "date": "2016-09-07T22:19:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：你要确认你所在的平台，使用的是什么格式的Image文件，你的是zImage？还是什么gz？arm下面肯定没有Image这个文件吧？"
+ },
+ {
+  "id": "4540",
+  "parent": "4539",
+  "date": "2016-09-07T22:46:36+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "@wowo：有的，而且测试过了，把原来的kernel@arm64节点和fdt节点屏蔽掉就OK。\r\n/home/xys0610/code/project-x/build/out/u-boot/tools/mkimage -f /home/xys0610/code/project-x/build/fit_uImage.its /home/xys0610/code/project-x/build/out/xprj_uImage.itb\r\nCan't set 'timestamp' property for '' node (FDT_ERR_NOSPACE)\r\nFIT description: U-Boot uImage source file for X project\r\nCreated:         Wed Sep  7 07:44:08 2016\r\n Image 0 (kernel@arm)\r\n  Description:  Unify(TODO) ARM64 Linux kernel\r\n  Created:      Wed Sep  7 07:44:08 2016\r\n  Type:         Kernel Image\r\n  Compression:  uncompressed\r\n  Data Size:    5295008 Bytes = 5170.91 kB = 5.05 MB\r\n  Architecture: ARM\r\n  OS:           Linux\r\n  Load Address: 0x30080000\r\n  Entry Point:  0x30080000\r\n Default Configuration: 'conf@bubblegum96'\r\n Configuration 0 (conf@bubblegum96)\r\n  Description:  Boot Linux kernel with FDT blob\r\n  Kernel:       kernel@arm64\r\n  FDT:          fdt@bubblegum96\r\n Configuration 1 (conf@tiny210)\r\n  Description:  Boot Linux kernel with FDT blob\r\n  Kernel:       kernel@arm\r\n\r\n您可以把Image改个名字然后再加个对应名字的节点测试一下看看。"
+ },
+ {
+  "id": "4541",
+  "parent": "4540",
+  "date": "2016-09-07T22:47:37+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "@ooonebook：不屏蔽掉就会报\"./out/linux/arch/arm64/boot/Image\": No such file or directory 的错"
+ },
+ {
+  "id": "4542",
+  "parent": "4541",
+  "date": "2016-09-08T09:28:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：啊~我明白你的意思了。\r\n.its里面所有的BIN文件，都需要同时存在，才能编译通过。dtc解释器没办法过滤那些不存在的image。\r\n因此我们要在一个itb中支持多个平台的话，确实很麻烦。\r\n这里面还涉及一个问题：空间的浪费。例如Image相同，支持load、entry不同的话，size也要double。\r\n我觉得FIT uImage还有很多改进空间。\r\n当然，现在没有这种unify的需求~~~~~~"
+ },
+ {
+  "id": "4545",
+  "parent": "0",
+  "date": "2016-09-08T15:24:52+08:00",
+  "author": "左边",
+  "site": "",
+  "text": "有没有关于openwrt方面的知识？"
+ },
+ {
+  "id": "4549",
+  "parent": "4545",
+  "date": "2016-09-08T18:20:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@左边：openwrt更倾向与OS层面吧？我们平时很少涉及"
+ },
+ {
+  "id": "5854",
+  "parent": "0",
+  "date": "2017-07-28T11:38:29+08:00",
+  "author": "Blackrose",
+  "site": "",
+  "text": "你好，我在网上看到embeddedlinux.org.cn引用这篇文章内容，但未属版权名，参考链接如下。\r\nhttp://www.embeddedlinux.org.cn/emb-linux/system-development/201707/14-6970.html"
+ },
+ {
+  "id": "5855",
+  "parent": "5854",
+  "date": "2017-07-28T11:53:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Blackrose：非常感谢，希望能多一些像您这样尊重原创的朋友。\r\n我已经发邮件提醒他们了。\r\n感谢~~~!!"
+ },
+ {
+  "id": "7569",
+  "parent": "0",
+  "date": "2019-08-03T12:53:32+08:00",
+  "author": "收信的加西亚",
+  "site": "",
+  "text": "厉害"
+ },
+ {
+  "id": "7919",
+  "parent": "0",
+  "date": "2020-03-12T17:31:56+08:00",
+  "author": "albert",
+  "site": "",
+  "text": "压缩过的uimage，这里uncompressed是什么意思？\r\n20200306_13:59:16## Booting kernel from Legacy Image at 00007fc0 ...\r\n20200306_13:59:16   Image Name:   Linux-3.10.52\r\n20200306_13:59:16   Image Type:   ARM Linux Kernel Image (uncompressed)\r\n20200306_13:59:16   Data Size:    2600896 Bytes = 2.5 MiB"
+ },
+ {
+  "id": "7922",
+  "parent": "0",
+  "date": "2020-03-19T17:09:02+08:00",
+  "author": "jake",
+  "site": "",
+  "text": "wowo大神太厉害了，不经意发现了你的宝藏博客。最近一直在拜读，每篇都很有思想，全是干货。学到了很多，多谢，多谢。"
+ }
+]

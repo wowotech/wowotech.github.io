@@ -1,0 +1,162 @@
+[
+ {
+  "id": "3500",
+  "parent": "0",
+  "date": "2016-02-15T10:26:30+08:00",
+  "author": "云",
+  "site": "",
+  "text": "Linux下的i2c framework还是比较直观的。。不像usb mmc那样“荡气回肠” ；）\r\n\r\n这篇比较概括浅显，期待后续\r\n\r\n情人节还在发文章，wowo你可以啊，不担心跪键盘？哈哈"
+ },
+ {
+  "id": "3501",
+  "parent": "3500",
+  "date": "2016-02-15T13:09:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@云：是的，I2C Framework还是比较清晰易懂的。\r\n哈哈，感情好的话哪天都是节，不怕不怕~~~"
+ },
+ {
+  "id": "3505",
+  "parent": "0",
+  "date": "2016-02-19T15:05:12+08:00",
+  "author": "Jordon Wu",
+  "site": "",
+  "text": "@wowo,\r\n请教下，对于I2C，可以在userspace的application里处理中断吗？谢谢"
+ },
+ {
+  "id": "3506",
+  "parent": "3505",
+  "date": "2016-02-19T15:34:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Jordon Wu：我不太明白您的意思，对I2C来说，它负责数据接收，中断是在Kernel处理的。\r\n我们讲的在用户空间访问，只是应用程序通过I2C Framework提供的字符设备接口，访问I2C slave device（数据收发）而已，应该不需要关心中断。"
+ },
+ {
+  "id": "3507",
+  "parent": "3506",
+  "date": "2016-02-19T16:52:07+08:00",
+  "author": "jordonwu",
+  "site": "",
+  "text": "@wowo：@wowo,\r\n是的，是在应用程序中通过字符设备接口open/read/write数据到slave device，这样做发数据没问题，但是收数据需要while循环去读或者poll去查询是否有数据可读。我想知道有没有办法把kernel的有数据可接受这个中断暴露给userspace的应用程序？这样应用程序只在这个中断来了之后才去度slave device的数据。"
+ },
+ {
+  "id": "3508",
+  "parent": "3507",
+  "date": "2016-02-19T17:06:10+08:00",
+  "author": "云",
+  "site": "",
+  "text": "@jordonwu：我大概理解的你的想法。\r\n1.首先中断只能在kenerl空间处理，这个是必须的。如果想实现此类模型，一个途径是应用程序调用read/write,在kernel空间中用诸如wait_even_xx()陷入睡眠，当有中断来临时，在ISR中wake_up_xx()来唤醒之前陷入睡眠的进程。\r\n\r\n2.i2c的bus驱动已经实现了上述模型，你可以参考drivers/i2c/busess/下的各种driver。也就是说,在应用程序中字节设备接口的read/write/ioctl都是同步的。"
+ },
+ {
+  "id": "3509",
+  "parent": "3507",
+  "date": "2016-02-19T17:13:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jordonwu：建议不这样做，poll已经够用了，如果poll解决不了，估计是应用层的设计有待商榷。"
+ },
+ {
+  "id": "3588",
+  "parent": "0",
+  "date": "2016-03-04T22:05:41+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "确实i2c是一个比较清晰的framework，记得第一个接触的驱动就是i2c slave，清晰的记得当时的迷茫，对各种数据结构的不解，现在看来感觉清楚了不少。"
+ },
+ {
+  "id": "3591",
+  "parent": "3588",
+  "date": "2016-03-05T17:55:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：是啊，I2C相对比较简单，不用当做理解设备模型的一个例子，也挺不错的。"
+ },
+ {
+  "id": "3739",
+  "parent": "0",
+  "date": "2016-03-28T18:54:55+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "所有运行linux kernel的设备，在I2C总线里面，都是I2C master（至于I2C slave，抱歉，kernel不管！）。\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n为什么不管呢？其实只要有需求，就应该提供支持的。在4.4.6的内核中，已经增加了对I2C slave的支持，同时也复用了当前的I2C framework的代码。\r\n\r\n另外，I2C物理拓扑（图片1）以及关于I2C和设备模型那部分（图片2），基本上四着眼于嵌入式平台，其实可以更通用一些。另外，图片2中的CPU block的出现容易误导的，或者建议增加更多的文字描述，对于I2C和设备模型之间的关系可以多写一些。"
+ },
+ {
+  "id": "3740",
+  "parent": "0",
+  "date": "2016-03-28T19:19:07+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "探讨一个问题啊，我说的也不一定对。\r\n我感觉I2C algos和I2C buses模块的关系不是平行关系，毫无疑问，I2C buses模块（I2C controller driver）模块是和底层硬件相关的，所有和具体的I2C controller的交互都是通过I2C busses模块进行，I2C algos是和硬件无关的（也不能这么说，应该说是和硬件操作序列有关）。I2C algos对底层硬件的操作都是通过I2C busses中的adapter的callback完成的，或者说，adapter提供了最底层的通信机制，不同的algos可以利用它实现具体的I2C的数据传输服务。"
+ },
+ {
+  "id": "3741",
+  "parent": "0",
+  "date": "2016-03-28T19:31:07+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "I2C slave device driver和I2C client driver在内核代码中有不同的含义，图片3中使用的术语似乎和内核不一致"
+ },
+ {
+  "id": "3742",
+  "parent": "3739",
+  "date": "2016-03-28T21:47:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hello_world：4.4.6是3/16才发布啊，我还没看呢！已经支持I2C slave了吗？看来kernel还是妥协了。其实我觉得，一个跑linux kernel的设备，当做I2C slave的可能性不大，还真不需要管它。\r\n\r\n通用一些具体指什么意思呢？加入slave？还是其它？"
+ },
+ {
+  "id": "3743",
+  "parent": "3740",
+  "date": "2016-03-28T21:52:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hello_world：这个还真不一定，我觉得kernel的设计初衷，是尽可能的复用I2C algos，也就是说，将adapter和algos分离。当然，现状是，adapter和algos基本上一一对应了，因而algos似乎变成adapter的一个属性（从属关系）了。"
+ },
+ {
+  "id": "3744",
+  "parent": "3741",
+  "date": "2016-03-28T21:58:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hello_world：kernel中有“I2C slave device driver”这个概念吗？这篇文章中我有意回避了I2C client这个概念，因为觉得它不直观，不好理解。从本质上来说，I2C client应该是I2C slave device在本地的一个“映像”（这让我想起了bluez中device的概念）。"
+ },
+ {
+  "id": "3745",
+  "parent": "3742",
+  "date": "2016-03-29T08:50:36+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@wowo：具体是哪一个版本加上的我没有查证，不过这不重要，重要的是开源社区增加i2c slave的支持也是很纠结的（就像你说的，其实大部分的运行linux的设备应该都是I2C master），在log中有这样的描述：最终，我们还是增加了slave的支持......\r\n\r\n增加slave的支持是指其他的模块可以调用i2c core提供的i2c_slave_register/i2c_slave_unregister来注册一个或者注销一个i2c的slave设备。一旦注册了slave设备，底层的adapter要切换到slave mode。完成这些操作之后，该i2c slave设备可以响应来自对端i2c master设备的各种命令和数据了。"
+ },
+ {
+  "id": "3746",
+  "parent": "3744",
+  "date": "2016-03-29T09:01:04+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@wowo：对的i2c client driver其实是驱动I2C 总线上的slave设备的，因此其实i2c slave driver更顺一些，但是，内核代码其实都是用i2c client的概念。因此，我觉得图片3应该表述这一部分的内容的：即i2c client driver模块应该和i2c slave HW block之间有虚线，表示这两个模块之间的关系。BTW，我觉的图片3应该可以有更好的表达。\r\n\r\n即便是有了I2C slave device的支持（类似USB 的gadget driver），实际上仍然用struct i2c_client来抽象这个slave设备。\r\n\r\n最后：我们觉得我们还是锁定一个内核版本好了，我建议是4.4.y的内核版本，大家都围绕这个版本讨论。"
+ },
+ {
+  "id": "3747",
+  "parent": "3743",
+  "date": "2016-03-29T09:04:06+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@wowo：的确，algos像是adapter的一个lib，不过反正在嵌入式的场景中，每一个adapter都有自己独特的algos，我们没有必要争论它们之间的关系，algos，就让它随风飘散吧，^_^"
+ },
+ {
+  "id": "7128",
+  "parent": "0",
+  "date": "2019-01-09T17:49:28+08:00",
+  "author": "x",
+  "site": "",
+  "text": "咨询一下各位大神，Linux kernel 4.1.15，两个进程A和B同时访问同一个SPI总线，会导致这两个进程退出吗？同一个SPI总线 但是有主和从\r\n\r\n是不是有可能A访问主SPI，B访问从SPI，然后B再请求主的，A再请求从的 两边都没释放，导致的进程僵死了？"
+ },
+ {
+  "id": "7131",
+  "parent": "7128",
+  "date": "2019-01-10T19:26:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@x：这和SPI driver的实现有关，当然，一个好的driver不会出现这种问题。"
+ }
+]

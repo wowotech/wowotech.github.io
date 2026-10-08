@@ -1,0 +1,106 @@
+[
+ {
+  "id": "1088",
+  "parent": "0",
+  "date": "2015-01-14T13:37:59+08:00",
+  "author": "王语双",
+  "site": "http://wangyushuang.com",
+  "text": "满满的，全是技术。\r\n技术创造美。"
+ },
+ {
+  "id": "4929",
+  "parent": "0",
+  "date": "2016-11-29T11:18:30+08:00",
+  "author": "Layman",
+  "site": "",
+  "text": "@wowo,\r\n\r\n请教两个问题：\r\n1.suspend和idle的终极状态都是WFI，请问他们之间有何异同？\r\n2.WFI“put the core in a low-power state by disabling the clocks in the core while keeping the core powered up”，那请问处于WFI的cpu功耗大概会是什么数量级的？\r\n\r\n谢谢"
+ },
+ {
+  "id": "4931",
+  "parent": "4929",
+  "date": "2016-11-29T13:22:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Layman：1. 你指的终极状态，都是所cpu core的状态，而在进入这个终极状态之前，做了什么事情，就是它们的区别。\r\n2. 这个问题不太好回答啊，因为和具体的CPU有关，建议既可以在自己的CPU上测试一下。对比一下WFI前后的电流，应该可以看出来。"
+ },
+ {
+  "id": "6417",
+  "parent": "0",
+  "date": "2017-12-25T11:32:38+08:00",
+  "author": "jiffy",
+  "site": "",
+  "text": "@wowo\r\n例如:entry-latency-us = <1000>;exit-latency-us = <500>;min-residency-us = <2500>;我的理解是这三个参数在系统起来之前已经配置好的,那么它们的值是怎么确定的,配置的依据是什么?"
+ },
+ {
+  "id": "6419",
+  "parent": "6417",
+  "date": "2017-12-25T12:03:22+08:00",
+  "author": "hello-world",
+  "site": "",
+  "text": "@jiffy：每个平台都不一样，那些数据需要实际测试才能得出的"
+ },
+ {
+  "id": "6449",
+  "parent": "6419",
+  "date": "2018-01-03T00:45:03+08:00",
+  "author": "jiffy",
+  "site": "",
+  "text": "@hello-world：@wowo\r\n能否讲解下idle-states dts结构中关于min-residency参数的计算过程，现在有个项目需要调试这个参数，谢谢！"
+ },
+ {
+  "id": "6451",
+  "parent": "6449",
+  "date": "2018-01-04T08:58:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jiffy：这个参数的含义是：cpu在idle状态最少停留多少时间才是划得来的。\r\n如果CPU很快（小于这个时间）就会从idle状态回来，就没必要idle了。\r\n至于怎么计算的，应该是跟平台的特性有关（没做过CPU核，不是很清楚）。\r\n你可以根据进、出所需的时间和功耗，idle状态所节省的功耗，换算一下，看看多久合适。或者设计一个测试场景，实际测试一下也行。"
+ },
+ {
+  "id": "6504",
+  "parent": "0",
+  "date": "2018-01-26T18:26:16+08:00",
+  "author": "fengmiao",
+  "site": "",
+  "text": "我看到有些平台实现了好多cpuidleDriver，比如：cps_driver、little_idle之类的。系统运行的时候是把CPU与特定的cpudile Driver联系起来，是通过DTS配置吗？"
+ },
+ {
+  "id": "6505",
+  "parent": "0",
+  "date": "2018-01-26T18:40:24+08:00",
+  "author": "fengmiao",
+  "site": "",
+  "text": "@wowo\r\n请教下您，我看到有些平台实现了好多cpuidleDriver，比如：cps_driver、little_idle之类的。系统运行的时候是把CPU与特定的cpudile Driver联系起来，是通过DTS配置吗？"
+ },
+ {
+  "id": "6511",
+  "parent": "6505",
+  "date": "2018-01-30T08:48:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@fengmiao：正常的driver（例如本文的例子），应该是这样。具体你可以看看driver的的实现。"
+ },
+ {
+  "id": "7696",
+  "parent": "0",
+  "date": "2019-10-14T19:55:11+08:00",
+  "author": "伊斯科明",
+  "site": "",
+  "text": "您好，请教一个问题，我现在手上的kernel是4.9.113版本，dts文件中有关idle-state的参数如下：\r\nidle-states {\r\n\tentry-method = \"arm,psci\";\r\n\tSYSTEM_SLEEP_0: system-sleep-0 {\r\n\t\tcompatible = \"arm,idle-state\";\r\n\t\tarm,psci-suspend-param = <0x0010000>;\r\n\t\tlocal-timer-stop;\r\n\t\tentry-latency-us = <0x3fffffff>;\r\n\t\texit-latency-us = <0x40000000>;\r\n\t\tmin-residency-us = <0xffffffff>;\r\n\t};\r\n};\r\n我之前遇到一个suspend的问题是和arm,psci-suspend-param有关的，请问一下，这个参数具体是有什么作用的呢？"
+ },
+ {
+  "id": "8103",
+  "parent": "6505",
+  "date": "2020-08-24T09:18:43+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@fengmiao：kernel-4.19,通过dts中的enable-method配置"
+ },
+ {
+  "id": "8104",
+  "parent": "6505",
+  "date": "2020-08-24T09:18:52+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@fengmiao：kernel-4.19,通过dts中的enable-method配置"
+ }
+]

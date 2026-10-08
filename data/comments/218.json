@@ -1,0 +1,338 @@
+[
+ {
+  "id": "2762",
+  "parent": "0",
+  "date": "2015-10-14T17:03:32+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "前段时间也在看aarch64，发现硬件的进步确实给软件带来很多优化。由于tbl有了两个，所以kernel和user的页表可以分离开了。并且arm32中的异常向量表只能放到0xffff 0000或者0x0000 0000，而aarch64有一个寄存器vbar_el1来指定来放异常向量表地址了。\r\n另外我看的是高通的代码，感觉swapper_pg_dir的建立过程和你上面说的有所不同呢。"
+ },
+ {
+  "id": "2764",
+  "parent": "2762",
+  "date": "2015-10-14T23:06:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：我贴的代码是标准linux kernel4.1.10版本的代码，你可以贴出来高通的代码大家一起研究一下怎么不一样。"
+ },
+ {
+  "id": "2790",
+  "parent": "0",
+  "date": "2015-10-19T07:50:41+08:00",
+  "author": "珠海影视制作",
+  "site": "",
+  "text": "好吧， 表示这些我都不懂的"
+ },
+ {
+  "id": "2802",
+  "parent": "0",
+  "date": "2015-10-20T11:07:38+08:00",
+  "author": "KO户外",
+  "site": "http://www.kohuwai.com/",
+  "text": "谢谢分享"
+ },
+ {
+  "id": "2818",
+  "parent": "2762",
+  "date": "2015-10-22T11:55:35+08:00",
+  "author": "claud",
+  "site": "",
+  "text": "@passerby：@passerby \r\n纠正一下哦：\r\n1.arm32 TLB也是2个, Micro TLB & Main TLB\r\n2.arm32(armv-7)的vector也可以设置到32字节对齐的任意地址哦:) 放在CP15 VBAR寄存器中"
+ },
+ {
+  "id": "2819",
+  "parent": "0",
+  "date": "2015-10-22T15:23:08+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "谢谢指点，查了一下ARM32确实有micro tlb和main tlb。但是main tlb做同步用的，它们的作用与arm64的tlb0 tlb1不一样。\r\n第二个确实是这样的 0^0，因为一直看到异常向量表是建立在0XFFFF 0000上的，就一直以为设置为两个固定地址。"
+ },
+ {
+  "id": "2820",
+  "parent": "2819",
+  "date": "2015-10-22T18:25:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：对于ARM64的EL1状态，有两个Translation Table Base Register，叫做TTBR0_EL1和TTBR1_EL1，这两个寄存器分别指向了用户空间和内核空间的Translation table。\r\n\r\n具体TLB的组织是和具体的processor相关，对于Cortex A72而言，其TLB包括两个level，共计3个，分别是L1 instruction TLB，L1 data TLB和L2 TLB。\r\n\r\nARM32的micro tlb类似L1 instruction TLB和L1 data TLB，Main TLB类似A72中的L2 TLB，其功能是一样的。"
+ },
+ {
+  "id": "2821",
+  "parent": "2820",
+  "date": "2015-10-22T19:19:08+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：受教了，谢谢O_O"
+ },
+ {
+  "id": "4327",
+  "parent": "0",
+  "date": "2016-07-27T20:38:30+08:00",
+  "author": "逗你玩",
+  "site": "",
+  "text": "受教了。\r\n\"（2）PAGE_OFFSET是kernel image的首地址，对于48bit的VA而言，该地址是0xffff8000-00000000。\"\r\n这里是不是应该为0xffff0000-00000000？"
+ },
+ {
+  "id": "4333",
+  "parent": "4327",
+  "date": "2016-07-28T18:04:14+08:00",
+  "author": "hello",
+  "site": "",
+  "text": "@逗你玩：0xffff0000-00000000是kernel space的首地址，在ARM64中，kernel image并没有放到kernel space首地址的位置而是放在了中间，代码如下：\r\n#define PAGE_OFFSET\t\t(UL(0xffffffffffffffff) << (VA_BITS - 1))"
+ },
+ {
+  "id": "4336",
+  "parent": "4333",
+  "date": "2016-07-28T18:26:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hello：多谢分享，这两天有些忙，没有及时恢复，望见谅"
+ },
+ {
+  "id": "4338",
+  "parent": "4336",
+  "date": "2016-07-28T19:16:58+08:00",
+  "author": "hello",
+  "site": "",
+  "text": "@wowo：谢啥啊，我就是linuxer啊，只是懒得登录而已"
+ },
+ {
+  "id": "4340",
+  "parent": "4338",
+  "date": "2016-07-28T19:55:30+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@hello：哈哈哈哈哈"
+ },
+ {
+  "id": "4341",
+  "parent": "4340",
+  "date": "2016-07-28T19:57:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：疯了，名字竟然天天换。哈哈~~"
+ },
+ {
+  "id": "4684",
+  "parent": "0",
+  "date": "2016-10-10T16:04:58+08:00",
+  "author": "vachel",
+  "site": "http://na",
+  "text": "请问ARMv8里面区分线性地址和虚拟地址吗?\r\n比如kmalloc出来的地址通过virt_to_phys转换就能得到PA.但是Vmalloc就不能这么算.\r\n\r\n测试方法, 将kmalloc和vmalloc的内存填好固定的值, 打印出对应的PA.  然后通过devmem PA 读对应的内容.\r\n\r\n测试代码:\r\n    //extern struct   mm_struct init_mm;\r\n    pgd_t *pgd;\r\n    pgd_t *pgd_temp;\r\n    pmd_t *pmd;\r\n    pte_t *pte;\r\n    pud_t *pud;\r\n\r\n    unsigned long va;\r\n    int* n_kmalloc = (int*)kmalloc(32, GFP_KERNEL);\r\n    int* n_vmalloc = (int*)vmalloc(sizeof(int));\r\n\r\n    *n_kmalloc = 0x1234;\r\n    *n_vmalloc = 0x4321;\r\n\r\n\r\n    /**************************************************************test kmalloc**********************************************************/\r\n    va = (unsigned long)n_kmalloc;\r\n    printk(\" Test 1, use virt_to_phys get kmalloc PA\\n\");\r\n    printk(\"kmalloc virt_to_phy = %lx\\n \", virt_to_phys(n_kmalloc));\r\n\r\n    printk(\" Test 2, use kernel pgd translation kmalloc to PA \\n\");\r\n    // ffffffc000e88000 B swapper_pg_dir\r\n    pgd =  0xffffffc000e88000;\r\n    printk(\"pgd_index = 0x%x\\n\", pgd_index(va));\r\n\r\n    pgd_temp = pgd+pgd_index(va);\r\n    printk(\"[%p][%08lx] *pgd = %016llx, pgd = %p, \", n_kmalloc,va, pgd_val(*pgd_temp), pgd_temp);\r\n\r\n    do {\r\n\r\n        if (pgd_none(*pgd_temp) || pgd_bad(*pgd_temp))\r\n            break;\r\n\r\n        pud = pud_offset(pgd_temp, va);\r\n        if (pud_none(*pud) || pud_bad(*pud))\r\n            break;\r\n\r\n        pmd = pmd_offset(pud, va);\r\n        printk(\", *pmd=%016llx\", pmd_val(*pmd));\r\n        if (pmd_none(*pmd) || pmd_bad(*pmd))\r\n            break;\r\n\r\n        pte = pte_offset_map(pmd, va);\r\n        printk(\", *pte=%016llx\", pte_val(*pte));\r\n    } while(0);\r\n\r\n    printk(\"\\n\");\r\n\r\n    printk(\"Test 3, use mm_struct pgd translation kmalloc to PA\\n\");\r\n    pgd = current->mm->pgd;\r\n    printk(\"pgd_index = 0x%x\\n\", pgd_index(va));\r\n\r\n    pgd_temp = pgd+pgd_index(va);\r\n    printk(\"[%p] [%08lx] *pgd = %016llx, pgd = %p, \", n_kmalloc, va, pgd_val(*pgd_temp), pgd_temp);\r\n\r\n    do {\r\n\r\n        if (pgd_none(*pgd_temp) || pgd_bad(*pgd_temp))\r\n            break;\r\n\r\n        pud = pud_offset(pgd_temp, va);\r\n        if (pud_none(*pud) || pud_bad(*pud))\r\n            break;\r\n\r\n        pmd = pmd_offset(pud, va);\r\n        printk(\", *pmd=%016llx\", pmd_val(*pmd));\r\n        if (pmd_none(*pmd) || pmd_bad(*pmd))\r\n            break;\r\n\r\n        pte = pte_offset_map(pmd, va);\r\n        printk(\", *pte=%016llx\", pte_val(*pte));\r\n    } while(0);\r\n\r\n    printk(\"\\n\");\r\n\r\n\r\n\r\n    /**************************************************************test vmalloc**********************************************************/\r\n    va = (unsigned long)n_vmalloc;\r\n    printk(\" Test 1, use virt_to_phys get vmalloc PA\\n\");\r\n    printk(\"vmalloc virt_to_phy = %lx\\n \", virt_to_phys(n_vmalloc));\r\n\r\n    printk(\" Test 2, use kernel pgd translation vmalloc to PA \\n\");\r\n    // ffffffc000e88000 B swapper_pg_dir\r\n    pgd =  0xffffffc000e88000;\r\n    printk(\"pgd_index = 0x%x\\n\", pgd_index(va));\r\n\r\n    pgd_temp = pgd+pgd_index(va);\r\n    printk(\"[%p] [%08lx] *pgd = %016llx, pgd = %p, \", n_vmalloc, va, pgd_val(*pgd_temp), pgd_temp);\r\n\r\n    do {\r\n\r\n        if (pgd_none(*pgd_temp) || pgd_bad(*pgd_temp))\r\n            break;\r\n\r\n        pud = pud_offset(pgd_temp, va);\r\n        if (pud_none(*pud) || pud_bad(*pud))\r\n            break;\r\n\r\n        pmd = pmd_offset(pud, va);\r\n        printk(\", *pmd=%016llx\", pmd_val(*pmd));\r\n        if (pmd_none(*pmd) || pmd_bad(*pmd))\r\n            break;\r\n\r\n        pte = pte_offset_map(pmd, va);\r\n        printk(\", *pte=%016llx\", pte_val(*pte));\r\n    } while(0);\r\n\r\n    printk(\"\\n\");\r\n\r\n    printk(\"Test 3, use mm_struct pgd translation vmalloc to PA\\n\");\r\n    pgd = current->mm->pgd;\r\n    printk(\"pgd_index = 0x%x\\n\", pgd_index(va));\r\n\r\n    pgd_temp = pgd+pgd_index(va);\r\n    printk(\"[%p] [%08lx]*pgd = %016llx, pgd = %p, \", n_vmalloc, va, pgd_val(*pgd_temp), pgd_temp);\r\n\r\n    do {\r\n\r\n        if (pgd_none(*pgd_temp) || pgd_bad(*pgd_temp))\r\n            break;\r\n\r\n        pud = pud_offset(pgd_temp, va);\r\n        if (pud_none(*pud) || pud_bad(*pud))\r\n            break;\r\n\r\n        pmd = pmd_offset(pud, va);\r\n        printk(\", *pmd=%016llx\", pmd_val(*pmd));\r\n        if (pmd_none(*pmd) || pmd_bad(*pmd))\r\n            break;\r\n\r\n        pte = pte_offset_map(pmd, va);\r\n        printk(\", *pte=%016llx\", pte_val(*pte));\r\n    } while(0);\r\n\r\n    printk(\"\\n\");\r\n\r\n\r\n    //dump pgd\r\n//    print_hex_dump(KERN_ERR, \"PGD raw data:\", DUMP_PREFIX_ADDRESS,16,1,pgd,4096,true);\r\n\r\n    //panic\r\n  //  *(int*)0x2 = 0; \r\n\r\n   /**/ while(true){\r\n    \r\n    }\r\n   /**/\r\n\r\n\r\n测试结论:\r\n# [ 4132.980000]  Test 1, use virt_to_phys get kmalloc PA\r\n[ 4132.984000] kmalloc virt_to_phy = 32184ad40\r\n  Test 2, use kernel pgd translation kmalloc to PA \r\n[ 4132.992000] pgd_index = 0x102\r\n[ 4132.996000] [ffffffc09d44ad40][ffffffc09d44ad40] *pgd = 000000005d1fa003, pgd = ffffffc000e88810, , *pmd=0040000321800711\r\n[ 4133.008000] Test 3, use mm_struct pgd translation kmalloc to PA\r\n[ 4133.012000] pgd_index = 0x102\r\n[ 4133.016000] [ffffffc09d44ad40] [ffffffc09d44ad40] *pgd = 0000000000000000, pgd = ffffffc09ab62810, \r\n[ 4133.024000]  Test 1, use virt_to_phys get vmalloc PA\r\n[ 4133.032000] vmalloc virt_to_phy = ffffffc0260ed000\r\n  Test 2, use kernel pgd translation vmalloc to PA \r\n[ 4133.040000] pgd_index = 0x0\r\n[ 4133.044000] [ffffff8005eed000] [ffffff8005eed000] *pgd = 000000033ac05003, pgd = ffffffc000e88000, , *pmd=00000000de236003, *pte=02e00003370e3713\r\n[ 4133.056000] Test 3, use mm_struct pgd translation vmalloc to PA\r\n[ 4133.060000] pgd_index = 0x0\r\n[ 4133.064000] [ffffff8005eed000] [ffffff8005eed000]*pgd = 0000000000000000, pgd = ffffffc09ab62000, \r\n\r\nbusybox devmem  0x32184ad40                              \r\n0x00001234\r\nbusybox devmem  0xffffffc0260ed000                         \r\ndevmem: mmap: Invalid argument"
+ },
+ {
+  "id": "4688",
+  "parent": "4684",
+  "date": "2016-10-10T21:54:43+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@vachel：我记得线性地址是X86平台特有的一个术语，在ARMv8中使用虚拟地址这个术语。\r\n\r\n对于kmalloc，分配的虚拟地址是位于Directed mapped区域，这个区域的地址虚拟地址和物理地址有固定的线性偏移关系，因此可以使用virt_to_phys。\r\n\r\n使用vmalloc，虚拟地址和物理地址没有线性关系。"
+ },
+ {
+  "id": "4690",
+  "parent": "4688",
+  "date": "2016-10-11T09:37:41+08:00",
+  "author": "vachel",
+  "site": "http://na",
+  "text": "@linuxer：@linuxer, 感谢回复, 感谢纠正.\r\n基于kernel的/Documentation/arm64/memory.txt 可以看到\r\nAArch64 Linux memory layout with 4KB pages:\r\n\r\nStart\t\t\tEnd\t\t\tSize\t\tUse\r\n-----------------------------------------------------------------------\r\n0000000000000000\t0000007fffffffff\t 512GB\t\tuser\r\n\r\nffffff8000000000\tffffffbbfffeffff\t~240GB\t\tvmalloc\r\n\r\nffffffbbffff0000\tffffffbbffffffff\t  64KB\t\t[guard page]\r\n\r\nffffffbc00000000\tffffffbdffffffff\t   8GB\t\tvmemmap\r\n\r\nffffffbe00000000\tffffffbffbbfffff\t  ~8GB\t\t[guard, future vmmemap]\r\n\r\nffffffbffa000000\tffffffbffaffffff\t  16MB\t\tPCI I/O space\r\n\r\nffffffbffb000000\tffffffbffbbfffff\t  12MB\t\t[guard]\r\n\r\nffffffbffbc00000\tffffffbffbdfffff\t   2MB\t\tfixed mappings\r\n\r\nffffffbffbe00000\tffffffbffbffffff\t   2MB\t\t[guard]\r\n\r\nffffffbffc000000\tffffffbfffffffff\t  64MB\t\tmodules\r\n\r\nffffffc000000000\tffffffffffffffff\t 256GB\t\tkernel logical memory map\r\n\r\n所以我能理解系统启动之后, 所有经过CPU的地址都是虚拟地址吧?\r\n1. directed mapped区域是针对虚拟内存分布而言? 是哪部分呢. 从arch/arm64/mm/init.c打印的virtual kernel memory layout来看是属于[PAGE_OFFSET, (unsigned long)high_memory] 也就是memory 区间. 可以这么理解吗?\r\n\r\n2. 拿到虚拟地址之后怎么通过页表换算为实际的物理地址呢? 因为无法知道TTBR1_EL1/TTBR0_EL1的值.  我用current->mm->pgd 和 swapper_pg_dir 分别去算都没有算对.\r\n\r\n谢谢"
+ },
+ {
+  "id": "4994",
+  "parent": "0",
+  "date": "2016-12-08T10:41:38+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "hi linuxer\r\n假设kernel的代码非常的小，我能不能打开mmu，但是设置的都是identity mapping？\r\n最近研究MMU相关，决定把你所有的文章都先研究一遍。轰炸式骚扰～～～哈哈"
+ },
+ {
+  "id": "4997",
+  "parent": "4994",
+  "date": "2016-12-08T17:51:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：欢迎骚扰，技术探讨都欢迎，除了解决问题那种类型的问题，那个估计是超出我的能力范围了，哈哈～～\r\n\r\n你的问题暴露了你还是不是很理解identity mapping，哈哈，内核运行在PAGE_OFFSET开始的这个虚拟地址上（编译的时候就确定了），因此，无论如何，一旦打开MMU，kernel image mapping都是需要的。identity mapping是“地址值等于物理地址的那些虚拟地址”到“物理地址”的mapping，它的建立仅仅是为了打开MMU附近的代码准备的。"
+ },
+ {
+  "id": "4999",
+  "parent": "4997",
+  "date": "2016-12-08T18:09:02+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：MMU相关的很多东西我都不太理解。所以现在在看你的文章。看起来还是很吃力。\r\n很多概念脑子里面没有任何的模型，而且你的文章写得很分散。不像普通的drive那么的系统。当然也可能是我能力不够。\r\n我努努力，争取花一个月能够有点收获。\r\n如果我只设置一级页表，TTBR0存放页表首地址。那么我这个页表的大小是多少？？\r\n我对这个非常的困惑。因为我接触的页表大小就是下面这3种。就不能有别的吗？\r\n如果有别的，那我又怎么设置呢？\r\nTG0, bits [15:14]\r\nGranule size for the corresponding translation table base address register.\r\n00 4KByte\r\n01 64KByte\r\n10 16KByte\r\n===========================================\r\n我是不是应该去讨论区里面启动一个帖子，然后在帖子里面写好对于哪篇文章的哪里不太懂？还是就在对于的文章下面提问题？你更倾向于哪种方式？"
+ },
+ {
+  "id": "5002",
+  "parent": "4999",
+  "date": "2016-12-08T19:25:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：在讨论区比较合适，可以起一个主题，不断的把关于MMU的Q和A整理出来也是一个不错的方案。"
+ },
+ {
+  "id": "5072",
+  "parent": "0",
+  "date": "2016-12-29T21:57:59+08:00",
+  "author": "randy",
+  "site": "",
+  "text": "还是没弄明白到底为啥要identity mapping?\r\n系统起来时候跑在物理地址上，在开启mmu之后有一个long jump\r\nmov\tr3, r13\r\nret\tr3\r\nr3是一个虚拟地址，如果pipeline，那么有可能跳转到r3时mmu还没开启成功，则会造成跳转到一个未经mmu翻译的虚拟地址造成指令fetch错误。但是我看到有isb保护着呢：\r\nENTRY(__turn_mmu_on)\r\n\tmov\tr0, r0\r\n\tinstr_sync\r\n\tmcr\tp15, 0, r0, c1, c0, 0\t\t@ write control reg\r\n\tmrc\tp15, 0, r3, c0, c0, 0\t\t@ read id reg\r\n\tinstr_sync\r\n\tmov\tr3, r3\r\n\tmov\tr3, r13\r\n\tret\tr3\r\n\r\n那到底为啥要identity mapping？上面贴的那段英文解释我没看懂"
+ },
+ {
+  "id": "5080",
+  "parent": "5072",
+  "date": "2017-01-03T16:35:18+08:00",
+  "author": "randy",
+  "site": "",
+  "text": "@randy：再打扰下，请问这个问题有人能稍作解答么？"
+ },
+ {
+  "id": "5090",
+  "parent": "5080",
+  "date": "2017-01-04T13:58:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@randy：那段英文的意思是，MMU ON或者OFF的时候，如果代码所在的虚拟地址和物理地址不一样，ON或者OFF的取指可能有问题（speculative instruction fetching，投机的取指？）。而不是你指的后面的跳转指令。\r\n至于为什么是这样子，我也不大清楚，估计要问问ARM的人，ARM也只是建议，我怀疑不是identity mapping的话，也不一定会出问题。"
+ },
+ {
+  "id": "5098",
+  "parent": "5090",
+  "date": "2017-01-04T14:56:00+08:00",
+  "author": "randy",
+  "site": "",
+  "text": "@wowo：speculative instruction fetching应该是指指令pipeline，应该是说MMU ON前后有指令还是按照老的方式在处理会有问题，我没想明白的是到底有啥问题，加了isb后貌似没问题"
+ },
+ {
+  "id": "5099",
+  "parent": "5098",
+  "date": "2017-01-04T15:34:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@randy：我觉得MMU ON之前的指令，只要是位置无关的，都不会有问题。\r\n而MMU ON之后的指令，就算加isb也不行，因为MMU ON的指令正在执行的时候，CPU就有可能再取后面的指令了（包括instr_sync）。因此在MMU ON的那一瞬间，可能会出问题。"
+ },
+ {
+  "id": "5423",
+  "parent": "0",
+  "date": "2017-04-03T10:31:57+08:00",
+  "author": "swan",
+  "site": "",
+  "text": "@linuxer：\r\n你好！\r\n非常感谢你的这一系列arm64分享。我最近开始接触arm64 linux的一些工作，读了你的这些文章对我梳理脉络非常有帮助。同时我也有一个问题想要咨询一下你：\r\n我手上的项目需要写一个对kernel 地址的page table walk，我看手册上写ttbr1上的内容是kernel address对应的pgd的起点，可是我取出这个值后再用__va翻译成虚拟地址传给pgd_offset_raw这个函数进行对pud,pmd和pte的寻找时，总是会在pgd或者pmd上就指到一个空地址，不知道你有没有看过这方面的材料？\r\n我把我的问题也放在了Stack Overflow上:http://stackoverflow.com/questions/42963312/arm64-linux-page-table-walk，若可以的话麻烦看一下我的代码并给我一点意见。\r\n\r\n再次致谢！\r\n祝好。"
+ },
+ {
+  "id": "5424",
+  "parent": "4690",
+  "date": "2017-04-03T10:38:31+08:00",
+  "author": "swan",
+  "site": "",
+  "text": "@vachel：Hi @tigger,\r\n你最后解决这个问题么？我用内联汇编取出了TTBR1的值可还是没办法把kmalloc的虚拟地址翻译成物理地址，所以也在寻求答案中.."
+ },
+ {
+  "id": "6192",
+  "parent": "0",
+  "date": "2017-11-13T01:22:44+08:00",
+  "author": "hit201j",
+  "site": "",
+  "text": "错别字：\r\n“还以一个就是bootloader传递过来的blob memory对应的页表”中：\r\n还以 -> 还有"
+ },
+ {
+  "id": "6194",
+  "parent": "6192",
+  "date": "2017-11-13T17:46:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@hit201j：已经修改，多谢！"
+ },
+ {
+  "id": "6230",
+  "parent": "0",
+  "date": "2017-11-22T11:05:15+08:00",
+  "author": "honest41",
+  "site": "",
+  "text": "感谢这么详细的分析！\r\n我是做芯片设计的，正好负责SMMU和MMU相关的系统验证。对于软件怎么使用硬件一直很好奇。\r\n看完你的分析有个问题，identity map和swapper map的页表之间是什么关系？\r\n按你的介绍，identity map页表已经从pgd开始的结构完整页表了，只map了kernel image部分的地址。是否未来也只会存在这部分的mapping？\r\n那swapper map页表也是从pgd开始的结构完整的页表吗？kernel image部分的地址也会在这个页表中同样map一遍？\r\n如果是这样的话，那这两个页表是会长期共存的吗？ttbr0/1_EL1是会指向哪个页表呢？\r\nidmap是只会在最初打开mmu前后暂时存在的过度页表，之后就切到swapper页表吗？\r\n我看到图中有“swapper进程页表”这种描述，或者说是swapper是被kernel以外的另外一个swapper进程来使用的？"
+ },
+ {
+  "id": "6304",
+  "parent": "0",
+  "date": "2017-12-07T17:05:48+08:00",
+  "author": "leba",
+  "site": "",
+  "text": "关于 identity mapping 有这样的说明，英语好的可以去这里直接看原帖：\r\nhttps://stackoverflow.com/questions/16688540/page-table-in-linux-kernel-space-during-boot/27266309#27266309\r\n--------------\r\n\r\n用中文把我的理解说一下：\r\n\r\n有两个前提\r\n    1）在使能 mmu 之前，CPU 产生的地址都是物理地址，使能 mmu 之后，产生的都是虚拟地址。\r\n    2）CPU 是 pipeline 工作的，在执行当前指令时，CPU 很可能已经做了一个动作，就是产生了下一条指令的地址（也就是计算出来了下一条指令在那里）。如果是在 mmu 打开之前，那这个地址就是物理地址。\r\n\r\n因此，假设当前指令就是在打开 mmu，那么，在执行打开 mmu 这条指令时，CPU 已经产生了一个地址（下一条指令的地址），如上 2) 所讲，此时这个地址是物理地址。那么 打开mmu这条指令执行完毕，mmu 生效后，CPU会把刚才产生的物理地址当成虚拟地址，去 mmu 表中查找对应的物理地址。\r\n\r\n      因此，对于切换 mmu的代码，是要求( strongly recommend）有 identical mapping的。\r\n\r\n\r\n-------------核心英文---------------------\r\n\r\nidentical mapping when setting up initial page table before turning on MMU. More specifically, the same address range where kernel code is running is mapped twice.\r\n\r\n    The first mapping, as expected, maps address range 0x00000000(again, this address depends on hardware config) through (0x00000000 + offset) to 0xCxxxxxxx through (0xCxxxxxxx + offset)\r\n    The second mapping, interestingly, maps address range 0x00000000 through (0x00000000 + offset) to itself(i.e.: 0x00000000 --> (0x00000000 + offset))\r\n\r\nWhy doing that? Remember that before MMU is turned on, every address issued by CPU is physical address(starting at 0x00000000) and after MMU is turned on, every address issued by CPU is virtual address(starting at 0xC0000000).\r\nBecause ARM is a pipeline structure, at the moment MMU is turned on, there are still instructions in ARM's pipeine that are using (physical) addresses that are generated by CPU before MMU is turned on! To avoid these instructions to get blown up, an identical mapping has to be set up to cater them."
+ },
+ {
+  "id": "6305",
+  "parent": "6230",
+  "date": "2017-12-07T17:08:41+08:00",
+  "author": "leba",
+  "site": "",
+  "text": "@honest41：https://stackoverflow.com/questions/16688540/page-table-in-linux-kernel-space-during-boot/27266309#27266309 \r\n\r\n看一下这个帖子，对理解 identical mapping 有帮助"
+ },
+ {
+  "id": "6306",
+  "parent": "6304",
+  "date": "2017-12-07T18:28:06+08:00",
+  "author": "leba",
+  "site": "",
+  "text": "@leba：补充：\r\n\r\n      即使代码是地址无关的，但是 CPU 在读取要执行的指令时，也是会涉及到“地址有关”，即要知道下一条要执行的指令在哪里，即使是相对于 PC 的 offset，因为 PC 本身是“地址有关”的。"
+ },
+ {
+  "id": "6307",
+  "parent": "6304",
+  "date": "2017-12-08T09:08:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@leba：多谢补充，手动点赞！"
+ },
+ {
+  "id": "6689",
+  "parent": "0",
+  "date": "2018-04-22T15:26:05+08:00",
+  "author": "Ryan.Tung",
+  "site": "",
+  "text": "hi,linuxer:\r\n在创建swapper map时create_block_map，中x6寄存器值设置在4.4.6的内核如下\r\nldr x6, =KERNEL_END         // __va(KERNEL_END)\r\n其中KERNEL_END\r\n#define KERNEL_END  _end，这里_end来自于vmlinux.lds.S,应该为物理地址，这里为什么说是虚拟地址？\r\nx5保存了#PAGE_OFFSET"
+ },
+ {
+  "id": "7155",
+  "parent": "6689",
+  "date": "2019-01-24T20:24:49+08:00",
+  "author": "haibin",
+  "site": "",
+  "text": "@Ryan.Tung：是system.map中_end的地址，就是虚拟地址，ldr取值和adr有区别的"
+ },
+ {
+  "id": "7541",
+  "parent": "4341",
+  "date": "2019-07-18T22:26:28+08:00",
+  "author": "七竹",
+  "site": "",
+  "text": "@wowo：这个感觉有点问题\r\nPAGE_OFFSET 应该就如提问者所说的是0xffff0000-00000000吧\r\nKERNEL_START: _text=PAGE_OFFSET + TEXT_OFFSET"
+ },
+ {
+  "id": "7680",
+  "parent": "0",
+  "date": "2019-09-30T15:03:27+08:00",
+  "author": "Zaiqiang",
+  "site": "",
+  "text": "你好，之前看到kernel会跑在EL1,而从bootloader过来系统是处于EL2,请问一下是在那里kernel会切到EL1"
+ },
+ {
+  "id": "7767",
+  "parent": "4341",
+  "date": "2019-11-28T15:11:52+08:00",
+  "author": "伊斯科明",
+  "site": "",
+  "text": "@wowo：#define PAGE_OFFSET\t\t(UL(0xffffffffffffffff) - \\\r\n\t(UL(1) << (VA_BITS - 1)) + 1)\r\n\r\nVA_BITS=48，当算出来PAGE_OFFSET=0xFFFF000000000000的"
+ },
+ {
+  "id": "8070",
+  "parent": "0",
+  "date": "2020-07-28T09:45:10+08:00",
+  "author": "阿喀琉斯",
+  "site": "",
+  "text": "给大神打个卡 学习中  受益匪浅"
+ },
+ {
+  "id": "8721",
+  "parent": "0",
+  "date": "2022-12-14T10:38:42+08:00",
+  "author": "Li Chen",
+  "site": "http://blog.linux.beauty",
+  "text": "> 实际上是从TEXT_OFFSET开始的，偏移这么一小段内存估计是为了bootloader和kernel之间传递一些信息\r\n\r\n不是, 这段当初是给swapper page table用的"
+ }
+]

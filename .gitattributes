@@ -1,0 +1,17 @@
+# 统一换行符，避免 Windows 与 CI 之间产生无意义 diff
+* text=auto eol=lf
+
+# 图片与数据库按二进制处理
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.sqlite binary
+
+# 生成物：diff 没有意义
+content/_gen/** linguist-generated=true
+data/comments/** linguist-generated=true
+content/forum/** linguist-generated=true
+static/archive/** linguist-generated=true

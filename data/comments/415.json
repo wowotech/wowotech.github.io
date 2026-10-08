@@ -1,0 +1,186 @@
+[
+ {
+  "id": "6235",
+  "parent": "0",
+  "date": "2017-11-23T15:56:12+08:00",
+  "author": "gnx",
+  "site": "",
+  "text": "好文啊，读起来爽得很，能把Linux内存讲深入的文章真的不多！写这样的文章一是要对linux内存管理真正懂，二是要有耐心，每幅插图的绘制都很要花时间，真心佩服。看完这篇文章，对内存逆向映射的过去和现在都有了更多理解，感谢linuxer！下面这篇也写得很不错，可以结合起来看\r\nhttp://www.cnblogs.com/tolimit/p/5398552.html"
+ },
+ {
+  "id": "6263",
+  "parent": "0",
+  "date": "2017-11-30T08:55:53+08:00",
+  "author": "Kernel_Lover",
+  "site": "",
+  "text": "听说郭大侠要写书，是真的吗？"
+ },
+ {
+  "id": "6267",
+  "parent": "6263",
+  "date": "2017-11-30T10:51:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Kernel_Lover：不是我要写书，是蜗窝要写书^_^"
+ },
+ {
+  "id": "6269",
+  "parent": "6267",
+  "date": "2017-11-30T12:32:54+08:00",
+  "author": "Kernel_Lover",
+  "site": "",
+  "text": "@linuxer：哦，这样啊，很期待这本书的出版"
+ },
+ {
+  "id": "6290",
+  "parent": "0",
+  "date": "2017-12-06T15:44:39+08:00",
+  "author": "神品江湖",
+  "site": "",
+  "text": "hello，郭大侠，看完你的文章之后学到了很多东西，但我有个疑问，为什么anonymous mapped page不能使用和fiel mapped page一样的逆向映射解决方案呢？文章里好像没有说明白，求大侠解惑，谢谢！！"
+ },
+ {
+  "id": "6296",
+  "parent": "6290",
+  "date": "2017-12-07T08:58:05+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@神品江湖：其实基本是一样的，file mapped page是通过文件的address_space对象管理vma的，而anonymous mapped page是通过anon_vma对象来管理vma的。"
+ },
+ {
+  "id": "6299",
+  "parent": "6296",
+  "date": "2017-12-07T11:37:26+08:00",
+  "author": "神品江湖",
+  "site": "",
+  "text": "@linuxer：我觉得目前的机制还存在几个缺点：\r\n1、如果进程的fork链很长，比如A进程fork出B进程，B进程又fork出C进程...，这种情况下AVC结构将会非常多，如果这样的链长度为N，那AVC结构的数量将会是（N！）数量级的；\r\n2、目前的方案解决了进程逆向映射时会访问到父进程和兄弟进程等无效VMA的问题，但却没有解决父进程逆向映射会访问到子进程无效VMA的问题；\r\n郭大侠，我想到一个方案，就是对于每个page frame用mapping指针指向一个结构记录下它们被映射到的所有VMA结构，您觉得这个方案怎么样？"
+ },
+ {
+  "id": "6300",
+  "parent": "6299",
+  "date": "2017-12-07T14:12:25+08:00",
+  "author": "神品江湖",
+  "site": "",
+  "text": "@神品江湖：算错了，上面AVC的数量级应该是N*N"
+ },
+ {
+  "id": "6308",
+  "parent": "6299",
+  "date": "2017-12-08T09:10:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@神品江湖：现在的匿名页面就是这样的机制啊。第一个版本，每个page指向一个anon_vma数据结构，这个数据结构记录了VMA，第二个版本类似，但是anon_vma变成per process的。"
+ },
+ {
+  "id": "6311",
+  "parent": "6308",
+  "date": "2017-12-08T09:47:48+08:00",
+  "author": "神品江湖",
+  "site": "",
+  "text": "@linuxer：我的意思是现在的版本是使用per process的anon_vma来记录每个page frame被映射到的VMA结构，是否可以使用per page的一个结构体记录下每个page frame被映射到的所有VMA结构呢？"
+ },
+ {
+  "id": "6316",
+  "parent": "6299",
+  "date": "2017-12-08T10:23:20+08:00",
+  "author": "gnx",
+  "site": "",
+  "text": "@神品江湖：@神品江湖 anon rmap确实存在这个问题，比如进程A fork了进程B，进程B，fork了进程C..如果一个pageA属于进程A且映射到相应的vma，那么在对这个page进行逆向映射时，确实会扫描到3个vma。如果进程C触发写保护异常，分配了一个新页pageC，那么在做pageA的逆向映射时，仍然会扫描到3个vma。我猜测linux这么实现的原因可能是：一个vma可能映射对个page，即使子进程对一个页面触发了写保护异常，但是其它page的映射关系没有发生改变。为了避免逆向映射时找到错误的vma，所以Linux做了以下工作：\r\n1.在page_referenced_one中通过page_check_address函数进行校验\r\n2.通过mapcount来优化逆向映射的过程，一旦映射到page的pte数量等于了mapcount，就不再继续搜索了"
+ },
+ {
+  "id": "6326",
+  "parent": "6311",
+  "date": "2017-12-08T15:56:55+08:00",
+  "author": "gnx",
+  "site": "",
+  "text": "@神品江湖：现在page结构体的开销已经不小了，1G内存大概需要16M，在page结构体中增加新成员恐怕不是一个好的选择，另外如果每个page维护一个vma的链表，那一个vma要挂到多个page的链表中，vma和page的关系如何正确映射？每个vma要分配多少个list_head？所以说，使用address_space的优先树或者anon_vma的红黑树来管理VMA到page的映射关系是个更好的选择。"
+ },
+ {
+  "id": "6330",
+  "parent": "6326",
+  "date": "2017-12-08T17:47:20+08:00",
+  "author": "神品江湖",
+  "site": "",
+  "text": "@gnx：仔细考虑了一下，您说的很有道理，受教了！！"
+ },
+ {
+  "id": "6439",
+  "parent": "0",
+  "date": "2018-01-01T21:02:28+08:00",
+  "author": "Jeffle",
+  "site": "",
+  "text": "@linuxer 真的是一篇深度但又非常风趣的好文，但我有一个疑惑就是你是怎么知道这个模块的整个发展历史的，是通过mailing list？还是google各种资料搜集？"
+ },
+ {
+  "id": "6452",
+  "parent": "0",
+  "date": "2018-01-04T14:59:48+08:00",
+  "author": "crystal736",
+  "site": "",
+  "text": "请教一个问题，匿名页(比如堆栈区)什么时候会从inactive变成active，匿名页第一次被访问时建立映射，在do_anonymous_page中mark_page_accessed将page的referenced置位，但是此时 还是inactive，那么什么时候匿名页会迁移到active链中呢？"
+ },
+ {
+  "id": "6547",
+  "parent": "0",
+  "date": "2018-02-09T17:15:22+08:00",
+  "author": "hanksonyao",
+  "site": "",
+  "text": "@linuxer: 上面7节的内容有点困惑：（4） P1进程访问了A页面，分配了page frame2后，P1又访问了B页面分配page frame 。 P进程的此VMA同P1进程的此VMA不在共享。此时，P1进程AVC_x01还在P进程的AV的红黑树中吗？"
+ },
+ {
+  "id": "6881",
+  "parent": "0",
+  "date": "2018-08-13T13:57:36+08:00",
+  "author": "zyzii",
+  "site": "",
+  "text": "最新的内核，anon_vma并不是按进程来分配的，而是按ＶＭＡ来分配的，基本上一个匿名的ＶＭＡ都有一个anon_vma. 几个相邻的anon_vma很难合并，合并的条件很苛刻，估计是mprotect分出来的才有资格共享一个anon_vma.\r\n\r\n所以一个进程基本是有很多个anon_vma,而不是只有一个．"
+ },
+ {
+  "id": "6896",
+  "parent": "6881",
+  "date": "2018-08-16T14:17:48+08:00",
+  "author": "zyzii",
+  "site": "",
+  "text": "@zyzii：vma和anon_vma是一对多的关系．多个anon_vma可以挂在vma->anon_vma_chain上．"
+ },
+ {
+  "id": "7033",
+  "parent": "0",
+  "date": "2018-11-14T10:23:26+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "文章说一个匿名page的mapping成员指向进程的AV， 但是如果page被同时映射到多个进程空间去呢， 他的mapping成员要指向哪个进程的AV ？谢谢..."
+ },
+ {
+  "id": "7054",
+  "parent": "7033",
+  "date": "2018-11-23T23:23:08+08:00",
+  "author": "dzxg",
+  "site": "",
+  "text": "@hzm：指向第一个为此page分配page frame的进程的AV。\r\n可以看一下最后一个图。"
+ },
+ {
+  "id": "8752",
+  "parent": "6267",
+  "date": "2023-03-13T23:16:18+08:00",
+  "author": "g",
+  "site": "",
+  "text": "@linuxer：请问书名是什么？"
+ },
+ {
+  "id": "8900",
+  "parent": "0",
+  "date": "2024-05-18T10:38:30+08:00",
+  "author": "葡萄",
+  "site": "",
+  "text": "原文中的“而一个AV会管理若干的VMA，所有相关的VMA（其子进程或者孙进程）都挂入红黑树，根节点就是AV的rb_root成员。”  应该是一个AV 会管理若干AVC, 这里描述有误"
+ },
+ {
+  "id": "9177",
+  "parent": "0",
+  "date": "2026-01-27T11:15:33+08:00",
+  "author": "菜就多练",
+  "site": "",
+  "text": "虽然但是，这些地方要表达的是不是AV，而非VA...\r\n“当VMA和VA首次相遇”\r\n“立父子进程之间的VMA、VA的“大厦”，主要的步骤如下：”\r\n\r\n“建立子进程VMA和“父进程们”VA的关系”\r\n\r\n“建立子进程VMA和子进程VA的关系”\r\n\r\n“将该AVC加入VA红黑树”\r\n\r\n巨难受哇我去，我想了半天我寻思这也不是介绍page fault的文章啊 干嘛一直提VA......."
+ }
+]

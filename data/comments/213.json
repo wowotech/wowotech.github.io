@@ -1,0 +1,162 @@
+[
+ {
+  "id": "2718",
+  "parent": "0",
+  "date": "2015-10-07T11:33:07+08:00",
+  "author": "安安博客",
+  "site": "http://xuzian.com",
+  "text": "看不懂..."
+ },
+ {
+  "id": "2719",
+  "parent": "0",
+  "date": "2015-10-07T16:31:37+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "android的oom增加了另外一套并行的Lowmemkiller机制，会主动的监控内存。当内存低于设定的门阀值时就会主动的杀掉占有内存较高的进程。"
+ },
+ {
+  "id": "2722",
+  "parent": "2719",
+  "date": "2015-10-08T09:06:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：为何android会创建Lowmemkiller这个机制？是内核OOM模块不满足需求吗？有时间的话可以给大家讲讲"
+ },
+ {
+  "id": "2723",
+  "parent": "2722",
+  "date": "2015-10-08T09:15:23+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：我猜测可能android认为发生do_page_fault时再进行oom已经太晚了，而是在swapd线程中增加了对内存监控的功能，当发现当前内存不够时主动的去杀掉从而释放内存。\r\nstatic short lowmem_adj[6] = {\r\n\t0,\r\n\t1,\r\n\t6,\r\n\t12,\r\n};\r\nstatic int lowmem_adj_size = 4;\r\nstatic int lowmem_minfree[6] = {\r\n\t3 * 512,\t/* 6MB */\r\n\t2 * 1024,\t/* 8MB */\r\n\t4 * 1024,\t/* 16MB */\r\n\t16 * 1024,\t/* 64MB */\r\n};\r\n\r\n从上面可以看出，当内存小于64M时，android会遍历进程oom_core > 12的所有进程，然后杀掉占有最多内存的进程。内存的紧张程度不同，android选择杀掉进程的oom_adj就不同。"
+ },
+ {
+  "id": "2724",
+  "parent": "2722",
+  "date": "2015-10-08T09:18:49+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：我猜测可能android认为发生do_page_fault时再进行oom已经太晚了，而是在swapd线程中增加了对内存监控的功能，当发现当前内存不够时主动的去杀掉从而释放内存。\r\nstatic short lowmem_adj[6] = {\r\n\t0,\r\n\t1,\r\n\t6,\r\n\t12,\r\n};\r\nstatic int lowmem_adj_size = 4;\r\nstatic int lowmem_minfree[6] = {\r\n\t3 * 512,\t/* 6MB */\r\n\t2 * 1024,\t/* 8MB */\r\n\t4 * 1024,\t/* 16MB */\r\n\t16 * 1024,\t/* 64MB */\r\n};\r\n\r\n从上面可以看出，当内存小于64M时，android会遍历进程oom_core > 12的所有进程，然后杀掉占有最多内存的进程。内存的紧张程度不同，android选择杀掉进程的oom_adj就不同。"
+ },
+ {
+  "id": "2725",
+  "parent": "0",
+  "date": "2015-10-08T09:45:08+08:00",
+  "author": "pga",
+  "site": "",
+  "text": "hi linuxer:\r\n  请教你一个困扰我很久的问题，具体描述如下：\r\n在系统调用的汇编部分有：\r\n\r\nENTRY(vector_swi)\r\n.....\r\n\t@ are we tracing syscalls?\r\n\tbne\t__sys_trace\r\n\r\n\tcmp\tscno, #NR_syscalls\t\t@ check upper syscall limit\r\n\tadr\tlr, BSYM(ret_fast_syscall)\t@ return address\r\n\tldrcc\tpc, [tbl, scno, lsl #2]\t\t@ call sys_* routine\r\n......\r\n\r\nENDPROC(vector_swi)\r\n\r\n从这个汇编片段及注释可知，pc地址为sys_xx所指向的地址值，其返回lr为ret_fast_syscall，按这个我理解为：最先执行的应该是sys_xxx的函数，但实际上我看调用栈都是ret_fast_syscall为最先执行。如：\r\n\r\n[   51.426327] [<c073fb0c>] (__schedule+0x37c/0x7c4) from [<c073f0f8>]  (schedule_hrtimeout_range_clock+0x130/0x14c)\r\n[   51.426343] [<c073f0f8>] (schedule_hrtimeout_range_clock+0x130/0x14c) from [<c0161c84>] (SyS_epoll_wait+0x304/0x458)\r\n[   51.426357] [<c0161c84>] (SyS_epoll_wait+0x304/0x458) from [<c0161f0c>] (SyS_epoll_pwait+0x134/0x140)\r\n[   51.426372] [<c0161f0c>] (SyS_epoll_pwait+0x134/0x140) from [<c000f300>] (ret_fast_syscall+0x0/0x30)\r\n\r\n为何会这样呢？ret_fast_syscall不是lr的值吗？为何不是最先执行的是pc值而是lr值呢？期待大师的回复，谢谢！"
+ },
+ {
+  "id": "2727",
+  "parent": "2725",
+  "date": "2015-10-08T16:05:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@pga：大师是不敢当了，就是普通爱好者而已。\r\n\r\n具体的调用顺序当然如你所说：首先执行sys_xxx函数，执行完毕之后，再调用ret_fast_syscall返回现场。\r\n\r\n我看到你贴出来的栈的回溯也很正常：\r\n__schedule\r\nschedule_hrtimeout_range_clock\r\nSyS_epoll_wait\r\nSyS_epoll_pwait\r\nret_fast_syscall\r\n\r\n正常而言，kernel stack上的内容就是这样的啊，只不过SyS_epoll_pwait和ret_fast_syscall之间不是函数调用关系，也就是说不是先执行ret_fast_syscall再执行SyS_epoll_pwait，之所以kernel stack上的内容如此，主要是因为下面的代码：\r\n\r\nadr    lr, BSYM(ret_fast_syscall)    @ return address \r\n\r\n这句代码模拟了一个从ret_fast_syscall到SyS_epoll_pwait的调用现场（因此栈的回溯看起来好象先调用了ret_fast_syscal），实际上这件事情从来没有发生过，这么做仅仅是为了完成SyS_epoll_pwait函数之后返回执行ret_fast_syscall。"
+ },
+ {
+  "id": "2731",
+  "parent": "2727",
+  "date": "2015-10-08T21:33:15+08:00",
+  "author": "pgalxx",
+  "site": "",
+  "text": "@linuxer：敬您一点拨，完全理解了，之前掉进惯性思维以为栈回溯就肯定是需要执行的。谢谢哈"
+ },
+ {
+  "id": "2740",
+  "parent": "2724",
+  "date": "2015-10-09T18:21:21+08:00",
+  "author": "cy",
+  "site": "",
+  "text": "@passerby：android的这个机制，比如上面的lowmem_minfree，是否可以用户通过sysfs动态调整?"
+ },
+ {
+  "id": "2741",
+  "parent": "2740",
+  "date": "2015-10-09T19:07:04+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@cy：lowmem_minfree是用module_param_array_named定义的，应该是可以通过sys设置它的值得。"
+ },
+ {
+  "id": "2878",
+  "parent": "0",
+  "date": "2015-10-28T15:36:17+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "hi linuxer\r\n请教一个问题，什么情况下，会一直杀死一个进程，但是杀不死。比如一直有个signal 9 要杀死这个进程，然后do_exit 然后过一会又 重新来一遍。但是这个进程就是杀不死。\r\n会不会进程处于freeze状态 会出现这样的情景？"
+ },
+ {
+  "id": "2886",
+  "parent": "2878",
+  "date": "2015-10-29T08:54:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：这个杀不死的进程是否被其父进程监控？父进程发现其子进程挂掉，然后会重新加载该进程，由于该进程自身的问题（代码有issue，或者消耗太多内存等），被内核干掉，父进程又reload该程序，然后就反反复复......\r\n\r\nfreeze和电源管理有关，你的场景和电源管理相关吗？"
+ },
+ {
+  "id": "2889",
+  "parent": "2886",
+  "date": "2015-10-29T10:05:04+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：跟电源管理有关系，怀疑suspend 过程与kill 进程冲突，导致进程无法被杀死"
+ },
+ {
+  "id": "3531",
+  "parent": "0",
+  "date": "2016-02-25T20:05:00+08:00",
+  "author": "andy01011501",
+  "site": "",
+  "text": "有没有办法关闭linux的内存的cache的功能？就是让meminfo中的cached这个值为0，每次文件都从flash读取？"
+ },
+ {
+  "id": "3540",
+  "parent": "3531",
+  "date": "2016-02-26T12:31:33+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@andy01011501：利用file cache来加速文件的读写是一个挺好的机制，为何要在整个linux kernel级别上关掉这个功能呢？内核配置项我是不记得有这个option的。\r\n\r\n如果你是想在访问文件的时候越过file cache，那么可以考虑在open文件的时候使用O_DIRECT这个flag。"
+ },
+ {
+  "id": "3544",
+  "parent": "3540",
+  "date": "2016-02-26T14:37:00+08:00",
+  "author": "andy01011501",
+  "site": "",
+  "text": "@郭健：这个仅仅是为了做一个测试，让读写文件的时候直接操作flash，而且是所有的文件都要这么操作，哈"
+ },
+ {
+  "id": "3555",
+  "parent": "3544",
+  "date": "2016-02-26T22:11:02+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@andy01011501：我觉得操作系统层面应该不会设定这样一个flag，操作系统可能会提供接口来设定page cache的额度范围，应该不会ON/OFF page cache吧。文件系统层面的话还是有可能的（可能调试文件系统的时候会打开这个开关）。\r\n\r\n如果是测试，可以自己修改内核代码，反正是玩玩嘛。"
+ },
+ {
+  "id": "3557",
+  "parent": "3555",
+  "date": "2016-02-27T09:43:15+08:00",
+  "author": "andy01011501",
+  "site": "",
+  "text": "@郭健：嗯，正在看代码呢，谢啦"
+ },
+ {
+  "id": "3620",
+  "parent": "0",
+  "date": "2016-03-09T11:14:10+08:00",
+  "author": "andy01011501",
+  "site": "",
+  "text": "各位，我想保持一个普通文件在内存中的cache不被置换，也就是永久保留在内存中，有没有什么好办法啊？"
+ },
+ {
+  "id": "8145",
+  "parent": "2718",
+  "date": "2020-11-24T17:47:52+08:00",
+  "author": "江南王公子",
+  "site": "",
+  "text": "@安安博客：太菜了，好好学习啊"
+ }
+]

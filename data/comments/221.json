@@ -1,0 +1,418 @@
+[
+ {
+  "id": "2831",
+  "parent": "0",
+  "date": "2015-10-26T11:18:14+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer，有个小问题，在汇编中建立的页表是将整个内核都做了映射吗？"
+ },
+ {
+  "id": "2832",
+  "parent": "2831",
+  "date": "2015-10-26T12:14:28+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：是的，是将整个kernel image进行了映射，开始和结束的定义是：\r\n#define KERNEL_START\t_text\r\n#define KERNEL_END\t_end\r\n当然，和整个内核空间比，这一段实际上也不大的。"
+ },
+ {
+  "id": "2833",
+  "parent": "2832",
+  "date": "2015-10-26T13:05:49+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：那映射完了，在start_kernel又会做一次page_init映射。这个时候汇编中做的映射会被抛弃掉重新做？不过不是，那这部分page怎么告诉伙伴系统这部分空间已经被占用的？"
+ },
+ {
+  "id": "2843",
+  "parent": "2833",
+  "date": "2015-10-26T19:02:11+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：那映射完了，在start_kernel又会做一次page_init映射。这个时候汇编中做的映射会被抛弃掉重新做？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n在start_kernel中不会抛弃”汇编时代“的映射，因为没有必要，都已经建立了又何必毁掉呢。\r\n\r\n那这部分page怎么告诉伙伴系统这部分空间已经被占用的？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n伙伴系统其实不需要管理kernel image占用的内存，这是通过arm64_memblock_init函数中的下面代码实现：\r\nmemblock_reserve(__pa(_text), _end - _text);"
+ },
+ {
+  "id": "2847",
+  "parent": "0",
+  "date": "2015-10-27T09:10:23+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "我在paging_init中的map_mem\r\nfor_each_memblock(memory, reg) {\r\n\t\tphys_addr_t start = reg->base;\r\n\t\tphys_addr_t end = start + reg->size;\r\n\r\n\t\tif (start >= end)\r\n\t\t\tbreak;\r\n                create_mapping(start, __phys_to_virt(start), end - start,\r\n\t\t\t\t\tfalse);\r\n\t}\r\n对所有的memblock进行映射，这里就包括了在汇编中映射好的kernel image。"
+ },
+ {
+  "id": "2857",
+  "parent": "0",
+  "date": "2015-10-27T14:16:40+08:00",
+  "author": "mobz",
+  "site": "http://https://github.com/54shady",
+  "text": "Hi linuxer，看到你最近有对系统启动做详细的分析，正好遇到个问题，想请教你下，就是在内核里的函数kernel_execve，有下面这样一段汇编代码，最终将调用到ret_to_user吗？是个什么流程？\r\n    asm(    \"add    r0, %0, %1\\n\\t\"\r\n        \"mov    r1, %2\\n\\t\"\r\n        \"mov    r2, %3\\n\\t\"\r\n        \"bl memmove\\n\\t\"    /* copy regs to top of stack */\r\n        \"mov    r8, #0\\n\\t\" /* not a syscall */\r\n        \"mov    r9, %0\\n\\t\" /* thread structure */\r\n        \"mov    sp, r0\\n\\t\" /* reposition stack pointer */\r\n        \"b  ret_to_user\"\r\n        :\r\n        : \"r\" (current_thread_info()),\r\n          \"Ir\" (THREAD_START_SP - sizeof(regs)),\r\n          \"r\" (&regs),\r\n          \"Ir\" (sizeof(regs))\r\n        : \"r0\", \"r1\", \"r2\", \"r3\", \"r8\", \"r9\", \"ip\", \"lr\", \"memory\");"
+ },
+ {
+  "id": "2859",
+  "parent": "2847",
+  "date": "2015-10-27T15:30:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：要回答这个问题，需要理解memory blocks模块（mm/memblock.c文件）。\r\n该模块定义了一个全局变量：\r\nstruct memblock memblock;\r\n这个全局变量用来管理系统中的所有的memory blocks。这些blocks分成两种：\r\n1、reserved\r\n2、memory\r\n从逻辑上讲，无论那种类型的block，其address region不能是overlap的（因此会有memory region的分裂和合并的操作）。\r\n在函数arm64_memblock_init函数中会调用memblock_reserve(__pa(_text), _end - _text)将kernel image的这段memory region加入“reserved”那种类型的memory blocks。\r\n\r\n而你说的for_each_memblock(memory, reg) ，仅仅是遍历“memory”那种类型的memroy blocks。而一旦你reserved了kernel image对应的那一段memory region，它是不会出现在memory类型的blocks中，因此不会再次mapping。\r\n\r\nBTW，我非常简单的过了一下memblock.c的代码，很多是从逻辑上推导的，可能有误。"
+ },
+ {
+  "id": "2860",
+  "parent": "2859",
+  "date": "2015-10-27T16:52:10+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：对于不做mapping有点疑问，因为其他的reserved的内存也需要被做映射啊。比如\r\n 91         cont_splash_mem: splash_region@83000000 {\r\n  92             linux,reserve-contiguous-region;\r\n  93             linux,reserve-region;\r\n  94             reg = <0x0 0x83000000 0x0 0x2000000>;\r\n  95             label = \"cont_splash_mem\";\r\n  96         };\r\nkernel image可以不做，但是其他的reserved空间并没有做mapping。在其他地方我并没有看到对reserverd做mapping的地方，只有在这里有看到。"
+ },
+ {
+  "id": "2861",
+  "parent": "0",
+  "date": "2015-10-27T17:31:02+08:00",
+  "author": "kitty",
+  "site": "http://blog.csdn.net/chongyang198999",
+  "text": "博主真的是辛苦了，像博主这样静下心搞钻研，如此认真隐忍的，太少了。"
+ },
+ {
+  "id": "2862",
+  "parent": "2857",
+  "date": "2015-10-27T17:47:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@mobz：无论是userspace还是kernel space，都有执行程序的需求。例如在内核空间，当把控制权转交给userspace的时候，需要执行/sbin/init（也有可能是其他程序）。用户空间的使用场景更多，你在terminal上输入某一个程序的命令行的时候，shell程序会fork，然后调用execve来执行程序。\r\n\r\n所谓执行某一个二进制程序其实就是内核态的loader将当前进程的地址空间（text,data,bss和stack）销毁，使用新的可执行程序的image来创建新的进程的过程，因此返回调用函数是没有任何意义的（实际上也不存在了）。但是，内核的loader总是要把控制权交给这个新创建的进程，因此，loader在这个新进程的内核栈上模拟了一次陷入内核的过程，在内核栈上构建了一个“现场”，然后调用ret_to_user返回userspace，开始新的进程的执行，当然，CPU的PC值会设定为二进制程序image的入口函数。"
+ },
+ {
+  "id": "2863",
+  "parent": "2860",
+  "date": "2015-10-27T18:26:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：通过device tree中的reserved-memory节点可以定义若干的reserved memory block，这些保留的memory region基本上被认为是for特定驱动使用的，因此，我的观点是：内核不会进行mapping，使用这些memory的driver应该负责进行mapping。"
+ },
+ {
+  "id": "2864",
+  "parent": "2861",
+  "date": "2015-10-27T18:30:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@kitty：不辛苦，如果真心热爱的话就不辛苦，^_^\r\n\r\n喜欢钻研的人很多，只是没有聚合在一起，蜗窝这个网站就是因此而设立的，欢迎每一个沉醉于技术的人。"
+ },
+ {
+  "id": "2866",
+  "parent": "2862",
+  "date": "2015-10-27T20:03:45+08:00",
+  "author": "mobz",
+  "site": "http://https://github.com/54shady",
+  "text": "@linuxer：ret_to_user会调用到arch_ret_to_user r1, lr 这里,可是我还是没搞懂这个arch_ret_to_user又是如何实现的？代码中怎么也搜索不到？？还是我没看懂。\r\n因为我经常遇到内核启动到Freeing init memory后就卡住的问题.定位发现应该就是卡在返回用户空间来是执行init进程的时候出现的问题，就像类是bootargs设置错误导致\r\n\r\nENTRY(ret_to_user)\r\nret_slow_syscall:\r\n    disable_irq             @ disable interrupts\r\nENTRY(ret_to_user_from_irq)\r\n    ldr r1, [tsk, #TI_FLAGS]\r\n    tst r1, #_TIF_WORK_MASK\r\n    bne work_pending\r\nno_work_pending:\r\n#if defined(CONFIG_IRQSOFF_TRACER)\r\n    asm_trace_hardirqs_on\r\n#endif\r\n    /* perform architecture specific actions before user return */\r\n    arch_ret_to_user r1, lr\r\n\r\n    restore_user_regs fast = 0, offset = 0\r\nENDPROC(ret_to_user_from_irq)\r\nENDPROC(ret_to_user)"
+ },
+ {
+  "id": "2870",
+  "parent": "2866",
+  "date": "2015-10-28T08:58:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@mobz：我正在读的是4.1.10版本中的ARM64的代码，其中其实都没有kernel_execve这个函数，也没有arch_ret_to_user。\r\n\r\n看起来arm平台有arch_ret_to_user的定义，在linux/arch/arm/kernel/entry-common.S文件中：\r\n\r\n#ifdef CONFIG_NEED_RET_TO_USER\r\n#include <mach/entry-macro.S>\r\n#else\r\n\t.macro  arch_ret_to_user, tmp1, tmp2\r\n\t.endm\r\n#endif"
+ },
+ {
+  "id": "2872",
+  "parent": "2870",
+  "date": "2015-10-28T09:49:58+08:00",
+  "author": "mobz",
+  "site": "http://https://github.com/54shady",
+  "text": "@linuxer：恩，是的，但是这个是怎么实现从return to userspace的？没看懂只有定义，实现呢？不理解这里"
+ },
+ {
+  "id": "2873",
+  "parent": "0",
+  "date": "2015-10-28T11:25:41+08:00",
+  "author": "amusion",
+  "site": "",
+  "text": "无意中看到了这个网站，拜读了几篇文章后，真是很钦佩啊，文章分析的很深入，不知能否写些和SMP先关的分析"
+ },
+ {
+  "id": "2874",
+  "parent": "2872",
+  "date": "2015-10-28T12:28:45+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@mobz：与其说arch_ret_to_user是architecture specific，不如说是ARM arch下，machine specific。对于有些特殊的arm machine（例如ARCH_IOP13XX），在返回用户空间的时候需要特别的操作，但是对于大部分的ARM处理器，arch_ret_to_user是空的。"
+ },
+ {
+  "id": "2875",
+  "parent": "2874",
+  "date": "2015-10-28T13:39:30+08:00",
+  "author": "mobz",
+  "site": "http://https://github.com/54shady",
+  "text": "@linuxer：那这么说来，其实从内核到用户空间就是：下面这三条语句（指令）了咯??？\r\n    disable_irq\r\n    ldr r1, [tsk, #TI_FLAGS]\r\n    tst r1, #_TIF_WORK_MASK"
+ },
+ {
+  "id": "2876",
+  "parent": "2874",
+  "date": "2015-10-28T14:41:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：后面不是有一个restore_user_regs嘛，用于从内核栈恢复userspace的上下文"
+ },
+ {
+  "id": "2880",
+  "parent": "2874",
+  "date": "2015-10-28T18:46:36+08:00",
+  "author": "mobz",
+  "site": "http://https://github.com/54shady",
+  "text": "@linuxer：在你最新的答复上回复不了，就回复在这里吧，restore_user_regs 这个和arch_ret_to_user在ARM平台上也是一样的，都是空，我并没在代码中找到相关的内容,倒是在FRV平台里找到有"
+ },
+ {
+  "id": "2884",
+  "parent": "2874",
+  "date": "2015-10-29T08:35:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：在arch/arm/kernel/entry-head.S中有定义（我的内核版本是4.1.10，其他版本应该类似吧）。"
+ },
+ {
+  "id": "2887",
+  "parent": "2873",
+  "date": "2015-10-29T08:59:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@amusion：这位客官，本站暂时不接受“点菜”，呵呵～～～开玩笑的，大家工作都很忙，业余时间写写文章，让自己爽一下，所以，想到哪里写到哪里，SMP的代码分布在各个内核的子系统中，其实不是很好写的。"
+ },
+ {
+  "id": "2895",
+  "parent": "2864",
+  "date": "2015-10-30T10:38:32+08:00",
+  "author": "kitty",
+  "site": "/armv8a_arch/turn-on-mmu.html#comment-2864",
+  "text": "@linuxer：hi linuxer，看你写的power相关文章，写的非常详细。但power相关架构，很多要进行调整了，在今年年底，linuro要发布一个新的调度器架构EAS，会把DVFS和cpu idle添加CFS调度器中，而themal也会被IPA机制取代，这是新的研究方向，感兴趣的话，可以一起学习。"
+ },
+ {
+  "id": "3312",
+  "parent": "2843",
+  "date": "2015-12-30T17:05:08+08:00",
+  "author": "donkey",
+  "site": "",
+  "text": "@linuxer：有个问题想请教一下，我最近在看ARM64启动的代码，现在正在研究跳到内核后正式页表的创建流程。在paging_init函数的map_mem函数中会对memory类型的内存创建页表，但是我怎么都找不到memory类型的内存是怎么加到memblock中的。只是在arm64_memblock_init中看到把一些内存区域加到了reserved类型的memblock中，但并没有什么代码把内存加到memory类型的memblock中啊？"
+ },
+ {
+  "id": "3313",
+  "parent": "3312",
+  "date": "2015-12-30T17:59:59+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@donkey：我没有看代码，不过推测是在device tree相关的代码中。"
+ },
+ {
+  "id": "3320",
+  "parent": "3313",
+  "date": "2015-12-31T11:19:09+08:00",
+  "author": "donkey",
+  "site": "",
+  "text": "@linuxer：果然是高手，按照你的提示，我又仔细研究了一下代码流程，发现了这样一条函数调用流程： \r\nsetup_arch-->setup_machine_fdt-->early_init_dt_scan-->early_init_dt_scan_nodes-->early_init_dt_add_memory_arch-->memblock_add\r\n经过这个流程，感觉memory类型的内存区域就有着落了，呵呵！再次感谢！"
+ },
+ {
+  "id": "3321",
+  "parent": "3313",
+  "date": "2015-12-31T11:23:11+08:00",
+  "author": "donkey",
+  "site": "",
+  "text": "@linuxer：刚才那个流程不知道为什么没显示完全，再补充一下：\r\n...->early_init_dt_add_memory_arch-->memblock_add"
+ },
+ {
+  "id": "3963",
+  "parent": "0",
+  "date": "2016-05-21T01:09:37+08:00",
+  "author": "tgn",
+  "site": "",
+  "text": "请教下博主，内核正式页表中的PXN位一般在哪里设置呀，我看arm64代码里面默认是没有的，能直接在create_mapping函数调用的时候直接把PAGE_KERNEL_EXEC给或上一个PXN吗？\r\n我是用的4.5的内核"
+ },
+ {
+  "id": "3965",
+  "parent": "3963",
+  "date": "2016-05-23T17:23:11+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tgn：为何要给PAGE_KERNEL_EXEC加上一个PXN的flag？PAGE_KERNEL_EXEC应该对应内核可执行代码的那些memory，因此创建页表的时候没有PXN是合适的，如果置位PXN，那么你的意思是准备让它在特权模式下永远不执行（Privileged execute-never）？"
+ },
+ {
+  "id": "4352",
+  "parent": "2859",
+  "date": "2016-07-31T14:08:53+08:00",
+  "author": "archer",
+  "site": "",
+  "text": "@linuxer：linuxer你好，reserved的region不会出现在memory类型，这里是不是有误啊？\r\n我看了下，memory类型包括了所有要被线性映射的物理空间，reserved的region只是在reserved类型增加了一个region，但是并没有从memory类型脱离出去。\r\n可以看看__map_memblock这个函数，是来映射一个region的。\r\n它里面先判断了是不是和kernel所在的物理区域有overlap：\r\nif (end < kernel_start || start >= kernel_end) { 没有就整个建立映射。"
+ },
+ {
+  "id": "4353",
+  "parent": "0",
+  "date": "2016-07-31T14:25:32+08:00",
+  "author": "archer",
+  "site": "",
+  "text": "linuxer，你好，请教一个问题：\r\nPAGE_OFFSET开始的虚拟地址 会 映射到PHYS_OFFSET的物理地址 （线性区），\r\nPHYS_OFFSET的定义：\r\n#define PHYS_OFFSET             ({ VM_BUG_ON(memstart_addr & 1); memstart_addr; })\r\n\r\n这个memstart_addr的全局变量是在arm64_memblock_init这个函数中计算确定的。\r\n所以线性区的起始物理地址是在这里才确定的？\r\n\r\n我的问题：因为内核的虚拟地址在PAGE_OFFSET的0x80000偏移处，所以Image物理地址也应该在memstart_addr的0x80000偏移处？ 但是memstart_addr是在这里才计算确定的，bootloader是怎么知道要把Image加载到这里的呢？"
+ },
+ {
+  "id": "4355",
+  "parent": "4352",
+  "date": "2016-08-01T10:08:14+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@archer：我不是特别明白你的意思，“reserved类型并没有从memory类型脱离出去”这句话是什么意思？你看的是哪个版本的内核？"
+ },
+ {
+  "id": "4356",
+  "parent": "4353",
+  "date": "2016-08-01T10:23:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@archer：这个memstart_addr的全局变量是在arm64_memblock_init这个函数中计算确定的。\r\n所以线性区的起始物理地址是在这里才确定的？ \r\n－－－－－－－－－－－－－－－－－－－\r\n我看的是4.4.6内核，memstart_addr是在内核启动的初始阶段被设定的：\r\nENTRY(stext)\r\n\t......\r\n\tadrp\tx24, __PHYS_OFFSET\r\n        ......\r\n之后，在__mmap_switched函数中：\t\r\n\tstr_l\tx24, memstart_addr, x6\t\t// Save PHYS_OFFSET\r\n\tmov\tx29, #0\r\n\r\n因为内核的虚拟地址在PAGE_OFFSET的0x80000偏移处，所以Image物理地址也应该在memstart_addr的0x80000偏移处？\r\n－－－－－－－－－－－－－－\r\n是的\r\n\r\n 但是memstart_addr是在这里才计算确定的，bootloader是怎么知道要把Image加载到这里的呢？\r\n－－－－－－－－－－－－－－－\r\n这些内容本来就是bootloader和kernel之间接口的一部分，bootloader本来就知道应该copy kernel image到哪里的，如果不知道，系统就没有办法运作了。"
+ },
+ {
+  "id": "4363",
+  "parent": "4355",
+  "date": "2016-08-01T22:01:10+08:00",
+  "author": "ericzhou",
+  "site": "",
+  "text": "@linuxer：linuxer你好，我的意思是说，加到reserved的region还在memory类型的范围内。我看的是4.6的内核。\r\nint __init_memblock memblock_reserve(phys_addr_t base, phys_addr_t size)\r\n{\r\nreturn memblock_add_range(&memblock.reserved, base, size, MAX_NUMNODES, 0);\r\n}"
+ },
+ {
+  "id": "4364",
+  "parent": "4356",
+  "date": "2016-08-01T22:05:02+08:00",
+  "author": "ericzhou",
+  "site": "",
+  "text": "@linuxer：linuxer，thanks for your reply.\r\n我看得是4.6的内核，memstart_addr的计算确定过程有点变化。\r\n是在arm64_memblock_init这个函数里确定的。\r\n不过你的意思我明白了。谢谢。"
+ },
+ {
+  "id": "4365",
+  "parent": "4363",
+  "date": "2016-08-02T14:37:11+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ericzhou：memblock_reserve函数将指定的memory region（reserved type）加到memblock.reserved链表中。而那些memory type的memory region是加到memblock.memory的链表中的，虽然这两种类型的memory region都是在memblock的管理框架中，但是在不同的链表上管理，处理起来也是不一样的。"
+ },
+ {
+  "id": "4683",
+  "parent": "0",
+  "date": "2016-10-10T14:21:46+08:00",
+  "author": "macooma",
+  "site": "",
+  "text": "博主的文章对于我这样初学armv8的晚辈来讲真是提供了极大的参考啊，感谢博主的无私精神！\r\n有个问题想请教一下，如下：\r\n\r\nidmap_pg_dir是为turn on MMU准备的一致性映射，物理地址的高16bit都是0，因此identity mapping必定是选择TTBR0_EL1指向的各级地址翻译表。\r\n-------------------------------------------------------------------------------------\r\n请问这里的“必定”是因何而来呢？ 谢谢！"
+ },
+ {
+  "id": "4687",
+  "parent": "4683",
+  "date": "2016-10-10T21:49:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@macooma：identity mapping实际上是把 物理地址映射到物理地址上去，ARMv8支持的物理地址最大是48个bit，因此高16bit必定等于0"
+ },
+ {
+  "id": "4852",
+  "parent": "4687",
+  "date": "2016-11-08T17:12:13+08:00",
+  "author": "macooma",
+  "site": "",
+  "text": "@linuxer：意思是CPU会主动判断要转换的地址前16位来决定使用TTBR0还是TTBR1吧？"
+ },
+ {
+  "id": "5852",
+  "parent": "0",
+  "date": "2017-07-26T14:19:35+08:00",
+  "author": "breeze",
+  "site": "",
+  "text": "@linuxer:\r\n\r\n本来我以为memblock是在arm64_memblock_init()中初始化的，但我发现kernel在call arm64_memblock_init()之前就已经初始化过memblock一次了. 如：我在arm64_memblock_init()的入口处调用memblock_dump_all(), 输出如下:\r\nMEMBLOCK configuration:\r\nmemory size = 0xf0000000 reserved size = 0x0\r\nmemory.cnt  = 0x1\r\nmemory[0x0]\t[0x00000010000000-0x000000ffffffff], 0xf0000000 bytes flags: 0x0\r\nreserved.cnt  = 0x1\r\nreserved[0x0]\t[0x00000000000000-0xffffffffffffffff], 0x0 bytes flags: 0x0\r\n\r\n至少memblock.memory已经初始化过了，region为: [0x00000010000000-0x000000ffffffff].\r\n请问楼主您知道是在哪里初始化的吗?我百思不得其姐．\r\n\r\n谢谢．"
+ },
+ {
+  "id": "5853",
+  "parent": "5852",
+  "date": "2017-07-28T08:56:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@breeze：你可以检查一下是不是这里初始化的（dts文件中指定的memblock）：\r\nsetup_arch\r\n  setup_machine_fdt\r\n    early_init_dt_scan_memory\r\n      early_init_dt_add_memory_arch\r\n        memblock_add"
+ },
+ {
+  "id": "6342",
+  "parent": "0",
+  "date": "2017-12-12T09:13:53+08:00",
+  "author": "leba",
+  "site": "",
+  "text": "实际上在这条指令的上下都有isb指令，理论上已经可以turn on MMU之前之后的代码执行顺序严格的定义下来，其实我感觉不必要再启用idmap_pg_dir的那些页表了，当然，这只是猜测。\r\n------ 应该还与 pipeline 有关系，所以，那个 idmap 还是需要的。"
+ },
+ {
+  "id": "6372",
+  "parent": "6342",
+  "date": "2017-12-16T09:38:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@leba：你说得有道理，看来还需要再深入理解一下CPU的架构。"
+ },
+ {
+  "id": "6571",
+  "parent": "0",
+  "date": "2018-02-28T09:29:01+08:00",
+  "author": "rikeyone",
+  "site": "",
+  "text": "你好，linuxer：\r\n我想请教一下，在start kernel之前创建的页表应该只是临时页表，那么在start kernel中的setup arch中会重新创建内核页表的映射，那么已经运行在虚拟空间上了，这个映射是怎么切换的呢？"
+ },
+ {
+  "id": "6573",
+  "parent": "6571",
+  "date": "2018-02-28T11:41:58+08:00",
+  "author": "rikeyone",
+  "site": "",
+  "text": "@rikeyone：我看的是arm32的内核操作，里面会调用pmd clear清除一级页表的内容"
+ },
+ {
+  "id": "6747",
+  "parent": "6342",
+  "date": "2018-05-15T11:28:15+08:00",
+  "author": "2freeman",
+  "site": "http://2freeman.github.io",
+  "text": "@leba：idmpa_pg_dir在MMU开启后应该还是需要的，无论是否跟pipeline有关，在MMU开启后，VA=PA=xxxx，所以，对于这样的VA，MMU的翻译还是需要使用idmap_pg_dir页表，只有在VA不再等于PA，也就是不再是一致性映射时，idmap_pg_dir页表才真正失效。而VA不等于PA的点，应该在__primary_switch中：ldr x8, =__primary_witched；br  x8，x8里保存的是真正的VA（！=PA），在br指令执行后，完成了VA（=PA）--> VA（！=PA）的转换，这是才是idmap_pg_dir不再起作用的时间点，这也许是这个函数为什么叫__primary_witched的原因。"
+ },
+ {
+  "id": "7331",
+  "parent": "4852",
+  "date": "2019-03-21T14:49:52+08:00",
+  "author": "thatman",
+  "site": "",
+  "text": "@macooma：请问下。这个问题有答案了吗？"
+ },
+ {
+  "id": "7457",
+  "parent": "0",
+  "date": "2019-06-05T10:39:20+08:00",
+  "author": "see",
+  "site": "",
+  "text": "请教下，文档里说编译后的内核运行在0xFFFF8000_00080000?  但是通过readelf查看内核，入口点地址是0xffff000008080000，怎么和文档说法不一致？"
+ },
+ {
+  "id": "7458",
+  "parent": "7457",
+  "date": "2019-06-05T17:58:43+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@see：可能你的内核代码已经把kernel从linear mapping区域搬移到vmalloc区域了。所以造成了这种现象。详情可以看下另外一篇文档：ARM64 Kernel Image Mapping的变化：/memory_management/436.html"
+ },
+ {
+  "id": "7839",
+  "parent": "0",
+  "date": "2020-01-15T10:35:32+08:00",
+  "author": "daiyinger",
+  "site": "",
+  "text": "博主你好，我目前遇到个开启mmu之后处理器变慢的问题，请问可能是什么原因呢\r\n\tldr\tx1, =0xf0000000\r\n\tstr\tx0,[x1]\r\n\r\n\tbr\tx27\r\nENDPROC(__enable_mmu)\r\n我是4核A53处理器，我在用其中一个核来引导另一个内核，如上我打算在开启mmu之后往0xf0000000物理地址写特征值表征mmu已开启，发现要等很久(几十秒)才发现0xf0000000的值被改写，如果代码放到开启mmu之前就不会。"
+ },
+ {
+  "id": "7848",
+  "parent": "7839",
+  "date": "2020-01-17T11:05:52+08:00",
+  "author": "daiyinger",
+  "site": "",
+  "text": "@daiyinger：最后发现是cache不一致的问题导致的"
+ },
+ {
+  "id": "8589",
+  "parent": "7839",
+  "date": "2022-04-19T09:56:28+08:00",
+  "author": "llp",
+  "site": "",
+  "text": "@daiyinger：请问你这个物理地址在mmu enable 之后，是如何映射的"
+ }
+]

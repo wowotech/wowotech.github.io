@@ -1,0 +1,146 @@
+[
+ {
+  "id": "6560",
+  "parent": "0",
+  "date": "2018-02-23T08:23:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "宋少侠文档产量很高啊！一次两篇，哈哈～～～"
+ },
+ {
+  "id": "6628",
+  "parent": "0",
+  "date": "2018-03-30T14:07:16+08:00",
+  "author": "rafal",
+  "site": "",
+  "text": "拜读，佩服楼主的文档输出，尤其插图，直观易懂。"
+ },
+ {
+  "id": "6629",
+  "parent": "0",
+  "date": "2018-03-30T14:18:04+08:00",
+  "author": "rafal",
+  "site": "",
+  "text": "碰到内存被踩的问题真是头疼，费了好大的力气查到某段地址被改，结果问题来了，who干的？似乎没有好的方法，先看看是不是被踩地址附近的对象越界踩的，如果不是，麻烦就来了，楼至有什么好方法吗？"
+ },
+ {
+  "id": "6632",
+  "parent": "6629",
+  "date": "2018-04-01T21:21:03+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@rafal：踩踏问题不是很容易解决的，可以尝试一下文章所说的工具，当然还有kasan工具。也是不错的。kasan的文章可以参考另一篇文章。"
+ },
+ {
+  "id": "6633",
+  "parent": "6632",
+  "date": "2018-04-02T10:45:26+08:00",
+  "author": "rafal",
+  "site": "",
+  "text": "@smcdef：正在看你写的kasan原理，真的太好了，看来这个工具可以在踩踏前报bug,强大，为楼主的付出点赞。"
+ },
+ {
+  "id": "6744",
+  "parent": "0",
+  "date": "2018-05-11T15:24:02+08:00",
+  "author": "hai",
+  "site": "",
+  "text": "请问一下，打开slub_debug_on一定会在free object的时候将object标记为\"6b\"吗？"
+ },
+ {
+  "id": "6748",
+  "parent": "6744",
+  "date": "2018-05-15T21:47:28+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hai：是啊！可以看下这个函数init_object()"
+ },
+ {
+  "id": "6749",
+  "parent": "0",
+  "date": "2018-05-16T12:27:48+08:00",
+  "author": "bob",
+  "site": "",
+  "text": "这种转换是后续一个补丁的修改。补丁就是为了增加left oob检测功能。请问这个补丁什么时候加入的，我这边4.4.15， 用slabinfo -v check left oob的信息，感觉还是red_left_pad是在尾部的"
+ },
+ {
+  "id": "6750",
+  "parent": "6748",
+  "date": "2018-05-17T09:53:24+08:00",
+  "author": "hai",
+  "site": "",
+  "text": "@smcdef：这里的if条件并不一致，而且查看代码__OBJECT_POISON成立需要s->ctor == 0,碰到一个slab(proc_inode_cache),它的s->ctor ！= 0，free过后object仍然遗留数据，不知道这个是特例还是什么？\r\n\r\nstatic void init_object(struct kmem_cache *s, void *object, u8 val)\r\n{\r\n\tu8 *p = object;\r\n\r\n\tif (s->flags & SLAB_RED_ZONE)\r\n\t\tmemset(p - s->red_left_pad, val, s->red_left_pad);\r\n\r\n\tif (s->flags & __OBJECT_POISON) {\r\n\t\tmemset(p, POISON_FREE, s->object_size - 1);\r\n\t\tp[s->object_size - 1] = POISON_END;\r\n\t}\r\n\r\n\tif (s->flags & SLAB_RED_ZONE)\r\n\t\tmemset(p + s->object_size, val, s->inuse - s->object_size);\r\n}\r\n\r\n\tif ((flags & SLAB_POISON) && !(flags & SLAB_DESTROY_BY_RCU) &&\r\n\t\t\t!s->ctor)\r\n\t\ts->flags |= __OBJECT_POISON;"
+ },
+ {
+  "id": "6751",
+  "parent": "6750",
+  "date": "2018-05-17T22:13:03+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hai：通用slab（kmalloc的kmem_cache）s->ctor是NULL，会填充“6b”。你说的slab就是用户自定义的，因此不会填充“6b”。slab debug更多的意图是检测通过kmalloc接口申请的内存。"
+ },
+ {
+  "id": "6752",
+  "parent": "6749",
+  "date": "2018-05-17T22:17:09+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@bob：commit d86bd1bece6fc41d59253002db5441fe960a37f6\r\nAuthor: Joonsoo Kim <iamjoonsoo.kim@lge.com>\r\nDate:   Tue Mar 15 14:55:12 2016 -0700\r\n\r\n    mm/slub: support left redzone"
+ },
+ {
+  "id": "6753",
+  "parent": "6749",
+  "date": "2018-05-17T22:19:49+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@bob：注意这个函数的使用，你就明白了\r\nvoid *fixup_red_left(struct kmem_cache *s, void *p)\r\n{\r\n\tif (kmem_cache_debug(s) && s->flags & SLAB_RED_ZONE)\r\n\t\tp += s->red_left_pad;\r\n\r\n\treturn p;\r\n}"
+ },
+ {
+  "id": "7490",
+  "parent": "0",
+  "date": "2019-06-26T19:53:52+08:00",
+  "author": "Dongwei",
+  "site": "",
+  "text": "您好，我想问一下，内核中，什么情况下会使用slab呢，一般的数据结构都会用到slab么？"
+ },
+ {
+  "id": "7491",
+  "parent": "0",
+  "date": "2019-06-26T19:57:35+08:00",
+  "author": "Dongwei",
+  "site": "",
+  "text": "您好，\r\n   free掉的内存，再使用就会提示use_after_free,既然如此，是不是意味着该块内存被浪费了，如果不是被浪费，那么内核需要做些什么事情，来证明这段内存又恢复了可用性。"
+ },
+ {
+  "id": "7520",
+  "parent": "7490",
+  "date": "2019-07-09T15:49:43+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@Dongwei：驱动以及内核代码大量的调用kmalloc()接口，kmalloc()就是对slab接口的封装，所以内存分配大部分都是使用slab。当申请内存超过2页，就是走buddy system。"
+ },
+ {
+  "id": "7521",
+  "parent": "7491",
+  "date": "2019-07-09T15:52:24+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@Dongwei：free的内存，其他用户可以继续申请，申请后就可以使用了。不存在浪费现象。我们编程的规范流程是：\r\n1. 申请内存\r\n2. 使用内存\r\n3. 释放内存\r\n\r\n凡是已经释放的，一律不能使用，如果需要继续使用，必须重复以上3个步骤。当然，刚刚释放的内存，现在申请有可能还是同一块内存。所以，这块内存没有浪费。而是在重复利用。"
+ },
+ {
+  "id": "8015",
+  "parent": "0",
+  "date": "2020-06-08T10:54:42+08:00",
+  "author": "benjoÿing",
+  "site": "",
+  "text": "赞！图形解析很清楚！"
+ },
+ {
+  "id": "8712",
+  "parent": "0",
+  "date": "2022-12-01T17:45:10+08:00",
+  "author": "卷心菜",
+  "site": "",
+  "text": "请问红区的size是多大？"
+ }
+]

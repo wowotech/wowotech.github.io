@@ -1,0 +1,34 @@
+[
+ {
+  "id": "3443",
+  "parent": "0",
+  "date": "2016-01-25T20:35:21+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "想到一个问题，\r\n读取数据的时候为什么要加锁？\r\n读取的任何数据都是某个变量在某个时间点上正确的值，加锁是不是没有必要了"
+ },
+ {
+  "id": "3445",
+  "parent": "3443",
+  "date": "2016-01-26T08:49:35+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@schedule：对reader侧进行加锁操作（rcu_read_lock和rcu_read_unlock）其实主要是为了判断CPU是否经历一次Quiescent state，和数据保护无关"
+ },
+ {
+  "id": "3724",
+  "parent": "0",
+  "date": "2016-03-24T15:45:32+08:00",
+  "author": "playsand",
+  "site": "",
+  "text": "你好，为什么rcu_cpu_mask赋值的时候直接就是rcu_cpu_mask=cpu_online_map（这个值为1）,但在后面却能用test_bit来区分不同cpu上有没有置位？"
+ },
+ {
+  "id": "3725",
+  "parent": "3724",
+  "date": "2016-03-24T18:46:08+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@playsand：你确定cpu_online_map这个值为1？这个值也是一个bitmap，每一个bit表示一个CPU的online情况。"
+ }
+]

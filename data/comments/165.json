@@ -1,0 +1,1010 @@
+[
+ {
+  "id": "1558",
+  "parent": "0",
+  "date": "2015-04-22T22:23:44+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "大哥，你研究的太深了了，佩服五体投地啊。你招小弟不，把我收了吧！后面顺便把把内核其它锁给讲讲吧！"
+ },
+ {
+  "id": "1559",
+  "parent": "0",
+  "date": "2015-04-23T10:14:21+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "许久不见更新，原来是在专研锁啊。\r\n不知道上次说的tty的分析文档会出吗？"
+ },
+ {
+  "id": "1560",
+  "parent": "1559",
+  "date": "2015-04-23T12:25:04+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：坦率的讲，系统级的一些模块（例如内核同步）写起来更有快感，更吸引我，因此，heziq网友发了一篇spin lock文档立刻激发我写spin lock的兴趣。驱动级别的模块（例如tty）虽然可以写，不过驱动力不是很强，不过既然答应你了，一定会写的，呵呵～～～\r\n不过，实际上更多的工程师更关注驱动级别的代码，我感觉写这些内容会更受欢迎，看来需要在自己写的爽和别人读的爽之间平衡啊。\r\n\r\n好象还答应tigger写tasklet的，还想要修改ARM gerneric timer的那份文档，唉，时间太少了......."
+ },
+ {
+  "id": "1561",
+  "parent": "1558",
+  "date": "2015-04-23T12:26:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@heziq：客气客气，大家一起研究一起进步。其他内核中的锁的机制一定会写的，只不过需要时间"
+ },
+ {
+  "id": "1569",
+  "parent": "1560",
+  "date": "2015-04-23T17:02:00+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：linuxer如果没时间，指导我写也行~！\r\n我这段时间基本上有时间就看tty；思路稍微清晰了一些。\r\n对于上次问你的统一设备模型和字符设备驱动以及洋葱问题，有了认识。\r\n    对于linux来说，按照一切即文件的思路，app调用后首先应该是进到vfs，然后根据文件类型，找到字符设备子系统，再那里找到之前注册的字符设备驱动程序，完成vfs的跨越。\r\n    而对于tty，我看了一部分了，也是沿着上面的思路，往下继续封装、分层，但是tty还和输入子系统等其他方面有联系，还没看全。\r\n    至于统一设备模型和设备驱动程序，我现在是这样认识：按照狭义设备驱动来说，只有字符设备、块设备、网络设备驱动等；总线下的驱动、设备，其实仅仅是个机制，跟狭义的字符设备驱动完全不同。不知道这样理解对不对？"
+ },
+ {
+  "id": "1577",
+  "parent": "1569",
+  "date": "2015-04-23T18:28:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：如果你能写一系列tty的文档那当然太好了，可以考虑给你开一个专栏就叫tty子系统，你可以慢慢写，写成一个系列，有问题大家可以交流，也可以帮忙review"
+ },
+ {
+  "id": "1585",
+  "parent": "1560",
+  "date": "2015-04-24T11:22:11+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：吭吭\r\n这篇文章我看的很爽啊～～～～～～\r\n非常有快感～～～～\r\n更新了我对spinlock的认识呢，尤其是之前内核与现在的区别，耳目一新啊"
+ },
+ {
+  "id": "1586",
+  "parent": "0",
+  "date": "2015-04-24T11:22:44+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "semaphore可以允许多个thread进入\r\n这个怎么理解？\r\n\r\n另外64位的spinlock 好像窝窝写过一次 在wfe wfi文档里面"
+ },
+ {
+  "id": "1587",
+  "parent": "1586",
+  "date": "2015-04-24T12:12:12+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：mutex和spin lock都是允许一个thread进入临界区的lock机制。\r\nsemaphore可以允许多个thread进入。就好像九毛九有10张桌子，当然允许10个人（thread）进入，当第11人到来的时候，只能等待了（thread将无法获取锁从而挂入等待队列，进入睡眠）。\r\n\r\n不停的spin是对电源管理是一个硬伤，因此ARM处理器提供了WFE指令，从而让准备获取spin lock的那个thread不需不停的spin，只需要调用WFE指令，进入低功耗状态，其他处理器会在unlock的时候会触发唤醒动作的。我文档中引用了那份专门描述WFI WFE的文档，呵呵～～～"
+ },
+ {
+  "id": "1588",
+  "parent": "1587",
+  "date": "2015-04-24T13:13:13+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：我把semaphore 看成了mutex\r\n还在纳闷呢"
+ },
+ {
+  "id": "1589",
+  "parent": "0",
+  "date": "2015-04-24T13:32:40+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "等这样一篇有干货的文章，足足从3月26号等到4月22号\r\n不过值啦，哈哈。每一篇都能学到好多东西"
+ },
+ {
+  "id": "1597",
+  "parent": "1589",
+  "date": "2015-04-26T12:07:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：呵呵~~~也是没有办法的事情，毕竟是业余时间搞，更重要的是家庭原因，还需要照顾家庭，和孩子玩...\r\n不过，在陪孩子上早教的时候，看到教室中的一句荀子的话还是很有道理的：不闻不若闻之,闻之不若见之,见之不若知之,知之不若行之。我把自己的理解的知识整理出来也勉强算是到了“见之”这个阶段，真正掌握还需要“行之”\r\n同样的道理，如果读者有缘看到这份文档也就是到了“闻之”阶段，离“知之”和“行之”还是有一段距离。\r\n拽一段古文，与tigger同学共勉，哈哈！"
+ },
+ {
+  "id": "1602",
+  "parent": "1597",
+  "date": "2015-04-27T13:41:18+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：我在想，会不会增加这样的操作比较好。\r\n比如你看到比较好的文章，推荐出来，\r\n这样就不限于你自己写了，\r\n当然我希望你推荐英文的文档，国内的文档作者太不负责任了。\r\n与其看到错误的文档，不如不看～～～～\r\nps：我这样说的原因是，我有很深的体会，英文的文档，我总是找不到我想要看的，总找不到有很多干货的，要不就是我的渠道有问题。"
+ },
+ {
+  "id": "1624",
+  "parent": "1577",
+  "date": "2015-04-29T00:13:38+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：好的，已经看的差不多了。写了思路和笔记，真要发表，担心文字表达跟你差距太大~！\r\n另外，在哪可以写?"
+ },
+ {
+  "id": "1635",
+  "parent": "1624",
+  "date": "2015-04-29T13:04:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：登录之后，在管理界面有一个写文章的标签，点击进去就可以写文章了。当然，也可以offline写，这时候可以使用Windows Live Writer"
+ },
+ {
+  "id": "1636",
+  "parent": "1624",
+  "date": "2015-04-29T13:05:45+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：不要担心质量什么的，能否分享给大家就是很好的开端"
+ },
+ {
+  "id": "1652",
+  "parent": "1602",
+  "date": "2015-04-30T00:48:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：我基本上都是看git的log，有时候也会看lwn上的一些文档，还有就是stackoverflow上的一些问题解答。推荐英文文档当然没有问题，不过我上面的话主要是委婉催促你写点什么，哈哈，真的，相信我，越写越聪明"
+ },
+ {
+  "id": "1654",
+  "parent": "1652",
+  "date": "2015-04-30T08:37:57+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：哈哈 ok"
+ },
+ {
+  "id": "1844",
+  "parent": "0",
+  "date": "2015-05-21T14:02:50+08:00",
+  "author": "新手上路",
+  "site": "",
+  "text": "我刚开始拜读大牛文章。很有些茅塞顿开的感觉。下面一段没看懂，能麻烦解释一下为什么要disable么？\r\n“使用spin lock+禁止本地中断当然是可以达到保护共享资源的效果，但是使用牛刀来杀鸡似乎有点小题大做，这时候disable bottom half就OK了。” \r\n我感觉spin lock是在isr handle里面做的，因为很快，不需要放到bottom half里面。我的理解是否有误？"
+ },
+ {
+  "id": "1847",
+  "parent": "1844",
+  "date": "2015-05-21T23:22:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@新手上路：到底用哪一种方式的锁机制是由访问共享资源的上下文决定的，当然，我们希望访问spin lock的共享资源执行比较快，例如某一个counter变量的操作。但是，你不能保证对这个counter变量的访问总是在中断handler中执行，因为对该counter的操作可能依赖于一系列比较耗时的操作，需要推到bottom half中执行，因此，驱动代码中的逻辑就是在bottom half中执行：\r\n1、首先进行一系列比较耗时的操作\r\n2、counter++\r\n\r\n此外，还有进程上下文操作这个counter变量，这时候，就是需要用spin_lock_bh和spin_unlock_bh这样的保护机制"
+ },
+ {
+  "id": "1848",
+  "parent": "1847",
+  "date": "2015-05-22T05:36:11+08:00",
+  "author": "新手上路",
+  "site": "",
+  "text": "@linuxer：谢谢大牛指点。没想到回复这么快。\r\n\r\n我理解这句话，“使用spin lock+禁止本地中断当然是可以达到保护共享资源的效果，但是使用牛刀来杀鸡似乎有点小题大做，这时候disable bottom half就OK了。”  就是用spin lock的时候，如果case 很简单， 就可以抛弃bottom half了对么？"
+ },
+ {
+  "id": "1850",
+  "parent": "1848",
+  "date": "2015-05-22T12:21:20+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@新手上路：不是这个意思。如何使用锁的机制来保护临界区始终是和场景相关，我们假设访问共享资源的thread包括：\r\n\r\n（1）运行在CPU0上的进程A在某个系统调用过程中访问了共享资源R\r\n\r\n（2）运行在CPU1上的进程B在某个系统调用过程中也访问了共享资源R\r\n\r\n（3）外设P的bottom half中也会访问共享资源R \r\n\r\n这时候，使用spin lock+禁止本地中断当然是可以达到保护共享资源的效果，但是disable中断会影响系统的中断延迟。在这种场景下，最适合的策略是：使用spin lock+禁止bottom half的方法。"
+ },
+ {
+  "id": "1858",
+  "parent": "1850",
+  "date": "2015-05-24T13:40:31+08:00",
+  "author": "新手上路",
+  "site": "",
+  "text": "@linuxer：受教了！ 我的基本概念还有待加强。"
+ },
+ {
+  "id": "1898",
+  "parent": "0",
+  "date": "2015-05-29T14:18:49+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "楼主，请问ARM里面spinlock的实现究竟是否依赖于L1和L2 cache呢？我看了下ldr和str（即ldrex和strexeq）的文档，感觉不是很明白。或者这样说，在cache被disable的情况下，能直接调用spin lock/unlock么？还是需要自己去实现spinlock锁？谢谢！"
+ },
+ {
+  "id": "1900",
+  "parent": "1898",
+  "date": "2015-05-29T18:30:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@bear20081015：当然不会，spinlock依赖的是对内存中的一个u32数据，怎么会和cache是否enable or disable相关呢？能说明你对ldrex和strex哪些不明白？我好象还没有搞清楚你要问什么问题"
+ },
+ {
+  "id": "1901",
+  "parent": "1900",
+  "date": "2015-05-30T00:48:24+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@linuxer：不好意思，我可能没有描述清楚。这是从ARM网站上看到的描述（http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dht0008a/CJAGCFAF.html）：\r\nEach processor that supports exclusive accesses has a local monitor. Exclusive accesses to memory locations marked as Non-shareable are checked only against this local monitor. Exclusive accesses to memory locations marked as Shareable are checked against both the local monitor and the global monitor.\r\n我个人理解，ldrex和strex指令的实现是依赖于local monitor和global monitor组成的状态机的，而这两者需要在L1和L2 cache中实现。那么当cache被disable的话这两个monitor也就不能工作了吧？这时候是不是就不能使用strex和ldrex指令了？"
+ },
+ {
+  "id": "1905",
+  "parent": "1901",
+  "date": "2015-06-01T09:12:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@bear20081015：你摘录的英文都是在描述Shareability，但是你的问题却在说cache，你是不是把Shareability和Cacheability搞混了？"
+ },
+ {
+  "id": "1906",
+  "parent": "1905",
+  "date": "2015-06-01T10:43:12+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@linuxer：linux,我摘录的那一段都是在描述arm中如何支持exclusive access的。我的理解是：spinlock从本质上来说确实就是内存中的一个u32数据，但如何支持ldx和stx这两条指令的原子性呢？硬件上肯定要有东西来支撑它，我理解就是local monitor和global monitor。正如这句话“Each processor that supports exclusive accesses has a local monitor.”。进一步从arm的文档中看，local和global monitor是实现在L1和L2 cache中的。所以我才怀疑当L1，L2 cache被disable掉的时候，ldx和stx指令都无效了，也就不能使用spinlock了。我这两天看了下ARM的trust firmware里的bakery lock，我不确定自己理解的对不对，但是看起来就是一个软件上的锁似乎就是为了代替在cpu刚上电时cache关掉时各个CPU的race condition，如果能够直接用spinlock的话似乎就没这个必要了吧。"
+ },
+ {
+  "id": "1907",
+  "parent": "1906",
+  "date": "2015-06-01T12:34:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@bear20081015：local和global monitor是实现在L1和L2 cache中的\r\n---------------------------------------------------\r\n我看原文上是说local和global monitor是实现在L1和L2 memory system中，我是觉得local timer以及global timer应该是和L1和L2 cache是否enable或者disable无关，即便是L1和L2 cache disable了，local monitor和global monitor也应该是可以工作的\r\n\r\n当然，这也是我的猜测而已，仅供参考"
+ },
+ {
+  "id": "1908",
+  "parent": "1907",
+  "date": "2015-06-01T15:34:01+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@linuxer：我个人还是感觉是有点关系的，否则不可能arm trustfirm要多此一举去实现一个软件的spinlock锁，而且这个锁就是在cache没有enable的情况下使用的。但还是感谢你耐心的回答！另外多问一句，我看到你们的pm runtime的系列文章似乎只开了个头，我最近在这一块有点疑问，不知道你们后续文章有时间表么？或者就在评论区里面大家讨论一下？"
+ },
+ {
+  "id": "1910",
+  "parent": "1906",
+  "date": "2015-06-01T20:18:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：我来插一句：\r\nARM架构提供了non-blocking的同步机制（也称作synchronization primitives），确实比较高效、实用。但该机制需要一些额外机制的支撑，也就是您所提到的local monitor和global monitor。monitor特别是global monitor的实现， 和cache、MMU等没有直接关系。但是，对那些特殊位置的memory，如non-cacheable、cache-disable等，需要在PE之外实现monitor功能，而并不是所有厂商都会做这些事情。\r\n对arm trusted firmware来说，它无法假设厂商的具体行为，因此为了确保同步的有效，就不得不使用软件的互斥机制（bakery lock）。\r\n而对Linux kernel而言，kernel是在单核、preemptive disable的情况下启动的，等到真正使用spin lock的时候，一切都准备就绪了，因此也就没什么问题了。\r\n\r\n具体可参考DDI0487A_d_armv8_arm.pdf：\r\nFor Shareable memory locations, in some implementations and for some memory types, the properties of the global\r\nmonitor require functionality outside the PE. Some system implementations might not implement this functionality\r\nfor all locations of memory. In particular, this can apply to:\r\n• Any type of memory in the system implementation that does not support hardware cache coherency.\r\n• Non-cacheable memory, or memory treated as Non-cacheable, in an implementation that does support\r\nhardware cache coherency.\r\nIn such a system, it is defined by the system:\r\n• Whether the global monitor is implemented.\r\n• If the global monitor is implemented, which address ranges or memory types it monitors  \r\n\r\n...\r\n \r\nTherefore, architecturally-compliant software that requires mutual\r\nexclusion must not rely on using the Load-Exclusive/Store-Exclusive mechanism, and must instead use a software\r\nalgorithm such as Lamport’s Bakery algorithm to achieve mutual exclusion."
+ },
+ {
+  "id": "1911",
+  "parent": "1906",
+  "date": "2015-06-01T20:23:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：至于runtime PM，确实只是开了一个头。因为RPM的使用比较简单，但内部实现涉及到的知识点就多了，因此还没有时间去写。可以直接评论交流，非常欢迎~~~~"
+ },
+ {
+  "id": "1913",
+  "parent": "1911",
+  "date": "2015-06-02T10:53:05+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：wowo,我最近在梳理pm runtime和suspend之间的关系。碰到有一种case有点不太理解，请帮我看看：\r\n1.一个设备在系统suspend之前处于RPM_SUSPENDED状态；此时dev->power.usage_count=0，dev->power.runtime_state = RPM_SUSPENDED； \r\n2.在dev->prepare函数， system suspend框架会调用pm_runtime_get_noresume，此时dev->power.usage_count=1， runtime_state仍然是RPM_SUSPENEDED；\r\n3.接着，system suspend会调用device_suspend_late，这个函数中调用了__pm_runtime_disable()。如果恰好在此之前，有人希望通过pm_runtime_get来resume这个设备，那么就会把一个pending的resume request放到pm runtime work queue上；此时usage_count=2， runtime_state = RPM_SUSPENDED；\r\n4. 在__pm_runtime_disable中，函数会调用__pm_runtime_barrier，这会取消step3中的pending resume请求。 但不会将usage_count减1。此时usage_count=2， runtime_state = RPM_SUSPENDED。\r\n5. 当系统resume回来的时候，它会调用pm_runtime_put来将usage_count减1。 此时usage_count=1， runtime_state = RPM_SUSPENDED。\r\n\r\n可以看到，经过这几个步骤后，device的runtime_state和usage_count出现了不匹配的情况，runtime_state=RPM_SUSPENDED的时候usage_count应该是0，但现在变成了1。我做的实验也是这样。不知道这算不算runtime的bug呢？还是我上面哪一步有问题？请指教，谢谢！"
+ },
+ {
+  "id": "1914",
+  "parent": "1910",
+  "date": "2015-06-02T10:58:34+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：谢谢！看起来非常合理啊。唯一有点疑问的：“而对Linux kernel而言，kernel是在单核、preemptive disable的情况下启动的，等到真正使用spin lock的时候，一切都准备就绪了，因此也就没什么问题了”。我的理解是确实在启动情况下没什么问题，但是对于SMP来说，当cluster进入到power down的状态，如果有多个cpu同时醒来的话，那么还是有竞争关系，仍然需要类似于spinlock的锁来保护吧，如果这时候local/global monitor还不能用的话。"
+ },
+ {
+  "id": "1915",
+  "parent": "0",
+  "date": "2015-06-02T13:10:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015: cluster的power down以及醒来，是要经过arm trust firmware哦。"
+ },
+ {
+  "id": "1916",
+  "parent": "1915",
+  "date": "2015-06-02T13:17:45+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：是的，但是arm trust firmware是在ARMV8之后才有的。我的意思是说在之前的armv7架构上，cluster的power down以及醒来的初始代码还是要有类似于bakery lock的锁吧，只不过不像ATF里面那样是标准的，可能是各个vendor自己实现了吧。"
+ },
+ {
+  "id": "1917",
+  "parent": "1916",
+  "date": "2015-06-02T13:53:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：嗯，这就清楚了。\r\n另外关于RPM的我要先看看，另外你看到的kernel版本是哪个？电源管理是kernel比较活跃的模块，一直在进化，有问题也是可能的。"
+ },
+ {
+  "id": "1921",
+  "parent": "1917",
+  "date": "2015-06-03T13:51:30+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：我的版本的3.14的。但我看到最新的3.18里面我提的这个问题牵涉到的相关代码似乎没有什么变化，所以3.18里我相信也会有这个问题的。"
+ },
+ {
+  "id": "1993",
+  "parent": "0",
+  "date": "2015-06-15T13:39:50+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "如果我只知道，arch_spinlock_t里面的owner跟next，我有方法知道是那个进程拿到了锁么？？或者说哪个core。我想到有一种情况\r\n比如我现在有8个core，core 1到core7 都在等同一把锁。owner 跟 next相差7，说明有7个thread在等，根据spinlock的原理，那么肯定是那个不再等的core上面拿了锁。\r\n但是我又如何证明锁是被哪个core拿了呢？\r\n再仅有owner跟next的情况下，是不是没法确定，必须打开debug的宏才知道呢？"
+ },
+ {
+  "id": "1995",
+  "parent": "1993",
+  "date": "2015-06-15T21:02:58+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@tigger：我理解应该没办法知道。除非恰好这个spinlock是全局变量，然后可以通过system.map知道lock的名字。再看看code看能不能知道是哪段code拿到的。局部变量只能打开debug宏了。"
+ },
+ {
+  "id": "1996",
+  "parent": "1993",
+  "date": "2015-06-15T22:46:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：仅有owner跟next的情况下应该是无法知道持有锁的是哪一个core。不过你为何要知道哪一个core持有锁呢？具体的应用场景是什么？"
+ },
+ {
+  "id": "1999",
+  "parent": "1996",
+  "date": "2015-06-16T18:16:03+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：因为会出现一种情况，几个core都在等同一把锁。这个时候就要知道哪个core拿锁。是不是core出现了问题，没有释放"
+ },
+ {
+  "id": "2353",
+  "parent": "0",
+  "date": "2015-07-29T11:35:31+08:00",
+  "author": "cinmun",
+  "site": "",
+  "text": "我想问楼主 如果我在操作gpio口的时候 用spinlock 在多核cpu里是 锁 当前核  还是所有核。  为什么 打开spinlcok的时候 后台播放音乐会卡顿暂停呢"
+ },
+ {
+  "id": "2354",
+  "parent": "0",
+  "date": "2015-07-29T11:40:11+08:00",
+  "author": "cinmun",
+  "site": "",
+  "text": "spin lock相关的接口API如下： 这里 unlock的好多函数名都是错误的"
+ },
+ {
+  "id": "2356",
+  "parent": "2354",
+  "date": "2015-07-29T12:06:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@cinmun：多谢指正，晚上回家就修改之"
+ },
+ {
+  "id": "2357",
+  "parent": "2353",
+  "date": "2015-07-29T12:11:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@cinmun：spinlock 当然是 lock all cpu core\r\n\r\n你确定 后台播放音乐会卡顿和spinlock相关吗？你的spinlock是否配合其他的内核同步机制？例如关中断什么的，能否进一步描述如何使用spinlock的？"
+ },
+ {
+  "id": "2358",
+  "parent": "2357",
+  "date": "2015-07-29T12:34:27+08:00",
+  "author": "维尼",
+  "site": "",
+  "text": "@linuxer：我用的终极spinlock-》spin_lock_irqsave 我锁定大约200ms 如果程序一直跑 那就一直锁定  后台放音乐卡顿 是不是就是内核不能去解码音乐了"
+ },
+ {
+  "id": "2367",
+  "parent": "2358",
+  "date": "2015-07-29T19:36:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@维尼：用spin_lock_irqsave锁定200ms实在是太残暴了，你的临界区真正的那么长吗？如果那么长，完全考虑其他的内核同步机制了，例如semaphore或者mutex\r\n\r\n如果后台放音乐的进程要竞争这个残暴的临界区，那么卡是一定的了"
+ },
+ {
+  "id": "2373",
+  "parent": "2367",
+  "date": "2015-07-30T08:49:21+08:00",
+  "author": "维尼",
+  "site": "",
+  "text": "@linuxer：我是在操作gpio口的时候用spin_lock_irqsave 用其他同步semaphore或者mutex  io都有延迟 或者错误"
+ },
+ {
+  "id": "3018",
+  "parent": "0",
+  "date": "2015-11-10T13:45:28+08:00",
+  "author": "descent",
+  "site": "",
+  "text": "請問一下禁止中斷的話, 有沒有可能漏掉中斷, 若漏了中斷, 是不是有可能會發生什麼問題呢？ex: 資料接收不完整之類的。"
+ },
+ {
+  "id": "3020",
+  "parent": "3018",
+  "date": "2015-11-10T16:48:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@descent：中斷被禁止的過程中，如果來一次可以觸發中斷的事件，是不會丟的，下一次打開中斷之後，會接著觸發中斷。如果來多次，要看相應的硬體行為了。\r\n另外，一般中斷被禁止的時間不會很長，那些硬件模塊的buffer足以應付了。"
+ },
+ {
+  "id": "3023",
+  "parent": "2357",
+  "date": "2015-11-11T09:56:10+08:00",
+  "author": "dadanio",
+  "site": "",
+  "text": "@linuxer：spinlock我的理解是锁住当前cpu。 spinlock其实就是CPU一直循环查询lock状态，如果是锁住所有的cpu，那么就有可能导致其他cpu没有机会释放spinlock从而导致当前cpu一直忙。不知道理解对不对"
+ },
+ {
+  "id": "3025",
+  "parent": "3023",
+  "date": "2015-11-11T12:16:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@dadanio：spinlock只是锁住临界区，允许一个thread进入而已。"
+ },
+ {
+  "id": "3089",
+  "parent": "0",
+  "date": "2015-11-20T17:12:30+08:00",
+  "author": "坚持到底",
+  "site": "",
+  "text": "hi, \r\n\r\n我有个疑问：\r\n\r\nticket spinlock 的实现上，只在初始化的时候把 owner, next 置为 0, 就一直 ++， ++，什么时候会被清空？理论上 16bit 的数据 65535 次后就溢出了。"
+ },
+ {
+  "id": "3095",
+  "parent": "3089",
+  "date": "2015-11-20T18:46:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@坚持到底：即便是溢出了，整个逻辑还是对的，你可以自己再分析一下"
+ },
+ {
+  "id": "3097",
+  "parent": "3095",
+  "date": "2015-11-23T10:16:49+08:00",
+  "author": "坚持到底",
+  "site": "",
+  "text": "@linuxer：是的。请问 wowotech 有群不？方便大家交流一下。"
+ },
+ {
+  "id": "3100",
+  "parent": "3097",
+  "date": "2015-11-24T08:47:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@坚持到底：这里有一些联系方式：/contact_us.html"
+ },
+ {
+  "id": "3573",
+  "parent": "0",
+  "date": "2016-03-02T17:59:03+08:00",
+  "author": "zhr2130",
+  "site": "",
+  "text": "@linuxer:问一个比较low但一直困扰我的问题。\r\n\r\n关于spin lock（或其他同步机制如信号量，互斥锁），是如何和它要保护的共享资源（或临界区）关联起来的。是根据spin lock定义的位置么。比如要用spin lock保护一个共享的struct，那么在这个struct中添加一个spin lock的element应该是可行的。放在struct外面可以么。另外对于其它类型的共享资源，如何和spin lock关联呢？\r\n\r\n看了很多参考资料，都只是介绍在进入临界区时要获得spin lock，却没有说这个spin lock应该放在哪。难道这个spin lock 可以随便定义在任何位置么？？ \r\n\r\n非常感谢"
+ },
+ {
+  "id": "3575",
+  "parent": "3573",
+  "date": "2016-03-02T18:48:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zhr2130：其实您问这个问题的时候应该已经有答案啦，即iushi随便放了，这完全是软件结构的事情了，和spin lock无关的。或者换个思路，如果要保护的仅仅是一个变量，没有结构体，spin lock放哪里呢？"
+ },
+ {
+  "id": "3577",
+  "parent": "3575",
+  "date": "2016-03-03T23:15:40+08:00",
+  "author": "zhr2130",
+  "site": "",
+  "text": "@wowo：@wowo,那意思就是在进临界区时,只要获取一个kernel中任意一个spinlock就行,只要这个spinlock可以获取到.添加新code时增加的新spinlock,完全是因为我们不清楚旧的spinlock有谁在用,如果用旧有的spinlock可能会造成死锁.是这样么."
+ },
+ {
+  "id": "3579",
+  "parent": "3577",
+  "date": "2016-03-04T11:32:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zhr2130：是的。"
+ },
+ {
+  "id": "3581",
+  "parent": "3573",
+  "date": "2016-03-04T12:52:51+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@zhr2130：其实这和数据结构的设计有关，如果你的数据是全局范围的，那么多半定义如下：\r\n1、struct xxxx foo。foo就是多个thread并发访问的资源\r\n2、DEFINE_SPINLOCK(foo_lock)。foo_lock就是控制并发访问foo这个全局资源的spin lock，不在struct xxxx，应该和foo这个需要控制并发的资源定义在一起。\r\n\r\n如果你的数据是局部的，比如struct xxxx是动态分配的，有A B C D.......等等若干个实例，而并发控制如下：\r\n1、对A资源的并发是需要控制在线程t1、t2、t3.....之间\r\n2、对B资源的并发是需要控制在线程t1、t2、t3.....之间\r\n....\r\n这时候，定义全局的spinlock显然不合适，最好的设计是相关的数据放在一起，因此，spin lock应该放在struct xxxx中，成为其成员。"
+ },
+ {
+  "id": "3598",
+  "parent": "3579",
+  "date": "2016-03-07T11:16:39+08:00",
+  "author": "zhr2130",
+  "site": "",
+  "text": "@wowo：@wowo,终于明白了，非常感谢"
+ },
+ {
+  "id": "3599",
+  "parent": "3581",
+  "date": "2016-03-07T11:18:09+08:00",
+  "author": "zhr2130",
+  "site": "",
+  "text": "@郭健：非常感谢，这下就清楚了"
+ },
+ {
+  "id": "3607",
+  "parent": "3581",
+  "date": "2016-03-08T08:54:13+08:00",
+  "author": "zhr2130",
+  "site": "",
+  "text": "@郭健：@郭健：不好意思还有个问题，如你描述的第一种情况，“foo_lock就是控制并发访问foo这个全局资源的spin lock，不在struct xxxx，应该和foo这个需要控制并发的资源定义在一起。”虽然它们定义在一起，可它们并没有相关性。那么其它进程要访问该全局数据时，并不一定要获取foo_lock,才能访问。可这样就没有定义锁的意义了吧。还是说因为它们做为全局变量定义在一起，所以spin lock把它们所在的存储区整个保护起来了。非常感谢"
+ },
+ {
+  "id": "3611",
+  "parent": "3607",
+  "date": "2016-03-08T18:52:55+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@zhr2130：其实我不太清楚你的问题，不过我强调2点：\r\n1、foo_lock和foo的定义相关性非常，非常....的大，对于一个代码洁癖的工程师而言，他们必须在源代码中定义在一起。\r\n2、访问foo必须获取foo_lock"
+ },
+ {
+  "id": "3615",
+  "parent": "3611",
+  "date": "2016-03-08T21:20:59+08:00",
+  "author": "zhr2130",
+  "site": "",
+  "text": "@郭健：@郭健\r\n不好意思,我对这块的概念比较模糊.其实我的问题就是foo_lock和foo是怎么关联到一起的.特别是foo_lock并未定义在foo结构里的时候.\r\n1、foo_lock和foo的定义相关性非常，非常....的大，\r\n它们的相关性是如何产生的,我没有找到它们能关联在一起的方法.spinlock_init的过程也没有把锁和相关资源关联起来啊.\r\n\r\n非常感谢你的耐心回答"
+ },
+ {
+  "id": "3616",
+  "parent": "3615",
+  "date": "2016-03-08T22:37:39+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@zhr2130：我还是换一个实际的例子好了，比如在clocksource.c文件中，有如下代码：\r\n\r\nstatic LIST_HEAD(clocksource_list);\r\nstatic DEFINE_MUTEX(clocksource_mutex);\r\n\r\nclocksource_list就是共享的资源，而clocksource_mutex就是保护这个资源的锁。任何对clocksource_list这个资源的访问都必须获取clocksource_mutex，以便确定在任何时候，系统只有一个thread在临界区，从而不会产生竞态条件：\r\n\r\n\tmutex_lock(&clocksource_mutex);\r\n\t访问临界区的代码\r\n\tmutex_unlock(&clocksource_mutex);\r\n\r\n这里的mutex并不会定义在struct clocksource中，因为mutex控制的资源是全局性的，是系统所有clocksource的实例构成的链表。"
+ },
+ {
+  "id": "3618",
+  "parent": "3616",
+  "date": "2016-03-08T23:40:14+08:00",
+  "author": "zhr2130",
+  "site": "",
+  "text": "@郭健：@郭健: \r\n\r\n又仔细看了看文章终于搞明白了,非常感谢你的解答"
+ },
+ {
+  "id": "3869",
+  "parent": "0",
+  "date": "2016-04-27T19:54:41+08:00",
+  "author": "simonzhang",
+  "site": "",
+  "text": "新的内核这里改变比较大，确实改善了公平性，保证了先来先得。\r\n但是next和owner都是16 bits，最大也就是65536，如果next overflow，但是owner不变的话，可能有两个thread可以同时获得lock。不过就目前的CPU硬件规模，（如最大cores数目100？）应该不会有问题了，就是说没有65536个cpu thread去竞争这个spin lock了。\r\n当然如果next和owner同时overflow的话也自然也不会有问题，只要不相差65536以上。"
+ },
+ {
+  "id": "4274",
+  "parent": "1907",
+  "date": "2016-07-18T12:12:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：之前对于Exclusive access instructions理解有误，重新整理如下：\r\n1、Exclusive access instructions不适合用在device memory中，基本上在控制多个thread访问某个外设的时候，可以使用基于normal memory的资源控制方法（例如spin lock或者mutex），而不是依赖Exclusive access instructions。在有些系统上，对device memory使用Exclusive access instructions会产生bus error。\r\n2、对于normal memory，可以分成Shareable memory regions和Non-Shareable memory regions。对于前者，需要local monitor和global monitor，对于后者，仅仅需要local monitor\r\n3、低于local monitor和global monitor而言，不同的系统实现也不同。对于特定的系统，如A9双核SOC，local monitor在L1 cache中，global monitor在SCU中。\r\n4、在MMU on（告知Shareable属性）和cache on（让monitors on）的情况下，一切工作应该是正常的，local monitor和global monitor都是正常工作的，否则，应该Exclusive access instructions不能正常工作"
+ },
+ {
+  "id": "4546",
+  "parent": "0",
+  "date": "2016-09-08T16:24:43+08:00",
+  "author": "randy",
+  "site": "",
+  "text": "请问下，spinlock的使用限制，除了不能阻塞性操作、耗时太久，critical section中是不是也不能开中断？对于spinlock_irq而言，内部实现为关local irq，如果critical section中开了中断是不是就会有问题？如果是的话，为啥很多资料里面没有提到这点呢？"
+ },
+ {
+  "id": "4551",
+  "parent": "4546",
+  "date": "2016-09-09T09:00:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@randy：spinlock的接口有多个，例如spin_lock、spin_lock_bh、spin_lock_irq，不同的场景，使用不同的接口。对于spin_lock而言，其实是没有关闭本地中断的需求的，因此，在进入临界区的时候，中断是打开的，如果在临界区有对中断的操作也是OK的。对于spin_lock_irq，其临界区是关中断的，因此，在临界区内当然不能打开中断，这是常识，因此没有必要提出。"
+ },
+ {
+  "id": "4552",
+  "parent": "4551",
+  "date": "2016-09-09T09:30:46+08:00",
+  "author": "randy",
+  "site": "",
+  "text": "@linuxer：了解, linuxer,thanks"
+ },
+ {
+  "id": "4884",
+  "parent": "0",
+  "date": "2016-11-17T17:27:24+08:00",
+  "author": "Jeffle",
+  "site": "",
+  "text": "你好，我用的内核版本是3.6.10，其中看到 spin_unlock对owner进行修改时并没有使用strex，而是直接令owner++，我觉得会有一个问题，那就是如果一个进程并不调用spin_lock，而是一上来直接调用spin_unlock，这里就存在一个bug，\r\n作者的意思是“only one CPU can be performing an unlock() operation for a given lock, this doesn't need to be exclusive”，是不是说作者认为这种bug应该由编程者自己来解决，而不是自旋锁的机制本身来解决呢？\r\n\r\nstatic inline void arch_spin_unlock(arch_spinlock_t *lock)\r\n {\r\n-\tunsigned long tmp;\r\n-\tu32 slock;\r\n-\r\n \tsmp_mb();\r\n-\r\n-\t__asm__ __volatile__(\r\n-\"\tmov\t%1, #1\\n\"\r\n-\"1:\tldrex\t%0, [%2]\\n\"\r\n-\"\tuadd16\t%0, %0, %1\\n\"\r\n-\"\tstrex\t%1, %0, [%2]\\n\"\r\n-\"\tteq\t%1, #0\\n\"\r\n-\"\tbne\t1b\"\r\n-\t: \"=&r\" (slock), \"=&r\" (tmp)\r\n-\t: \"r\" (&lock->slock)\r\n-\t: \"cc\");\r\n-\r\n+\tlock->tickets.owner++;\r\n \tdsb_sev();\r\n }"
+ },
+ {
+  "id": "5264",
+  "parent": "0",
+  "date": "2017-02-27T18:27:41+08:00",
+  "author": "ron",
+  "site": "",
+  "text": "@linuxner: 在arm32中，next和owner初始化都为0， 当第一个thread获取spin_lock的时候 汇编中 next++， 但是owner仍然为0， 做完汇编之后就会判断 这两个值是否相等。\r\n    while (lockval.tickets.next != lockval.tickets.owner) {－－－－－－－－－－－－（5） \r\n        wfe();－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－（6） \r\n        lockval.tickets.owner = ACCESS_ONCE(lock->tickets.owner);－－－－－－（7） \r\n    }\r\n由于owner从未改变所以此时岂不是一直在循环里出不来吗？ 多谢！"
+ },
+ {
+  "id": "5268",
+  "parent": "5264",
+  "date": "2017-02-27T19:23:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ron：lock->tickets.owner的值怎么会不变呢？其他thread终究会unlock从而修改owner的。"
+ },
+ {
+  "id": "5270",
+  "parent": "5268",
+  "date": "2017-02-28T14:57:15+08:00",
+  "author": "ron",
+  "site": "",
+  "text": "@linuxer：谢谢@linuxer，我的意思是 第一次获取锁的时候， next和owner初始化都为0， 当进入arch_spin_lock()的时候，next和owner都没有改变， 但是在汇编里 \"add    %1, %0, %4\\n\" 此时next++， 后面接着就while 判断，理论上这时候是unlock的，而且锁应该是谁申请 谁释放。\r\nspin_lock --------> 第一次进入的时候 next++， 而owner未改变，应该会while循环\r\ndo_citical()\r\nspin_unlock\r\n如果上述情况成立，那其他thread应该先spin_lock申请锁，此时上面的锁还在while循环。。。。"
+ },
+ {
+  "id": "5272",
+  "parent": "5270",
+  "date": "2017-03-01T00:21:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ron：也许汇编代码影响了你的逻辑判断，我用c代码重新写过spinlock的过程（当然，这里无法保证原子操作了，不过我们主要是理解逻辑）：\r\nstatic inline void arch_spin_lock(arch_spinlock_t *lock)\r\n{ \r\n    unsigned long tmp;\r\n    u32 newval;\r\n    arch_spinlock_t lockval; \r\n\r\n    lockval = lock->slock;----获得了next和owner值，\r\n    lock->tickets.next++;----lock中的next++，lockval不变\r\n    \r\n如果这时候当前的号码牌（lockval.tickets.next）和owner相等，说明可以持有锁长驱直入。\r\n    while (lockval.tickets.next != lockval.tickets.owner) {\r\n\twfe();\r\n\tlockval.tickets.owner = ACCESS_ONCE(lock->tickets.owner);---用当前spinlock中的owner值更新lockval中的owner值\r\n    }\r\n\r\n    smp_mb();\r\n}\r\n你把lock和lockval这两个变量搞混了。"
+ },
+ {
+  "id": "5274",
+  "parent": "5272",
+  "date": "2017-03-01T09:34:59+08:00",
+  "author": "ron",
+  "site": "",
+  "text": "@linuxer：@linuxer 明白了， 是我把两个变量的值混淆了, 一语惊醒梦中人啊... 非常感谢。"
+ },
+ {
+  "id": "5464",
+  "parent": "0",
+  "date": "2017-04-13T22:02:30+08:00",
+  "author": "michael",
+  "site": "",
+  "text": "@linuxer\r\n\r\n您的文章中这样写到:\r\n最后，我们讨论一下中断上下文之间的竞争。同一种中断handler之间在uni core和multi core上都不会并行执行，这是linux kernel的特性。如果不同中断handler需要使用spin lock保护共享资源，对于新的内核（不区分fast handler和slow handler），所有handler都是关闭中断的，因此使用spin lock不需要关闭中断的配合。bottom half又分成softirq和tasklet，同一种softirq会在不同的CPU上并发执行，因此如果某个驱动中的sofirq的handler中会访问某个全局变量，对该全局变量是需要使用spin lock保护的，不用配合disable CPU中断或者bottom half。tasklet更简单，因为同一种tasklet不会多个CPU上并发，具体我就不分析了，大家自行思考吧\r\n\r\n下面是我对这段话的分析，帮忙分析是否正确:\r\n(1)中断handler+spinlock\r\n1.同一种中断不能并发运行在多个CPU上，因此同一种中断访问时不需要spinlock保护.\r\n2.如果两个中断handler运行同一个CPU上，由于新的内核disable local irq，因此这种情况不需要spinlock保护.\r\n3.如果两个中断handler运行在不同的CPU上，这种情况需要spinlock保护，且调用函数spin_lock_irqsave进行保护？\r\n(2)softirq+spinlock\r\n4.同一种softirq可以运行在多个CPU上，因此需要spinlock保护，调用哪个API进行保护？\r\n5.不同的softirq可以运行在多个CPU上，因此需要spinlock保护，调用哪个API进行保护？\r\n(3)tasklet+spinlock\r\n6.同一种tasklet只能运行在同一个CPU上串行执行，因此不需要spinlock保护.\r\n7.不同的tasklet可以运行在不同的CPU上执行，因此需要进行spinlock保护，调用哪个API进行保护?\r\n(4)workqueue+spinlock\r\nworkqueue属于线程化，但优先级仍高于普通进程。\r\n8.同一个work在某一时间点上只能在同一CPU上运行，是不是就不需要spinlock保护？\r\n9.不同的work访问共享资源时，由于可以运行在不同的CPU上，就需要spinlock保护，调用哪个API进行保护？"
+ },
+ {
+  "id": "5465",
+  "parent": "5464",
+  "date": "2017-04-13T22:07:04+08:00",
+  "author": "michael",
+  "site": "",
+  "text": "@michael：追加两个问题：\r\n1.我的理解，中断也是一种抢占，它是一种异步抢占，是不是调用了preempt_disable禁止了本CPU的抢占，是不是也disable中断了？\r\n2.所谓的抢占，是不是指同一CPU上进程、中断间争夺CPU的控制权，而两个CPU之间，不存在抢占？也就是说，运行在不同CPU上的两个线程间，不存在抢占了"
+ },
+ {
+  "id": "5503",
+  "parent": "4884",
+  "date": "2017-04-30T11:00:32+08:00",
+  "author": "hony",
+  "site": "",
+  "text": "@Jeffle：应该是由使用者保证的，就像使用互斥锁时使用不当就会产生死锁一样道理。"
+ },
+ {
+  "id": "5504",
+  "parent": "3869",
+  "date": "2017-04-30T11:04:48+08:00",
+  "author": "hony",
+  "site": "",
+  "text": "@simonzhang：#if (CONFIG_NR_CPUS < 256)\r\ntypedef u8  __ticket_t;\r\ntypedef u16 __ticketpair_t;\r\n#else\r\ntypedef u16 __ticket_t;\r\ntypedef u32 __ticketpair_t;\r\n#endif\r\n从作者的定义看cpu数不会超过16位。"
+ },
+ {
+  "id": "5818",
+  "parent": "0",
+  "date": "2017-07-18T18:08:44+08:00",
+  "author": "benjoying",
+  "site": "",
+  "text": "（1）运行在CPU0上的进程A在某个系统调用过程中访问了共享资源R \r\n\r\n（2）运行在CPU1上的进程B在某个系统调用过程中也访问了共享资源R \r\n\r\n（3）外设P的bottom half中也会访问共享资源R \r\n\r\n这时候，使用spin lock+禁止本地中断当然是可以达到保护共享资源的效果，但是disable中断会影响系统的中断延迟。在这种场景下，最适合的策略是：使用spin lock+禁止bottom half的方法。\r\n@linuxer, 在这里有点不太明白，bottom half一般是用来做一些比较费时的事情，那如果把这个disable掉，那这部分如何处理呢，感谢！"
+ },
+ {
+  "id": "5820",
+  "parent": "5818",
+  "date": "2017-07-19T14:34:45+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@benjoying：一般而言，这种临界区不会太长，一旦离开临界区，打开了bottom half的话，delay的bottom half会立刻执行。"
+ },
+ {
+  "id": "5824",
+  "parent": "5820",
+  "date": "2017-07-19T20:37:36+08:00",
+  "author": "benjoying",
+  "site": "",
+  "text": "@linuxer：@linuxer 感谢感谢，之前把这个意思曲解了谢谢！"
+ },
+ {
+  "id": "5909",
+  "parent": "5464",
+  "date": "2017-08-15T19:20:51+08:00",
+  "author": "John",
+  "site": "",
+  "text": "@michael：我的理解是linuxer表达的意思是所有的临界区都是在相同的handler中共享的。比如同种softirq的handler之间或者不同softirq handler之间，他们会访问全局的变量。并不考虑softirq handler与硬中断handler（top handler）之间的临界区这种情况。\r\n以下是我的一些理解，回答如下：\r\n(1)中断handler+spinlock \r\n1.同一种中断不能并发运行在多个CPU上，因此同一种中断访问时不需要spinlock保护. \r\n\tA：我的理解是你的观点是正确的。spin lock主要是防止其他的CPU进入临界区，如果这个临界区只在这个中断handler中访问的话，那么由于只有一个handler（同一种中断不能并发运行在多个CPU上），所以不需要spin lock保护。\r\n2.如果两个中断handler运行同一个CPU上，由于新的内核disable local irq，因此这种情况不需要spinlock保护. \r\n\tA：由于中断handler执行时是关中断的，所以不存在两个中断handler运行同一个CPU上的情况。\r\n3.如果两个中断handler运行在不同的CPU上，这种情况需要spinlock保护，且调用函数spin_lock_irqsave进行保护？\r\n\tA：两个中断handler运行在不同的CPU上，这种情况需要spinlock保护，但是并不需要关闭中断。因为中断handler执行时local cpu是关中断的。所以只需使用spin_lock就行了。\r\n(2)softirq+spinlock \r\n4.同一种softirq可以运行在多个CPU上，因此需要spinlock保护，调用哪个API进行保护？ \r\n\tA：同1，基于linuxer原文的意思，不考虑softirq handler和硬中断handler临界区情况，所以只需要spin_lock就可以了。\r\n5.不同的softirq可以运行在多个CPU上，因此需要spinlock保护，调用哪个API进行保护？ \r\n\tA：同4。\r\n(3)tasklet+spinlock \r\n6.同一种tasklet只能运行在同一个CPU上串行执行，因此不需要spinlock保护. \r\n\tA：我的理解是你的观点是正确的。\r\n7.不同的tasklet可以运行在不同的CPU上执行，因此需要进行spinlock保护，调用哪个API进行保护? \r\n\tA：只需要spin_lock就可以了\r\n(4)workqueue+spinlock \r\nworkqueue属于线程化，但优先级仍高于普通进程。 \r\n8.同一个work在某一时间点上只能在同一CPU上运行，是不是就不需要spinlock保护？ \r\n\tA：我不确定同一个work是否可以同时运行在多个CPU上。如果是的话，必须使用spin lock防止其他CPU干扰。\r\n9.不同的work访问共享资源时，由于可以运行在不同的CPU上，就需要spinlock保护，调用哪个API进行保护？\r\n\tA：基于linuxer原文的意思，不考虑work与其他人（softirq handler，thread，top handler）共享临界区的情况，spin_lock就可以了。"
+ },
+ {
+  "id": "5910",
+  "parent": "5465",
+  "date": "2017-08-15T19:28:33+08:00",
+  "author": "John",
+  "site": "",
+  "text": "@michael：同样追加两个回答： \r\n1.我的理解，中断也是一种抢占，它是一种异步抢占，是不是调用了preempt_disable禁止了本CPU的抢占，是不是也disable中断了？ \r\n\tA：preempt_disable只是一种软件方法，达到同步的目的。而disable中断是一个涉及硬件的行为。所以diable中断是一个更底层的行为，它的结果可以影响软件，比如使scheduler没有办法执行，更不能执行preempt。\r\n2.所谓的抢占，是不是指同一CPU上进程、中断间争夺CPU的控制权，而两个CPU之间，不存在抢占？也就是说，运行在不同CPU上的两个线程间，不存在抢占了\r\n\tA：我的理解是这里的抢占指的是进入临界区。获得CPU的控制权是手段，目的还是要进入临界区完成一些操作。"
+ },
+ {
+  "id": "6155",
+  "parent": "0",
+  "date": "2017-10-31T17:18:24+08:00",
+  "author": "zoro",
+  "site": "",
+  "text": "如果CPU0上有个线程A获得了锁后在执行临界代码，这个时候CPU0上发生了中断，中断中也申请同一个锁，这样的话这个CPU0岂不是就进入低功耗等待模式了？不能再去做其他事情了。\r\n\r\n如果CPU0进入了低功耗等待模式，那么其他的CPU能不能去释放这个锁，同时把CPU0从低功耗等待模式退出呢？"
+ },
+ {
+  "id": "6163",
+  "parent": "6155",
+  "date": "2017-11-02T12:02:59+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zoro：你说的场景属于错误的使用了锁的机制，如果一个临界区会被中断和线程并非访问，那么你需要的内核同步机制是spin lock＋disable local irq"
+ },
+ {
+  "id": "6165",
+  "parent": "0",
+  "date": "2017-11-02T19:58:35+08:00",
+  "author": "fy",
+  "site": "",
+  "text": "hi 说到spin lock\r\n说一个老生常谈的问题吧。\r\n如果一个临界区X是有进程上下文和中断上下文都会访问的。那按理 spin lock应该做到\r\n1.禁止本地中断 2.禁止抢占 3.自旋\r\n\r\n那又由于内核抢占真正能运行的前提是 从一个中断返回时(A) 并且当前允许抢占(B)并且当前中断开启（C)。。。\r\n因为上面1.中已经禁止本地中断了，即使2.禁止抢占不做也没关系了。\r\n我个人觉得确实是不需要2.禁止抢占的。只要1禁止本地中断和3.自旋 一起就可以达到保护临界区X\r\n如果真的不加上 2.禁止抢占，会不会有问题，我想了一些case，暂时没想到。\r\n当然，我是默认临界区X内不会主动放弃CPU为前提的。（临界区也确实不应该睡眠才是)\r\n\r\n不知道linuxer对此什么看法。"
+ },
+ {
+  "id": "6175",
+  "parent": "6165",
+  "date": "2017-11-06T17:07:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@fy：我有点看不太明白这个问题，不过可以试着说一下我的理解：\r\nspin lock有两大类：\r\n一类是spin_lock，做的事情就是禁止抢占+自旋，这样可以保护那些没有中断参与的临界区，代价也小一些。\r\n一类是spin_lock_irqsave，做的事情是禁止中断+（禁止抢占+自旋），这样在第一类的基础上也可以保护有中断参与的临界区。\r\n你好像在质疑第二类中禁止抢占的必要性，确实，没什么必要。可spin_lock_irqsave要调用spin_lock啊，再封出来一个接口？岂不是有点画蛇添足了？"
+ },
+ {
+  "id": "6190",
+  "parent": "6175",
+  "date": "2017-11-11T16:08:21+08:00",
+  "author": "fy",
+  "site": "",
+  "text": "@wowo：是的。我只是就这里的“禁止抢占”非必要，问问wowo的个人理解。\r\n确实是非必要的。\r\n非常感谢。"
+ },
+ {
+  "id": "6259",
+  "parent": "6190",
+  "date": "2017-11-29T13:10:06+08:00",
+  "author": "LOONG",
+  "site": "",
+  "text": "@fy：前来膜拜郭大侠:)\r\n那天看文嘉转了郭大侠在另一个群里讨论这个问题（关抢占有没有必要），觉得受益匪浅，学习了。\r\n当时就想：或者作者当初也并不是一气呵成呢？这样定然有commit log可以查询。试着搜了一下，发现目前的git库已经没有相关记录了。于是上网搜到了这个问题：\r\nhttps://stackoverflow.com/questions/13263538/linux-kernel-spinlock-smp-why-there-is-a-preempt-disable-in-spin-lock-irq-sm\r\n基本跟郭大侠分析的一样:)\r\n不知@fy有何理解？或许可以直接问Dave Miller，说不定他跟郭大侠一样nice:)"
+ },
+ {
+  "id": "6261",
+  "parent": "6259",
+  "date": "2017-11-30T08:38:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@LOONG：多谢支持！问题是一样的问题，但是在stackoverflow上也没有得到回答，不过在前几天的微信群里，这里问题已经讨论的比较清楚了。"
+ },
+ {
+  "id": "6262",
+  "parent": "6165",
+  "date": "2017-11-30T08:50:31+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@fy：非常好的问题，非常精彩的思考点。\r\n\r\n禁止了中断的确等于了禁止抢占，但是并不意味着它们两个完全等同，因为在preempt disable－－－preempt enable这个的调用过程中，在打开抢占的时候有一个抢占点，内核控制路径会在这里检查抢占，如果满足抢占条件，那么会立刻调度schedule函数进行进程切换，但是local irq disable－－－local irq enable的调用中，并没有显示的抢占检查点，当然，中断有点特殊，因为一旦打开中断，那么pending的中断会进来，并且在返回中断点的时候会检查抢占，但是也许下面的这个场景就无能为力了。进程上下文中调用如下序列：\r\n（1）local irq disable\r\n（2）wake up high level priority task\r\n（3）local irq enable\r\n当唤醒的高优先级进程被调度到本CPU执行的时候，按理说这个高优先级进程应该立刻抢占当前进程，但是这个场景无法做到。在调用try_to_wake_up的时候会设定need resched flag并检查抢占，但是由于中断disable，因此不会立刻调用schedule，但是在step （3）的时候，由于没有检查抢占，这时候本应立刻抢占的高优先级进程会发生严重的调度延迟.....直到下一个抢占点到来。"
+ },
+ {
+  "id": "6264",
+  "parent": "6262",
+  "date": "2017-11-30T10:06:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：这个场景还是挺有意思的，不过话说回来了，spin_lock_xxx的目的是保护临界区，关preempt的抢占点什么事呢？爱抢占不抢占啊～\r\n本质上还是spin_lock需要通过开关抢占进行临界区保护，到spin_lock_irqxxx的时候，顺便做一下，再顺便帮preempt一个忙而已。\r\n所以这个场景并不能构成“spin_lock_irqsave关抢占是否有必要的理由”，最后的答案还是没必要（因为“保护”的目的已经达到），至于是不是可以增加一个抢占点，在local_irq_restore的时候，调用一下preempt_check_resched岂不是更直接？"
+ },
+ {
+  "id": "7168",
+  "parent": "0",
+  "date": "2019-01-30T17:33:21+08:00",
+  "author": "randy",
+  "site": "",
+  "text": "想请问一个arm32实现版本的spin unlock的问题，我注意到spin_unlock的实现中仅仅是owner++，没有ldrex/strex的实现，请问是否有问题:\r\ncpu0             cpu1\r\nldrex\r\n                 next | owner+1\r\n\r\nnext+1 | owner\r\n\r\nstrex\r\n所以在cpu0完成strex后，把老的owner值覆盖回去了，cpu1的对owner++操作被覆盖，关键在于unlock操作没有原子，请问Linux内核为何没有问题？"
+ },
+ {
+  "id": "7169",
+  "parent": "7168",
+  "date": "2019-01-31T11:07:29+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@randy：你可以看到在ARM64上，arch_spin_unlock()同样也是类似owner++的操作。我就根据ARM64的认知，推测以下ARM32的原理吧。\r\n\r\nCPU0 执行ldrex后，monitor的状态是Exclusive Access。当CPU1把owner写成功以后，就会导致monitor的状态切换到Open Access。然后，CPU0的strex操作就会失败。因此，不会出现你担心的情况。\r\n\r\n虽然owner++是RMW操作，但是由于spin_unlock()在任意时刻都只有一个进程调用。spin_unlock()和spin_lock()之间也是安全的。"
+ },
+ {
+  "id": "7170",
+  "parent": "7169",
+  "date": "2019-01-31T11:24:35+08:00",
+  "author": "randy",
+  "site": "",
+  "text": "@smcdef：我理解普通的ldr/str指令不会导致open/exclusive状态机的切换，除非把Unlock的实现为ldrex/strex指令对，而非普通的owner++。"
+ },
+ {
+  "id": "7171",
+  "parent": "7170",
+  "date": "2019-01-31T11:31:40+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@randy：在ARM64上，普通的str操作也会clear monitor。你既然说不会，可能你已经查阅了相关ARM的文档。我只是说出了ARM64的设计，供你参考。因为，我确实不了解ARM的设计（一直在搞ARM64）。"
+ },
+ {
+  "id": "7176",
+  "parent": "7171",
+  "date": "2019-02-01T13:57:28+08:00",
+  "author": "randy",
+  "site": "",
+  "text": "@smcdef：sorry,你的理解是对的，重新读了下文档，arm32下str指令也会导致exclusive->open态的切换，我之前一直理解为只有strex这样的指令才会，多谢！"
+ },
+ {
+  "id": "7552",
+  "parent": "0",
+  "date": "2019-07-26T16:32:49+08:00",
+  "author": "cp",
+  "site": "",
+  "text": "请教一个问题\r\n T1                   T2\r\nnext +1 | owner\r\n\r\n                     next+1 | owner+1\r\nWFE\r\n这种情况下，T1如何才能被唤醒？"
+ },
+ {
+  "id": "7553",
+  "parent": "7552",
+  "date": "2019-07-26T16:39:33+08:00",
+  "author": "cp",
+  "site": "",
+  "text": "@cp：意思就是  一个cpu的SEV 在另一个CPU的next++ 和WFE之间完成会怎么样呢？\r\n多谢"
+ },
+ {
+  "id": "7597",
+  "parent": "0",
+  "date": "2019-08-20T08:51:16+08:00",
+  "author": "crash",
+  "site": "",
+  "text": "spin_lock获取不到锁资源spin等待期间会被中断切走吗"
+ },
+ {
+  "id": "8096",
+  "parent": "0",
+  "date": "2020-08-14T09:48:26+08:00",
+  "author": "linuxzz",
+  "site": "",
+  "text": "大神，加了你们的官方QQ群，求通过，一起学习"
+ },
+ {
+  "id": "8126",
+  "parent": "7553",
+  "date": "2020-10-20T15:13:40+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@cp：这就是linuxer说的：有其它thread/PE的插入，strex会执行失败，重新ldrex。"
+ },
+ {
+  "id": "8127",
+  "parent": "8126",
+  "date": "2020-10-20T15:30:02+08:00",
+  "author": "白白",
+  "site": "",
+  "text": "@bsp：大佬有没有联系方式 想咨询一下EMMC读写方面的问题"
+ },
+ {
+  "id": "8146",
+  "parent": "0",
+  "date": "2020-11-27T10:30:19+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "（1）和preloading cache相关的操作，主要是为了性能考虑\r\n做一点补充：\r\nprefetch mem 指令其工作主要是通知memory系统（cache line file）在后台执行，然后立马返回，而不会阻塞在等待prefetch完成后（linefill complete））才返回，所以会有效加速性能（10%以上）。\r\nfrom: https://developer.arm.com/documentation/100403/0200/functional-description/level-1-memory-system/data-prefetching\r\nThe Cortex-A75 core supports the AArch64 Prefetch Memory (PRFM) instructions and the AArch32 Prefetch Data (PLD) and Preload Data With Intent To Write (PLDW) instructions. These instructions signal to the memory system that memory accesses from a specified address are likely to occur soon. The memory system acts by taking actions that aim to reduce the latency of the memory access when they occur. PRFM instructions perform a lookup in the cache, and if they miss and are to a cacheable address, a linefill starts. However, the PRFM instruction retires when its linefill is started, rather than waiting for the linefill to complete. This enables other instructions to execute while the linefill continues in the background."
+ },
+ {
+  "id": "8147",
+  "parent": "1906",
+  "date": "2020-11-27T12:00:10+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@bear20081015：你指的cache disable分两种（arm）：\r\n1：设置cp15（c1）寄存器中的IC/DC，这时cpu 访存不会经过cache而已，但是cache monitor还是工作的，exclusive access是可以正常工作的。从linux内核代码中也可以看到CONFIG_CPU_DCACHE_DISABLE/CONFIG_CPU_ICACHE_DISABLE并不会影响spin-lock，spin-lock中ldrex并没有因为cache disable而做额外的动作，说明ldrex在cache disable时也能正常工作。\r\n2：cache power off，这时arm core一定也是power offer的，不会出现core active而cache power off的情况。所以在cache power off时，不会出现arm core access memory的情况。\r\n3：至于outer cache，其power off时arm core一般也是power off的；如果outer cache power off && arm core power on，exclusive access应该会by-pass 这一级cache的monitor。"
+ },
+ {
+  "id": "8192",
+  "parent": "0",
+  "date": "2021-01-30T18:38:55+08:00",
+  "author": "linuxxx",
+  "site": "",
+  "text": "linuxer你好:\r\n请教一个问题:进程上下文中在临界区有cooy_to_user的操作,中断上下文也需要写同样的buffer, 使用了copy_to_user就无法使用spinlock,但是中断里锁机制只能使用spinlock该如何解决这种冲突呢?谢谢"
+ },
+ {
+  "id": "8435",
+  "parent": "1850",
+  "date": "2021-12-17T15:59:42+08:00",
+  "author": "learner",
+  "site": "",
+  "text": "@linuxer：请教下，有个问题想大不通，spin lock+禁止bottom half的方法，我的理解是由P的中断handler直接访问R了吧？那如何么防止在和A运行在同一个CPU时和A产生死锁？"
+ },
+ {
+  "id": "8560",
+  "parent": "8192",
+  "date": "2022-02-23T07:47:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxxx：建议不要这么设计软件，可以考虑中断中queue一个work，然后在其callback中使用copy_to_user"
+ },
+ {
+  "id": "8561",
+  "parent": "7597",
+  "date": "2022-02-23T07:50:14+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@crash：会的，spin lock在spin的时候其实是处于WFE状态，中断来了之后，cpu会从WFE状态解除，从而跳转到中断上下文去执行。\r\n\r\n当然，前提是你的spin lock是单纯的spin lock，没有附件disable interrupt"
+ },
+ {
+  "id": "8649",
+  "parent": "0",
+  "date": "2022-07-22T23:23:23+08:00",
+  "author": "dream",
+  "site": "http://https://blog.csdn.net/lovemengx",
+  "text": "linuxer:\r\n\r\n看到这段话，有些不理解，还请解惑，非常感谢。\r\n\r\n\"A在进入临界区之前获取了spin lock，同样的，在A访问共享资源R的过程中发生了中断，中断唤醒了沉睡中的，优先级更高的B，B在访问临界区之前仍然会试图获取spin lock，这时候由于A进程持有spin lock而导致B进程进入了永久的spin……怎么破？linux的kernel很简单，在A进程获取spin lock的时候，禁止本CPU上的抢占（上面的永久spin的场合仅仅在本CPU的进程抢占本CPU的当前进程这样的场景中发生）。\"\r\n\r\n即使当前进程在持有锁的时候，被高优先级进程抢占也访问了锁，进入自旋状态，那么内核不是支持时间片轮转的调度嘛，当产生 tick 中断的时候，高优先级的进程时间片用完，那么低优先级的进程就有再次执行的机会，只要低优先级有执行的机会，自然就能完成临界区的代码执行，然后释放锁。释放锁，高优先级进程也就自然也能获取锁。"
+ },
+ {
+  "id": "8723",
+  "parent": "8649",
+  "date": "2022-12-15T19:49:32+08:00",
+  "author": "Yaksama",
+  "site": "",
+  "text": "@dream：个人认为spinlock本身就是一种轻量级的锁，设计初衷除了考虑中断访问临界区资源的情况，还有一个就是避免过多进程上下文切换带来的开销。\r\n如果不disable preempt，的确拥有锁的线程早晚有得到执行的一天，但这种情况为什么不直接用mutex呢，而且线程获取spinlock之后执行的任务都是轻量级的，如果让其调度出去再调度回来才能执行完，这和disable preempt相比未免有些得不偿失。\r\n另外个人对调度器内容不太了解，但如果调度器本身也是个线程，可以获取spinlock的话..."
+ },
+ {
+  "id": "8733",
+  "parent": "8649",
+  "date": "2023-01-31T15:16:56+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@dream：B如果为rt线程，SCHED_FIFO时，是不考虑时间片的；"
+ },
+ {
+  "id": "8734",
+  "parent": "0",
+  "date": "2023-01-31T16:31:41+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "ticket-based-spinlock有个问题，\r\nCPU0获取了spinlock，CPU1、CPU2、CPU3...在等锁时，CPU0通过spinunlock中的sev唤醒其它所有所有CPU去check是否轮到自己；既然我们通过ticket知道了lock->next是哪个CPU，其实只需要唤醒对应CPU上的task即可。\r\n也许这就是qspinlock应运而生的一个原因？"
+ },
+ {
+  "id": "8765",
+  "parent": "8734",
+  "date": "2023-04-06T09:56:57+08:00",
+  "author": "icy_river",
+  "site": "",
+  "text": "@bsp：1. sev只有sev/sevl两种, 无法给指定core发event;\r\n2. 同时自旋的core太多的话, cache同步开销就不能忽略了;\r\n3. kernel 5.10, ticket spinlock已经换成qspinlock;"
+ },
+ {
+  "id": "8766",
+  "parent": "8649",
+  "date": "2023-04-06T10:00:18+08:00",
+  "author": "icy_river",
+  "site": "",
+  "text": "@dream：在你假设的场景是,功能是没问题的; 但是这样B的时间片不是完全浪费了吗?"
+ },
+ {
+  "id": "8861",
+  "parent": "0",
+  "date": "2024-01-13T21:34:54+08:00",
+  "author": "Harry Song",
+  "site": "",
+  "text": "文中对 ticket 的机制进行举例和实际的汇编实现有偏差：\r\n\r\n\"最开始的时候，slock被赋值为0，也就是说owner和next都是0，owner和next相等，表示unlocked。\"\r\n\r\n--> 实际上应该是默认值是1，第一位来排队的，先 next+1 = 1,然后 当前owner == 当前next，拿到了锁；如果不是第一位来排队的，那就是等待 owner何时 == 自己的next值；\r\n而不是来排队的先 next+1 把号码给后来的人。\r\n\r\n我通过 ARM32 的arch_spin_lock 分析的，你看对不对。"
+ },
+ {
+  "id": "8881",
+  "parent": "8765",
+  "date": "2024-04-12T17:36:42+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@icy_river：嗯，我其实就在说qspinlock 替代ticket-based-spinlock的原因。\r\n通过qspinlock，只需要唤醒lock->next所在的cpu，其它cpu继续自旋。"
+ },
+ {
+  "id": "8882",
+  "parent": "8765",
+  "date": "2024-04-12T17:36:50+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@icy_river：嗯，我其实就在说qspinlock 替代ticket-based-spinlock的原因。\r\n通过qspinlock，只需要唤醒lock->next所在的cpu，其它cpu继续自旋。"
+ },
+ {
+  "id": "8883",
+  "parent": "8765",
+  "date": "2024-04-12T17:38:06+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@icy_river：bsp\r\n2023-02-01 13:11\r\nticket-based-spinlock有个重大问题：\r\n假如当CPU0获取了spinlock，而CPU1、CPU2、CPU3...在等锁，在CPU0 spin_unlock时通过sev/stlr唤醒其它所有所有CPU去check是否轮到自己；我们通过ticket可以知道lock->next是哪个CPU，其实只需要唤醒对应CPU上的task即可。\r\n于是qspinlock应运而生：\r\n1：当CPU0获取了spinlockA，而CPU1-->CPU2-->CPU3依次在等锁（lock->next是CPU1上的task）时，只需让CPU1自旋在spinlockA上（即qspinlock中的pending）、CPU2/CPU3自旋在percpu上的另外一把锁B（即qspinlock中的mcs锁），percpu的锁可以减少cache-boucing（具体怎么减 自行脑补）；\r\n2：当CPU0释放了spinlockA（armv8的stlr可以只唤醒对应地址上的waiter即CPU1，这点比armv7的sev好用），只会唤醒自旋在spinlockA上的CPU1，其它CPU则暂时不会被唤醒；\r\n3：同理CPU1获取了spinlockA，需要把把lock->next标记为CPU2，并让CPU2从自旋在percpu的spinlockB转换到spinlockA；即qspinlock中对应的mcs队列；\r\n4：同理CPU1释放了spinlockA，stlr（load-acquire/store-release）只会唤醒CPU2,；CPU2获取了spinlockA，把lock->next标记为CPU3，并让CPU3从自旋在percpu的spinlockB转换到spinlockA；即qspinlock中对应的mcs队列；\r\n依次往下，这便是qspinlock的中心思想吧。至于怎么设计和实现，我觉得有不同的方法。"
+ },
+ {
+  "id": "8922",
+  "parent": "8649",
+  "date": "2024-08-14T02:57:46+08:00",
+  "author": "ja",
+  "site": "",
+  "text": "@dream：我看完這段也有相同的想法，引用 @dream 最後一段的說法\r\n\r\n即使当前进程在持有锁的时候，被高优先级进程抢占也访问了锁，进入自旋状态，那么内核不是支持时间片轮转的调度嘛，当产生 tick 中断的时候，高优先级的进程时间片用完，那么低优先级的进程就有再次执行的机会，只要低优先级有执行的机会，自然就能完成临界区的代码执行，然后释放锁。释放锁，高优先级进程也就自然也能获取锁\r\n\r\n這樣B进程不會进入\"永久\"的spin，而只是暫時的spin，使用\"永久\"這個詞是因為上述做法會因為某些原因而無法達成嗎?"
+ }
+]

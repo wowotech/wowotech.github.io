@@ -1,0 +1,138 @@
+[
+ {
+  "id": "4643",
+  "parent": "0",
+  "date": "2016-10-04T12:12:04+08:00",
+  "author": "lucky",
+  "site": "",
+  "text": "Hi linuxer\r\n\r\n@linuxer\r\n你之前的文章关于work同步的解释如下：\r\n=>挂入到multi thread或者说per cpu workqueue上的指定的work，其callback是不会在一个cpu上并发执行（也就是说在多个cpu上可以并发执行）\r\n\r\n此篇文中有这样一段话：“不是当前选定的那个pool wq对应的worker pool就适合该work，因为有时候该work可能正在其他的worker thread上执行中，在这种情况下，为了确保work的callback function不会重入，该work最好还是挂在那个worker thread pool上”\r\n=>这一段的意思是：\r\n1. 对于per cpu来讲保证同一个work不能在同一个cpu对应的worker pool里的多个worker thread里面同时执行，但可以在不同的cpu 的worker pool里的worker thread执行。\r\n2. 对于UNBOUND的情况，可以将属于同一个node id的若干个个cpu视作一个逻辑cpu，保证同一个逻辑cpu里面不会出现多个worker thread执行一个相同的work，不同的node id（即不同的逻辑cpu）里面的worker thread是可以同时执行一个相同的work的。\r\n\r\n我这样理解是正确的吗？如有偏差请指正，谢谢！"
+ },
+ {
+  "id": "4653",
+  "parent": "4643",
+  "date": "2016-10-06T19:04:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lucky：的确，我之前在回复某个网友的提问的时候说到：挂入到multi thread或者说per cpu workqueue上的指定的work，其callback是不会在一个cpu上并发执行（也就是说在多个cpu上可以并发执行）。不过这句话是有条件限制的，当时，我的描述是针对旧的workqueue上的并发（参考的是linux2.6.23的workqueue代码）。\r\n\r\n对于新的内核，例如4.4.6的内核，不论是bound（per cpu）或者unbounded workqueue，其work的处理都遵守下面的处理原则：在给定的时间点，同一个work只能被系统中的一个worker线程处理，也就是说，任何的work都是non-reentrant的。"
+ },
+ {
+  "id": "5356",
+  "parent": "0",
+  "date": "2017-03-22T15:24:04+08:00",
+  "author": "michael",
+  "site": "",
+  "text": "Hi, linuxer \r\n\r\n有几个问题要咨询一下:\r\n在旧机制下的workqueue，在workqueue下，一个workqueue可能包含了多个work。比如，当前正在执行work A时，被调度了，让出了CPU，那么workqueue中的其它work，可以在其它CPU上执行吗，还是说也被阻塞了？"
+ },
+ {
+  "id": "5357",
+  "parent": "5356",
+  "date": "2017-03-22T16:28:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@michael：这分两种情况：\r\n（1）对于single threaded的workqueue，任何的work都是排队执行。如果workqueue中挂入work A B C，那么如果A阻塞，那么B和C也是会等待，直到A work完成。\r\n（2）对于multi threaded（更准确的是per-CPU threaded）情况当然会好一些，因为该workqueue会为每一个online cpu创建一个线程来处理work。对于一个cpu上的线程，其处理逻辑等于single threaded的workqueue，即一个work阻塞了，挂入该cpu的work都会阻塞，但是其他cpu的线程处理是不受影响的。"
+ },
+ {
+  "id": "5389",
+  "parent": "0",
+  "date": "2017-03-28T16:08:26+08:00",
+  "author": "nimisolo",
+  "site": "",
+  "text": "请问，一个pool的多个work能并发处理吗？\r\n例如：一个unbound work pool，目前有100个work需要处理，有5个worker，这5个worker能够同时运行并处理一部分work吗？\r\n我看worker_thread中处理一个work前会首先获得pool->lock，处理好后再释放它，这是不是说明一个pool多个worker无法并发运行？"
+ },
+ {
+  "id": "5390",
+  "parent": "5389",
+  "date": "2017-03-28T16:52:18+08:00",
+  "author": "nimisolo",
+  "site": "",
+  "text": "@nimisolo：解决了...\r\nprocess_one_work中在处理work之前会释放pool->lock，所以可以的"
+ },
+ {
+  "id": "5656",
+  "parent": "0",
+  "date": "2017-06-12T17:29:00+08:00",
+  "author": "lamaboy",
+  "site": "",
+  "text": "追代码的时候发现，当前工作队列线程休眠，在找不到空闲的线程的情况下 ：如to_wakeup == null，是如何处理的呢？？ 具体代码如下，\r\n\t\t\tif (prev->flags & PF_WQ_WORKER) {\r\n\t\t\t\tstruct task_struct *to_wakeup;\r\n\r\n\t\t\t\tto_wakeup = wq_worker_sleeping(prev); // 如果当前一休眠，\r\n\t\t\t\tif (to_wakeup)\r\n\t\t\t\t\ttry_to_wake_up_local(to_wakeup, cookie);\r\n\t\t\t}\r\n.//////////////\r\n\r\nstruct task_struct *wq_worker_sleeping(struct task_struct *task)\r\n{\r\n\tstruct worker *worker = kthread_data(task), *to_wakeup = NULL;\r\n\tstruct worker_pool *pool;\r\n\r\n\t/*\r\n\t * Rescuers, which may not have all the fields set up like normal\r\n\t * workers, also reach here, let's not access anything before\r\n\t * checking NOT_RUNNING.\r\n\t */\r\n\tif (worker->flags & WORKER_NOT_RUNNING)\r\n\t\treturn NULL;\r\n\r\n\tpool = worker->pool;\r\n\r\n\t/* this can only happen on the local cpu */\r\n\tif (WARN_ON_ONCE(pool->cpu != raw_smp_processor_id()))\r\n\t\treturn NULL;\r\n\r\n\t/*\r\n\t * The counterpart of the following dec_and_test, implied mb,\r\n\t * worklist not empty test sequence is in insert_work().\r\n\t * Please read comment there.\r\n\t *\r\n\t * NOT_RUNNING is clear.  This means that we're bound to and\r\n\t * running on the local cpu w/ rq lock held and preemption\r\n\t * disabled, which in turn means that none else could be\r\n\t * manipulating idle_list, so dereferencing idle_list without pool\r\n\t * lock is safe.\r\n\t */\r\n\tif (atomic_dec_and_test(&pool->nr_running) &&\r\n\t    !list_empty(&pool->worklist))\r\n\t\tto_wakeup = first_idle_worker(pool);  // 找不到空闲的！！\r\n\treturn to_wakeup ? to_wakeup->task : NULL;\r\n}"
+ },
+ {
+  "id": "5658",
+  "parent": "0",
+  "date": "2017-06-12T17:51:46+08:00",
+  "author": "lamaboy",
+  "site": "",
+  "text": "你好！ 在看到如下代码：\r\n\r\nstatic struct worker *create_worker(struct worker_pool *pool)\r\n{\r\n...\r\n\tworker->task = kthread_create_on_node(worker_thread, worker, pool->node,\r\n\t\t\t\t\t      \"kworker/%s\", id_buf);\r\n...\r\n}\r\n\r\n每一个线程创建的用的是同一个函数，这样，会不会引入重入的问题，是不是，只要我保证这个回调函数是线程安全的，不管在kernel、user 空间懂不会有问题，，希望博主解惑！！"
+ },
+ {
+  "id": "5659",
+  "parent": "5658",
+  "date": "2017-06-12T17:57:00+08:00",
+  "author": "lamaboy",
+  "site": "",
+  "text": "@lamaboy：还有，如果没有问题？？ 我在申请中断的时候，如gpio_key ，我要申请10 个中断，用的是统一个函数，在什么情况下会有什么问题呢？？"
+ },
+ {
+  "id": "5660",
+  "parent": "5656",
+  "date": "2017-06-12T18:04:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lamaboy：如果to_wakeup等于null，说明当前线程池中已经有足够的worker线程了，不需要唤醒多余的worker thread了。一个典型的例子是挂在worker pool中的work list是空的，如果是空的，那么worker thread阻塞就阻塞吧，反正也没有什么活要干。"
+ },
+ {
+  "id": "5661",
+  "parent": "5658",
+  "date": "2017-06-12T18:58:26+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lamaboy：同意你的说法。重入问题在kernel space和userspace都是一样的，解决的方法就是：\r\n1、全部访问thread local资源\r\n2、在thread之间共享的资源使用锁机制保护\r\n\r\n你可以看看worker_thread函数实现，显然，它使用了方法二来保证了多个thread重入是安全的。"
+ },
+ {
+  "id": "5662",
+  "parent": "5659",
+  "date": "2017-06-12T19:06:26+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lamaboy：多个irq number对应一个interrupt handler也是没有什么问题，当然需要仔细考虑清楚内核不同问题（也是保证重入安全的）。"
+ },
+ {
+  "id": "5829",
+  "parent": "0",
+  "date": "2017-07-20T20:57:05+08:00",
+  "author": "cade",
+  "site": "",
+  "text": "1. “work item” 是什么？“work item\" 指work_struct 这个结构体，\r\n\r\nret = queue_work(lsm_workqueue, &sdata->input_work);\r\nif (!ret)\r\n   LOG_INFO(\"work was already on the queue.\\n\");\r\n   \r\n   如果上次提交的work没有执行，而再次调用queue_work，则这个应该是同一个”work item“ \r\n   还是不同的”work item“?\r\n  即同一个work_struct 是否可以被提交多次，处于pending状态的work就没法再提交了？\r\n  我的需求是每10ms执行一次work，即100Hz，读数据并上报给用户空间，\r\n  通过加log发现好像是如果上次提交的work没有执行完，则无法提交；造成的结果就是在上层看来丢数据了，\r\n  读数据的频率不是100Hz。\r\n但我觉得不应该这样设计的，不是可以一直提交才更合理吗，类似链表管理一个work_struct的各个提交项目\r\n请帮忙解答下，谢谢~\r\n\r\n2. 关于 @max_active:\r\n如下解释\r\n@max_active determines the maximum number of execution contexts per\r\nCPU which can be assigned to the work items of a wq.  For example,\r\nwith @max_active of 16, at most 16 work items of the wq can be\r\nexecuting at the same time per CPU.\r\n\r\n我的场景是driver中创建一个workqueue_struct，有两个work_struct A和B，A和B的执行逻辑一样，对应同一个call back\r\n所以问题是：\r\n    lsm_workqueue = alloc_workqueue(\"%s\", WQ_HIGHPRI | WQ_UNBOUND | WQ_MEM_RECLAIM, 2, \"lsm_wq\");\r\n这个参数max_active应该传入2 更合适吗？"
+ },
+ {
+  "id": "7684",
+  "parent": "0",
+  "date": "2019-10-06T13:52:59+08:00",
+  "author": "www",
+  "site": "",
+  "text": "对于不同的bound的workqueue，最终大家都要添加到同样的worker pool的list上，而在一个worker pool上只会有一个active的线程处理事件，是否意味着驱动根本没有必要自己去创建workqueue，因为通过queue_work将work添加到自己创建的workqueue和添加到default的workqueue都同样要在同一个worker pool的list上排队，和直接queue_work到default的workqueue上效果一样，即不会并行处理。\r\n是否是我什么地方的理解有问题？\r\n\r\n谢谢"
+ },
+ {
+  "id": "8171",
+  "parent": "7684",
+  "date": "2021-01-04T11:33:53+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@www：我觉得前半部分理解没有问题，从日志也可以看到：\r\necho t >/proc/sysrq-trigger; dmesg\r\n[  367.575510] Showing busy workqueues and worker pools:\r\n[  367.575513] workqueue events: flags=0x0\r\n[  367.575520] pwq 4: cpus=0 node=0 flags=0x0 nice=0 active=10/256\r\n[  367.575530] in-flight: 9297 :mxt_work\r\n[  367.576205] pending: mxt_work, watchdog_work, ***\r\n这些work都是挂在到同一个pool中的。\r\n但并行处理是会的，有时候worker_pool太忙了，就会创建新的work-thread去并行处理多个work，这在Concurrency Managed Workqueue之（三/二）有介绍。"
+ },
+ {
+  "id": "8177",
+  "parent": "5829",
+  "date": "2021-01-05T09:45:39+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@cade：1，相同的work是可以提交多次的，确实有pool->worklist来管理待处理（pending）的work，从log也可以看到：\r\necho t >/proc/sysrq-trigger; dmesg\r\n[  367.575510] Showing busy workqueues and worker pools:\r\n[  367.575513] workqueue events: flags=0x0\r\n[  367.575520] pwq 4: cpus=0 node=0 flags=0x0 nice=0 active=10/256\r\n[  367.575530] in-flight: 9297 :mxt_work\r\n[  367.576205] pending: mxt_work, vmstat_shepherd, tsens_poll, tsens_poll, sdhci_msm_pm_qos_cpu_unvote_work, sdhci_msm_pm_qos_cpu_unvote_work, sdhci_msm_pm_qos_irq_unvote_work\r\n这里有两个tsens_poll，两个sdhci_msm_pm_qos_cpu_unvote_work。\r\n至于丢包，那可能是pending太久上层认为timeout丢掉了。\r\n2，关于max_active，Documentation//core-api/workqueue.rst有很好的解释和例子。对于你这例子，传入默认的0最合适，系统会设为256（512/2）。\r\nThe following example execution scenarios try to illustrate how cmwq\r\nbehave under different configurations.\r\n\r\n Work items w0, w1, w2 are queued to a bound wq q0 on the same CPU.\r\n w0 burns CPU for 5ms then sleeps for 10ms then burns CPU for 5ms\r\n again before finishing.  w1 and w2 burn CPU for 5ms then sleep for\r\n 10ms.\r\n\r\nIgnoring all other tasks, works and processing overhead, and assuming\r\nsimple FIFO scheduling, the following is one highly simplified version\r\nof possible sequences of events with the original wq. ::\r\n\r\n TIME IN MSECS  EVENT\r\n 0              w0 starts and burns CPU\r\n 5              w0 sleeps\r\n 15             w0 wakes up and burns CPU\r\n 20             w0 finishes\r\n 20             w1 starts and burns CPU\r\n 25             w1 sleeps\r\n 35             w1 wakes up and finishes\r\n 35             w2 starts and burns CPU\r\n 40             w2 sleeps\r\n 50             w2 wakes up and finishes\r\n\r\nAnd with cmwq with ``@max_active`` >= 3, ::\r\n\r\n TIME IN MSECS  EVENT\r\n 0              w0 starts and burns CPU\r\n 5              w0 sleeps\r\n 5              w1 starts and burns CPU\r\n 10             w1 sleeps\r\n 10             w2 starts and burns CPU\r\n 15             w2 sleeps\r\n 15             w0 wakes up and burns CPU\r\n 20             w0 finishes\r\n 20             w1 wakes up and finishes\r\n 25             w2 wakes up and finishes\r\n\r\nIf ``@max_active`` == 2, ::\r\n......"
+ },
+ {
+  "id": "8943",
+  "parent": "0",
+  "date": "2024-11-26T13:56:45+08:00",
+  "author": "rzbdz",
+  "site": "",
+  "text": "请教一下，为什么 __queue_work 中读取 wq->flags 的过程不需要对 wq->mutex 加锁呢？\r\n\r\n\tif (unlikely(wq->flags & (__WQ_DESTROYING | __WQ_DRAINING) &&\r\n\t\t     WARN_ON_ONCE(!is_chained_work(wq))))\r\n\r\n在其他地方对 wq->flags 的访问，如或置位 __WQ_DESTROYING  和 __WQ_DRAINING 都加上了对 wq->mutex 的锁。"
+ }
+]

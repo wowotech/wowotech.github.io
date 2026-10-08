@@ -1,0 +1,146 @@
+[
+ {
+  "id": "1392",
+  "parent": "0",
+  "date": "2015-03-24T11:26:38+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "hi wowo\r\n我有个问题想请教，我的理解，arm的电，都是靠PMIC给供的。那PMIC的电，跟regulator是怎么对应上的呢？？物理上肯定是有连线的。\r\n或者说，比如一个regulator是vdd1v8，那这个肯定是PMIC那边的1V8供过来的？还是随便一个regulator，只是软件写成1v8，然后PMIC就会出这个电？"
+ },
+ {
+  "id": "1395",
+  "parent": "1392",
+  "date": "2015-03-24T14:38:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：tigger,我不是很明白您的意思。PMIC是一个硬件设备，regulator也是硬件设备。只不过，大多数时候，regulator集成在PMIC的内部了，因此会出现;类似下面的设备拓扑结构（以DTS的形式）：\r\nPMICx {\r\n        avdd0 {\r\n        };\r\n\r\n        vcc1_8 {\r\n        };\r\n\r\n        ...\r\n};\r\ndriver的编写形式为：\r\npmic_probe {\r\n        ...\r\n        regulator_register(1...);\r\n        regulator_register(2...);\r\n        ...\r\n};\r\n因此regulator的控制（包括enable、disable、modify value等），还是需要依赖parent driver（PMIC）的实现的。"
+ },
+ {
+  "id": "1397",
+  "parent": "1395",
+  "date": "2015-03-24T15:18:04+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：ok 我明白了，我以为regulator是ARM CPU这边的器件了。"
+ },
+ {
+  "id": "1452",
+  "parent": "0",
+  "date": "2015-04-01T16:11:21+08:00",
+  "author": "haichunzhao",
+  "site": "",
+  "text": "mark"
+ },
+ {
+  "id": "1677",
+  "parent": "0",
+  "date": "2015-05-03T16:19:29+08:00",
+  "author": "wzzazc",
+  "site": "",
+  "text": "mark ^_^"
+ },
+ {
+  "id": "2546",
+  "parent": "0",
+  "date": "2015-09-07T23:40:52+08:00",
+  "author": "coray",
+  "site": "",
+  "text": "请问，这一句是不是有语误，说反了？：\r\n1）前级regulator（即该regulator的输入是另一个regulator的输出，简称supply regulator）和后级regulator（即该regulator的输出是其它regulator的输入，简称consumer regulator）。"
+ },
+ {
+  "id": "2548",
+  "parent": "2546",
+  "date": "2015-09-08T09:31:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@coray：感谢指正，确实是写反了，马上修改，谢谢~~~"
+ },
+ {
+  "id": "3602",
+  "parent": "0",
+  "date": "2016-03-07T20:48:55+08:00",
+  "author": "kobe.bao",
+  "site": "",
+  "text": "Hi wowo: \r\n\r\n   关于电源管理，有个问题请教，是这样的（高通soc芯片）： \r\n\r\n   需要regulator供电的外设，都会在其DTS中对regulator进行设置(暂且称之为regulator设置节点)，例如： \r\n\r\n   qcom,ctrl-supply-entry@0 { \r\n\r\n         qcom,supply-name = \"vdda\"; \r\n\r\n         qcom,supply-min-voltage = <1250000>; \r\n\r\n         qcom,supply-max-voltage = <1250000>; \r\n\r\n        ... \r\n\r\n         }; \r\n\r\n    驱动代码中会对该节点进行解析，利用regulator_get、regulator_count_voltages等API函数进行设置。 \r\n\r\n    通常，外设的DTS中还有一个这样的节点，例如： \r\n\r\n    vdda-supply = <&pm8994_l2> \r\n\r\n    该节点的解释是“Phandle for vreg regulator device node”，暂且称为regulator设备节点。但是我在代码中并没有找到对该节点的解析，我想请问，regulator设备节点与regulator设置节点是怎么联系起来的？"
+ },
+ {
+  "id": "3603",
+  "parent": "3602",
+  "date": "2016-03-07T22:39:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@kobe.bao：qcom,supply-name = \"xxx\"; \r\n\r\nxxx-supply = <&pm8994_l2>\r\n\r\n这里的xxx是“vdda”，就是这样联系起来的。"
+ },
+ {
+  "id": "3610",
+  "parent": "3603",
+  "date": "2016-03-08T18:52:03+08:00",
+  "author": "kobe.bao",
+  "site": "",
+  "text": "@wowo：Hi wowo:\r\n\r\n   感谢回答。\r\n\r\n   我也猜到他们是这样联系起来的，但是在代码中我没有找到相关的部分，心里总觉得不踏实，能否指点下代码中是如何实现联系的？谢谢"
+ },
+ {
+  "id": "3614",
+  "parent": "3610",
+  "date": "2016-03-08T21:20:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@kobe.bao：关于regulator的supply，我在“/pm_subsystem/regulator_driver.html”中有提到，其实就是在regulator_register的时候，解析DTS中“supply-name”的值，然后调用regulator_dev_lookup接口，找到对应的struct regulator指针（就是“xxx-supply = <&pm8994_l2> ”所对应的指针）。"
+ },
+ {
+  "id": "3630",
+  "parent": "3614",
+  "date": "2016-03-09T19:40:20+08:00",
+  "author": "kobe.bao",
+  "site": "",
+  "text": "@wowo：Hi wowo：\r\n\r\n   还没有空拜读后面的文章呢，我再自己跟下，多谢\r\n\r\n   另外，刚接触pm，以前没搞过，想系统学习下，我看咱网站“电源管理”栏目有几十篇文章，该按照怎么主线进行学习呢？\r\n\r\n   谢谢"
+ },
+ {
+  "id": "3632",
+  "parent": "3630",
+  "date": "2016-03-09T21:19:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@kobe.bao：按照时间顺序看就行了，我也是按照这个主线写的。"
+ },
+ {
+  "id": "3646",
+  "parent": "3632",
+  "date": "2016-03-10T21:29:59+08:00",
+  "author": "kobe.bao",
+  "site": "",
+  "text": "@wowo：好的，多谢，也期待wowo继续完成Linux graphic subsytem"
+ },
+ {
+  "id": "5140",
+  "parent": "0",
+  "date": "2017-01-12T14:25:01+08:00",
+  "author": "黯魂天残",
+  "site": "",
+  "text": "不错，谢谢分享！"
+ },
+ {
+  "id": "6743",
+  "parent": "0",
+  "date": "2018-05-10T16:27:24+08:00",
+  "author": "blain",
+  "site": "",
+  "text": "是否启动时就要打开（always_on）；\r\n\r\n这句话括号里是不是应该(boot_on)"
+ },
+ {
+  "id": "6783",
+  "parent": "0",
+  "date": "2018-06-05T21:03:02+08:00",
+  "author": "searchthetruth",
+  "site": "",
+  "text": "@wowo\r\n===========原文=========\r\n3.2 driver\r\n\r\ndriver模块的功能，是从regulator driver的角度，抽象regulator设备。\r\n========================\r\n此处driver部分的主要功能是注册regulator（生成struct regulator_dev）并实现针对regulator的各类操作（struct regulator_ops），同时提供notifier机制，当regulator有事件发生时通知其他关心该regulator变化的程序。\r\n不知道这样的理解是否正确呢？"
+ },
+ {
+  "id": "7572",
+  "parent": "0",
+  "date": "2019-08-06T17:52:09+08:00",
+  "author": "鱼儿",
+  "site": "",
+  "text": "请教一下，我遇到这样一个问题，我将一个模块设置为booton，这个模块的电源是有外部i2c连接的一个pmic控制的，然后在probe的时候regulator_enable将这个模块上电，但是奇怪的是，如果我将这个模块编译成ko，这个ko就无法insmod，卡死在regulator_enable当中，如果设置成alwayson的方式，则可以正常insmod"
+ }
+]

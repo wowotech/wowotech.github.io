@@ -1,0 +1,66 @@
+[
+ {
+  "id": "4221",
+  "parent": "0",
+  "date": "2016-07-10T14:26:57+08:00",
+  "author": "qdzhaozx",
+  "site": "",
+  "text": "我这边做过的产品，有些pin需要几种不同的功能，并且运行的过程要动态改变pin的外设功能属性。所以当时接触pinctrl的时候，完全和之前2.6的代码不一样了。2.6的代码对应的mach下有特定的类似 set_peripheral_A,set_peripheral_B.\r\n无奈在新的代码里将pinctrl driver里export一个接口 设置 A B C GPIO的一个接口"
+ },
+ {
+  "id": "4224",
+  "parent": "0",
+  "date": "2016-07-10T16:30:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "几种不同的功能，也没有关系的，就在pinctrl driver中将他们都抽象出来，例如：\r\npinctrl@e01b0000 { \r\n       pinctrl_funcA: funcA { \r\n              ...\r\n       }; \r\n       pinctrl_funcB: funcB { \r\n              ...\r\n       }; \r\n       pinctrl_funcC: funcC { \r\n              ...\r\n       }; \r\n       ...\r\n};\r\n\r\n然后在需要使用的DTS中，将它们都引用过来，如：\r\n                pinctrl-names = \"funcA\", \"funcCB\", \"funcC\"; \r\n                pinctrl-0 = <&pinctrl_funcA>. <&pinctrl_funcB>. <&pinctrl_funcC>; \r\n\r\n在driver中，就可以调用标准接口，切换这三个状态了。\r\n\r\npinctrl的设计思路，大体如此。"
+ },
+ {
+  "id": "4227",
+  "parent": "4224",
+  "date": "2016-07-11T09:39:06+08:00",
+  "author": "qdzhaozx",
+  "site": "",
+  "text": "@wowo：嗯 可以，3Q"
+ },
+ {
+  "id": "4292",
+  "parent": "0",
+  "date": "2016-07-20T16:23:50+08:00",
+  "author": "漫道",
+  "site": "http://www.mandaokuangtu.com/",
+  "text": "据说好像一年多没来博主这里了"
+ },
+ {
+  "id": "5828",
+  "parent": "0",
+  "date": "2017-07-20T16:11:19+08:00",
+  "author": "wyn93",
+  "site": "",
+  "text": "最近在做pinctrl这相关的内容，对于xxx-pinctrl.dtsi这个文件的编写中有几个问题，希望可以解惑。\r\n1、在看这个文件的过程中发现它其实就是在配置管脚（复用寄存器）的复用功能！\r\n2、这个文件中需要列出那些设备有什么决定？\r\n3、您说pin有几种功能是没有关系的，但是我们在区分功能的时候是什么依据？\r\n   比如：\r\n         pmx0: pinconf@f8a21000 {\r\n\t\t\tpinctrl-names = \"default\";\r\n\t\t\tpinctrl-0 = <\r\n\t\t\t\t&emmc_p1_pmx_cfg\r\n\t\t\t\t&emmc_p2_pmx_cfg\r\n\t\t\t\t&emmc_p3_pmx_cfg\r\n                                ****\r\n                        >;\r\n   其中的属性值，在driver中会读取其中的内容吧！谢谢！"
+ },
+ {
+  "id": "5832",
+  "parent": "5828",
+  "date": "2017-07-21T16:39:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wyn93：1、在看这个文件的过程中发现它其实就是在配置管脚（复用寄存器）的复用功能！\r\n   是的。\r\n2、这个文件中需要列出那些设备有什么决定？ \r\n   由硬件决定。\r\n3、您说pin有几种功能是没有关系的，但是我们在区分功能的时候是什么依据？ \r\n   你是指状态吗？“default”之类的？状态是根据工作状态，例如正常工作和suspend状态，有些设备可能需要不同的管脚配置。"
+ },
+ {
+  "id": "5842",
+  "parent": "5832",
+  "date": "2017-07-25T08:20:02+08:00",
+  "author": "wyn93",
+  "site": "",
+  "text": "@wowo：谢谢你的回复。\r\n1、{  2、这个文件中需要列出那些设备有什么决定？ \r\n   由硬件决定。\r\n}\r\n例如：dts中一个设备对应了下面的这几个文件：\r\n s3c2416.dtsi  s3c2416-smdk2416.dts  s3c2416-pinctrl.dtsi  s3c24xx.dtsi\r\n你说的硬件是不是就是s3c2416-smdk2416.dts这个文件中所列出的。\r\n\r\n2、{您说pin有几种功能是没有关系的，但是我们在区分功能的时候是什么依据？ \r\n   你是指状态吗？“default”之类的？状态是根据工作状态，例如正常工作和     suspend状态，有些设备可能需要不同的管脚配置。\r\n}\r\n我说的并不是状态，我们这个里面没有其他的什么状态，只有一个default状态。\r\n我的意思是对于一个emmc这个设备为什么要分成这三个节点：\r\n      &emmc_p1_pmx_cfg \r\n      &emmc_p2_pmx_cfg \r\n      &emmc_p3_pmx_cfg \r\n去描述，不能一个，两个..。这其中有什么依据。"
+ },
+ {
+  "id": "5845",
+  "parent": "5842",
+  "date": "2017-07-25T08:52:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wyn93：1. 之所以有这么多文件，和某一个芯片厂商的芯片体系结构有关，例如s3c2416属于s3c24xx系列，s3c2416-smdk2416是基于s3c2416的一个板子。dts的层次结构，用于抽象共性。\r\n\r\n2. 要分成几个节点，完全是软件设计的时候根据实际情况弄出来的，至于原因，有时候很好理解，有时候却比较难（要看设计者当时吃的什么饭、想的什么事了，呵呵）。\r\n至于你这个例子，我看不到code，不好下结论，你可以对着硬件想一下。"
+ }
+]

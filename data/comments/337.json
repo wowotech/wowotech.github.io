@@ -1,0 +1,74 @@
+[
+ {
+  "id": "5143",
+  "parent": "0",
+  "date": "2017-01-14T11:36:28+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "IC设计工程师怎么会忽略step （1）和step （2）呢\r\n--》 这里应该是step(1) 和 step（3）吧"
+ },
+ {
+  "id": "5193",
+  "parent": "0",
+  "date": "2017-02-02T00:04:48+08:00",
+  "author": "pursue4meaning",
+  "site": "",
+  "text": "写的非常清楚，涉猎广泛，博而不杂，佩服！"
+ },
+ {
+  "id": "5551",
+  "parent": "5143",
+  "date": "2017-05-15T17:27:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madang：多谢指正。\r\n呵呵，今天突然自己重新阅读了这篇文档，发现了这个错误，觉得很奇怪：为何这么明显的错误没有人提出来，拉到评论区，发现已经有网友提出了，只是我之前可能是错过了而已，呵呵～～～"
+ },
+ {
+  "id": "5779",
+  "parent": "0",
+  "date": "2017-07-06T11:30:47+08:00",
+  "author": "linux小白",
+  "site": "",
+  "text": "我理解tlb中的table硬件不会修改，页表内容修改是操作系统来执行的，当tlb和linux中页表内容不匹配时候应该是invalid tlb中的表项，怎么叫flush_tlb_all(flush)呢， 这个函数名意思是用tlb中页表内容替换linux中页表？"
+ },
+ {
+  "id": "5781",
+  "parent": "5779",
+  "date": "2017-07-07T09:28:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linux小白：在这里，flush就是invalid的含义。"
+ },
+ {
+  "id": "5782",
+  "parent": "5781",
+  "date": "2017-07-07T11:15:11+08:00",
+  "author": "linux小白",
+  "site": "",
+  "text": "@linuxer：@linuxer :命名不严谨啊，容易误导人，应该叫invalid_tlb_all...."
+ },
+ {
+  "id": "7173",
+  "parent": "0",
+  "date": "2019-01-31T16:38:15+08:00",
+  "author": "fear",
+  "site": "",
+  "text": "这篇文章太经典了，解答了很多问题，感谢大佬。"
+ },
+ {
+  "id": "8719",
+  "parent": "0",
+  "date": "2022-12-12T21:55:57+08:00",
+  "author": "Egan",
+  "site": "",
+  "text": "ARM architecture现在有支持TLB range的"
+ },
+ {
+  "id": "8781",
+  "parent": "8719",
+  "date": "2023-05-08T17:20:01+08:00",
+  "author": "eillon",
+  "site": "",
+  "text": "@Egan：需要ARMv8.4硬件支持"
+ }
+]

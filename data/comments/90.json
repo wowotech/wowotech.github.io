@@ -1,0 +1,434 @@
+[
+ {
+  "id": "1178",
+  "parent": "0",
+  "date": "2015-02-06T08:54:20+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "请教：\r\n我的是安卓(STR),我执行echo mem > /sys/power/state之后，屏幕黑了一下马上又亮了，然后我读取cat /sys/kernel/debug/rpm_stats，这里面的count一直为0.\r\n所以说我的系统一直没有sleep。\r\n那么像我这种情况，如何去定位系统为什么没睡眠？比如哪个驱动，哪个硬件导致的？"
+ },
+ {
+  "id": "1179",
+  "parent": "1178",
+  "date": "2015-02-06T10:59:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@RobinHsiang：你可以看一下这个文件：\r\ncat /sys/kernel/debug/suspend_stats"
+ },
+ {
+  "id": "1183",
+  "parent": "0",
+  "date": "2015-02-07T14:53:26+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "你们的文章写的太好了，让我感觉对各个知识点理解的更清晰。\r\n不是说看大部头不重要，没个程序员必须啃大部头，但是看你们写的文章，思路更清晰，更容易理解。\r\n尤其你们还能抽时间出来写，更新的那么快，很敬佩你们。\r\n只有经常来看你们的文章，以此支持你们，^_^~~~"
+ },
+ {
+  "id": "1185",
+  "parent": "1183",
+  "date": "2015-02-07T21:48:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@RobinHsiang：您过奖了，蜗窝会尽力多写一些，以感谢您的支持。"
+ },
+ {
+  "id": "1232",
+  "parent": "1179",
+  "date": "2015-02-27T15:21:21+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "@wowo：@WOWO，\r\n新年好..!!\r\n\r\n再请教一个问题，如果我要用一个外围设备（Zigbee），通过UART时不时的收发一些数据。\r\n理论上应该做到这样：1.active的情况下传输数据。2.不传输数据时睡眠。3.有数据进来，使用中断唤醒。\r\n这个看上去简单，但是牵涉到的知识点还是很多，最近一直在做知识储备，就在读你们的电源管理和中断的文章。\r\n而我现在困惑的是，这里面的电源管理的情况。\r\n在这个硬件的工作环境中，电源管理是由UART（tty core）来决定？还是需要在Zigbee的驱动中，来做suspend和resume的编写，来关闭Tx Rx以及Zigbee的clock？"
+ },
+ {
+  "id": "1233",
+  "parent": "1232",
+  "date": "2015-02-27T17:10:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@RobinHsiang：新年好。\r\n中断时指哪个中断呢？ZigBee的中断还是Uart的中断？\r\n唤醒源是ZigBee模块吗？ZigBee接收数据唤醒？如果是，关闭ZigBee的CLock是否影响唤醒。\r\n基本的原则是：Uart driver和ZigBee driver是两个单独的driver，电源管理应该独立，互不干涉，这样模块化才好。基于这样的基本原则，再思考接下来的问题。"
+ },
+ {
+  "id": "1234",
+  "parent": "1233",
+  "date": "2015-02-27T17:48:41+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "@wowo：我目前的中断大致是这样的，假设房屋里面的sensor感触到有火警，那sensor发一个数据给平板上的Zigbee模块，Zigbee通过GPIO唤醒系统触发警报。\r\n\r\n现在如果只不考虑关闭Zigbee模块，让它一直开着。\r\n\r\n那UART驱动这部分的电源管理应该是linux的串口驱动自己autosleep？因为我只配置了几个UART的device tree，基本上的数据收发都能实现，我只用到“open /dev/ttyHSL1”就打开了UART。而在芯片厂商给我的Zigbee驱动模块，都没有suspend和resume的部分。\r\n\r\n我不了解UART的电源管理部分，目前正看UART的实现代码，在加上你写的linux电源管理部分，希望慢慢理解。一步一步来。"
+ },
+ {
+  "id": "1235",
+  "parent": "1234",
+  "date": "2015-02-27T18:32:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@RobinHsiang：UART的电源管理可以做，也可以不做。因为这个场景里面操作UART是主动方式，不用的时候把UART关闭即可。\r\n如果UART driver做的稍好一些，关闭之后，它的耗电应该很少。\r\n更进一步，如果我们care UART的延迟，则可以多采取一些措施。"
+ },
+ {
+  "id": "1380",
+  "parent": "0",
+  "date": "2015-03-23T19:41:56+08:00",
+  "author": "Janet",
+  "site": "",
+  "text": "你好wowo,\r\n目前我已經用eclipse寫好一個程式,它的動作是,\r\n按下button on後suspend 5 秒,再resume 5 秒,持續三次,\r\n但我想在跑完這三次suspend/resume後,判斷是否有真正susend/resume,\r\n判斷完畢並show出一個log,顯示pass or fail,\r\n但我不清楚應該如何寫出這個判斷是才能斷定是否真正有執行到suspend/resume這些動作,\r\n可否麻煩您提供一些寶貴的意見,\r\n謝謝!"
+ },
+ {
+  "id": "1381",
+  "parent": "1380",
+  "date": "2015-03-23T19:49:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Janet：可以調用這個文件：/sys/kernel/debug/suspend_stats\r\n如下（注意第一行信息中的success，可能就是您需要的）：\r\ncat /sys/kernel/debug/suspend_stats                        \r\nsuccess: 2\r\nfail: 0\r\nfailed_freeze: 0\r\nfailed_prepare: 0\r\nfailed_suspend: 0\r\nfailed_suspend_late: 0\r\nfailed_suspend_noirq: 0\r\nfailed_resume: 0\r\nfailed_resume_early: 0\r\nfailed_resume_noirq: 0\r\nfailures:\r\n  last_failed_dev:\r\n\r\n  last_failed_errno:    0\r\n                        0\r\n  last_failed_step:"
+ },
+ {
+  "id": "2111",
+  "parent": "0",
+  "date": "2015-07-01T19:28:23+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "hi wowo，请教一下。\r\n\r\n __pm_stay_awake(autosleep_ws);\r\n\r\n mutex_lock(&autosleep_lock);  \r\n\r\n autosleep_state = state;\r\n\r\n __pm_relax(autosleep_ws);\r\n\r\n----这里为什么先lock住系统，然后又释放掉啊？\r\n谢谢！"
+ },
+ {
+  "id": "2112",
+  "parent": "2111",
+  "date": "2015-07-01T19:40:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：lock住系统？您是指mutex_lock吗？包括__pm_stay_awake和__pm_relax，都是为了保护这个共享资源（autosleep_state），避免产生同步问题。"
+ },
+ {
+  "id": "2136",
+  "parent": "2112",
+  "date": "2015-07-03T10:55:36+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "@wowo：wowo，还是没有搞明白，再请教一下。\r\n\r\n1.加个互斥锁就可以了，为啥还要__pm_stay_awake和__pm_relax？先\"确保系统不会休眠\",然后“允许系统休眠”。\r\n\r\n2.为什么保护这个共享资源(autosleep_state)，就可以避免产生同步问题了？\r\n\r\n谢谢！"
+ },
+ {
+  "id": "2137",
+  "parent": "2136",
+  "date": "2015-07-03T14:09:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：请参考“kernel/power/autosleep.c”中的注释：\r\n/*      \r\n * Note: it is only safe to mutex_lock(&autosleep_lock) if a wakeup_source\r\n * is active, otherwise a deadlock with try_to_suspend() is possible.\r\n * Alternatively mutex_lock_interruptible() can be used.  This will then fail\r\n * if an auto_sleep cycle tries to freeze processes.\r\n */\r\n就是说，mutex_lock(&autosleep_lock)的调用，必须在有active状态的wakeup_source才安全，否则在 try_to_suspend()时可能发生死锁，我的理解是：\r\n例如，pm_autosleep_set_state中，需要更改autosleep_state（一个全局变量），因而需要使用mutex_lock保护临界区。如果调用时序如下：\r\n1. 系统具备suspend的条件，调用try_to_suspend试图suspend系统，该接口调用mutex_lock(&autosleep_lock);，持有锁。\r\n2. 发生调度，执行pm_autosleep_set_state所在的进程，在该接口中调用mutex_lock(&autosleep_lock)。因为此时锁已经被try_to_suspend占用，进程sleep，且状态为TASK_UNINTERRUPTIBLE（这个状态会导致task freezing失败）。\r\n3. 发生调度，继续执行try_to_suspend，直到执行freeze操作（suspend_freeze_processes）。由于有进程处于TASK_UNINTERRUPTIBLE状态，freeze失败，suspend失败。\r\n因此，出现了“具备suspend条件，却suspend失败了”，就是上面注释中所说的deadlock问题。所以在mutex_lock(&autosleep_lock)调用前，保持系统不会suspend，就可以解决这种问题。"
+ },
+ {
+  "id": "2469",
+  "parent": "0",
+  "date": "2015-08-17T15:24:36+08:00",
+  "author": "misakamm20001",
+  "site": "",
+  "text": "Hi wowo:\r\n    请教个问题 能介绍下这个autosleep的具体调用情景  谁来负责写这个state？"
+ },
+ {
+  "id": "2472",
+  "parent": "2469",
+  "date": "2015-08-19T13:27:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@misakamm20001：以Android为例，写state的位置在“system/core/libsuspend/”中，但具体到调用时机，和操作系统的电源管理机制有关，就比较复杂了，一时半会也说不清的。"
+ },
+ {
+  "id": "2528",
+  "parent": "0",
+  "date": "2015-09-04T15:28:28+08:00",
+  "author": "民",
+  "site": "",
+  "text": "@wowo,请教下：\r\nd）如果写count失败，说明读写的过程有events产生，退出，进行下一次尝试。\r\n=>try_to_suspend函数里面，out：好像无论怎么样都会执行，也就是说kernel会不断尝试睡眠，这样的话（以Android为例），执行一次写一次state就好了呀.kernel就会不断尝试睡眠了\r\n这样理解对吗，感觉怪该的"
+ },
+ {
+  "id": "2529",
+  "parent": "2528",
+  "date": "2015-09-04T17:24:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@民：确实应该这样啊，别忘了这是autosleep的场景。\r\n如果不想让让它频繁尝试，我们可以把autosleep关闭，也即stop这个work。"
+ },
+ {
+  "id": "2607",
+  "parent": "0",
+  "date": "2015-09-18T11:26:54+08:00",
+  "author": "lynn_LY",
+  "site": "",
+  "text": "感谢wowo分享这么精彩的文章，有个问题我想问下，pm_wakep_autosleep_enabled，autosleep为enable是什么意思，就是允许autosleep吗？还有这个函数还更新了一些time，阻止总时间这个变量有什么作用呢？"
+ },
+ {
+  "id": "2609",
+  "parent": "2607",
+  "date": "2015-09-18T12:18:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lynn_LY：是的，enable后系统会在没有wakeup event的时候自动Sleep。那些时间是一些统计信息，可以不关注。"
+ },
+ {
+  "id": "2706",
+  "parent": "0",
+  "date": "2015-09-28T14:58:40+08:00",
+  "author": "qinghu",
+  "site": "",
+  "text": "你好，请教您个问题，android4.4 +kernel3.0版本的基于 autosleep机制进行suspend操作，是可以的。\r\n但是wakeup的后屏幕没有点亮，就又suspend下去了。请问，这是怎么回事呢？系统回来后，没有 wakeup source吗？需要自己添加block系统继续睡眠下去吗？如果是的话，在什么地方来添加呢？期待您的答复，谢谢！"
+ },
+ {
+  "id": "2709",
+  "parent": "2706",
+  "date": "2015-09-28T19:33:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@qinghu：可以从这个角度看这种现象：是谁产生这次wakeup event的呢？谁（一般指的是应用程序）又关心这个event呢？\r\n如果没有人关系这个event，那系统肯定睡下去。\r\n如果有人关心，如power management service关心power key的事件，觉得有必要点亮屏幕并保持系统清醒一段时间，它就会去拿一个timeout的锁，在一定时间内，阻止系统休眠。"
+ },
+ {
+  "id": "3062",
+  "parent": "0",
+  "date": "2015-11-16T17:08:45+08:00",
+  "author": "misakamm20001",
+  "site": "",
+  "text": "如果开了earlysuspend功能 autosleep通常是放在earlysuspend后主动触发吧 感觉和以前检查wake_lock那套也没差多少啊"
+ },
+ {
+  "id": "3063",
+  "parent": "3062",
+  "date": "2015-11-16T19:31:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@misakamm20001：是的，不过early suspend可以在suspend之前处理一些事情，也就是说，还未进入suspend的流程时，就suspend一些设备。这是它存在的意义。"
+ },
+ {
+  "id": "3072",
+  "parent": "3063",
+  "date": "2015-11-17T15:31:54+08:00",
+  "author": "misakamm20001",
+  "site": "",
+  "text": "@wowo：话说为什么不叫autosuspend呢 sleep和suspend的区别是啥"
+ },
+ {
+  "id": "3074",
+  "parent": "3072",
+  "date": "2015-11-17T15:48:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@misakamm20001：我的理解，suspend是通用表述，表示暂停运行。\r\nSleep是suspend的一种，以睡眠的方式，暂停执行。\r\n不过有时候大家会混着用。"
+ },
+ {
+  "id": "3803",
+  "parent": "0",
+  "date": "2016-04-06T20:33:48+08:00",
+  "author": "gaos",
+  "site": "",
+  "text": "start_prevent_time被用来做什么啊？  autosleep 除了在状态修改的时候trytosuspend    如果没有用户主动调用suspend相关的东西    autosleep是怎么做到sleep的啊？   我搜了一下使用start_prevent_time的地方  并没有别的地方来对这个值进行判断来判定是否要进入睡眠啊。"
+ },
+ {
+  "id": "3805",
+  "parent": "3803",
+  "date": "2016-04-07T08:45:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@gaos：某一个wakeup source处于active状态的时候，它会阻止autosleep。这个变量记录了该wakeup source开始阻止autosleep的时间点，主要用于统计wakeup source阻止autosleep的时间（prevent_sleep_time）。在电源管理debug 的时候比较有用（一直无法sleep，查找原因的时候）。"
+ },
+ {
+  "id": "3807",
+  "parent": "3805",
+  "date": "2016-04-07T09:31:40+08:00",
+  "author": "gaos",
+  "site": "",
+  "text": "@wowo：也就是最终决定要sleep的是应用层的程序，而不是kernel内部的一个自动执行sleep?  \r\n\r\n以autosleep字面上的理解，我以为它的最终目标是，在没有wakesource 处于active的一段时间后，比如说两分钟内都没有wakeevent产生， 会有某个kernel的线程来尝试suspend。  \r\n\r\n\r\n/sys/power/autosleep 和/sys/power/state 最终的功能上不就基本上差不多了么？  \r\n\r\n文章中写到：autosleep是Opportunistic suspend的一种实现，   那么通过/sys/power/state也能实现Opportunistic suspend了？  \r\n\r\n\r\n在使用state来进行suspend的时候  需要跟wakeup_count配合使用来做同步， \r\n通过/sys/power/autosleep 来suspend的时候  需要跟wakeup_count陪配合做同步么？"
+ },
+ {
+  "id": "3809",
+  "parent": "3807",
+  "date": "2016-04-07T11:05:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@gaos：state提供方法（怎样suspend），autosleep提供策略（何时suspend），因此我不认同你2、3个问题。\r\n第一个问题，autosleep的“auto”，是指没有active的wakeup source的时候，sleep，我不明白你的意思。\r\n最后一个问题，请你再阅读一下本文的最后一段。"
+ },
+ {
+  "id": "3810",
+  "parent": "3805",
+  "date": "2016-04-07T11:06:03+08:00",
+  "author": "gaos",
+  "site": "",
+  "text": "@wowo：又看了看  明白了  autosleep打开的时候会一直queuework   有wakesource处于active就会阻塞到 event处理完，  然后执行try_to_suspend"
+ },
+ {
+  "id": "5016",
+  "parent": "0",
+  "date": "2016-12-13T18:06:01+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "休眠应由经常或者线程触发\r\n休眠应由进程或者线程触发"
+ },
+ {
+  "id": "5254",
+  "parent": "0",
+  "date": "2017-02-27T09:06:46+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "hi wowo，所谓的wakeup count与autosleep两种方式有什么不一样呢？？"
+ },
+ {
+  "id": "5261",
+  "parent": "5254",
+  "date": "2017-02-27T15:56:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：你把这篇文章读完，就得到答案啦:-)"
+ },
+ {
+  "id": "5707",
+  "parent": "0",
+  "date": "2017-06-20T10:58:54+08:00",
+  "author": "xingxing.wang",
+  "site": "",
+  "text": "Hi wowo:\r\n     请问autosleep和suspend有什么区别？/sys/power/state和/sys/power/autosleep二者有什么联系，分别实现什么功能？谢谢。"
+ },
+ {
+  "id": "5710",
+  "parent": "5707",
+  "date": "2017-06-20T11:43:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xingxing.wang：你的问题这篇文章已经讲了很多了（自我感觉还是比较清楚的），因此你可以先读读文章:-)"
+ },
+ {
+  "id": "5712",
+  "parent": "5710",
+  "date": "2017-06-20T15:35:25+08:00",
+  "author": "xingxing.wang",
+  "site": "",
+  "text": "@wowo：Hi Wowo：\r\n   看了一下源码发现suspend和autosleep到pm_suspend(autosleep_state)之后是一样的流程，在pm_suspend()之前，能否分别列举一个suspend和autosleep的应用场景，谢谢。"
+ },
+ {
+  "id": "6260",
+  "parent": "5707",
+  "date": "2017-11-29T19:39:10+08:00",
+  "author": "废柴",
+  "site": "",
+  "text": "@xingxing.wang：wowo你好，请问autosleep被设为mem之后，uevent还会进行传递么？\r\n谢谢"
+ },
+ {
+  "id": "6285",
+  "parent": "5710",
+  "date": "2017-12-05T15:27:43+08:00",
+  "author": "废柴",
+  "site": "",
+  "text": "@wowo：wowo你好，请问autosleep被设为mem之后，uevent还会进行传递么？ \r\n谢谢"
+ },
+ {
+  "id": "6286",
+  "parent": "5710",
+  "date": "2017-12-05T15:28:23+08:00",
+  "author": "废柴",
+  "site": "",
+  "text": "@wowo：@wowo\r\n你好，请问autosleep被设为mem之后，uevent还会进行传递么？ \r\n谢谢"
+ },
+ {
+  "id": "6287",
+  "parent": "6260",
+  "date": "2017-12-05T19:45:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@废柴：抱歉，您之前的留言被漏掉了，这里的uevent指的是什么呢？谁的uevent呢？"
+ },
+ {
+  "id": "6288",
+  "parent": "6287",
+  "date": "2017-12-05T19:49:08+08:00",
+  "author": "废柴",
+  "site": "",
+  "text": "@wowo：以关机充电这个为例，battery status都是通过uevent来更新的，那么当关机充电程序进入了suspend之后，这个uevent应该停止传递了吧？"
+ },
+ {
+  "id": "6292",
+  "parent": "6288",
+  "date": "2017-12-06T21:39:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@废柴：是的。除非有事件可以把系统唤醒，否则不会发uevent的。"
+ },
+ {
+  "id": "6953",
+  "parent": "0",
+  "date": "2018-09-14T10:29:39+08:00",
+  "author": "xuwukong",
+  "site": "",
+  "text": "@wowo,进入autosleep 的时机还是Android 上层决定的吧，并不是内核有个什么东西在监测没有wakeup event就调用orderqueue进入autosleep,比如在设置->显示->休眠里面选择15s无操作就会自动灭屏待机。"
+ },
+ {
+  "id": "6957",
+  "parent": "6953",
+  "date": "2018-09-17T11:50:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xuwukong：如果用的是原生的kenrel机制，上层只能决定何时开启autosleep，不能决定何时sleep。auto这个事情是kernel负责。"
+ },
+ {
+  "id": "7241",
+  "parent": "0",
+  "date": "2019-03-07T11:27:15+08:00",
+  "author": "whaaj",
+  "site": "",
+  "text": "我理解：Android中libsuspend为上层应用提供了申请Opportunistic Suspend的途径。例如关闭屏幕时，DisplayPowerState通过PowerManagerService实现的回调，调用libsuspend操作/sys/power/state。此时，如果没有active wakeup source，就可以suspend。但是此时如果系统开了autosleep，则libsuspend不会最终触发suspend，而是依赖autosleep去调用pm_suspend()走休眠流程。\r\n如我理解有误，请帮忙指正。谢谢！"
+ },
+ {
+  "id": "7244",
+  "parent": "7241",
+  "date": "2019-03-07T19:18:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@whaaj：Android的机制好久没看了，不太确定哦"
+ },
+ {
+  "id": "7969",
+  "parent": "7241",
+  "date": "2020-04-24T18:17:29+08:00",
+  "author": "myh123",
+  "site": "",
+  "text": "@whaaj：你说的Android的流程我也看到了，但最后一句话是你的猜测还是代码有体现呢？我并没有看到libsuspend操作/sys/power/state的整个流程会受到autosleep的影响啊？是不是Android默认不使用内核提供的这个功能呢？"
+ },
+ {
+  "id": "7971",
+  "parent": "6957",
+  "date": "2020-04-27T10:43:55+08:00",
+  "author": "myh123",
+  "site": "",
+  "text": "@wowo：我觉得上层能决定何时开启autosleep，也能通过wakelock（本质是通过wakeup source更改wakeup count）决定何时sleep吧？\r\n上层有两个suspendblocker，WakeLockSuspendBlocker和DisplaySuspendBlocker，对应到底层，都是写wake_lock和wake_unlock文件，从而决定是否允许sleep。允许了之后，再通过autosleep进入sleep，或者上层也会在屏幕状态改变时向state文件写入mem尝试进入suspend。"
+ },
+ {
+  "id": "7972",
+  "parent": "7969",
+  "date": "2020-04-27T10:47:04+08:00",
+  "author": "myh123",
+  "site": "",
+  "text": "@myh123：我最新的理解是，libsuspend和autosleep是并行不悖的~"
+ },
+ {
+  "id": "8838",
+  "parent": "7972",
+  "date": "2023-10-23T14:41:37+08:00",
+  "author": "chenan",
+  "site": "",
+  "text": "@myh123：android 9以后已经没有 libsuspend，取而代之的 SystemSuspend service"
+ },
+ {
+  "id": "8842",
+  "parent": "0",
+  "date": "2023-11-02T17:16:55+08:00",
+  "author": "chenan",
+  "site": "",
+  "text": "autosleep 早已经废弃了，蜗窝也好久没更新了"
+ },
+ {
+  "id": "8843",
+  "parent": "8842",
+  "date": "2023-11-06T14:43:52+08:00",
+  "author": "schspa",
+  "site": "",
+  "text": "@chenan：autosleep只是android不使用吧, 内核里边的支持还是在的吧。"
+ },
+ {
+  "id": "8845",
+  "parent": "8843",
+  "date": "2023-11-08T20:27:36+08:00",
+  "author": "chenan",
+  "site": "",
+  "text": "@schspa：我理解的 autosleep 本身就是给 Android 打的补丁，autosleep 在内核里本身也是一个配置项。\r\n对于 android 的休眠机制，完成由上层控制了，只要没唤醒锁，抓住机会就睡"
+ }
+]

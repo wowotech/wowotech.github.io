@@ -1,0 +1,66 @@
+[
+ {
+  "id": "5860",
+  "parent": "0",
+  "date": "2017-07-30T12:28:42+08:00",
+  "author": "Seitran",
+  "site": "",
+  "text": "想请教一下，\r\n“\r\n如果DMA mapping是以PAGE_SIZE为粒度进行映射，那么那些分散的一块块的dma buffer可以被映射到一个对齐在PAGE_SIZE，然后各个dma buffer依次收尾相接的一个大的总线地址区域上。\r\n”\r\n分散的DMA buffer怎么会被影射到同一个PAGE_SIZE里面去的呢？IOMMU怎么对这些地址进行翻译和映射？IOMMU应该是基于页为粒度来管理的吧？"
+ },
+ {
+  "id": "5861",
+  "parent": "5860",
+  "date": "2017-07-30T23:59:19+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Seitran：\"那些分散的一块块的dma buffer\"当然也必须是分散的，一个个的page size为单位的dma buffer"
+ },
+ {
+  "id": "6362",
+  "parent": "0",
+  "date": "2017-12-13T17:01:52+08:00",
+  "author": "bobo",
+  "site": "",
+  "text": "很详细，为什么 觉得 这份文档（包括DMA API本身）可能会显得过时，陈旧呢？"
+ },
+ {
+  "id": "6364",
+  "parent": "0",
+  "date": "2017-12-14T17:26:56+08:00",
+  "author": "nswcfd@cu",
+  "site": "",
+  "text": "感谢分享，几个错别字：\r\ns/大于大于/大小大于/\r\ns/收尾相接/首尾相接/\r\ns/邀请/要求/\r\n\r\nPS，最新的dma-api-howto里提到，\r\nThis rule also means that you may use neither kernel image addresses\r\n(items in data/text/bss segments), nor module image addresses, nor\r\nstack addresses for DMA.  These could all be mapped somewhere entirely\r\ndifferent than the rest of physical memory."
+ },
+ {
+  "id": "6369",
+  "parent": "6364",
+  "date": "2017-12-16T09:12:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@nswcfd@cu：多谢指正。"
+ },
+ {
+  "id": "6370",
+  "parent": "6362",
+  "date": "2017-12-16T09:15:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@bobo：因为目前的文档总是基于某个版本的内核，随着内核的发展，DMA API也许会修改，如果这份文档不及时更新，当然会显得陈旧了。因此，作者呼吁大家给出意见和建议。"
+ },
+ {
+  "id": "8619",
+  "parent": "0",
+  "date": "2022-05-19T19:05:02+08:00",
+  "author": "gavin",
+  "site": "",
+  "text": "请问这个地方说：。dma_map_single函数在进行DMA mapping的时候使用的是CPU指针（虚拟地址），这样就导致该函数有一个弊端：不能使用HIGHMEM memory进行mapping。 这个为啥不能呢？谢谢"
+ },
+ {
+  "id": "8620",
+  "parent": "8619",
+  "date": "2022-05-24T20:49:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@gavin：因为HIGHMEM memory没有进行线性映射，所以没有虚拟地址呀。"
+ }
+]

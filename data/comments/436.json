@@ -1,0 +1,154 @@
+[
+ {
+  "id": "6692",
+  "parent": "0",
+  "date": "2018-04-24T16:44:01+08:00",
+  "author": "Tw",
+  "site": "",
+  "text": "if (memstart_addr + linear_region_size < memblock_end_of_DRAM()) \r\n\r\n这里是不是因为(memstart_addr + linear_region_size) overflow了，可能是因为memstart_addr选取的太大了..."
+ },
+ {
+  "id": "6723",
+  "parent": "6692",
+  "date": "2018-04-30T10:48:07+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@Tw：或许真的是这样"
+ },
+ {
+  "id": "6796",
+  "parent": "6723",
+  "date": "2018-06-12T11:36:31+08:00",
+  "author": "kuroky",
+  "site": "",
+  "text": "@smcdef：有可能，毕竟128TB的内存不多"
+ },
+ {
+  "id": "6857",
+  "parent": "0",
+  "date": "2018-07-31T12:36:19+08:00",
+  "author": "cqy",
+  "site": "",
+  "text": "嗨，@smcdef ，感谢详细的分析。\r\n我有点疑问。\r\n在预处理阶段，_text符号的地址应该还没有分配吧？\r\n那么预处理之后，KERNEL_START和__PHYS_OFFSET的值应该是多少呢？"
+ },
+ {
+  "id": "6861",
+  "parent": "6857",
+  "date": "2018-07-31T22:18:17+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@cqy：#define KERNEL_START      _text\r\n_text在连接脚本中定义，你可以看作是一个变量，预处理就是把KERNEL_START替换成_text而已，在链接的时候_text会有一个确定的值。"
+ },
+ {
+  "id": "6865",
+  "parent": "0",
+  "date": "2018-08-03T15:01:17+08:00",
+  "author": "nzg",
+  "site": "",
+  "text": "您好，请教一下PAGE_OFFSET这个宏定义为： PAGE_OFFSET - the virtual address of the start of the kernel image (top(VA_BITS - 1))\r\n按照这个注释的意思，kernel image 的起始虚拟地址应该是PAGE_OFFSET+TEXT_OFFSET, 但实际上_text和 _end 这两个symbol却不在此范围，这是为什么呢？ PAGE_OFFSET到底是用来做什么的呢？"
+ },
+ {
+  "id": "6868",
+  "parent": "6865",
+  "date": "2018-08-04T13:05:31+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@nzg：文章的目的就是为了介绍kernel日新月异的变化！你贴的注释应该是以前的代码，但是这篇文章是基于4.13内核代码分析变化。我给你看看4.13内核对于PAGE_OFFSET的解释\r\nPAGE_OFFSET - the virtual address of the start of the linear map"
+ },
+ {
+  "id": "6869",
+  "parent": "6868",
+  "date": "2018-08-06T13:23:03+08:00",
+  "author": "nzg",
+  "site": "",
+  "text": "@smcdef：您好，我看的代码版本是4.4.83,PAGE_OFFSET就是我贴出的那样注释，实际上印出_text & _end并不在PAGE_OFFSET往后的范围中.."
+ },
+ {
+  "id": "6871",
+  "parent": "6869",
+  "date": "2018-08-06T22:27:57+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@nzg：4.4.83链接脚本：\r\n. = PAGE_OFFSET + TEXT_OFFSET;\r\n\r\n.head.text : {\r\n\t_text = .;\r\n}\r\n_text = PAGE_OFFSET + TEXT_OFFSET"
+ },
+ {
+  "id": "6873",
+  "parent": "0",
+  "date": "2018-08-08T19:57:12+08:00",
+  "author": "randyqiu",
+  "site": "",
+  "text": "问一个问题，内核把kernel image也放到vmalloc区域，进行这样的修改是为了解决什么问题？内核之前kernel区域是线性映射的，个人认为是内核一直常驻内存，不会swap出去，所以用section方式的线性映射关系还可以减少页表数目，减少内存开销和MMU映射时的MIPS开销，现在又放到vmalloc这个可以被释放出去的区域里面干啥？"
+ },
+ {
+  "id": "6878",
+  "parent": "6873",
+  "date": "2018-08-09T22:48:52+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@randyqiu：其实并kernel并不会释放，就是仅仅换一个区域而已，本质来说和之前差别不大（虽然再VMALLOC区域，但是kernel的部分其实物理地址还是连续的）。迁移到VMALLOC区域可能是和KASLR有关（猜测，没有去看修改提交记录）。关于KASLR部分也可以参考本网站的一篇文章。"
+ },
+ {
+  "id": "7485",
+  "parent": "0",
+  "date": "2019-06-24T11:33:15+08:00",
+  "author": "威点零",
+  "site": "",
+  "text": "hi,@smcdef,深入浅出，强大。另外请教一下，VA转PA都是固定的offset，那么针对Kernel中的动态分配的内存，有两条路，一条是slub一条是大块的走buddy system。kernel是怎么保证这个VA和PA一定是一个offset的？"
+ },
+ {
+  "id": "7486",
+  "parent": "7485",
+  "date": "2019-06-24T16:12:01+08:00",
+  "author": "威点零",
+  "site": "",
+  "text": "@威点零：我想了一下，是不是分配kmalloc的时候，va是通过pa转过来的，所以全部都差offset。补充一个问题，vmalloc分配的va是连续的，但是PA拿到的是不连续的，看起来这样就没办法直接做到va/pa转换直接加offset？"
+ },
+ {
+  "id": "7518",
+  "parent": "7485",
+  "date": "2019-07-09T15:46:22+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@威点零：分配的内存给用户，用户拿到的都是VA。不关注PA。VA和PA偏差offset是映射的时候决定的。slub和buddy的使用已经是在映射建立后了，此时就不需要关注PA了。"
+ },
+ {
+  "id": "7519",
+  "parent": "7486",
+  "date": "2019-07-09T15:47:51+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@威点零：VA和PA偏差是固定offset仅仅针对linear mapping区域，VMALLOC是不保证这个特征的。"
+ },
+ {
+  "id": "7693",
+  "parent": "0",
+  "date": "2019-10-12T10:44:59+08:00",
+  "author": "misaka",
+  "site": "",
+  "text": "您好，请问 memstart_addr = round_down(memblock_start_of_DRAM(),ARM64_MEMSTART_ALIGN); 这条语句为什么不是 round_up 而是 round_down 呢？ round_down 了地址不是可能会比 memblock_start_of_DRAM() 小吗，可是 memblock_start_of_DRAM() 不是最低可用的物理地址吗？thx"
+ },
+ {
+  "id": "7754",
+  "parent": "0",
+  "date": "2019-11-17T22:31:22+08:00",
+  "author": "orangeboyye",
+  "site": "",
+  "text": "[ kernel image映射区域从原来的linear mapping region（线性映射区域）搬移到VMALLOC区域 ]\r\n你确定对吗，我咋感觉肯定不对呢"
+ },
+ {
+  "id": "7779",
+  "parent": "7754",
+  "date": "2019-12-09T18:24:11+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@orangeboyye：这里的代码分析都是基于ARM64 arch。你可以瞅瞅最新的代码是不是这样的"
+ },
+ {
+  "id": "8168",
+  "parent": "0",
+  "date": "2020-12-27T16:38:52+08:00",
+  "author": "xiaowu",
+  "site": "",
+  "text": "您好，有个疑惑的地方，这个汇编翻译成C的，id_map段创建block_map时，大小小于2M，start和end地址相同，走不进while循环，那岂不是无法填充tbl中的单元？\r\n#define create_block_map(tbl, flags, phys, start, end) do {  \\\r\n\t\tphys >>= SWAPPER_BLOCK_SHIFT;                /* 1 */ \\\r\n\t\tstart >>= SWAPPER_BLOCK_SHIFT;               /* 2 */ \\\r\n\t\tstart &= PTRS_PER_PTE - 1;                   /* 2 */ \\\r\n\t\tphys = flags | (phys << SWAPPER_BLOCK_SHIFT);/* 3 */ \\\r\n\t\tend >>= SWAPPER_BLOCK_SHIFT;                 /* 4 */ \\\r\n\t\tend &= PTRS_PER_PTE - 1;                     /* 4 */ \\\r\n                                                             \\\r\n\t\twhile (start != end) {                       /* 5 */ \\\r\n\t\t\t*((long *)(tbl + (start << 3))) = phys;  /* 6 */ \\\r\n\t\t\tstart++;                                 /* 7 */ \\\r\n\t\t\tphys += SWAPPER_BLOCK_SIZE;              /* 8 */ \\\r\n\t\t}                                                    \\\r\n\t} while (0)"
+ }
+]

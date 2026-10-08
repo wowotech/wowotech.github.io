@@ -1,0 +1,42 @@
+[
+ {
+  "id": "3625",
+  "parent": "0",
+  "date": "2016-03-09T16:04:03+08:00",
+  "author": "xiaolei",
+  "site": "",
+  "text": "HI 郭健:\r\n<br />\r\n<br />    我现在做android驱动开发有半年了，对驱动的理解是东理解一点，西理解一点，没有系统的认识，也没有从架构上抽象的那种认识，心里很着急，想把东西弄清楚，但是方法总是不对，想向您请教一些学习经验，我能加您的QQ或者微信吗？我去年7月份大学毕业。\r\n<br />\r\n<br />\r\n<br />    希望能得到您的指点。我是真心想把linux技术学好。\r\n<br />\r\n<br />谢谢"
+ },
+ {
+  "id": "3633",
+  "parent": "3625",
+  "date": "2016-03-09T21:36:33+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@xiaolei：指点是谈不上了，大家相互切磋吧，我已经加了你，顺便把你的个人信息删掉了（个人隐私要注意保护，呵呵~~）。"
+ },
+ {
+  "id": "3653",
+  "parent": "0",
+  "date": "2016-03-12T15:05:28+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "楼主真有极客精神啊"
+ },
+ {
+  "id": "5670",
+  "parent": "0",
+  "date": "2017-06-13T22:16:15+08:00",
+  "author": "S.Z",
+  "site": "",
+  "text": "楼主你好，我研究wpa_supplicant时有一些疑惑，用户空间通过nl80211.h向驱动发送命令，例如扫描相关命令NL80211_CMD_TRIGGER_SCAN，NL80211_CMD_GET_SCAN就会得到回调类型CN_CB_VALID，内核回复相关信息。但是其他命令如NL80211_CMD_CONNECT或NL80211_CMD_AUTHENTICATION，按照说明内核会自动处理进行相关操作发送消息给AP。但我得到的回调类型为NL_CB_ACK，内核无返回消息，在AP端监听模式下也抓不到相应数据包。这两种回调类型区别是什么，为什么内核不响应呢？谢谢！"
+ },
+ {
+  "id": "5927",
+  "parent": "0",
+  "date": "2017-08-20T14:56:42+08:00",
+  "author": "edward",
+  "site": "",
+  "text": "Hi Linuxer:\r\n   我在台式机ubuntu系统上插入RT3070无线网卡,这样台式机作为一个STA,然后打开我手机的AP热点,并且按您文章所述配置好了wpa_supplicant,然后sudo wpa_supplicant -B -iwlan0 -Dnl80211 -c /etc/wpa_supplicant/home.conf, 然后发现台式机的无线网卡并未连上我的手机\r\niw dev wlan0 link\r\nNot connected.\r\n请问,这是什么原因啊?\r\n谢谢!"
+ }
+]

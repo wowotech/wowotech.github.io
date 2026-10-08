@@ -1,0 +1,242 @@
+[
+ {
+  "id": "927",
+  "parent": "0",
+  "date": "2014-12-23T15:28:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "我只想说骚年你又升华了，哈哈。等下班了得好好研究研究，窥探一下天机~~~~"
+ },
+ {
+  "id": "935",
+  "parent": "0",
+  "date": "2014-12-23T18:12:16+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "如果不是为了靠linux kernel混口饭吃，我早就遁入空门研究物理学和数学了，^_^"
+ },
+ {
+  "id": "942",
+  "parent": "935",
+  "date": "2014-12-24T10:23:36+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：幸好我逼迫自己尝试喜欢linux kernel\r\n要不然早就没饭吃了\r\n^_^"
+ },
+ {
+  "id": "946",
+  "parent": "942",
+  "date": "2014-12-24T13:08:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：经济基础决定上层建筑，相信我，骚年，大胆的、勇敢的、奋不顾身的去挣钱混饭吃吧，但有一点，为自己的理想保留一个空间，有空就去打扫它，给它浇浇水，施施肥，等到经济基础打好了，我们再更加大胆的、勇敢的、奋不顾身的去追求内心的愉悦......."
+ },
+ {
+  "id": "1115",
+  "parent": "0",
+  "date": "2015-01-21T11:19:45+08:00",
+  "author": "star",
+  "site": "",
+  "text": "已从量子物理转到嵌入式混饭吃..."
+ },
+ {
+  "id": "1116",
+  "parent": "1115",
+  "date": "2015-01-21T12:19:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@star：我觉得这才是这个社会的无奈，理想状态下，搞量子物理的一定要比搞嵌入式的挣的钱更多，哪怕他一辈子什么都没搞出来……"
+ },
+ {
+  "id": "1121",
+  "parent": "1116",
+  "date": "2015-01-22T10:44:00+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：是啊，其实我的理想是\r\n忙了好一阵子。\r\n要把这段时间没仔细看的文章读一遍了。"
+ },
+ {
+  "id": "1122",
+  "parent": "1121",
+  "date": "2015-01-22T10:44:38+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@tigger：我的理想是种地。"
+ },
+ {
+  "id": "1123",
+  "parent": "1122",
+  "date": "2015-01-22T12:21:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：呵呵，可以去包点地开个农场啊。"
+ },
+ {
+  "id": "1130",
+  "parent": "0",
+  "date": "2015-01-23T14:43:51+08:00",
+  "author": "haichunzhao",
+  "site": "",
+  "text": "随着应用的发展，秒精度已经无法满足要求，因此出现了毫秒精度的时间表示：\r\nstruct timeval {  \r\n    time_t        tv_sec;        /* seconds */  \r\n    suseconds_t    tv_usec;    /* microseconds */ \r\n};\r\nstruct timeval 的概念和time_t是一样的，只不过多了一个毫秒的成员，将时间的精度推进到毫秒级别。在计算当前时刻到epoch时间点的毫秒数值的时候可以使用公式：tv_sec x 10^6 + tv_usec。\r\n\r\n这里说的是微妙，不是毫秒。"
+ },
+ {
+  "id": "1132",
+  "parent": "1130",
+  "date": "2015-01-26T12:12:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@haichunzhao：多谢指正，我公式用的10^6，不过手写就错了，^_^"
+ },
+ {
+  "id": "1135",
+  "parent": "1130",
+  "date": "2015-01-26T20:13:53+08:00",
+  "author": "Ash",
+  "site": "",
+  "text": "@haichunzhao：我一直很奇怪：在一般都是1000HZ，也就是1ms一次的滴答下，怎么得到us级别的精度？"
+ },
+ {
+  "id": "1138",
+  "parent": "1135",
+  "date": "2015-01-27T11:56:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Ash：低精度timer是基于tick的，实际上，高精度timer不是base on tick的，它是基于clockevent和clock source的，假设一个晶振是13M，那么每个clock就是1/13个us，通过对clock的计数，当然很容易达到us的精度了。更具体的内容会在高精度timer文档中描述，BTW，这份文档还没有开始写，呵呵。"
+ },
+ {
+  "id": "1140",
+  "parent": "1135",
+  "date": "2015-01-27T14:00:20+08:00",
+  "author": "haichunzhao",
+  "site": "",
+  "text": "@Ash：kernel会选择最好的clocksource，一般的clocksource都是MHZ，会比1000HZ大的，所以能精确到us；"
+ },
+ {
+  "id": "1141",
+  "parent": "1138",
+  "date": "2015-01-27T16:32:26+08:00",
+  "author": "Ash",
+  "site": "",
+  "text": "@linuxer：哦，就相当于有一个寄存器级别的jiffies在计数，所以能够达到更高的精度。那看来是我的采用的soc架构不支持这个，于是退而求其次采用了低精度的jiffies作为clocksource。我以为是有什么特殊的算法，能够实现高精度呢。感谢了。"
+ },
+ {
+  "id": "1142",
+  "parent": "1140",
+  "date": "2015-01-27T16:33:49+08:00",
+  "author": "Ash",
+  "site": "",
+  "text": "@haichunzhao：恩，看来是这样的，是我之前找错方向了。谢谢！"
+ },
+ {
+  "id": "1539",
+  "parent": "0",
+  "date": "2015-04-21T17:16:11+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "很好的文章"
+ },
+ {
+  "id": "3026",
+  "parent": "0",
+  "date": "2015-11-11T15:42:35+08:00",
+  "author": "sched_fork",
+  "site": "",
+  "text": "博主，你的文章写的很好。可贵的是，在写一个 timer 子系统还能道出这么多物理学相关的知识。\r\n请问一下你研究一个子系统是怎么样的顺序呢？\r\n是先阅读相关背景知识，然后通读该子系统代码，再整理出一个轮廓框架，最后写作吗?\r\n还有一点，读代码的时候，你是怎么知道代码背后的知识的？例如从 time_t 和 struct timeval 这样的代码，知道背后 posix 演进的过程。"
+ },
+ {
+  "id": "3031",
+  "parent": "3026",
+  "date": "2015-11-11T18:00:38+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@sched_fork：呵呵～～～我本身是一个物理学和数学爱好者，当然，仅仅限于“爱好者”，因此，有时候就会喜欢乱想，乱写，其实那些和理解linux kernel的各个子系统没有任何的关系。\r\n\r\n知识的获取是和人的思维习惯相关的，多思考，多问问题，自己先分析，然后从网络找答案验证自己的思路....."
+ },
+ {
+  "id": "4200",
+  "parent": "935",
+  "date": "2016-07-06T15:24:15+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "@linuxer：中国制造业本来就不发达，整天互联网+制造泡泡。"
+ },
+ {
+  "id": "5394",
+  "parent": "1138",
+  "date": "2017-03-30T14:20:11+08:00",
+  "author": "cade",
+  "site": "",
+  "text": "@linuxer：请教下\r\n这base on tick 和base on clockevent/clocksource两种定时器硬件实现上有什么不同？一般是arm实现的吗？\r\n在driver中使用时有接口可以设置精度吗比如要精确到ns/us/ms/s。。。\r\n定时器到期就一定意味着GIC向cpu发送中断，进入interrupt context？"
+ },
+ {
+  "id": "5406",
+  "parent": "5394",
+  "date": "2017-03-31T19:23:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@cade：这base on tick 和base on clockevent/clocksource两种定时器硬件实现上有什么不同？一般是arm实现的吗？\r\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝\r\n低精度timer是基于tick的，而对于周期性tick而言，HW timer需要能够周期性的产生中断。\r\n高精度timer是基于clockevent driver的，需要HW timer具备one shot的功能。\r\n\r\n在driver中使用时有接口可以设置精度吗比如要精确到ns/us/ms/s\r\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝\r\n不能\r\n\r\n定时器到期就一定意味着GIC向cpu发送中断，进入interrupt context？\r\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝\r\nhw timer到期当然会触发中断了"
+ },
+ {
+  "id": "5407",
+  "parent": "5406",
+  "date": "2017-03-31T19:47:34+08:00",
+  "author": "cade",
+  "site": "",
+  "text": "@linuxer：谢谢！这几天一直在拜读timer系列文件，写的很好！\r\n原先从来没有看过timer，一直有个疑问\r\n“HW timer的哪些是ARM 实现的，哪些是SOC实现的？”\r\n我看下来的结合自己的认识是：\r\nsystem counter/local timer----arm实现了；\r\nRTC 用来实现alarmtimer，可以设定wall time---soc厂商实现\r\n不知是这样吗？"
+ },
+ {
+  "id": "5563",
+  "parent": "0",
+  "date": "2017-05-17T13:45:50+08:00",
+  "author": "江南书生",
+  "site": "http://no",
+  "text": "老板，你好。\r\n文中有“如果time_t被实现成一个signed 32-bit integer，那么实际上在2038年的时候就会有溢出问题”，我想请问2038年是怎么算出来的，我按32无符号算才136年呢？"
+ },
+ {
+  "id": "5564",
+  "parent": "5563",
+  "date": "2017-05-17T15:02:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@江南书生：有符号的32bit的整数最大值是0x7fffffff，而一年等于多少秒呢？等于365 x 24 x 3600，这两个数相除等于68，而linux epoch从1970年开始，1970 ＋ 68 ＝ 2038"
+ },
+ {
+  "id": "5565",
+  "parent": "5564",
+  "date": "2017-05-17T15:04:37+08:00",
+  "author": "江南书生",
+  "site": "http://no",
+  "text": "@linuxer：明白了，看错了，嘿嘿"
+ },
+ {
+  "id": "5851",
+  "parent": "0",
+  "date": "2017-07-26T10:02:52+08:00",
+  "author": "wakawaka",
+  "site": "",
+  "text": "你好，我最近在一个APP上设置时区，用C++写的，但是不知道怎么解析linux中的时区文件，通过时区换算当前时间，有没有相关的库介绍"
+ },
+ {
+  "id": "8195",
+  "parent": "0",
+  "date": "2021-02-15T12:18:30+08:00",
+  "author": "张连聘Linc Zhang",
+  "site": "http://https://www.bahutou.cn/  https://blog.csdn.net/zhanglianpin",
+  "text": "为你的这句话点赞。"
+ },
+ {
+  "id": "8196",
+  "parent": "0",
+  "date": "2021-02-15T12:19:54+08:00",
+  "author": "张连聘Linc Zhang",
+  "site": "http://https://www.bahutou.cn/  https://blog.csdn.net/zhanglianpin",
+  "text": "为你的这句话点赞"
+ },
+ {
+  "id": "8197",
+  "parent": "8196",
+  "date": "2021-02-15T12:21:53+08:00",
+  "author": "张连聘Linc Zhang",
+  "site": "http://https://blog.csdn.net/zhanglianpin",
+  "text": "@张连聘Linc Zhang：经济基础决定上层建筑，相信我，骚年，大胆的、勇敢的、奋不顾身的去挣钱混饭吃吧，但有一点，为自己的理想保留一个空间，有空就去打扫它，给它浇浇水，施施肥，等到经济基础打好了，我们再更加大胆的、勇敢的、奋不顾身的去追求内心的愉悦......."
+ }
+]

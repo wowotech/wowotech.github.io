@@ -1,0 +1,354 @@
+[
+ {
+  "id": "881",
+  "parent": "0",
+  "date": "2014-12-11T10:17:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "最近准备研究CPU idle framework\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n太好了，我在看tick broadcast framework，和cpuidle framework有关，我还在想蜗窝应该写到这里了吧\r\n\r\n另外，你文章中的PE的full name是什么？"
+ },
+ {
+  "id": "882",
+  "parent": "0",
+  "date": "2014-12-11T10:35:17+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "hi wowo\r\n但是这个arch_spin_lock 使用到的地方很少啊。\r\n好像只有raw_spin_lock_irqsave 会用到这个地方。"
+ },
+ {
+  "id": "883",
+  "parent": "881",
+  "date": "2014-12-11T10:36:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：Processing Element， Cortex-A57有一个ARM core的架构图，比较清晰。我不想写太多，光这个词，就可以写一篇文章啊，涉及到ARM的架构。"
+ },
+ {
+  "id": "884",
+  "parent": "882",
+  "date": "2014-12-11T10:39:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：应该不会，不过我没有细看，你可以顺着这个调用顺序看一下：__lock_acquire-->mark_lock-->graph_lock-->arch_spin_lock(arch/arm64/include/asm/spinlock.h)。\r\nPS：有没有同学把spinlock分析一下啊？还挺有意思啊。"
+ },
+ {
+  "id": "885",
+  "parent": "884",
+  "date": "2014-12-11T10:40:03+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：linuxer 之前分析过的啊"
+ },
+ {
+  "id": "886",
+  "parent": "885",
+  "date": "2014-12-11T11:11:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：是吗？我怎么不记得了呢？"
+ },
+ {
+  "id": "887",
+  "parent": "884",
+  "date": "2014-12-11T11:57:55+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：内核同步的第四篇就是spin lock，不过我还没有写呢，最近又沉迷与时间子系统，唉，时间总是不够用啊"
+ },
+ {
+  "id": "888",
+  "parent": "887",
+  "date": "2014-12-11T12:00:15+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：我也感觉时间不够用，想学的东西太多了。总是东学一下，西学一下。"
+ },
+ {
+  "id": "889",
+  "parent": "0",
+  "date": "2014-12-11T18:10:26+08:00",
+  "author": "haichunzhao",
+  "site": "",
+  "text": "刚注册了个账号\r\n不论cpuidle和平台sleep最后走的都是WFI。WFE没研究过，看到你写的，在spinlock中使用的话，感觉和信号量差不多了。"
+ },
+ {
+  "id": "890",
+  "parent": "889",
+  "date": "2014-12-11T18:26:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@haichunzhao：sleep应该是ARM core或者ARM cpu的低功耗状态，估计会在WFI之后，再关闭一些其它的东西。不知道是不是所有CPU都一样。\r\n行为确实和信号量类似，但信号量依赖软件的调度，而使用WFE的spinlock是硬件行为。"
+ },
+ {
+  "id": "1090",
+  "parent": "890",
+  "date": "2015-01-15T11:30:54+08:00",
+  "author": "sea",
+  "site": "",
+  "text": "@wowo：wowo，“cpuidle和平台sleep最后走的都是WFI”，那sleep会调用cpuidle framework来走WFI吗？如果不是，那不就意味着sleep也就相当于使用的是《Linux cpuidle framework(1)_概述和软件架构》中“曾经有过一段时间的cpuidle过程”。而且像android这种移动端os，能够进入到idle进程的情况下，应该早就进行suspend操作了吧。这样的话cpuidle framework不就没什么意义了。或者说suspend也是使用cpuidle framework来走WFI，又或者有其它的应用场景?"
+ },
+ {
+  "id": "1093",
+  "parent": "1090",
+  "date": "2015-01-15T13:18:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@sea：1. sleep这个词可能过于含糊，不同平台的实现可能不同，因此是否会使用WFI，是不一定的。\r\n2. WFI只是ARM体系结构的一个指令，谁会使用这个指令，spinlock？cpuidle？还是sleep？是没有限制的，因此也不一定非要走cpuidle framework。\r\n3. 你说的很对，Android选择了autosleep作为自身电源管理的主要手段，cpuidle framework就没有太多用处了，甚至，大多数的Android设备，没有启用cpuidle framework功能。\r\n4. 个人意见，cpuidle framework的主要使用场景，是在服务器系统中，这些系统的cpu core动辄就几十个，对系统响应能力的要求又比较高，通过cpuidle，既可以保证性能，也可以节省很多power。"
+ },
+ {
+  "id": "1133",
+  "parent": "0",
+  "date": "2015-01-26T13:44:47+08:00",
+  "author": "rockwu",
+  "site": "",
+  "text": "核心是WFI只能由cpu硬件来唤醒，WFE除了硬件唤醒之外还支持软件唤醒。所以WFE的自由度更好，只要WFE和SEV成对使用。不知道理解是否正确。"
+ },
+ {
+  "id": "1136",
+  "parent": "1133",
+  "date": "2015-01-26T22:32:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@rockwu：应该就是您说理解的那个样子。\r\n不过是不是必须“由CPU硬件唤醒”，这个不能太武断，因为到底什么是硬件的范畴，不太好界定。"
+ },
+ {
+  "id": "1641",
+  "parent": "0",
+  "date": "2015-04-29T22:41:42+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "我也一直疑惑这两条指令，今日才明白。如拨云见日。感谢！"
+ },
+ {
+  "id": "1642",
+  "parent": "890",
+  "date": "2015-04-29T22:45:03+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@wowo：我的理解是：信号量依赖软件的调度，所以cpu还干活。而使用WFE的spinlock。则cpu进入低功耗模式。不干活了。"
+ },
+ {
+  "id": "1643",
+  "parent": "1090",
+  "date": "2015-04-29T22:52:55+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@sea：说说我的见解。只限于手机场景。不论cpuide和sleep虽都调用wfi，但流程不同。很多情况下是cpu idle状态。比如你把手机亮屏不做任何操作有可能进入cpu idle，灭屏听fm也可能会进入。"
+ },
+ {
+  "id": "1644",
+  "parent": "1642",
+  "date": "2015-04-29T23:11:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@shoujixiaodao：是的，完全正确，所以从这个角度看，spinlock并不是那么可怕了。"
+ },
+ {
+  "id": "1645",
+  "parent": "1643",
+  "date": "2015-04-29T23:12:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@shoujixiaodao：我接触的手机平台不多，不知道它们是否使能了cpuidle功能。从道理上来说，确实是这样的。"
+ },
+ {
+  "id": "1646",
+  "parent": "1641",
+  "date": "2015-04-29T23:13:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@shoujixiaodao：不必客气，大家多交流~~"
+ },
+ {
+  "id": "1893",
+  "parent": "0",
+  "date": "2015-05-28T11:48:59+08:00",
+  "author": "omind",
+  "site": "http://omind.org",
+  "text": "都写到armv8了，先进啊"
+ },
+ {
+  "id": "3065",
+  "parent": "0",
+  "date": "2015-11-17T11:32:07+08:00",
+  "author": "坚持到底",
+  "site": "",
+  "text": "arm64 smp 中，并没有直接在 arch_spin_unlock() 里使用 sev 来唤醒执行 wfe 的 CPU，请问楼主有没研究过执行 wfe 的 CPU 怎么被唤醒的？"
+ },
+ {
+  "id": "3067",
+  "parent": "3065",
+  "date": "2015-11-17T13:45:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@坚持到底：当前ARM Kernel的spin_lock是不是没有利用WFE节省功耗？\r\n请教linuxer，ldaxrh让CPU进入低功耗吗？如果不会，现在仅仅用了busy loop的方式。"
+ },
+ {
+  "id": "3068",
+  "parent": "3067",
+  "date": "2015-11-17T14:11:20+08:00",
+  "author": "坚持到底",
+  "site": "",
+  "text": "@wowo：static inline void arch_spin_lock(arch_spinlock_t *lock)\r\n{\r\n\tunsigned int tmp;\r\n\r\n\tasm volatile(\r\n\t\"\tsevl\\n\"\r\n\t\"1:\twfe\\n\"\r\n\t\"2:\tldaxr\t%w0, %1\\n\"\r\n\t\"\tcbnz\t%w0, 1b\\n\"\r\n\t\"\tstxr\t%w0, %w2, %1\\n\"\r\n\t\"\tcbnz\t%w0, 2b\\n\"\r\n\t: \"=&r\" (tmp), \"+Q\" (lock->lock)\r\n\t: \"r\" (1)\r\n\t: \"cc\", \"memory\");\r\n}\r\n\r\nstatic inline void arch_spin_unlock(arch_spinlock_t *lock)\r\n{\r\n\tasm volatile(\r\n\t\"\tstlr\t%w1, %0\\n\"\r\n\t: \"=Q\" (lock->lock) : \"r\" (0) : \"memory\");\r\n}\r\n\r\n我的 linux kernel  3.10.61，是有用到 wfe 的。"
+ },
+ {
+  "id": "3069",
+  "parent": "3068",
+  "date": "2015-11-17T14:33:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@坚持到底：这两个配合：\r\n\"    sevl\\n\" \r\n    \"1:    wfe\\n\" \r\nwfe不会进入低功耗模式的。"
+ },
+ {
+  "id": "3070",
+  "parent": "3069",
+  "date": "2015-11-17T14:58:04+08:00",
+  "author": "坚持到底",
+  "site": "",
+  "text": "@wowo：会的。\r\n\r\n假设 cpu0 执行下面伪代码：\r\n\r\n \"    sevl\\n\"  //set event register 1\r\n    \"1:    wfe\\n\"  //clear event register 为 0，执行 wfe 完毕，不睡眠。\r\n    \"2:    ldaxr    %w0, %1\\n\" //tmp = lock->lock, 测试 lock->lock是否有 CPU 占用，1 为有 CPU 占用，0 为没 CPU 占用。假设此时已经有 CPU 占用被设置为 1, 则非零，跳转到 1b, wfe.\r\n    \"    cbnz    %w0, 1b\\n\""
+ },
+ {
+  "id": "3071",
+  "parent": "3065",
+  "date": "2015-11-17T15:05:04+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@坚持到底：当没有获取spinlock的时候，cpu core当然会调用wfe，等待其他cpu使用sev来唤醒自己。linux kernel的ARM64代码当然不会busy loop了，那太业余了。具体可以参考：\r\n/kernel_synchronization/spinlock.html\r\n\r\n在ARM64中，arch_spin_unlock并没有显示的调用sev来唤醒其他cpu，而是通过stlr指令完成的。在ARM ARM文档中有说：在执行store操作的时候，如果要操作的地址被标记为exclusive的，那么global monitor的状态会从exclusive access变成open access，同时会触发一个事件，唤醒wfe中的cpu。"
+ },
+ {
+  "id": "3073",
+  "parent": "3071",
+  "date": "2015-11-17T15:42:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：嗯嗯，这就对了，我也一直怀疑stlr，去memory barrier文档中找了很久没找到信息，原来在spin lock中。\r\n\r\n@坚持到底：抱歉误导您了啊，好在有大神在，哈哈。"
+ },
+ {
+  "id": "3075",
+  "parent": "3071",
+  "date": "2015-11-17T15:54:47+08:00",
+  "author": "坚持到底",
+  "site": "",
+  "text": "@linuxer：是的，感谢啊。在 6000 页的 pdf 中找到：\r\n\r\nThe ARMv8 architecture adds the acquire and release semantics to Load-Exclusive and Store-Exclusive instructions, which allows them to gain ordering acquire and/or release semantics.\r\n\r\nThe Load-Exclusive instruction can be specified to have acquire semantics, and the Store-Exclusive instruction can be specified to have release semantics. These can be arbitrarily combined to allow the atomic update created by a successful Load-Exclusive and Store-Exclusive pair to have any of:\r\n\r\n•\r\nNo Ordering semantics (using LDREX and STREX).\r\n•\r\nAcquire only semantics (using LDAEX and STREX).\r\n•\r\nRelease only semantics (using LDREX and STLEX).\r\n•\r\nSequentially consistent semantics (using LDAEX and STLEX).\r\n\r\nIn addition, the ARMv8 specification requires that the clearing of a global monitor will generate an event for the PE associated with the global monitor, which can simplify the use of WFE, by removing the need for a DSB barrier and SEV instruction."
+ },
+ {
+  "id": "3078",
+  "parent": "3073",
+  "date": "2015-11-17T18:27:12+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：大神不敢当啊，我还是喜欢华南区（深圳，珠海除外）首席xxx这样的称号，^_^"
+ },
+ {
+  "id": "3079",
+  "parent": "3075",
+  "date": "2015-11-17T18:29:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@坚持到底：关于这个问题可以参考ARM ARM文档中的Figure B2-5，这个图是PE（n）的global monitor的状态迁移图。当PE（n）对x地址发起了exclusive操作的时候，PE（n）的global monitor从open access迁移到exclusive access状态，来自其他PE上针对x（该地址已经被mark for PE（n））的store操作会导致PE（n）的global monitor从exclusive access迁移到open access状态，这时候，PE（n）的Event register会被写入event，就好象生成一个event，将该PE唤醒，从而可以省略一个SEV的指令。"
+ },
+ {
+  "id": "3085",
+  "parent": "3079",
+  "date": "2015-11-19T01:01:17+08:00",
+  "author": "坚持到底",
+  "site": "",
+  "text": "@linuxer：这里我有个疑问。\r\n\r\n假设 spinlock 场景：\r\n\r\n1. cpu0 exclusive load, and exclusive store 操作 lock->lock.此时 global monitor 对于 lock->lock 的 status 依然是 exclusive.\r\n\r\n2. cpu1 exclusive load, and wfe.\r\n\r\n3. cpu2 exclusive load, and wfe.\r\n\r\n4. cpu3 exclusive load, and wfe.\r\n\r\n5. 此时只有 cpu0 能去 arch_spin_unlock()， exclusive store 操作 lock->lock, 本应该 excl -> open，会触发 global monitor generate an event for the PE.\r\n\r\n但是从你上一段描述和 Figure B2-5 的意思又不一致。 上面 spinlock 的场景根本不会有其他 PE 上针对 x( mark for exclusive ) 的操作了。Figure B2-5 图中也表示 StoreExcl(Marked_address,n) 进行 excl access 操作，global monitor status 是不变的。"
+ },
+ {
+  "id": "3087",
+  "parent": "3085",
+  "date": "2015-11-19T10:34:16+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@坚持到底：好吧，看来我表述的不是那么的清楚，针对你说的场景，我重新组织一下：\r\n在cpu0调用unlock之前，各个状态机的状态如下：\r\n1、cpu0上针对spink lockmemory的状态机是open access状态。当然，这个状态和具体实现相关，不过，在这个场景中，没有人关注它的状态。\r\n2、cpu1上针对spink lockmemory的状态机是exclusive access状态，这时候cpu1处于wfe\r\n3、cpu2状态机和cpu1相同\r\n4、cpu3状态机和cpu1相同\r\n\r\n\r\ncpu0执行了spin_unlock操作，各个状态机的迁移情况如下：\r\n1、cpu0上针对spink lockmemory的状态机是怎样的呢？有人在乎吗？需要知道它的状态吗？当然不需要。\r\n2、cpu1的状态迁移：这时候实际上产生的事件是有其他cpu（指cpu0）执行了针对marked address（指共享的spin lock memory地址）的store操作，在状态图上对应Store(Marked_address,!n)事件，因此，该状态机迁移到open access状态，这时候cpu1的Event register会被写入event，就好象生成一个event，将cpu1唤醒\r\n3、cpu2类似cpu1\r\n4、cpu3类似cpu1\r\n\r\n\r\n上面是我的理解，请参考"
+ },
+ {
+  "id": "3088",
+  "parent": "3087",
+  "date": "2015-11-19T23:51:29+08:00",
+  "author": "坚持到底",
+  "site": "",
+  "text": "@linuxer：对的，谢谢解释啊。^_^"
+ },
+ {
+  "id": "4415",
+  "parent": "0",
+  "date": "2016-08-17T23:01:58+08:00",
+  "author": "lamaboy",
+  "site": "",
+  "text": "你好，，\r\n请问 spin_lock  只是用来在不同CPU core之间，保护共享资源吗？？\r\n\r\n对于那些单cpu 的spin_lock   有什么不同之处呢？？"
+ },
+ {
+  "id": "4416",
+  "parent": "4415",
+  "date": "2016-08-18T14:54:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lamaboy：spin的意思，就是让某个CPU在原地打转，这样就可以避免它去访问共享资源。\r\n对于单个CPU来说，它只能顺序执行（除非被中断、异常打断），因此没有spin的必要，也就没有spin_lock的概念。\r\n单CPU需要做同步的话，就把自己的中断关掉就行了。"
+ },
+ {
+  "id": "4489",
+  "parent": "4416",
+  "date": "2016-09-01T19:15:00+08:00",
+  "author": "randy",
+  "site": "",
+  "text": "@wowo：单核下spin lock也是有意义的：用于线程之间的同步时禁止内核抢占，保证被中断后仍然回到原先的线程中；用于线程上下文和中断上下文之间的同步时根据上半部和下半部分别关中断和关下半部"
+ },
+ {
+  "id": "4490",
+  "parent": "4489",
+  "date": "2016-09-01T19:45:42+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@randy：我想wowo同学的本意是：在单核情况下，spin lock退化成了禁止抢占，其实已经脱离了spin lock的本意，因此，他才说“对于单个CPU来说，它只能顺序执行（除非被中断、异常打断），因此没有spin的必要”\r\n\r\n我其实比较挑战的是他的另外一句话“单CPU需要做同步的话，就把自己的中断关掉就行了”，一言不合就使用关中断这种大杀器我是反对的，可以选择使用最适合的同步方法。"
+ },
+ {
+  "id": "4495",
+  "parent": "4489",
+  "date": "2016-09-02T08:55:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@randy：是的，randy和linuxer的说法比我说的“精细”多了，多谢~~\r\n我的风格是比较直接，不太希望把话题延伸的太宽，大家多包涵哈~~~"
+ },
+ {
+  "id": "6366",
+  "parent": "0",
+  "date": "2017-12-15T11:43:07+08:00",
+  "author": "gnx",
+  "site": "",
+  "text": "@wowo，请教一个问题哈，如果在关中断之后，wfi之前收到了一个中断，执行wfi指令会发生怎样的行为？"
+ },
+ {
+  "id": "6367",
+  "parent": "6366",
+  "date": "2017-12-15T12:48:27+08:00",
+  "author": "gnx",
+  "site": "",
+  "text": "@gnx：在手册找到答案了，如果有中断处于pending状态，wfi不会进入睡眠，伪代码如下\r\nif ConditionPassed() then\r\n    EncodingSpecificOperations();\r\n    if !InterruptPending() then\r\n        if PSTATE.EL == EL0 then\r\n            AArch32.CheckForWFxTrap(EL1, FALSE);\r\n        if HaveEL(EL2) && !IsSecure() && PSTATE.EL IN {EL0,EL1} then\r\n            AArch32.CheckForWFxTrap(EL2, FALSE);\r\n        if HaveEL(EL3) && PSTATE.M != M32_Monitor then\r\n            AArch32.CheckForWFxTrap(EL3, FALSE);\r\n        WaitForInterrupt();"
+ },
+ {
+  "id": "6682",
+  "parent": "0",
+  "date": "2018-04-19T10:20:29+08:00",
+  "author": "Rafe",
+  "site": "",
+  "text": "@wowo @linuxer\r\nHi 大神们，想请教你们一个问题：系统suspend调用的是WFI, 那么WFI 执行后，系统进入suspend, 那么接下来如果中断产生了，系统是如何恢复到原有的C状态的？中间理应会有一段汇编执行保存恢复跳转才对，请问对该部分是否有了解过? Thanks!"
+ },
+ {
+  "id": "8390",
+  "parent": "0",
+  "date": "2021-12-04T22:28:53+08:00",
+  "author": "我是来点赞的",
+  "site": "",
+  "text": "赞"
+ },
+ {
+  "id": "8903",
+  "parent": "0",
+  "date": "2024-05-31T16:25:32+08:00",
+  "author": "育",
+  "site": "",
+  "text": "@wowo 想請問大神，我的board有兩個Kernel 但只有其中一個可以輸入指令另一個不能，這樣我要怎麼輸入WFI command"
+ }
+]

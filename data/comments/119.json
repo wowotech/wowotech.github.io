@@ -1,0 +1,90 @@
+[
+ {
+  "id": "872",
+  "parent": "0",
+  "date": "2014-12-10T13:05:18+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "所以高通的芯片是高通拿到ARM的IP core lincense然后自己做出来的一个ARM Core，指令集跟拿到的那IP core的指令集兼容。但是有自己的独特的东东\r\n其他的公司比如国内的芯片公司，都是拿的完整的ARM core，然后自己封装出来一个ARM CPU.所谓的CPU就是ARM CORE+其他总线啊，外设啊。等等。"
+ },
+ {
+  "id": "873",
+  "parent": "872",
+  "date": "2014-12-10T13:06:45+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@tigger：当然对于高通比如8916,光有ARM core还不行，还是要有外设组成一个CPU.这个8916应该是个ARM CPU."
+ },
+ {
+  "id": "874",
+  "parent": "872",
+  "date": "2014-12-10T13:19:08+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@tigger：这里cpu 跟soc的区别我有点搞不懂了。。。"
+ },
+ {
+  "id": "875",
+  "parent": "872",
+  "date": "2014-12-10T14:05:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：是的，你看维基上给出来的那个表格，高通比较有技术含量，买的是IP core的授权，而不是ARM core的授权。\r\n对于CPU和SOC，其实界限不是特别明显，这取决于厂商怎么定义。如果严格定义，CPU应该只负责取指、执行、存储、读取。从这个角度看，主流CPU都是SOC，因为里面包了很多之外的东西，但厂商却不那么叫。\r\n另外，有一些很明显的chip，它可以包含1个ARM core和1个DSP，这一定是SOC了。"
+ },
+ {
+  "id": "877",
+  "parent": "875",
+  "date": "2014-12-10T16:36:01+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：领教了。"
+ },
+ {
+  "id": "2897",
+  "parent": "0",
+  "date": "2015-10-30T11:08:30+08:00",
+  "author": "superm",
+  "site": "",
+  "text": "高通会修改ARM IP的内部RTL代码吗？"
+ },
+ {
+  "id": "2898",
+  "parent": "2897",
+  "date": "2015-10-30T13:50:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@superm：抱歉，我也不是很懂RTL，可以的话，您可以给大家普及一下这个概念。"
+ },
+ {
+  "id": "2900",
+  "parent": "2898",
+  "date": "2015-10-30T17:19:53+08:00",
+  "author": "superm",
+  "site": "",
+  "text": "@wowo：其实我就是觉得高通可能会自己修改了ARM的IP，优化和个性化IP，就好像你说的高通买的是IP core的授权，而不是ARM core的授权，这个是不是说明高通自己在修改ARM IP?\r\n二国内大部分都是直接集成了。"
+ },
+ {
+  "id": "2907",
+  "parent": "2900",
+  "date": "2015-10-30T21:33:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@superm：高通和苹果应该会自己设计、修改ARM IP的，不然比其它厂家就没有优势了。"
+ },
+ {
+  "id": "3211",
+  "parent": "0",
+  "date": "2015-12-10T07:26:01+08:00",
+  "author": "Tech_fan",
+  "site": "",
+  "text": "ARM architecture，是指ARM公司开发的、基于精简指令集架构（RISC, Reduced Instruction Set Computing architecture）的指令集架构（Instruction set architecture）\r\n\r\n其实ARM构架不仅仅包括指令集，还包括异常模式，寄存器集，内存管理等"
+ },
+ {
+  "id": "3216",
+  "parent": "3211",
+  "date": "2015-12-10T09:11:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Tech_fan：确实如此，多谢指正~~"
+ }
+]

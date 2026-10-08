@@ -1,0 +1,50 @@
+[
+ {
+  "id": "806",
+  "parent": "0",
+  "date": "2014-12-04T18:23:06+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "看了蜗窝同学的kobject的文章，准备找几个实际使用的案例分析一下，首先是最简单的一个场景，慢慢深入吧"
+ },
+ {
+  "id": "864",
+  "parent": "0",
+  "date": "2014-12-09T09:45:42+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "kobject是组成设备模型的基本结构。\r\n\r\n前面你和wowo已经论证过cdev与设备模型无关，那么你是怎么理解cdev中出现的kobject？ 没看出来它在这里的作用。"
+ },
+ {
+  "id": "865",
+  "parent": "864",
+  "date": "2014-12-09T12:14:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@puppypyb：设备模型中大量使用了kobject，但是kobject并不是仅仅for设备模型的。\r\n对于cdev这个场景，kobject主要是应用两点：\r\n1、reference count。\r\n2、ktype中的release函数\r\n\r\n基本上可以这么认为，cdev中的kobject没有完全发挥其功能，假设其全部功能有10条，实际只用了2条。是不是很浪费？当然是很浪费了，如果有可能，最好定义一个基类，只包括上面的那两点功能，kobject派生于此基类，cdev也是派生于此基类。当然，是否定义这样的基类应该是内核中的应用场景相关，如果有大量类似cdev这样的场景，我们相信内核人员有可能定义这样的基类"
+ },
+ {
+  "id": "866",
+  "parent": "0",
+  "date": "2014-12-09T12:26:40+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "good!!!!!\r\n\r\n我觉得这段解释有必要加入到正文中去，说起来，bbs怎么没有编辑功能呢？"
+ },
+ {
+  "id": "867",
+  "parent": "866",
+  "date": "2014-12-09T12:43:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@puppypyb：讨论区的文章可以编辑的，如果你是这份文档的作者。其实和其他板块的文章是类似的。"
+ },
+ {
+  "id": "871",
+  "parent": "865",
+  "date": "2014-12-09T22:09:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：这两点功能，其中一点（reference count），kernel中已经有一个基类了，即struct kref，kobject也正是派生于kref。\r\n至于第二点，应该就是kobject诞生的初衷。"
+ }
+]

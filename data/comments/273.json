@@ -1,0 +1,114 @@
+[
+ {
+  "id": "3727",
+  "parent": "0",
+  "date": "2016-03-25T23:01:43+08:00",
+  "author": "Musiclover",
+  "site": "",
+  "text": "刚好学习i2c就看见wowo更新文章，我真是有福。"
+ },
+ {
+  "id": "3728",
+  "parent": "3727",
+  "date": "2016-03-26T11:10:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Musiclover：哈哈，客气了，希望多提宝贵意见~~"
+ },
+ {
+  "id": "4342",
+  "parent": "0",
+  "date": "2016-07-28T22:29:59+08:00",
+  "author": "Peter",
+  "site": "",
+  "text": "Audio Codec 有音频数据接口(eg: I2S/PCM 等)用于传输数字音频信号，而i2c总线 主要用于配置寄存器；因此应该属于形态2"
+ },
+ {
+  "id": "4344",
+  "parent": "4342",
+  "date": "2016-07-29T08:43:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Peter：多谢提醒，你说的是对的:-)"
+ },
+ {
+  "id": "4480",
+  "parent": "0",
+  "date": "2016-08-31T09:04:05+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "亲爱的版主：\r\n 请教一个问题。如果我要向flash写入一个字节的数据。\r\n方法1：\r\n\r\n\r\n\tmsg[0].addr = client->addr;\r\n\tmsg[0].flags = client->flags;\r\n\tmsg[0].len = 1;\r\n\tmsg[0].buf = &wr_reg;\r\n\t\r\n\tmsg[1].addr = client->addr;\r\n\tmsg[1].flags = client->flags;\r\n\tmsg[1].len = 1;\r\n\tmsg[1].buf = buf;\r\n方法2：\r\n        char *bufs[2] ={\r\n           {wr_reg},{*buf}\r\n        };\r\n        msg[0].addr = client->addr;\r\n\tmsg[0].flags = client->flags;\r\n\tmsg[0].len = 2;\r\n\tmsg[0].buf = &bufs;\r\n\r\n就是把写入的地址和数据 分成2个不同的 MSG，或者在同一个msg。有没有什么不同？分成2个msg会不会在传送写入地址后，又发送1帧i2c从机地址+wr，然后再发要写的数据。"
+ },
+ {
+  "id": "4481",
+  "parent": "4480",
+  "date": "2016-08-31T09:21:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@emeralddream：是由区别的。具体的行为，和Controller的默认配置有关，msg的flags参数也可以影响，具体可以参考/comm/i2c_provider.html中有关的说明。"
+ },
+ {
+  "id": "5482",
+  "parent": "4344",
+  "date": "2017-04-24T15:29:17+08:00",
+  "author": "ohyes158",
+  "site": "",
+  "text": "@wowo：对于形态2的i2c slave，其实也不属于platform\r\n依然是i2c device，只是从类设备来说，会从属于音频(音频codec)或者视频子系统（v4l2 subdev）"
+ },
+ {
+  "id": "5986",
+  "parent": "0",
+  "date": "2017-09-04T23:42:07+08:00",
+  "author": "小白",
+  "site": "",
+  "text": "wowo你好！在of_i2c_register_device函数中是解析i2c的slaver设备的信息，主要是填充struct i2c_board_info结构，然后内核使用i2c_new_device(adap, &info)解析成client信息，我看了源码，并没有看到struct i2c_client中的irq信息的解析！不知道是不是哪里没有注意到！在此请教！难道这个irq信息的填充，内核并没有帮我们填充吗？我们自己的驱动中解析？但是想想也不合理，因为platform_device解析资源的时候都会顺带将irq信息解析。\r\n\r\nstatic struct i2c_client *of_i2c_register_device(struct i2c_adapter *adap,\r\n\t\t\t\t\t\t struct device_node *node)\r\n{\r\n\tstruct i2c_board_info info = {};\r\n\r\n\taddr_be = of_get_property(node, \"reg\", &len);\r\n\taddr = be32_to_cpup(addr_be);\r\n\r\n\tinfo.addr = addr;\r\n\tinfo.of_node = of_node_get(node);\r\n\tinfo.archdata = &dev_ad;\r\n\r\n\tresult = i2c_new_device(adap, &info);\r\n\r\n\treturn result;\r\n}"
+ },
+ {
+  "id": "5987",
+  "parent": "5986",
+  "date": "2017-09-05T10:31:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@小白：i2c_device_probe中解析的：\r\n        if (!client->irq && dev->of_node) {                                     \r\n                int irq = of_irq_get(dev->of_node, 0);                          \r\n                                                                                \r\n                if (irq == -EPROBE_DEFER)                                       \r\n                        return irq;                                             \r\n                if (irq < 0)                                                    \r\n                        irq = 0;                                                \r\n                                                                                \r\n                client->irq = irq;                                              \r\n        }"
+ },
+ {
+  "id": "5991",
+  "parent": "5987",
+  "date": "2017-09-05T23:05:39+08:00",
+  "author": "小白",
+  "site": "",
+  "text": "@wowo：谢谢"
+ },
+ {
+  "id": "6159",
+  "parent": "0",
+  "date": "2017-11-01T11:18:10+08:00",
+  "author": "我一米八",
+  "site": "",
+  "text": "wowo你好，受益匪浅，但是第四篇没有找到，只有前三篇，可否帮我发个链接"
+ },
+ {
+  "id": "6161",
+  "parent": "6159",
+  "date": "2017-11-01T21:43:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@我一米八：我还没写第四篇呢，所以你揍是找不到啊，哈哈~~"
+ },
+ {
+  "id": "6433",
+  "parent": "0",
+  "date": "2017-12-29T14:37:19+08:00",
+  "author": "青春年少",
+  "site": "",
+  "text": "wowo大侠，什么时候搞篇spi的文章？期待ing"
+ },
+ {
+  "id": "6441",
+  "parent": "6433",
+  "date": "2018-01-01T21:59:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@青春年少：SPI的应用场景没有I2C那么广泛，所以才没有写它，有机会的话再写吧，多谢关注:-)"
+ }
+]

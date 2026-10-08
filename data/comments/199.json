@@ -1,0 +1,210 @@
+[
+ {
+  "id": "2230",
+  "parent": "0",
+  "date": "2015-07-16T07:53:20+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "有个弊端，就是其中一个work block，后续排到同一队列的work都无法执行了"
+ },
+ {
+  "id": "2233",
+  "parent": "2230",
+  "date": "2015-07-16T09:05:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：对，这也是Concurrency-managed workqueues（CMWQ）要解决的问题之一，具体如何解决且听下回分解，呵呵。\r\nBTW，4.0的CMWQ的代码要将近5000行代码，而2.6.23的workqueue才800多行代码，复杂度不是增加一点点啊"
+ },
+ {
+  "id": "2234",
+  "parent": "2233",
+  "date": "2015-07-16T09:27:48+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@linuxer：期待大作，前两年网上讲解CMWQ的资料太少"
+ },
+ {
+  "id": "2324",
+  "parent": "0",
+  "date": "2015-07-27T17:52:43+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer，在3.10的代码中WQ已经被替换成了CMWQ了吗？"
+ },
+ {
+  "id": "2325",
+  "parent": "2324",
+  "date": "2015-07-27T18:01:14+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：第一个引入cmwq的内核版本是2.6.36"
+ },
+ {
+  "id": "2411",
+  "parent": "0",
+  "date": "2015-08-04T08:57:26+08:00",
+  "author": "qq2shui",
+  "site": "",
+  "text": "大神们，问一个问题，希望大神们帮忙解决一下。嘻嘻。\r\n1.创建单线程的work，是绑定到第一个可用的CPU上吗？简单看了一下宏定义，没有彻底弄明白。\r\n2.为什进程不能睡眠：文中说的只是理论原因，网上说实际原因可能存在两点∶首先在中断上下文，是需要禁用中断的，如果睡眠会导致同级的中断得不到响应，比如时钟中断；其次：由于中断是在他人的进程上下文，如果睡眠，导致进程切出，再次切回来，无法找到回来的路，但是针对这一点实在无法理解。再次：内核中针对中断中睡眠的行为是否存在保护。"
+ },
+ {
+  "id": "2414",
+  "parent": "2411",
+  "date": "2015-08-04T09:34:00+08:00",
+  "author": "qq2shui",
+  "site": "",
+  "text": "@qq2shui：更正：“再次：内核中针对中断中睡眠的行为是否存在限制”。"
+ },
+ {
+  "id": "2415",
+  "parent": "2411",
+  "date": "2015-08-04T11:02:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@qq2shui：第一个问题：single threaded workqueue不会绑定在第一个可用的cpu上，虽然在初始化的时候有：\r\nsinglethread_cpu = first_cpu(cpu_possible_map);\r\n但是，实际上只是该workqueue的cpu_workqueue_struct选择该cpu，实际调度的时候，single threaded workqueue的worker线程可以被调度到任何一个cpu上运行\r\n\r\n第二个问题：我个人不是非常认同您说的这些网络的说法"
+ },
+ {
+  "id": "2487",
+  "parent": "0",
+  "date": "2015-08-23T23:17:16+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "@linuxer:\r\n\r\ntasklet 通过 TASKLET_STATE_SCHED 和 TASKLET_STATE_RUN 来防止并发，threaded irq hander 也通过IRQS_ONESHOT防止并发，workequeue是通过什么手段来防止并发的呢？比如我在两个cpu上同时触发同一个workqueue，我看到一个WORK_STRUCT_PENDING 在work提交的时候使用，是不是workqueue采取与taskelet类似的方法，来防止并发，或者根本就由用户自己考虑并发？我自己先在代码中找了好久都没发现，workqueue的代码变复杂了，我有点晕。"
+ },
+ {
+  "id": "2488",
+  "parent": "2487",
+  "date": "2015-08-24T23:39:20+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@heziq：非常好的问题，多谢！但是最近有点忙，而且你的问题不是三言两语就能回答的，稍等两天再回复你。"
+ },
+ {
+  "id": "2492",
+  "parent": "2487",
+  "date": "2015-08-25T19:28:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@heziq：如果CMWQ的代码让你眼花缭乱，那么不如先看看旧workqueue上的并发。\r\n1、挂入队列。对于旧的workqueue而言，有两种场景：\r\n（1）single thread workqueue\r\n（2）multi thread workqueue或者说per cpu thread workqueue\r\n无论哪一种场景，当调用queue_work的时候，cpu已经选定。对于single thread workqueue，选择singlethread_cpu定义的那个cpu（一般是first possible cpu），对于per cpu thread workqueue，选择当前的cpu，也就是说，哪个cpu上执行queue_work，就挂入哪一个cpu对应的cpu_workqueue_struct。对于WORK_STRUCT_PENDING标记，你可以再看看queue_work的代码，代码中，test_and_set_bit是原子操作，因此，只能有一个thread进入queue work区域，也就是说，无论有多少个thread（可能来自多个cpu上的多种上下文）调用queue_work，结果只有一个work挂入某个cpu上的work list，变成pending状态。这里还有一个小的同步细节：wq_per_cpu访问了per cpu变量，而get_cpu/put_cpu分别disable preempt和enable preempt，确保了在访问Per-CPU变量的时候，current thread不能调度到其他CPU上去。\r\n\r\n需要注意的是，WORK_STRUCT_PENDING可以保证pending状态的work只有一个，但是，如果一旦该work进入执行状态会怎样呢？\r\n\r\n2、执行work。在worker thread中，处理work的大概流程是：\r\n（1）从该worker thread对应的work list中摘下一个work\r\n（2）clear pending flag\r\n（3）执行该work的callback function\r\n如果该work进入执行状态，pending flag已经清除，因此后续queue_work可以继续将work挂入worker list。对于single thread workqueue，由于只有一个worklist，只有一个thread，虽然该thread可以被调度到多个cpu上执行，但是不可能有多个thread同时执行，因此，对于single thread workqueue，其work（不论是否是同一个work）的callback function都是不会重入的，也就是说，各个work都是严格串行化执行。对于per cpu workqueue，各个online的cpu上都有一个worker thread及其要处理的work list。因此，有可能会有多个work在多个cpu上执行。我们举一个实际的例子：假设有一个per cpu workqueue，我们称之WQ，有work A和work B可能来自driver A和driver B，Driver A和Driver B的中断触发并分别送达cpu 0和cpu1，在驱动的handler中会queue相应的work到WQ去，因此work A和work B分别在cpu 0和cpu 1上的worker thread中执行，因此work A和work B的callback function是完全并发的。如果Driver A和Driver B的中断触发并都送达了cpu 0，那么work A和work B的callback function在cpu0上worker thread是串行执行的。上面讨论了多个work实例的并发，那么指定的work，例如work A的并发是怎样的呢？其实也是类似的，如果driver A的中断始终送达cpu 0，那么work A的callback是串行执行的，如果driver A的中断可以送达多个cpu ，那么在多个cpu上，work A的callback也是可以并发执行的。\r\n\r\n最后总结一下：挂入到multi thread或者说per cpu workqueue上的指定的work，其callback是不会在一个cpu上并发执行（也就是说在多个cpu上可以并发执行）。\r\n\r\nCMWQ的概念是类似的，这里就不再赘述了，后面还会有文档描述。"
+ },
+ {
+  "id": "2493",
+  "parent": "2492",
+  "date": "2015-08-26T11:25:13+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "@linuxer：挂入到multi thread或者说per cpu workqueue上的指定的work，其callback是不会在一个cpu上并发执行（也就是说在多个cpu上可以并发执行）。 \r\n\r\n如你所说，挂入multi thread上的work的并发引起的同步问题，需要用户自己解决了，不像taskelet那样，同一个tasklet 绝对不会并发。"
+ },
+ {
+  "id": "5145",
+  "parent": "0",
+  "date": "2017-01-14T16:06:50+08:00",
+  "author": "edison.jiang",
+  "site": "http://no",
+  "text": "linuxer,你好，我有如下问题想跟您请教一下（麻烦了）：\r\n1.系统一直卡在cancel_delayed_work_sync（work），走不下去。我现在的workaround是这样的：\r\n  \tif (!delayed_work_pending (work)) {\r\n\t    return ;\r\n\t}\r\n\tcancel_delayed_work_sync(work);\r\n  请问这是为什么？\r\n2.一个work_struct的func走完后，会和它的workqueue_struct解除绑定关系吗？"
+ },
+ {
+  "id": "5153",
+  "parent": "5145",
+  "date": "2017-01-16T09:10:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@edison.jiang：之所以走不下去，是因为work的func中在等什么事情吧？你这里又在等func走完，所以出现问题。看一下func的实现。"
+ },
+ {
+  "id": "5157",
+  "parent": "5153",
+  "date": "2017-01-16T10:17:40+08:00",
+  "author": "edison.jiang",
+  "site": "http://no",
+  "text": "@wowo：你好，多谢指点。我看一下我的func的实现，理论上没有问题。加log验证也没问题。不过通过看func， 我发现了是因为我的func里和外面的互斥锁是使用同一个锁，我外面使用了这个锁，等到func执行的时候又去使用这个func，而在外面的流程里有一个spin_lock，所以产生了一直走不下去的情况。"
+ },
+ {
+  "id": "5158",
+  "parent": "5145",
+  "date": "2017-01-16T10:45:55+08:00",
+  "author": "hello",
+  "site": "",
+  "text": "@edison.jiang：2.一个work_struct的func走完后，会和它的workqueue_struct解除绑定关系吗？\r\n\r\n当然，如果一个work被调度执行之后，就已经从workqueue上摘下来了。"
+ },
+ {
+  "id": "6532",
+  "parent": "0",
+  "date": "2018-02-06T10:21:08+08:00",
+  "author": "小学生",
+  "site": "",
+  "text": "处于pending状态的work不会重复挂入workqueue。我们假设A驱动模块静态定义了一个work，当中断到来并分发给cpu0的时候，中断handler会在cpu0上执行，我们在handler中会调用schedule_work将该work挂入cpu0的worker thread，也就是keventd 0的work list。在worker thread处理A驱动的work之前，中断很可能再次触发并分发给cpu1执行，这时候，在cpu1上执行的handler在调用schedule_work的时候实际上是没有任何具体的动作的，也就是说该work不会挂入keventd 1的work list，因为该work还pending在keventd 0的work list中。\r\n————————————————————————————————————————————\r\n这样不会发生少处理work的事情吗？"
+ },
+ {
+  "id": "6537",
+  "parent": "6532",
+  "date": "2018-02-07T09:30:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@小学生：不会的，work的目标就是调用对应的work function，连续的work事件只要有一个被处理就OK了。"
+ },
+ {
+  "id": "6541",
+  "parent": "6537",
+  "date": "2018-02-07T14:09:38+08:00",
+  "author": "小学生",
+  "site": "",
+  "text": "@linuxer：那如果假设work function要做的事情就是对某个counter进行加一操作，这样的话，岂不是会少计算counter的值"
+ },
+ {
+  "id": "6542",
+  "parent": "6541",
+  "date": "2018-02-08T09:19:18+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@小学生：workqueue机制本身就是提供一个异步进程上下文的执行环境，并不保证调用次数。"
+ },
+ {
+  "id": "6574",
+  "parent": "0",
+  "date": "2018-02-28T16:16:52+08:00",
+  "author": "该昵称已屏蔽",
+  "site": "",
+  "text": "有个问题啊。就是其中一个work block，后续排到同一队列的work都无法执行了"
+ },
+ {
+  "id": "7008",
+  "parent": "0",
+  "date": "2018-10-31T12:13:32+08:00",
+  "author": "张飞",
+  "site": "",
+  "text": "（1）导致worker thread进入sleep状态有三个条件：（a）电源管理模块没有请求冻结该worker thread。（b）该thread没有被其他模块请求停掉。（c）work list为空，也就是说没有work要处理\r\n\r\na,b是不是说反了"
+ },
+ {
+  "id": "7081",
+  "parent": "0",
+  "date": "2018-12-12T15:56:44+08:00",
+  "author": "reborn",
+  "site": "",
+  "text": "@linuxer \r\n请问,我们系统出现了一个 空指针反引用的问题涉及到pwq,\r\n\r\n[1353795.671908] BUG: unable to handle kernel NULL pointer dereference at 0000000000000008\r\n[1353795.671972] IP: process_one_work+0x2e/0x410\r\n[1353795.671997] PGD 0 P4D 0 \r\n[1353795.672039] Oops: 0000 [#1] SMP PTI\r\n[1353795.672070] Modules linked in: binfmt_misc dccp_diag dccp udp_diag unix_diag af_packet_diag netlink_diag tcp_diag inet_diag nf_conntrack_ipv4 nf_defrag_ipv4 xt_tcpudp xt_conntrack xt_multiport iptable_filter ip_tables x_tables 8021q garp mrp stp llc bonding ipmi_ssif dcdbas intel_rapl skx_edac x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass intel_cstate intel_rapl_perf ipmi_si ipmi_devintf mei_me lpc_ich ipmi_msghandler mei mac_hid shpchp acpi_power_meter ib_iser rdma_cm iw_cm ib_cm ib_core iscsi_tcp libiscsi_tcp libiscsi scsi_transport_iscsi toa(OE) nf_conntrack lp parport autofs4 btrfs zstd_compress raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear igb dca i40e mgag200 crct10dif_pclmul i2c_algo_bit\r\n[1353795.672626]  crc32_pclmul ttm ghash_clmulni_intel drm_kms_helper pcbc syscopyarea sysfillrect aesni_intel sysimgblt aes_x86_64 fb_sys_fops crypto_simd glue_helper ptp drm megaraid_sas cryptd ahci pps_core libahci [last unloaded: stap_f2cfe18efb176d4eb6e226c35bf623fd_263331]\r\n[1353795.672827] CPU: 53 PID: 1314 Comm: kworker/53:2 Tainted: G           OE    4.15.0-21-shopee-generic #22~16.04.1+3\r\n[1353795.672900] Hardware name: Dell Inc. PowerEdge R740xd/0RR8YK, BIOS 1.3.7 02/08/2018\r\n[1353795.672999] RIP: 0010:process_one_work+0x2e/0x410\r\n[1353795.673037] RSP: 0018:ffff9be74f93fe88 EFLAGS: 00010046\r\n[1353795.673080] RAX: 0000000000000000 RBX: ffff8e953d6a2180 RCX: 0000000000000000\r\n[1353795.673132] RDX: 0000000000000000 RSI: ffff9be7824fbb08 RDI: ffff8e9534b5f680\r\n[1353795.673184] RBP: ffff9be74f93fec0 R08: 0000000000000000 R09: 0000000000000000\r\n[1353795.673236] R10: 0000000000000000 R11: 0000000000000010 R12: ffff8e953d6a2180\r\n[1353795.673289] R13: ffff8e953d6a2180 R14: 0000000000000000 R15: ffff8e9534b5f680\r\n[1353795.673343] FS:  0000000000000000(0000) GS:ffff8e953d680000(0000) knlGS:0000000000000000\r\n[1353795.676382] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033\r\n[1353795.680239] CR2: 00000000000000b0 CR3: 0000000e9260a006 CR4: 00000000007606e0\r\n[1353795.682521] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000\r\n[1353795.683576] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400\r\n[1353795.684812] PKRU: 55555554\r\n[1353795.685832] Call Trace:\r\n[1353795.686860]  worker_thread+0x253/0x410\r\n[1353795.687837]  kthread+0x121/0x140\r\n[1353795.688798]  ? process_one_work+0x410/0x410\r\n[1353795.689769]  ? kthread_create_worker_on_cpu+0x70/0x70\r\n[1353795.690723]  ret_from_fork+0x35/0x40\r\n[1353795.691711] Code: 00 00 55 48 89 e5 41 57 41 56 41 55 41 54 53 48 83 ec 10 48 8b 06 4c 8b 6f 48 49 89 c6 45 30 f6 a8 04 b8 00 00 00 00 4c 0f 44 f0 <49> 8b 46 08 44 8b b8 00 01 00 00 41 83 e7 20 41 f6 45 10 04 75 \r\n[1353795.693324] RIP: process_one_work+0x2e/0x410 RSP: ffff9be74f93fe88\r\n[1353795.694056] CR2: 0000000000000008\r\n\r\n\r\n最后发现 get_work_pwq 会返回NULL,\r\n\r\n什么情况下它会返回null"
+ },
+ {
+  "id": "8601",
+  "parent": "6532",
+  "date": "2022-04-28T18:25:24+08:00",
+  "author": "orangeboyye",
+  "site": "",
+  "text": "@小学生：如果你这样写代码就会导致少一个work处理，所以不能这么写代码，你应该每次都创建一个新的work来执行，不要复用work。当然我遇到过复用work的，它的逻辑是这么写的，把要处理的事情放到另一个list上，work遍历那个list处理事情，scheddule_work在这里是的作用就是如果work没在运行就唤醒它，如果正在运行就不用管，说明它正在遍历list，这么使用逻辑是正确的。"
+ },
+ {
+  "id": "8602",
+  "parent": "7008",
+  "date": "2022-04-28T18:35:07+08:00",
+  "author": "orangeboyye",
+  "site": "",
+  "text": "@张飞：没有说反，你仔细看代码，这三个条件不是or的关系，是and的关系，第一个成立了才会去看第二个，第二个成立了才会去看第三个，第一个条件是没有在冻结，如果不成立就是在冻结，整个表达式为false，后面的就不看了，if子语句不执行，下面的语句是try_to_freeze，正好执行冻结啊。第二代条件同理。当三个条件都成立的时候才schedule，也就是去调度其他进程，此时的条件是没有冻结，是合理的，如果是要冻结，此时你去执行调度，不是就不合理了吗。"
+ },
+ {
+  "id": "9148",
+  "parent": "0",
+  "date": "2025-02-28T16:24:14+08:00",
+  "author": "luc",
+  "site": "",
+  "text": "keventd_wq 从2010 年就变成 system_wq 了"
+ }
+]

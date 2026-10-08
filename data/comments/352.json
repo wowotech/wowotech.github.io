@@ -1,0 +1,90 @@
+[
+ {
+  "id": "4987",
+  "parent": "0",
+  "date": "2016-12-07T18:58:13+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "hi linuxer\r\n这个宏定义主要是用来创建一个中间level的translation table中的描述符\r\n==============================================================\r\n那第一个level的translation table在哪里？放在TTBR0_ELX中吗？\r\n\r\n如果是这样的话，第一level的translation table怎么找到你说的这个中间级别的？"
+ },
+ {
+  "id": "4988",
+  "parent": "0",
+  "date": "2016-12-07T19:00:02+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "tlb参数里面都保存着什么？只是指向该translation talbe的内存吗？"
+ },
+ {
+  "id": "4992",
+  "parent": "4988",
+  "date": "2016-12-08T10:16:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：tbl指向某个level的translation table。\r\nBTW，是tbl（表示table）而不是tlb"
+ },
+ {
+  "id": "4993",
+  "parent": "4987",
+  "date": "2016-12-08T10:19:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：我是这样定义中间level的页表：\r\nTTBR-->（中间level的页表）--->PTE--->page\r\n\r\n你说的第一level的translation table也是中间level的页表，也就是说中间level的页表就是那些描述符是table描述的level，只有最后一个translation table不是中间level"
+ },
+ {
+  "id": "5045",
+  "parent": "0",
+  "date": "2016-12-21T14:59:49+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "初始阶段的页表（PGD/PUD/PMD/PTE）都是排列在一起的，每一个占用一个page。\r\n===>> 请问下，每一个页表占用一个page，且排列在一起，为什么每个页表使用一个page，是合适的？比如：pgd 页表，如果4k page，那么最多保存4k/8=512 entry。对于0xC0000000会不会落到其512entry之外，或者说使用一个页来保存pgd页表在任何配置下都会使用其kernel的虚拟地址落在一个页内。"
+ },
+ {
+  "id": "6340",
+  "parent": "0",
+  "date": "2017-12-11T17:55:17+08:00",
+  "author": "eastl",
+  "site": "",
+  "text": "你好，有個小問題想請教一下\r\n這邊__create_page_tables的return是透過自己呼叫ret來return回去\r\n但是在preserve_boot_args是在__inval_cache_range裡面做ret\r\n為何這邊不要一樣在__inval_cache_range使用b不要用bl\r\n來讓__inval_cache_rangeret回去就好呢"
+ },
+ {
+  "id": "6655",
+  "parent": "0",
+  "date": "2018-04-11T15:09:15+08:00",
+  "author": "rikeyone",
+  "site": "",
+  "text": "Hi,linuxer：\r\n我想请教一下，PGD的入口地址最终会被设置到CP15的TTBR寄存器，我想了解的是，这个地址后续会由MMU去访问并去解析地址，那么MMU能访问到的PGD空间有多大？\r\n换句话说，PGD这一个level的页表大小是否有一个限制。比如4KB或者其他？"
+ },
+ {
+  "id": "6657",
+  "parent": "0",
+  "date": "2018-04-12T11:57:00+08:00",
+  "author": "rikeyone",
+  "site": "",
+  "text": "mov    x0, x26                －－－－－－－－－－－－－－－－－－－－－－－－（1）\r\nmov    x5, #PAGE_OFFSET－－－－－－－－－－－－－－－－－－－－－－－（2）\r\ncreate_pgd_entry x0, x5, x3, x6－－－－－－－－－－－－－－－－－－－－－（3）\r\nldr    x6, =KERNEL_END            // __va(KERNEL_END)\r\nmov    x3, x24                // phys offset\r\ncreate_block_map x0, x7, x3, x5, x6 －－－－－－－－－－－－－－－－－－－（4） \r\n\r\n\r\n关于这段 kernel direct map，有个问题想请教，上面只执行一次create pgd entry函数其实是在各个level的页表中只创建了一个entry。那么它创建出来的映射地址范围也才4K ， kernel image的大小不会超过这个界限吗。"
+ },
+ {
+  "id": "6658",
+  "parent": "6657",
+  "date": "2018-04-12T22:56:00+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@rikeyone：如果是4k页面，create_pgd_entry就是为PGD页表的某一个表项填充PUD页表，继续填充PUD页表的页表项指向PMD页表，最后create_block_map创建对应的PMD页表的表项。使用section mapping，也就是PMD页表的表项填充block descriptor，也就是2M大小。"
+ },
+ {
+  "id": "7673",
+  "parent": "0",
+  "date": "2019-09-29T10:18:24+08:00",
+  "author": "see",
+  "site": "",
+  "text": "记得之前有一篇文档介绍identity mapping和kernel image mapping的内存映射图，怎么找不到那篇文章了？"
+ },
+ {
+  "id": "8187",
+  "parent": "6657",
+  "date": "2021-01-23T16:17:12+08:00",
+  "author": "xuan",
+  "site": "",
+  "text": "@rikeyone：create_block_map内部是一个循环语句，在设置swapper_pg_dir时，是将虚拟地址段PAGE_OFFSET到KERNEL_END映射到__pa(__PHYS_OFFSET)起始的连续物理地址段上，设置的页表entry是在PMD上，如果是4KB的page，那么最多可以达到512个entry，每个entry对应的设置大小是2MB，最大也就是1GB，没有哪个Image的大小是超过1GB的吧？"
+ }
+]

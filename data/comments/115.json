@@ -1,0 +1,610 @@
+[
+ {
+  "id": "809",
+  "parent": "0",
+  "date": "2014-12-04T22:08:12+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "Hi linuxer 这篇文章看了也有几遍了，有些问题还是想请教一下。1：为什么Timer要有up counter ,downcounter 呢？这个不是有一个就可以吗？"
+ },
+ {
+  "id": "810",
+  "parent": "809",
+  "date": "2014-12-04T22:42:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：在我阅读ARM general timer的spec之前，接触了两种类型的Timer硬件：\r\n1、upcounter类型的。类似PXA270处理器的timer硬件，有一个free running的counter，有一个match register，free running的counter在某个输入频率下工作，每一个clock加一，周而复始。只要free running的counter在数值上等于match register的值，就会触发中断。\r\n2、downcounter类型的。类似S3C2451处理器的timer，有一个counter初始值寄存器，还有一个counter寄存器，一旦enable了counter寄存器，初始值被加载到这个counter寄存器，然后counter在某个输入频率下工作，每一个clock减去一，达到0值则触发中断。\r\n\r\n这两种counter各有优点和缺点：upcounter型的timer硬件的好处是符合linux kernel的需求，一个timer的硬件就可以支持clocksource和clockevent模型。downcounter类型的优点是这种timer可以设定周期模式和one shot模式。one shot模式就是中断只产生一次。周期模式在产生中断的时候，初始值寄存器会重新加载到counter中，counter继续counter down，中断会周期性的产生。不过，downcounter无法符合linux对clock source的抽象。\r\n\r\nARM的general timer的硬件当然是想集成upcounter和downcounter的好处，因此ARM的general timer既可以做upcounter，也可以做downcounter。"
+ },
+ {
+  "id": "812",
+  "parent": "810",
+  "date": "2014-12-04T22:50:20+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：Awesome! 佩服佩服！\r\n还有一个疑问 msm8974 timer 的代码寄存器地址是从0xf9020000开始，他的这个地址是虚拟地址 还是物理地址？"
+ },
+ {
+  "id": "814",
+  "parent": "812",
+  "date": "2014-12-04T22:54:42+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@tigger：还有=\"\" 这个在dt里面是什么用法啊？"
+ },
+ {
+  "id": "815",
+  "parent": "812",
+  "date": "2014-12-04T22:55:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：在DTS中描述的都是物理地址。\r\n在msm8974 timer driver的初始化代码中会获取该物理地址（通过device node），然后用io mmap函数进行映射，得到虚拟地址，kernel中的访问都是虚拟地址了"
+ },
+ {
+  "id": "816",
+  "parent": "815",
+  "date": "2014-12-04T22:57:03+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：嗯，按照道理应该是这样的，只是他这个oxf开头的地址是物理地址我有点不太适应 哈哈"
+ },
+ {
+  "id": "817",
+  "parent": "814",
+  "date": "2014-12-04T22:59:04+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：惨了，这里的例子都错了，我在我的计算机上看到的都是对的，一发布就出错，我经常有这样的错误，估计是和中文字符相关，现在在家不方便，明天我回公司再修改吧。\r\n\r\nPS：多谢啦！要不这里会一直错下去......"
+ },
+ {
+  "id": "818",
+  "parent": "817",
+  "date": "2014-12-04T23:02:04+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：哈哈 作为金牌读者要负责啊。另外里面有一句 ----并把该终端控制器的device node ---/也一并修改了吧。这里应该也是笔误。"
+ },
+ {
+  "id": "819",
+  "parent": "818",
+  "date": "2014-12-04T23:03:37+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@tigger：这里我把中断两个字打错了"
+ },
+ {
+  "id": "821",
+  "parent": "818",
+  "date": "2014-12-04T23:13:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：好的。\r\n作为“华南首席linux团队”，按照我们的习惯，金牌读者的全称应该是“华南首席金牌读者”，哈哈"
+ },
+ {
+  "id": "1500",
+  "parent": "0",
+  "date": "2015-04-14T18:57:49+08:00",
+  "author": "hacker",
+  "site": "",
+  "text": "Thanks for your sharing. 谢谢！"
+ },
+ {
+  "id": "1547",
+  "parent": "0",
+  "date": "2015-04-22T12:14:52+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "好文！\r\n对CP15盒mem两种模式的system counter的读取方式解读有误。\r\n事实上只要系统中存在了cp15类型的模式，mem模式时不会调用到的, 看源码：\r\narch_counter_read-->arch_counter_get_cntvct-->arch_timer_read_counter()\r\n\r\narch_timer_read_counter是一个函数指针，它的定义如下：\r\nu64 (*arch_timer_read_counter)(void) = arch_counter_get_cntvct_cp15;\r\n\r\n所以初始化的时候默认采用cp15方式读取，再看下是否有人对它赋值：\r\nstatic void __init arch_counter_register(unsigned type)\r\n{\r\n\tu64 start_count;\r\n\r\n\t/* Register the CP15 based counter if we have one */\r\n\tif (type & ARCH_CP15_TIMER)\r\n\t\tarch_timer_read_counter = arch_counter_get_cntvct_cp15;\r\n\telse\r\n\t\tarch_timer_read_counter = arch_counter_get_cntvct_mem;\r\n......\r\n}\r\n\r\n所以在初始化的时候，假设cp15和mem两种方式同时存在，那么只会采用cp15。只有当cp15不存在的时候，才会用到mem，也就是函数arch_counter_get_cntvct_mem\r\n\r\n再看下你举例里面高通8974的例子，事实上你漏了dtsi里面前面的一段：\r\n\r\n\ttimer {\r\n\t\tcompatible = \"arm,armv7-timer\";\r\n\t\tinterrupts = <1 2 0xf08>,\r\n\t\t\t     <1 3 0xf08>,\r\n\t\t\t     <1 4 0xf08>,\r\n\t\t\t     <1 1 0xf08>;\r\n\t\tclock-frequency = <19200000>;\r\n\t};\r\n\r\n\ttimer@f9020000 {\r\n\t\t#address-cells = <1>;\r\n\t\t#size-cells = <1>;\r\n\t\tranges;\r\n\t\tcompatible = \"arm,armv7-timer-mem\";\r\n\t\treg = <0xf9020000 0x1000>;\r\n\t\tclock-frequency = <19200000>;\r\n......\r\n\r\n请注意8974平台注册了arm,armv7-timer这种cp15类型的system counter。\r\n后面的arm,armv7-timer-mem是为了注册timer用的，并不代表system counter会真的采用mem模式去读取。"
+ },
+ {
+  "id": "1551",
+  "parent": "1547",
+  "date": "2015-04-22T13:06:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：多谢你的指正！\r\n实际上每次回头再看以前的文档都是觉得惨不忍睹。实际上cp15和memory map的方式有很大性能的不同，我相信ARM公司终将会把per core类型的硬件全部使用cp15类型的方式来访问。对于timer硬件，global的counter是全局的，应该是使用memory map的方式访问，属于各个cpu core的local timer，应该应用更快的系统总线（CP15）访问。同样的道理也适用于GIC，在最新的GIC中已经移除了CPU interface这部分的HW block功能，只是保留Distributor的内容，而原来GIC中的CPU interface被集成到了ARM core中。"
+ },
+ {
+  "id": "1552",
+  "parent": "1551",
+  "date": "2015-04-22T13:32:12+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：这是我见过为数不多的可以讲why的技术文章。有些小错漏在所难免，不必计较。\r\n请抽空更新剩下的几个章节，期待中。"
+ },
+ {
+  "id": "1555",
+  "parent": "1551",
+  "date": "2015-04-22T17:40:51+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：@linuxer @蜗蜗:\r\n  请问两位是否可以私下交流一下？\r\n  爱才之心大起 :=)\r\n\r\nskype id: tangramybu@outlook.com"
+ },
+ {
+  "id": "1630",
+  "parent": "0",
+  "date": "2015-04-29T10:15:39+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer\r\n 你好，有些概念我看了之后还是觉得有点模糊，麻烦你帮忙解答一下，多谢。抱歉我对这一块的理解有欠缺，似懂非懂，要真正做一遍才能彻底领悟，目前的问题本身也许也存在问题，请你包涵。\r\n\r\n我们的SOC采用一个单核的A5，由于A5单核模式下面不支持ARM的generic timer架构，于是只能自己去搭这个timer的架构。目前是用一个56 bit的的system counter放在always-on里面，这个counter一直不停下，如果要读取的话是通过mem map方式读取。由于A5 core里面没有集成timer，因此在SOC级别放了一个32 bit的timer，同样通过mem map方式读取和配置timer。下面的这些问题我没有想明白：\r\n1. 在我们自己的架构下，arm_arch_timer.c 是不是就不能直接用了?  比如timer肯定不能直接使用这个模块的代码，因为我们用的不是ARM的timer IP，因此寄存器不一样。\r\n2. system counter我准备按照ARM的代码创建:\r\nstatic struct clocksource clocksource_counter = {\r\n .name = \"arch_sys_counter\",\r\n .rating = 400,\r\n .read = arch_counter_read,\r\n .mask = CLOCKSOURCE_MASK(56),\r\n .flags = CLOCK_SOURCE_IS_CONTINUOUS | CLOCK_SOURCE_SUSPEND_NONSTOP,\r\n};\r\n\r\n 上面是照抄的，我觉得应该不需要改动什么，自己实现一下read函数就行了。\r\n\r\n3. timer，这个需要去实现clock_event_device结构体，我准备照抄kernel里面tegra现成的：\r\nstatic struct clock_event_device tegra_clockevent = {\r\n .name  = \"timer0\",\r\n .rating  = 300,\r\n .features = CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_PERIODIC,\r\n .set_next_event = tegra_timer_set_next_event,\r\n .set_mode = tegra_timer_set_mode,\r\n};\r\n\r\n CLOCK_EVT_FEAT_PERIODIC这个flag需要置位吗？ARM的代码里面似乎没有置位。假设我不主动置位，会影响系统的什么特性吗？\r\n\r\n CLOCK_EVT_FEAT_C3STOP这个flag是否需要置位？我看ARM把cp15类型的per cpu timer置位了这个flag，但是其它mem map的timer没有置位，我们用的是mem map类型的，所以这个不需要置位。\r\n 还有个问题：这个timer的精度只有300，在我们SOC里面全靠它来更新ktime，这样的架构是否有问题？是否有可能改进设计？\r\n\r\n4. 我看到kernel里面有关于broadcast timer的代码，在我们的SOC里面只有单核A5，是否完全不需要考虑这一块的设计？当它不存在就可以了？下面两个config不知道是否需要打开？\r\nCONFIG_ARCH_HAS_TICK_BROADCAST=y\r\nCONFIG_GENERIC_CLOCKEVENTS_BROADCAST=y\r\n \r\n5. 单核的A5, timer不在core里面，假设用了no_hz，那么如果进入cpuidle，这个timer是关还是开呢？我觉得必须开着，否则下一个timer中断就不会过来了因为timer关闭了。\r\n\r\n6．单核A5， timer不在core里面，假设用了no_hz，那么如果进入suspend，这个timer是关还是开呢？我觉得可以关闭，因为我们的system counter放在always-on里面，系统resume的时候可以通过读取system counter来补偿ktime。并且kernel suspend的时候普通的软件timer是不可能唤醒系统的，所以这个timer可以关闭。\r\n\r\n7. 假设这是别家的芯片，多核A5, SMP，并且采用了ARM generic timer的架构，那么它是怎么运作的？ 当cpu3进入cpuidle的时候，cpu3的core被clk gating了，那么cpu3的timer可能也被停止了，这时候是需要借助同一个cluster里面其它的cpu来给cpu3 broadcast timer中断吗？ 这里涉及到一个设计逻辑：在cpu3进入cpuidle之前，cpu3是否会判断和计算一下下一个到期的timer，如果下一个timer很快到期，cpu3有两种选择，要么完全依赖于cpu0~cpu2的broadcast timer irq，直接idle。要么干脆不idle了先处理完下一个timer事件再说。我猜应该是前一种，甚至可以理解为cpu3执行idle代码的时候不会判断到期的timer，直接发出一个broadcast timer的广播，告诉其它cpu接管timer事件，然后cpu3直接idle。 \r\n\r\n8. broadcast这种行为，是由同一个cluster里面的其它cpu利用自身的cp15 timer的中断来广播给已经idle的cpu，还是全局的mem map的timer利用自身的timer中断来广播给所有的cpu？我觉得后者的可能性更高一些，假设一个cluster里面有cpu0~cpu3，假设cpu3进入cpuidle并且timer停止了，那么cpu0, cpu1, cpu2的timer仍然在运行中不受影响，一个全局的具有broadcast功能的timer会负责记录cpu3上面的下一个唤醒事件，等触发时间到来的时候，全局timer负责唤醒cpu3,这个过程中cpu0, cpu1, cpu2并不会接收这个广播事件，因为它们自身的cpu timer运行良好并不需要全局timer的帮助。理解是否正确？\r\n\r\n9. cpuidle的时候per-cpu的timer是否关闭是否要看进入idle的级别？如果是最浅的级别，cpu简单执行了WFI，那么这种情况下per-cpu的timer应该不会停下，所以下一个event到期了之后cpu可以顺利被per-cpu timer唤醒。 如果进入的idle级别很深，肯定会关闭per-cpu timer， 这时候对系统架构来说是不是必须有一个全局的broadcast timer存在？否则的话这个idle的cpu就不能正常处理tick了，是不是会有问题？ 有没有可能其它没有idle的cpu通过IPI来广播timer event给这个已经idle的cpu?\r\n\r\n问题有点多，有点长，不好意思。期待你的耐心解答，先谢过了 :)"
+ },
+ {
+  "id": "1634",
+  "parent": "1630",
+  "date": "2015-04-29T12:56:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：在我们自己的架构下，arm_arch_timer.c 是不是就不能直接用了?  比如timer肯定不能直接使用这个模块的代码，因为我们用的不是ARM的timer IP，因此寄存器不一样。 \r\n－－－－－－－－－－－－－－－－－－－－－\r\n的确是不能直接使用了。不过听你的描述，你们是A5单核系统，因此cpu core中没有local timer，这时候，system counter和HW timer都集成在SOC上的一个HW block中，这时候使用arm_arch_timer.c作为参考其实不是那么适合，建议使用PXA系列的timer程序做参考就OK了。\r\n\r\nCLOCK_EVT_FEAT_PERIODIC这个flag需要置位吗？ARM的代码里面似乎没有置位。假设我不主动置位，会影响系统的什么特性吗？ \r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n这个flag和底层硬件是否有周期性产生timer中断相关，如果硬件有这个能力，当然要设定并且在clock event device中实现set_mode这个callback函数。如果不设定这个标记也没有关系，这也意味着底层的hw timer只是支持one shot mode，那么tick device layer会帮你用one shot mode来模拟周期性的timer中，具体参考tick_setup_periodic代码\r\n\r\nCLOCK_EVT_FEAT_C3STOP设定问题\r\n－－－－－－－－－－－－－－－－－－－－－－\r\n其实我的文档中已经描述过这个问题。这个是和cpu idle的实现有关，如果你们打算设计的cpu idle状态不会导致HW timer停止工作就不需要设定这个bit。\r\n\r\n还有个问题：这个timer的精度只有300，在我们SOC里面全靠它来更新ktime，这样的架构是否有问题？是否有可能改进设计？ \r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\ntimer的rating是300不意味timer的精度就是300，实际timer的精度是和system counter以及HW timer的输入的clock设定相关的\r\n\r\n我看到kernel里面有关于broadcast timer的代码，在我们的SOC里面只有单核A5，是否完全不需要考虑这一块的设计？当它不存在就可以了？下面两个config不知道是否需要打开？ \r\n－－－－－－－－－－－－－－－－－－－－－－\r\n没有CLOCK_EVT_FEAT_C3STOP的问题则不需要打开\r\n\r\n单核的A5, timer不在core里面，假设用了no_hz，那么如果进入cpuidle，这个timer是关还是开呢？我觉得必须开着，否则下一个timer中断就不会过来了因为timer关闭了。 \r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n设计是平衡的艺术。打开timer、功耗增加，关闭timer、虽然降低功耗，但是会增加软件的复杂度（需要进行特别的设计）。你问的这个问题是一个SOC设计的问题，不是一个时间子系统的软件设计问题，当然，最终的答案来自你们的产品需求。\r\n\r\n\r\n其他问题改天再回答吧，^_^"
+ },
+ {
+  "id": "1637",
+  "parent": "1634",
+  "date": "2015-04-29T14:05:01+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：@linuxer ： 非常干你你的耐心回答。\r\n关于CLOCK_EVT_FEAT_C3STOP的设置，我的理解是：假设我们系统只有一个A5 core，SOC里面假设有5个timer。那么在cpu idle的时候就算我把和A5绑定的那个local timer关闭了，我仍然要让另外一个timer来做广播，似乎多次一举，还不如直接让A5的local timer一直运行着，毕竟在我们的架构下面local timer就是普通的SOC timer，不存在哪一个更省电的问题。这样子我在定义clock event device的时候不应该设置CLOCK_EVT_FEAT_C3STOP这个flag，同时也不应该开启那两个broadcast的config，\r\n不知道理解是否正确？\r\n期待你对我其它问题的解答 ：）"
+ },
+ {
+  "id": "1638",
+  "parent": "1634",
+  "date": "2015-04-29T14:06:01+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：非常感谢你的耐心解答，笔误。。。"
+ },
+ {
+  "id": "1651",
+  "parent": "1634",
+  "date": "2015-04-30T00:34:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：我发现你其他的问题都是和tick broadcast framework相关，那我还是用一份文档来完整的描述它好了。\r\n顺便聊几句关于CPU idle设计的问题。这个问题实际上是一个系统问题，需要多个工种来协调。从系统软件的角度来看，当然希望能够在cpu idle的时候保持timer的运作，这样软件复杂度比较简单，但是如果设计的CPU本身需要提供极低功耗的特性，那么在执行cpu idle的时候，有可能会关闭更多的HW block以便节省功耗，这时候，软件team只能妥协了。"
+ },
+ {
+  "id": "1662",
+  "parent": "1651",
+  "date": "2015-04-30T22:16:01+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：期待broadcast的文章赶快面世。\r\n对这个问题我仍然有疑惑：在只有一个A5 core的SOC里面假设有5个timer。假设我把其中一个timer配置成了A5 的local timer，假设HW团队也不反对，我在定义clock event device的时候不设置CLOCK_EVT_FEAT_C3STOP这个flag，同时也不开启那两个broadcast的config，在cpu idle的时候和A5绑定的那个local timer仍然运行，系统中另外的4个timer都没有用来做广播，请问这样子的设计是不是对软硬件都最好的设计？"
+ },
+ {
+  "id": "1683",
+  "parent": "1662",
+  "date": "2015-05-03T22:39:38+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：其实你没有给定具体的应用场景，我不敢说是“对于软硬件最好的设计”，可以肯定的说：你的方案是一个比较通用的设计。\r\n\r\n假设你的处理器想使用在传感器网络的，这样场景一般是使用纽扣电池的，而且你期望你的CPU可以在一个纽扣电池的情况下，可以使用1~2年的时候，这时候，所有的设计都是围绕的如何降低功耗来进行，这时候，你是不是想要在idle的时候turn off那个HW timer？当然，我这里描述的内容可能不符合你说的场景，我只是举一个例子而已"
+ },
+ {
+  "id": "1687",
+  "parent": "1683",
+  "date": "2015-05-04T10:17:30+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：你猜的太准了，我的应用场景还真是需要超低功耗的，假设顺着你的思路，如果在idle的时候turn off那个和A5绑定的local timer，是否系统中其它的global timer也全部需要关闭？因为所有timer的物理上来说都是一模一样的，应该不存在谁比较省电谁比较费电？那结论是系统idle的时候可以把所有HW timer都关闭？那么系统退出idle的时候是不是需要额外的代码逻辑来补偿xtime等等？是不是有点类似于是从suspend退出来的时候读取rtc那种模式？kernel内部有么有这种场景的参考例子？请指教。"
+ },
+ {
+  "id": "1704",
+  "parent": "1687",
+  "date": "2015-05-04T23:11:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：如果真的是有超低功耗的需求，那么我觉得整个系统的电源管理的状态可以考虑设计成两个mode：\r\n1、工作状态。\r\n2、deep sleep状态。\r\n工作状态非常短，可能每隔十几分钟醒来一次进行运算，整个工作状态可能就几个毫秒，运算完毕就立刻进入deep sleep状态。\r\n在deep sleep状态，除了一个小小模块在工作，其余的HW block都被shutdown，这个小小模块包括（和wakeup source相关）：\r\n1、RTC\r\n2、几个GPIO的硬件逻辑\r\n3、PMU\r\n上面的几个电路可以正常工作，但是工作在非常慢的clock上，例如32K的晶振（这时候，系统的main crystal也被turn off）。除了上面的几个block，所有的power被turn off\r\n\r\n我感觉，这时候cpu idle framework似乎是无法满足超低功耗的需求。"
+ },
+ {
+  "id": "1710",
+  "parent": "1687",
+  "date": "2015-05-05T12:15:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：补充两句：\r\n1、CPU idle和suspend是两种不同的状态，本质上CPU idle用于系统的working mode（例如在编辑文本的过程中，cpu暂时休息一下，等到用户输入），这时候，整个系统的外设都是standby的，按理说任何外设的中断事件都应该可以让CPU立刻回到working mode。只不过，由于multi core体系下，很多的外设build in到CPU core，因此，cpu idle也有可能关闭那些build in的外设。suspend绝对是一个系统行为，需要系统的全部模块参与，CPU idle仅仅是由cpu这一个HW block参与。\r\n2、如果系统的负荷非常轻，那么其实没有必要设计复杂的cpu idle状态，因此这时候系统的行为多半是迅速处理完事情，立刻suspend\r\n3、suspend的开销比较大（进入的时候要冻结所有进程、遍历所有driver），处于suspend的时间要足够久才能省电。如果suspend了，但是2秒就resume，肯定是起不到省电的目的\r\n4、suspend的时候，时间子系统已经suspend（各种普通timer已经没有意义了），只能借助RTC来唤醒系统，也就是说需要使用alarm timer。\r\n5、可能有人会问：如果换成cpuidle也进入最深级别，假设采用一模一样的代码逻辑，只留下rtc，gpio，pmu，会有什么问题吗？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n基本上这个很有困难，cpu idle是内核的自主行为，不需要其他外设驱动的状态，也不需要考虑AP的感受。suspend是一个系统行为，一般由AP发起\r\n6、问题：是不是一定需要一个HW timer可以用来唤醒cpu，否则的话就违反了cpuidle的定义？\r\n－－－－－－－－－－－－－－－－－－－－－－\r\n重点不是HW timer，而是整个系统仍然处于工作状态，任何用户的动作、或者外设的动作都需要系统响应。"
+ },
+ {
+  "id": "1865",
+  "parent": "0",
+  "date": "2015-05-26T13:28:49+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "我现在想做个实现，在arch_counter_register中我会改变arch_timer_rate。以使内核timekeeper的墙上时间变快或者变慢，达到欺骗效果。但是现在发现一个问题，我把arch_timer_rate减小时，系统跑起来是OK的。但是我增大arch_timer_rate时可能随时崩溃掉。我跟了下arch_counter_register函数，并没有发现对CLK有操作的东西，只是注册一个clocksource，但为什么对系统的影响会这么大呢。"
+ },
+ {
+  "id": "1868",
+  "parent": "1865",
+  "date": "2015-05-26T15:58:38+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@passerby：@linuxer， 求教。"
+ },
+ {
+  "id": "1870",
+  "parent": "1868",
+  "date": "2015-05-26T16:59:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：帮顶，估计linuxer同学又在做各种表格，哈哈。"
+ },
+ {
+  "id": "1871",
+  "parent": "1865",
+  "date": "2015-05-26T19:04:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：改动arch_timer_rate这个变量带来的影响很大的，影响了clocksource和clockevent模块，而实际上，这是内核中的基本服务，大量的其他内核模块都要使用clocksource和clockevent模块的，你怎么做实际上是动了地基，不建议如此操作。\r\n\r\n我很奇怪，你为何要使内核timekeeper的墙上时间变快或者变慢，用来欺骗谁呢?这是一个什么功能？"
+ },
+ {
+  "id": "1872",
+  "parent": "1870",
+  "date": "2015-05-26T19:05:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：啥也别说了，泪牛满面～～～"
+ },
+ {
+  "id": "1874",
+  "parent": "1871",
+  "date": "2015-05-26T20:46:02+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：实现跑分欺骗功能，希望通过clocksource的方法来实现。但是看起来比较奇怪，我虽然动了地基，但是让时间变快就OK，但是让时间变慢就会出现直接死机重启。所以觉得很奇怪。"
+ },
+ {
+  "id": "1875",
+  "parent": "1874",
+  "date": "2015-05-27T08:39:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：跑分程序应该是运行在用户空间吧，如果这样，可以考虑修改时间子系统中用户空间接口那一部分的模块，不要动底层的代码。"
+ },
+ {
+  "id": "1876",
+  "parent": "1875",
+  "date": "2015-05-27T09:03:17+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：因为原来实现可以通过伪造一个比较慢的clocksource，当检测到跑分程序启动就切换clocksource，这样就能将系统时间慢下来。但是现在我想直接改下clocksource却发现不行，所以感觉是不是代码有所变化。"
+ },
+ {
+  "id": "1878",
+  "parent": "1876",
+  "date": "2015-05-27T10:29:28+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "@passerby：为什么不把这些精力花到系统的优化上面呢？\r\n我是不是问了一个好笑而又愚蠢的问题？"
+ },
+ {
+  "id": "1879",
+  "parent": "1878",
+  "date": "2015-05-27T10:48:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@RobinHsiang：同意！还是正面迎击问题比较好"
+ },
+ {
+  "id": "1880",
+  "parent": "1878",
+  "date": "2015-05-27T11:01:11+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@RobinHsiang：是客户需要手机跑到一个SOC厂家标称的CPU分数，但是这个分数是SOC厂商的比较好条件下的性能效果分数。由于材质、散热、做工各方面的问题，手机无法达到那么好的效果。但是客户又不接受的你说法，一定要达到那个分数。这个时候就像用些歪门邪道来做点手脚。"
+ },
+ {
+  "id": "2197",
+  "parent": "0",
+  "date": "2015-07-13T17:00:16+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer，有个关于system counter   local timer的问题。我以高通的代码作为例子\r\nenum ppi_nr {\r\n\tPHYS_SECURE_PPI,\r\n\tPHYS_NONSECURE_PPI,\r\n\tVIRT_PPI,\r\n\tHYP_PPI,\r\n\tMAX_TIMER_PPI\r\n};\r\n\r\n 35     timer {\r\n 36         compatible = \"arm,armv7-timer\";\r\n 37         interrupts = <1 2 0xff08>,\r\n 38                  <1 3 0xff08>,\r\n 39                  <1 4 0xff08>,\r\n 40                  <1 1 0xff08>;\r\n 41         clock-frequency = <19200000>;\r\n 42     };\r\n高通以ppi中断的形式用request_percpu_irq注册了四个ppi中断，我想问这个注册四个具体作用是什么？我有点迷惑这个是global timer还是local timer，而且为什么要以PPI形式注册。\r\n\r\ntimer@b120000 {\r\n 142         #address-cells = <1>;\r\n 143         #size-cells = <1>;\r\n 144         ranges;\r\n 145         compatible = \"arm,armv7-timer-mem\";\r\n 146         reg = <0xb120000 0x1000>;\r\n 147         clock-frequency = <19200000>;\r\n 148 \r\n 149         frame@b121000 {\r\n 150             frame-number = <0>;\r\n 151             interrupts = <0 8 0x4>,\r\n 152                      <0 7 0x4>;\r\n 153             reg = <0xb121000 0x1000>,\r\n 154                   <0xb122000 0x1000>;\r\n 155         };\r\n 156 \r\n 157         frame@b123000 {\r\n 158             frame-number = <1>;\r\n 159             interrupts = <0 9 0x4>;\r\n 160             reg = <0xb123000 0x1000>;\r\n 161             status = \"disabled\";\r\n 162         };\r\n 163 \r\n 164         frame@b124000 {\r\n 165             frame-number = <2>;\r\n 166             interrupts = <0 10 0x4>;\r\n 167             reg = <0xb124000 0x1000>;\r\n 168             status = \"disabled\";\r\n 169         };\r\n................\r\n而这几个按照你上面所说的MMIO注册的timer，这几个timer我能够理解是以SPI形式注册不同core的system counter和local timer，但对于cp15上面注册的4个PPI确实不太能理解原理，能解释下吗"
+ },
+ {
+  "id": "2198",
+  "parent": "2197",
+  "date": "2015-07-13T18:21:36+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@passerby：还有点补充，如果是local timer，那CP15寄存器访问形式注册为PPI形式。那么每个CORE都会产生中断并且执行中断服务函数，local timer应该只会让它对应的CORE中断，而让其他CORE也中断？这里不太理解"
+ },
+ {
+  "id": "2209",
+  "parent": "2197",
+  "date": "2015-07-14T14:16:02+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@passerby：@linuxer，能否解答下疑惑，却是有点不太理解。"
+ },
+ {
+  "id": "2211",
+  "parent": "2209",
+  "date": "2015-07-14T18:17:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：稍等，有一段时间没有看这些代码了，我需要恢复一下现场。"
+ },
+ {
+  "id": "2216",
+  "parent": "2197",
+  "date": "2015-07-14T23:34:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：高通以ppi中断的形式用request_percpu_irq注册了四个ppi中断，我想问这个注册四个具体作用是什么？\r\n-------------------------------------------\r\n要理解这些ppi的中断，需要理解虚拟化的概念，需要理解security的概念，这些都不是三言两语可以讲清楚的，更重要的是我也在消化理解中，呵呵~~~\r\n\r\n关于local timer的解释\r\n---------------------------\r\n35     timer {\r\n36         compatible = \"arm,armv7-timer\";\r\n37         interrupts = <1 2 0xff08>,\r\n38                  <1 3 0xff08>,\r\n39                  <1 4 0xff08>,\r\n40                  <1 1 0xff08>;\r\n41         clock-frequency = <19200000>;\r\n42     }; \r\n如果dts文件中包括上面这样的armv7-timer的device node，那么说明硬件系统包括system counter（这是全局性的counter）以及各个processor的local timer的硬件。各个local timer的中断只会送达本processor而不会送往其他的processor，因此注册的是PPI的中断。\r\n\r\n\r\nmemory map的timer\r\n--------------------------------------\r\nmemory map的timer是全局性的timer（这里的全局是指对所有的processor都是可见的），因此该timer需要注册的是SPI类型的中断。"
+ },
+ {
+  "id": "2235",
+  "parent": "2216",
+  "date": "2015-07-16T10:01:20+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：谢谢linuxer这么晚了还回复我，大概懂了你的意思。"
+ },
+ {
+  "id": "2441",
+  "parent": "0",
+  "date": "2015-08-10T07:08:12+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "10-50M的频率，怎么计算出纳秒的精度呢？"
+ },
+ {
+  "id": "2442",
+  "parent": "2441",
+  "date": "2015-08-10T08:59:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：10MHz的clock，每一个cycle就是1/10MHz ＝ 100ns，也就是说，counter的精度是以100ns为基础累加的，你不可能得到小于100ns的精度。不过，这也是远远超过之前的低精度timer，因为它是基于tick的，基本上是属于ms级别的"
+ },
+ {
+  "id": "3357",
+  "parent": "0",
+  "date": "2016-01-06T22:42:10+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer 对于arch_mem_timer还是有些疑惑，我看到高通里面是用一个best_frame来注册的timer，我打印/proc/interrupts看到有很多arch_mem_timer的SPI中断，但是我不知道这些中断是谁产生的？用来做什么的？"
+ },
+ {
+  "id": "3358",
+  "parent": "3357",
+  "date": "2016-01-07T00:05:14+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：其实我对高通的芯片根本不了解，呵呵~~因为从来没有做过。\r\n不过，我想高通可能的设计是这样的：\r\n1、通过system register接口可以访问那些per cpu的local timer\r\n2、通过MMIO接口可以访问一个SOC级别的timer\r\n\r\n你说你打印看到若干arch_mem_timer的SPI中断，那么我想这个arch_mem_timer也许就是上面的那个SOC级别的timer，当然，这个timer不是ARMv7或者ARMv8定义的generic timer的功能，应该是自己增加的设计。\r\n\r\n上面都是猜的，完全不靠谱的，仅供参考"
+ },
+ {
+  "id": "3360",
+  "parent": "3358",
+  "date": "2016-01-07T11:24:34+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：@linuxer，你们这里的最新评论只能看到5条。有没有办法看到更多评论的。因为有的时候可能评论的人数比较多，就看不到5条之前的了。"
+ },
+ {
+  "id": "3361",
+  "parent": "3360",
+  "date": "2016-01-07T13:09:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：页面上有一个评论列表的东西，你可以看看。"
+ },
+ {
+  "id": "3362",
+  "parent": "3361",
+  "date": "2016-01-07T13:27:13+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：Thanks 看到这个之后，突然感觉世界变大了。看到了大家思想碰撞出的火花 0~0"
+ },
+ {
+  "id": "3525",
+  "parent": "0",
+  "date": "2016-02-25T15:12:11+08:00",
+  "author": "coldiceangel",
+  "site": "",
+  "text": "能否在（ARM Linux）内核捕获硬件引起的时钟中断？在内核“看起来”已经“死掉”且没有任何打印输出的情况下，有人告诉我最基本的时钟中断还是存在的，我怎么验证这一点？"
+ },
+ {
+  "id": "3530",
+  "parent": "3525",
+  "date": "2016-02-25T19:18:11+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@coldiceangel：基本上我是不太同意你说的那句话的，因为“死掉”是一个非常模糊的词语。\r\n\r\n如果你一定想要验证这一点，也很简单，timer中断handler里面 toggle一个GPIO不就可以了吗？然后示波器可以看到GPIO的波形"
+ },
+ {
+  "id": "3772",
+  "parent": "3525",
+  "date": "2016-04-01T16:12:29+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@coldiceangel：也有可能是串口挂死吧，如果有网络的话 可以ping一下ip。\r\n如果可以ping通，那么处理网卡的cpu本地中断是正常的；如果ping通但ssh连不上（确保sshd打开的情况下），那可能是cpu过于繁忙或者死锁了。"
+ },
+ {
+  "id": "6036",
+  "parent": "0",
+  "date": "2017-09-14T00:53:35+08:00",
+  "author": "misakamm20001",
+  "site": "",
+  "text": "hi linuxer 我翻了下代码没找到CONFIG_HZ是如何设定到local timer里去的 请问这部分设置是在哪里完成的？"
+ },
+ {
+  "id": "6040",
+  "parent": "6036",
+  "date": "2017-09-14T15:02:13+08:00",
+  "author": "misaka",
+  "site": "",
+  "text": "@misakamm20001：仔细看了一下似乎arm-timer feature并不支持PERIOD模式,所以应该是采用oneshot模式 利用tick_sched_timer进行模拟tick行为的吧？"
+ },
+ {
+  "id": "6041",
+  "parent": "6040",
+  "date": "2017-09-15T09:21:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@misaka：在__arch_timer_setup的代码中的确没有设定CLOCK_EVT_FEAT_PERIODIC，这说明的确arm-timer不支持PERIOD模式。\r\n\r\n如果没有配置hrtimer，我记得在周期性tick的配置下，每次tick到来的时候都需要再次program next event，以便下次的定时中断会送达CPU。\r\n\r\n如果配置了hrtimer，并且配置周期性tick，实际上周期性tick的到了是利用了一个sched_timer来模拟的，每次tick到来的时候，rearm该sched_timer就OK了。"
+ },
+ {
+  "id": "6042",
+  "parent": "6041",
+  "date": "2017-09-15T10:05:50+08:00",
+  "author": "misaka",
+  "site": "",
+  "text": "@linuxer：ok thanks.  那么请问如果是采用period mode的timer是不是有寄存器来设定产生中断的时间间隔？"
+ },
+ {
+  "id": "6043",
+  "parent": "6042",
+  "date": "2017-09-15T10:20:25+08:00",
+  "author": "cookii",
+  "site": "",
+  "text": "@misaka：这种和硬件有关的具体问题，就不要在这里问了吧？不然的话你让楼主怎么回答你呢？？"
+ },
+ {
+  "id": "6045",
+  "parent": "6043",
+  "date": "2017-09-15T15:36:27+08:00",
+  "author": "misaka",
+  "site": "",
+  "text": "@cookii：只是交流一下而已  软件说到底还是为硬件服务 不搞清楚硬件行为是没有意义的 软件的流程我现在从上到下大概过了一遍 就顺便和linuxer聊聊硬件 linuxer经验丰富  能听他说几句  我也会受益匪浅   我并不是为了解决问题  如果只是解决问题问一大推问题大概不会比纯粹因为好奇想要深入了解更让回答者来的舒服的多。"
+ },
+ {
+  "id": "6047",
+  "parent": "6045",
+  "date": "2017-09-18T09:12:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@misaka：这个问题并不复杂，只要工作的时间足够长，就能接触各种各样的硬件情况。HW timer其实各家都设计不太一样，一个可能的设计是这样的：\r\n1、有一个counter寄存器\r\n2、有一个match寄存器\r\n3、count寄存器是count down的\r\n4、match寄存器加载到counter寄存器，然后会count down，0值的时候产生中断\r\n5、可以配置产生中断的时候是否reload match寄存器的值。如果配置，那么就是periodic mode，否则是one-shot mode"
+ },
+ {
+  "id": "6048",
+  "parent": "6041",
+  "date": "2017-09-18T10:13:24+08:00",
+  "author": "misaka",
+  "site": "",
+  "text": "@linuxer：明白了,谢谢你"
+ },
+ {
+  "id": "6643",
+  "parent": "0",
+  "date": "2018-04-03T23:28:15+08:00",
+  "author": "奋斗",
+  "site": "http://jianhuizhao329@gmail.com",
+  "text": "arch_timer_handler_phys；\r\n         timer_handler(ARCH_TIMER_PHYS_ACCESS, evt)；\r\n                    evt->event_handler(evt)；\r\n请问下，这里的event_handler在哪里赋值的，我看了代码，没有找到在哪里赋值呢。"
+ },
+ {
+  "id": "6823",
+  "parent": "0",
+  "date": "2018-06-27T20:05:56+08:00",
+  "author": "raceant",
+  "site": "",
+  "text": "请教下cp15和memory map的方式是不是硬件设计是就固定了？ 如果硬件没有做map的话怎样通过读写内存就能访问CP15的寄存器呢？ 而且system_counter不在core中，难道需要另外的driver？ 正在研究这部分代码"
+ },
+ {
+  "id": "6824",
+  "parent": "6823",
+  "date": "2018-06-27T20:11:52+08:00",
+  "author": "raceant",
+  "site": "",
+  "text": "@raceant：@linuxer 帮忙解答一下不胜感激"
+ },
+ {
+  "id": "6825",
+  "parent": "1547",
+  "date": "2018-06-27T20:16:13+08:00",
+  "author": "raceant",
+  "site": "",
+  "text": "@buyit：@buyit @linuxer 高通多注册了一个armv7-timer-mem，有什么作用呢，这个timer的reg需要和armv7-timer相同才能work，但是多加一个timer好像没有用"
+ },
+ {
+  "id": "7470",
+  "parent": "2197",
+  "date": "2019-06-15T10:40:17+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@passerby：我的理解，\r\n\"arm,armv7-timer-mem\"是去访问sys_counter的，所以注册为SPI，N个frame中一般只有一个有效,就是那个best-frame；\r\n用法一般是，某个core进入low-power-mode了，local-timer会关闭，但是global-timer（sys_counter）不会；当该core之前注册的timer超时了（sleep 10），global-timer就会发送中断给该core 并wakeup it from lpm mode。"
+ },
+ {
+  "id": "7471",
+  "parent": "2197",
+  "date": "2019-06-15T10:53:00+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@passerby：enum ppi_nr {\r\n    PHYS_SECURE_PPI,\r\n    PHYS_NONSECURE_PPI,\r\n    VIRT_PPI,\r\n    HYP_PPI,\r\n    MAX_TIMER_PPI\r\n};\r\n\r\n35     timer {\r\n36         compatible = \"arm,armv7-timer\";\r\n37         interrupts = <1 2 0xff08>,\r\n38                  <1 3 0xff08>,\r\n39                  <1 4 0xff08>,\r\n40                  <1 1 0xff08>;\r\n41         clock-frequency = <19200000>;\r\n42     }; \r\n这些是local-timer，IPI类型；从interrupts = <1 ***>， 这个1 就是IPI。\r\nlinux-kernel运行在EL1的话，一般会选择VIRT_PPI,即 <1 4 0xff08>；\r\nlinux-kernel运行在EL2的话（with ArmV8.1-VHE，虚拟化），会选择HYP_PPI,即即 <1 1 0xff08>。"
+ },
+ {
+  "id": "7510",
+  "parent": "6643",
+  "date": "2019-07-04T15:47:08+08:00",
+  "author": "yuhezhouping",
+  "site": "",
+  "text": "@奋斗：同问，现在找到了吗"
+ },
+ {
+  "id": "7527",
+  "parent": "0",
+  "date": "2019-07-10T18:07:29+08:00",
+  "author": "Yuping",
+  "site": "",
+  "text": "是tick_handle_periodic， 也有可能是其它callback 函数。\r\nkernel/time/tick-common.c\r\nkernel/time/tick-broadcast.c\r\n\r\n\r\nExecution stopped in EL1h mode at EL1N:0xFFFFFF80081336F8\r\nOn core ARMAEMv8-A_MP_0 (ID 0)\r\nIn tick-common.c\r\nEL1N:0xFFFFFF80081336F8   100,0   {\r\nbt\r\n#0 tick_handle_periodic(dev = (struct clock_event_device*) 0xFFFFFFC078F35D00) at tick-common.c:100\r\n#1 timer_handler(access = <Value optimised away by compiler>, evt = <Value optimised away by compiler>) at arm_arch_timer.c:589\r\n#2 arch_timer_handler_phys(irq = <Value currently has no location>, dev_id = (void*) 0xFFFFFFC078F35D00) at arm_arch_timer.c:607\r\n#3 handle_percpu_devid_irq(desc = (struct irq_desc*) 0xFFFFFFC07688EE00) at chip.c:894\r\n#4 generic_handle_irq(irq = 3) at irqdesc.c:625\r\n#5 __handle_domain_irq(domain = (struct irq_domain*) 0xFFFFFFC076880200, hwirq = 3, lookup = <Value currently has no location>, regs = (struct pt_regs*) 0xFFFFFF8008CF3D30) at irqdesc.c:664\r\n#6 gic_handle_irq(regs = (struct pt_regs*) 0xFFFFFF8008CF3D30) at irq-gic-v3.c:363\r\n#7 [el1_irq+0xB0]"
+ },
+ {
+  "id": "7699",
+  "parent": "0",
+  "date": "2019-10-17T17:12:30+08:00",
+  "author": "wangyunqian",
+  "site": "",
+  "text": "请教个问题：arm64的每个core都有自己的local timer，那么soc上的global timer除了做broadcast timer外还有其他用处吗？并且基本上一个soc还支持几个甚至十几个global timer！想不明白"
+ },
+ {
+  "id": "7824",
+  "parent": "0",
+  "date": "2020-01-07T14:57:22+08:00",
+  "author": "yui",
+  "site": "",
+  "text": "hi 您好 麻烦 想请教一下 什么时候用virtual timer什么时候用physical timer ,"
+ },
+ {
+  "id": "8665",
+  "parent": "7824",
+  "date": "2022-08-08T16:56:38+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@yui：linux作为虚拟机VM运行时，就要配置成virtual timer；\r\nEL2的hypervisor使用physical timer；\r\n一般virtual_time = physical_timer - offset;\r\noffset(CNTVOFF寄存器)由hypervisor调整，比如VM_linux被调度出去1s，offset就要+1s，VM_linux再调度回来读virtual timer的值时，硬件（支持timer虚拟化的硬件）会计算physical_timer - offset，并返回给virtual timer。"
+ },
+ {
+  "id": "8869",
+  "parent": "0",
+  "date": "2024-03-05T15:10:33+08:00",
+  "author": "rankie007",
+  "site": "",
+  "text": "老师好，我们在KVM虚拟化开发过程中需要适配不同厂家的CPU，遇到个问题，当两家CPU的external clock（通过dmidecode -t processor查询）不同时，其上运行的虚拟机执行在线迁移后，虚拟机内部系统的计时器会加快或减慢，比如A厂商CPU的 external clock是100Mhz，B厂商CPU的external clock是1000Mhz，则虚拟机从A在线迁移到B后，虚拟机内部操作系统的计时器快了10倍（正常的1秒钟，系统内部会走10秒），反向迁移的话，计时器会慢10倍，我们宿主机内核用的5.10版本，CPU的主频是一样的，一直没搞明白原因，还望老师指点，非常感谢。"
+ },
+ {
+  "id": "9158",
+  "parent": "0",
+  "date": "2025-05-12T19:57:43+08:00",
+  "author": "wangyongrui",
+  "site": "",
+  "text": "设备树没写频率的情况下，寄存器CNTFRQ里的值是谁写进去的呢"
+ },
+ {
+  "id": "9160",
+  "parent": "9158",
+  "date": "2025-06-18T17:00:40+08:00",
+  "author": "xqplfly",
+  "site": "",
+  "text": "@wangyongrui：芯片厂商或者固件厂商在固件阶段（一般是ATF）写进去的。"
+ },
+ {
+  "id": "9178",
+  "parent": "7510",
+  "date": "2026-02-05T16:47:32+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@yuhezhouping：cat /proc/timer_list |grep event_handler\r\n一般Broadcast device 的 event_handler:  tick_handle_oneshot_broadcast  \r\nPer CPU device的event_handler:  hrtimer_interrupt；\r\n\r\nkernel/time/tick-oneshot.c\r\ntick_init_highres-->tick_switch_to_oneshot(hrtimer_interrupt):\r\n{\r\n    struct tick_device *td = this_cpu_ptr(&tick_cpu_device);\r\n    struct clock_event_device *dev = td->evtdev;\r\n\r\n    dev->event_handler = handler;\r\n}\r\n这就把每个cou的tick_cpu_device的event_handler 赋成了hrtimer_interrupt。"
+ },
+ {
+  "id": "9179",
+  "parent": "9178",
+  "date": "2026-02-05T16:48:12+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@bsp：这就把每个cpu的tick_cpu_device的event_handler 赋成了hrtimer_interrupt。"
+ }
+]

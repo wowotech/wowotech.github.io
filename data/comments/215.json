@@ -1,0 +1,338 @@
+[
+ {
+  "id": "2756",
+  "parent": "0",
+  "date": "2015-10-13T15:25:23+08:00",
+  "author": "jefby",
+  "site": "",
+  "text": "great !"
+ },
+ {
+  "id": "2757",
+  "parent": "0",
+  "date": "2015-10-13T19:33:37+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "楼主开始进军mm了？"
+ },
+ {
+  "id": "2758",
+  "parent": "2757",
+  "date": "2015-10-13T19:45:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@schedule：犀利！！赞一个！呵呵"
+ },
+ {
+  "id": "2759",
+  "parent": "2757",
+  "date": "2015-10-13T23:05:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：都是瞎写，想到哪写到哪，也没有什么目标，呵呵~~~"
+ },
+ {
+  "id": "2834",
+  "parent": "0",
+  "date": "2015-10-26T14:13:35+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "我的理解， arm64 text段其实的虚拟地址应该是0xffffffc000080000"
+ },
+ {
+  "id": "2838",
+  "parent": "2834",
+  "date": "2015-10-26T18:04:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：这和kernel space的首地址相关，offset永远都是0x80000.\r\n\r\n而kernel space的首地址是和CONFIG_ARM64_VA_BITS的定义相关，目前ARM64 kernel支持39，42和48 bit的虚拟地址，对于48bit的虚拟地址配置，arm64 text段的虚拟地址应该是0xffff 0000 0008 0000。其他依次类推。"
+ },
+ {
+  "id": "2841",
+  "parent": "2838",
+  "date": "2015-10-26T18:49:30+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：_text = .;  \r\n如果_text是代码的起始的话，我看到确实是0xffffffc000080000\r\n你这里写0xffff 0000 0008 0000 感觉不太对。。。。。\r\n你看到的你自己编译出来的_text就是这个地方吗？"
+ },
+ {
+  "id": "2844",
+  "parent": "2841",
+  "date": "2015-10-26T19:11:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：你的CONFIG_ARM64_VA_BITS配置是什么？"
+ },
+ {
+  "id": "2853",
+  "parent": "2844",
+  "date": "2015-10-27T10:12:13+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：sorry 请原谅我没有仔细看你的回答。\r\n我的是39 根据如下的移位操作\r\n#define PAGE_OFFSET\t\t(UL(0xffffffffffffffff) << (VA_BITS - 1))\r\n那么text段虚拟地址应该是0xffff ff80 0008 0000\r\n跟我实际看到的0xffff ffc0 0008 0000 不一样，暂时没有思考出来为什么"
+ },
+ {
+  "id": "2911",
+  "parent": "2853",
+  "date": "2015-10-30T22:41:09+08:00",
+  "author": "zoon",
+  "site": "",
+  "text": "@tigger：如下39位地址4kB页，可用内存1022MB\r\n内核空间地址：0xffffff8000000000~0xffffffffffffffff\r\n内存映射开始为：0xffffffc000000000\r\nvmalloc和modules映射到地址前端了\r\n[    0.000000]  [0:        swapper:    0] Memory: 1022MB = 1022MB total\r\n[    0.000000]  [0:        swapper:    0] Memory: 964444k/964444k available, 82084k reserved\r\n[    0.000000]  [0:        swapper:    0] Virtual kernel memory layout:\r\n[    0.000000]  [0:        swapper:    0]     vmalloc : 0xffffff8000000000 - 0xffffffbbffff0000   (245759 MB)\r\n[    0.000000]  [0:        swapper:    0]     vmemmap : 0xffffffbc00007000 - 0xffffffbc00e00000   (    13 MB)\r\n[    0.000000]  [0:        swapper:    0]     modules : 0xffffffbffc000000 - 0xffffffc000000000   (    64 MB)\r\n[    0.000000]  [0:        swapper:    0]     memory  : 0xffffffc000000000 - 0xffffffc03fe00000   (  1022 MB)\r\n[    0.000000]  [0:        swapper:    0]       .init : 0xffffffc000be4000 - 0xffffffc000c20480   (   242 kB)\r\n[    0.000000]  [0:        swapper:    0]       .text : 0xffffffc000080000 - 0xffffffc000be37b4   ( 11662 kB)\r\n[    0.000000]  [0:        swapper:    0]       .data : 0xffffffc000c21000 - 0xffffffc000dbdf40   (  1652 kB)"
+ },
+ {
+  "id": "3270",
+  "parent": "2853",
+  "date": "2015-12-22T17:16:12+08:00",
+  "author": "donkey",
+  "site": "",
+  "text": "@tigger：VA_BITS如果是39，PAGE_OFFSET就是0xc0 0000 0000,好像没错啊！"
+ },
+ {
+  "id": "3695",
+  "parent": "0",
+  "date": "2016-03-20T09:46:42+08:00",
+  "author": "dandan",
+  "site": "",
+  "text": "请教一下。请问kernel启动时，通过哪个寄存器来设置protected mode的呢？\r\n这里protected mode是指，SMEP/SMAP，也即是设置CPU不能从内核execute/access用户态地址空间\r\n谢谢。"
+ },
+ {
+  "id": "3698",
+  "parent": "3695",
+  "date": "2016-03-21T00:00:26+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@dandan：protected mode？是X86处理器吗，感觉ARM好像没有什么保护模式这种说法啊，只有x86才有实模式保护模式什么的。\r\n\r\n其实我对X86不熟悉，呵呵~~~"
+ },
+ {
+  "id": "4350",
+  "parent": "0",
+  "date": "2016-07-31T12:09:32+08:00",
+  "author": "ericzhou",
+  "site": "",
+  "text": "谢谢楼主！写得好。"
+ },
+ {
+  "id": "4804",
+  "parent": "0",
+  "date": "2016-10-28T23:25:14+08:00",
+  "author": "dashan",
+  "site": "",
+  "text": "谢谢楼主分享这么好的文章。我想问一个问题，在armv8 Linux Kernel启动过程中能不能一直关闭data cache?如果可以的花能否告知怎么做？谢谢"
+ },
+ {
+  "id": "4805",
+  "parent": "4804",
+  "date": "2016-10-31T09:51:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@dashan：你可以参考ARM ARM文档中关于SCTLR_EL1寄存器的描述。"
+ },
+ {
+  "id": "4806",
+  "parent": "4805",
+  "date": "2016-10-31T12:35:56+08:00",
+  "author": "dashan",
+  "site": "",
+  "text": "@linuxer：谢谢，我直接把bit2清掉了在汇编中：\r\ncrval:\r\n\t.word\t0xfcffffff\t\t\t// clear\r\n\t.word\t0x34d5d919\t\t\t// set\r\n\r\n我目前准备把soc 上cpu的频率调高，比如由1GHz跑到1.2G(芯片是支持这个频率的)，uboot能跑起来，但内核总是跑一会就停了，这个时候jtag也连不上，从打印上看停的位置不固定， 基本上从start_kernel开始跑个8秒左右就会停。\r\n请问你能否提供点建议？谢谢"
+ },
+ {
+  "id": "5013",
+  "parent": "0",
+  "date": "2016-12-13T10:41:52+08:00",
+  "author": "lover713814",
+  "site": "",
+  "text": "从kernel 代码看\r\n这一切地址范围的起始都是由ARM64_4K_PAGES 引起的。\r\nchoice\r\n\tprompt \"Page size\"\r\n\tdefault ARM64_4K_PAGES\r\n\r\nconfig ARM64_VA_BITS\r\n\tint\r\n\tdefault 39 if ARM64_VA_BITS_39\r\n\r\nconfig PGTABLE_LEVELS\r\n\tint\r\n\tdefault 3 if ARM64_4K_PAGES && ARM64_VA_BITS_39\r\n\t\r\n#define VA_BITS\t\t\t(CONFIG_ARM64_VA_BITS)\r\n\t\r\n#define VA_START\t\t(UL(0xffffffffffffffff) << VA_BITS)  //0xffffff8000000000\r\n#define PAGE_OFFSET\t\t(UL(0xffffffffffffffff) << (VA_BITS - 1)) //0xffffffc000000000\r\n#define PAGE_OFFSET\t\t(UL(0xffffffffffffffff) << (VA_BITS - 1))\r\n\r\n但是为啥用ARM64_4K_PAGES 做引子想不通为啥，也不知道联系。"
+ },
+ {
+  "id": "5017",
+  "parent": "5013",
+  "date": "2016-12-14T09:07:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lover713814：4K的page是经典的设置，缺省情况下当然选用4K页了"
+ },
+ {
+  "id": "5183",
+  "parent": "0",
+  "date": "2017-01-24T14:53:37+08:00",
+  "author": "eric",
+  "site": "",
+  "text": "个人觉得楼主对 adrp    x24, __PHYS_OFFSET 这里的写法可能有点歧义，参考ARM手册，adrp的格式是adrp <xd> <label>，其中label的定义是Is the program label whose 4KB page address is to be calculated. Its offset from the page address of this instruction, in the range +/-4GB, is encoded as \"immhi:immlo\" times 4096.所以这里宏展开后是adrp x24, _text-TEXT_OFFSET，_text这个label表示的是当前指令地址所在的“page address”与text段开始位置的偏移，称作虚拟地址有点不太合适，这里其实并不需要再继续宏展开到KIMAGE_VADDR去得到一个0xffffffxxxx的虚拟地址，只是一个相对位置而已。"
+ },
+ {
+  "id": "5188",
+  "parent": "5183",
+  "date": "2017-01-25T09:13:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@eric：我觉得，这段英文只是在解释“label在adrp中的含义以及操作方式”。对label本身而言，肯定不会只是一个偏移（你可以去System.map中看看_text的值）。"
+ },
+ {
+  "id": "5318",
+  "parent": "0",
+  "date": "2017-03-15T09:52:31+08:00",
+  "author": "newjourney",
+  "site": "",
+  "text": "请问  在Non-cacheable的情况下，必须要使用DMB来保证stp指令在dc ivac指令之前执行完成   是为何呢？"
+ },
+ {
+  "id": "5332",
+  "parent": "5318",
+  "date": "2017-03-16T16:10:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@newjourney：文章中的那段英文说的就是数据访问指令和data cache操作指令的顺序，处理器设计就是这样的，具体为何这样设计，这个问题太深奥了，超出我的能力范围了。"
+ },
+ {
+  "id": "5371",
+  "parent": "0",
+  "date": "2017-03-24T15:16:28+08:00",
+  "author": "zhusbj",
+  "site": "",
+  "text": "从英文表述来看，因为device属性的memory store指令和cache 指令没有数据依赖关系，所以可以乱序执行。\r\n但是源代码中明显是考虑到了 cache on的情况，否则也不必要在最后调用一下 cache invalidate操作。\r\n所以我觉得在能保证 non-cacheable 的情况下，可以不必插入dmb指令。"
+ },
+ {
+  "id": "5373",
+  "parent": "0",
+  "date": "2017-03-24T16:01:39+08:00",
+  "author": "zhusbj",
+  "site": "",
+  "text": "针对 MMU OFF / Cache ON有一些不同的见解。摘自ARMv8-A TRM\r\n---------------------------------------------------------\r\nBehavior when stage 1 address translation is disabled\r\nWhen a stage 1 address translation is disabled, memory accesses that would otherwise be translated by that stage of\r\ntranslation are treated as follows:\r\nNon-secure EL1 and EL0 accesses if the HCR_EL2.DC bit is set to 1\r\nFor the Non-secure EL1&0 translation regime, when the value of HCR_EL2.DC is 1, the stage 1\r\ntranslation assigns the Normal Non-shareable, Inner Write-Back Read-Write-Allocate, Outer\r\nWrite-Back Read-Write-Allocate memory attributes.\r\nNote\r\nThis applies for both instruction and data accesses.\r\nAll other accesses\r\nFor all other accesses, when stage 1 address translation is disabled, the assigned attributes depend\r\non whether the access is a data access or an instruction access, as follows:\r\nData access\r\nThe stage 1 translation assigns the Device-nGnRnE memory type.\r\nInstruction access\r\nThe stage 1 translation assigns the Normal memory attribute, with the cacheability and\r\nshareability attributes determined by the value of the SCTLR.I bit for the translation\r\nregime, as follows:\r\nWhen the value of I is 0\r\nThe stage 1 translation assigns the Non-cacheable and Outer Shareable\r\nattributes.\r\nWhen the value of I is 1\r\nThe stage 1 translation assigns the Cacheable, Inner Write-Through no\r\nWrite-Allocate Read-Allocate, Outer Write-Through no Write-Allocate\r\nRead Allocate Outer Shareable attribute.\r\n---------------------------------------------------------\r\nDC, bit [12]\r\nDefault Cacheable. When this bit is set to 1, this causes:\r\n• The SCTLR_EL1.M bit to behave as 0 when in the Non-secure state for all purposes other\r\nthan reading the value of the bit.\r\n• The HCR_EL2.VM bit to behave as 1 when in the Non-secure state for all purposes other\r\nthan reading the value of the bit.\r\nThe memory type produced by the first stage of translation used by EL1 and EL0 is Normal\r\nNon-Shareable, Inner WriteBack Read-WriteAllocate, Outer WriteBack Read-WriteAllocate.\r\nWhen this bit is 0 and the stage 1 MMU is disabled, the default memory attribute for Data accesses\r\nis Device-nGnRnE.\r\nThis bit is permitted to be cached in a TLB.\r\n---------------------------------------------------------\r\n楼主的解释需要一个前提条件，就是HCR_EL2.DC 必须已经置1。但是这个bit默认值很可能是0，并且代码中也没有置1的操作，所以memory的属性应该是Device-nGnRnE for data access。对于 instruction access，取决于SCTLR.I bit。"
+ },
+ {
+  "id": "5719",
+  "parent": "0",
+  "date": "2017-06-22T13:20:22+08:00",
+  "author": "raceant",
+  "site": "",
+  "text": "@linuxer \r\n#define __PHYS_OFFSET    (KERNEL_START - TEXT_OFFSET)\r\n难道在arm64中所有的物理地址都是从0开始的？ 我记得arm中好像mach-xxx/中有个文件配置物理地址的，\r\n但在arm64中却没有找到这个物理地址怎样配置"
+ },
+ {
+  "id": "5726",
+  "parent": "5719",
+  "date": "2017-06-23T09:27:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@raceant：需要定义内存物理地址的起始位置吗？一般情况下，kernel image被copy到（内存首地址＋TEXT_OFFSET）这样的一个位置上去，因此，在没有打开MMU的时候，代码中实际上是有技巧可以获取自己执行在哪一个地址上的。\r\n\r\n\tadrp\tx24, __PHYS_OFFSET\r\n\r\nx24中即保存了内存的物理地址。\r\n\r\n编译器在编译这一条指令的时候，把该指令所在的虚拟地址和__PHYS_OFFSET的offset保存在了指令的imm域。当实际运行的时候，x24被赋值为当前PC值＋offset，也就是内存的物理地址了。BTW，上面说的实际上是需要对齐到page size的。"
+ },
+ {
+  "id": "5730",
+  "parent": "5726",
+  "date": "2017-06-23T13:43:09+08:00",
+  "author": "raceant",
+  "site": "",
+  "text": "@linuxer：@linuxer： 谢谢你的解答，我现在明白了，所以kernel的地址（image地址 - TEXT_OFFSET）一定是放在物理地址的首地址处，才能将正确的物理地址位置放到x24中"
+ },
+ {
+  "id": "5812",
+  "parent": "0",
+  "date": "2017-07-17T00:45:44+08:00",
+  "author": "matchchen",
+  "site": "",
+  "text": "@linuxer\r\n你好，对于ARM64下uboot启动kernel传参我有点疑惑未理清：\r\n从kernel_entry入口来看，uboot jump 到linux传递的唯一信息就只有dtb的地址即X0，不再传递cmdline/ramdisk地址等atags了。\r\n那么ramdisk数据地址是如何传递；如果我要在uboot和linux之间传递一些数据文件该如何实现为妥？"
+ },
+ {
+  "id": "5813",
+  "parent": "5812",
+  "date": "2017-07-17T10:05:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@matchchen：既然能够把dtb传递给kernel，还有什么不能传呢？\r\n都加到dtb里面就行了啊。\r\n至于ramdisk，做法也类似，不过可能会有一些小技巧，例如紧随dtb的结尾啦（可参考fdt_initrd函数的实现）。"
+ },
+ {
+  "id": "5836",
+  "parent": "5813",
+  "date": "2017-07-23T18:58:40+08:00",
+  "author": "matchchen",
+  "site": "",
+  "text": "@wowo：并没看到这样的实例，是否像image tree中的内核、ramdisk、dtb一样的语法指定数据文件的路径，把文件打包到dtb中？"
+ },
+ {
+  "id": "5839",
+  "parent": "5836",
+  "date": "2017-07-24T09:09:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@matchchen：举个简单的例子：dtb里面有命令行参数，你可以增加一个参数，xxx=XXXX。这样的话，什么都可以传递啊！"
+ },
+ {
+  "id": "7019",
+  "parent": "5332",
+  "date": "2018-11-08T10:08:55+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：@linuxer\r\n那段英文应该说的是要么用devcie memory attribute，如果使用normal nocache，那么必须加上DMB或者DSB吧"
+ },
+ {
+  "id": "7133",
+  "parent": "5332",
+  "date": "2019-01-11T17:53:52+08:00",
+  "author": "deven",
+  "site": "",
+  "text": "@linuxer：关键是为什么要保证这种顺序？即使先无效了d-cache后写变量的值感觉也没啥问题，实验了下确实没发生问题"
+ },
+ {
+  "id": "7134",
+  "parent": "5332",
+  "date": "2019-01-11T20:12:27+08:00",
+  "author": "deven",
+  "site": "",
+  "text": "@linuxer：关键为什么stp指令要先完成？当前cache没有enable~"
+ },
+ {
+  "id": "7153",
+  "parent": "5188",
+  "date": "2019-01-24T16:12:09+08:00",
+  "author": "haibin",
+  "site": "",
+  "text": "@wowo：1. __PHYS_OFFSET是内核加载的偏移地址，因为bootloader没有传递这个值，实际也不需要，通过这个方式可以计算出来\r\n2. adrp在这个环境下得到的是物理地址，因为此时MMU没有开启，不是你说的system.map里面的地址\r\n3. arm32中有一条ldr的伪指令，ldr reg，=label，这条指令才是获取system.map中的地址，arm64中好像没有类似的"
+ },
+ {
+  "id": "7191",
+  "parent": "0",
+  "date": "2019-02-19T19:17:33+08:00",
+  "author": "yiyeguzhou100",
+  "site": "http://blog.csdn.net/yiyeguzhou100",
+  "text": "感谢作者写了这么好的文档， 我在们的产品上用的arm64架构，  我发现CONFIG_RANDOMIZE_BASE配置了（CONFIG_RANDOMIZE_BASE=y），CONFIG_ARM64_RANDOMIZE_TEXT_OFFSET没有配置（is not set）， 我编译个若干次内核进行测试， 发现kernel image会被load到固定的位置（0xffff000010080000~0xffff000010c95000）, 其中vmalloc区域的地址是0xffff000010000000~0xffff7bffbfff0000。\r\n这样看来即使配置了CONFIG_RANDOMIZE_BASE，也没有实现kernel image会被随机copy到不同的位置。 反倒时我觉得配置了CONFIG_ARM64_RANDOMIZE_TEXT_OFFSET才能实现kernel image被随机copy到不同的位置。 因CONFIG_ARM64_RANDOMIZE_TEXT_OFFSET会决定TEXT_OFFSET的值。\r\n感谢能解答一下"
+ },
+ {
+  "id": "7658",
+  "parent": "5813",
+  "date": "2019-09-20T14:55:59+08:00",
+  "author": "see",
+  "site": "",
+  "text": "@wowo：images->ep和readelf vmlinux的的Entry point address是同一地址码？"
+ },
+ {
+  "id": "7997",
+  "parent": "0",
+  "date": "2020-05-19T09:16:01+08:00",
+  "author": "linuxxx",
+  "site": "",
+  "text": "wowo,你好：\r\n根据我个人的理解，kernel代码段的起始地址是\r\nVA_START + KASAN_SHADOW_SIZE+MODULES_SIZE+TEXT_OFFSET =\r\n(0xffffffffffffffff - 1 << 39 + 1) + 0 + 0x8000000 + 0x80000 = 0xffffff8008080000\r\n根据我通过aarch64-linux-readelf命令读取Image头的信息里 Entry point address，这两个值也是一致的。\r\n是不是PAGE_OFFSET有其他理解方式呢？"
+ },
+ {
+  "id": "7998",
+  "parent": "7997",
+  "date": "2020-05-20T10:43:06+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@linuxxx：代码在变化更新，所以文章只能参考。"
+ },
+ {
+  "id": "8663",
+  "parent": "5836",
+  "date": "2022-08-05T22:05:17+08:00",
+  "author": "fanqirong660",
+  "site": "",
+  "text": "@matchchen：跟回帖有同样的疑惑。\r\n之前ARM32上，boot_jump_linux传的fdt_addr以及在uboot里解析fdt得到的ramdisk等信息，都填在bootm_headers_t结构体里传给kernel了。\r\n\r\n但ARM64上，boot_jump_linux只传fdt_addr。那是不是只能通过在dts的cmdline里指定initrd=addr,size这样的方式将ramdisk的信息传给kernel了?（ARM32里是不用在cmdline里指定的，uboot解析fdt的时候解析到ramdisk镜像自然会知道其信息）"
+ },
+ {
+  "id": "8928",
+  "parent": "0",
+  "date": "2024-09-04T10:13:51+08:00",
+  "author": "飞翔的蜗牛2024",
+  "site": "",
+  "text": "请问怎么在head.S中bl __enable_mmu后使用串口打印进行调试？"
+ }
+]

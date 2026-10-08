@@ -1,0 +1,146 @@
+[
+ {
+  "id": "6746",
+  "parent": "0",
+  "date": "2018-05-15T09:28:28+08:00",
+  "author": "finics",
+  "site": "",
+  "text": "最近正好看到另外一篇比较浅显易懂的slab讲解，结合起来看更容易理解。\r\nhttps://blog.csdn.net/lukuen/article/details/6935068\r\nlinux 内核 内存管理 slub算法 （一） 原理"
+ },
+ {
+  "id": "6788",
+  "parent": "0",
+  "date": "2018-06-07T16:24:30+08:00",
+  "author": "白泽",
+  "site": "",
+  "text": "@smcdef 图文并茂，写得太好了。但slab_alloc时，是不是有一点忽略了：\r\nc->freelist为NULL，应该还去判断c->page->freelist, 也是NULL，才去看c->partial吧？"
+ },
+ {
+  "id": "6789",
+  "parent": "6788",
+  "date": "2018-06-07T23:02:40+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@白泽：是的，你说的对"
+ },
+ {
+  "id": "6790",
+  "parent": "6788",
+  "date": "2018-06-07T23:22:17+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@白泽：slub释放内存的时候，如果object正好是当前cpu freelist链表分配出来的，自然可以直接free，也就是直接放在c->freelist。反之，为了效率，不至于在这里傻等直到reschedule到object所属的cpu，slub的做法是直接将object放到page的freeelist链表。很巧妙。\r\n所以这里c->page->freelist是有可能存在free object。"
+ },
+ {
+  "id": "6977",
+  "parent": "0",
+  "date": "2018-10-11T17:29:58+08:00",
+  "author": "anonymous",
+  "site": "",
+  "text": "当然，kmem_cache_create仅仅是创建了一个描述slab缓存池布局的数据结构，并没有从伙伴系统申请内存\r\n我理解kmem_cache_create应该是从伙伴系统申请了一个描述slab缓存池大小内存吧,  不然kmem_cache_create返回的指针本身从哪里获取内存?  谢谢"
+ },
+ {
+  "id": "6978",
+  "parent": "0",
+  "date": "2018-10-11T17:30:32+08:00",
+  "author": "anonymous",
+  "site": "",
+  "text": "当然，kmem_cache_create仅仅是创建了一个描述slab缓存池布局的数据结构，并没有从伙伴系统申请内存\r\n我理解kmem_cache_create应该是从伙伴系统申请了内存吧,  不然kmem_cache_create返回的指针本身从哪里获取内存?  谢谢"
+ },
+ {
+  "id": "6979",
+  "parent": "6978",
+  "date": "2018-10-11T23:24:57+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@anonymous：kmem_cache_create仅仅是创建了一个描述slab缓存池布局的数据结构，这个“描述slab缓存池布局的数据结构”结构体自然是申请的内存，但是slab管理的内存池的内存并没有分配。"
+ },
+ {
+  "id": "6992",
+  "parent": "6979",
+  "date": "2018-10-18T15:30:04+08:00",
+  "author": "anonymous",
+  "site": "",
+  "text": "@smcdef：请问这个内存是如何申请的?  slab那时候还没有建立, 无法从slab获取内存,从buddy拿内存最少1个page太浪费内存了吧?  谢谢~"
+ },
+ {
+  "id": "6994",
+  "parent": "6992",
+  "date": "2018-10-18T22:26:56+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@anonymous：可以看一下kmem_cache_init()函数，静态定义第一个kmem_cache（static struct kmem_cache boot_kmem_cache;）该kmem_cache就是为了kmem_cache_create()函数创建kmem_cache结构体的slab缓存池"
+ },
+ {
+  "id": "7139",
+  "parent": "0",
+  "date": "2019-01-16T17:37:01+08:00",
+  "author": "zoro",
+  "site": "",
+  "text": "谢谢分享! 文中提到的*pages*成员，存储的应该是per cpu partial链表中slab的个数，而不是页数"
+ },
+ {
+  "id": "7140",
+  "parent": "7139",
+  "date": "2019-01-16T23:23:03+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@zoro：是的，感谢指正"
+ },
+ {
+  "id": "7181",
+  "parent": "0",
+  "date": "2019-02-12T20:14:12+08:00",
+  "author": "lcm",
+  "site": "",
+  "text": "kmalloc中 如果分配的size大于 KMALLOC_MAX_CACHE_SIZE（1<< 22,也就是4M）,会走kmalloc_large.里面会调用alloc_pages也就是buddy算法。kmalloc最大是不是只能分配4M呢？但是看文章是8M"
+ },
+ {
+  "id": "7182",
+  "parent": "7181",
+  "date": "2019-02-13T21:30:29+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@lcm：现在最新kernel的情况是这样的。当申请的内存大于2页（PAGE_SIZE*2，大部分情况下是8k）时，kmalloc走的实际上buddy算法，即通过alloc_pages()申请内存。小于2页的内存走的是slub。\r\n\r\n因此根据这种情况下，文章提到的大于2页的kmem cache实际上也不会创建。\r\n\r\n另外你说的KMALLOC_MAX_CACHE_SIZE应该是PAGE_SIZE*2（这是我推算的结果），并不是1 << 22。"
+ },
+ {
+  "id": "7715",
+  "parent": "6994",
+  "date": "2019-10-27T18:36:28+08:00",
+  "author": "kldr111",
+  "site": "",
+  "text": "@smcdef：我可以理解 是将一个大的内存分配给slub，再由slab切割成小的对象来分发吗"
+ },
+ {
+  "id": "8067",
+  "parent": "0",
+  "date": "2020-07-26T17:02:04+08:00",
+  "author": "小孩儿的愿",
+  "site": "",
+  "text": "就想问下大神使用什么软件画的这张图？"
+ },
+ {
+  "id": "8707",
+  "parent": "0",
+  "date": "2022-11-29T16:16:58+08:00",
+  "author": "abcdggg",
+  "site": "",
+  "text": "请教一下，假如一个cpu在kmem_cache_destroy销毁句柄，另一个cpu在kmem_cache_alloc使用句柄分配内存，二者如何互斥？没有看到加锁的情形。"
+ },
+ {
+  "id": "8708",
+  "parent": "0",
+  "date": "2022-11-29T17:06:20+08:00",
+  "author": "abcdggg",
+  "site": "",
+  "text": "kmem_cache.kmem_cache_node.list_lock这个锁仅用于写kmem_cache_node结构成员的场合（读操作未见加锁），那么就有一定概率出现错乱"
+ },
+ {
+  "id": "9144",
+  "parent": "7182",
+  "date": "2025-02-17T17:37:14+08:00",
+  "author": "内核小白",
+  "site": "",
+  "text": "@smcdef：今天正好看到这部分源码。KMALLOC_MAX_CACHE_SIZE 这个宏和架构有关，以及和你自己的config 有关。现在又有大页。总体上是16 14 12三个size, 4kb, 16kb, 64kb."
+ }
+]

@@ -1,0 +1,10 @@
+[
+ {
+  "id": "8700",
+  "parent": "0",
+  "date": "2022-11-17T15:27:44+08:00",
+  "author": "Ren Zhijie",
+  "site": "",
+  "text": "E、将detach_tasks函数摘下的任务挂入到src rq上去。由于detach_tasks、attach_tasks会进行多轮，ld_moved记录了总共迁移的任务数量，cur_ld_moved是本轮迁移的任务数\r\n\r\n将detach_tasks函数摘下的任务挂入到*dst_rq*上去。"
+ }
+]

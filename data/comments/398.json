@@ -1,0 +1,130 @@
+[
+ {
+  "id": "5992",
+  "parent": "0",
+  "date": "2017-09-06T11:01:43+08:00",
+  "author": "向往",
+  "site": "",
+  "text": "我看在/drivers/base/下有两个文件，dma-coherent.c和dma-contiguous.c，两个文件分别有RESERVEDMEM_OF_DECLARE(dma, \"shared-dma-pool\", rmem_dma_setup)和RESERVEDMEM_OF_DECLARE(cma, \"shared-dma-pool\", rmem_cma_setup)；rmem_dma_setup和rmem_cma_setup两个函数都会调用吗？dma-coherent和dma-contiguous的区别是什么呢？在rmem_cma_setup中判断了是否有no-map属性，如果有会返回错误，而在rmem_dma_setup中没有判断该属性？"
+ },
+ {
+  "id": "5993",
+  "parent": "5992",
+  "date": "2017-09-06T19:12:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@向往：1、是的，都会调用\r\n2、dma-coherent用来分配per device coherent memory的，dma-contiguous是和CMA相关的\r\n3、CMA内存必须要建立地址映射，否则无法进入伙伴系统。因此如果有no-map属性，就会返回错误，而per device coherent memory可以不建立映射，而是在自己的驱动中调用ioremap进行映射。"
+ },
+ {
+  "id": "5994",
+  "parent": "0",
+  "date": "2017-09-06T19:23:37+08:00",
+  "author": "向往",
+  "site": "",
+  "text": "@蜗窝 那我是不是可以理解成dma-contiguous指的是global cma，所有的驱动模块都能用?；而dma-coherent指的是per device cma，只有相应的驱动通过设备树解析到它并调用device_init回调对它初始化，然后才能通过dma_alloc_contiguous函数用它?"
+ },
+ {
+  "id": "5999",
+  "parent": "5994",
+  "date": "2017-09-07T19:09:26+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@向往：不是的，不过这些也不是三言两语可以说的清楚的，等两天我再一篇文档描述这些吧。"
+ },
+ {
+  "id": "6001",
+  "parent": "5999",
+  "date": "2017-09-07T20:34:07+08:00",
+  "author": "向往",
+  "site": "",
+  "text": "@linuxer：期待郭大侠这篇文章"
+ },
+ {
+  "id": "6022",
+  "parent": "0",
+  "date": "2017-09-11T15:21:48+08:00",
+  "author": "迷途凡人",
+  "site": "",
+  "text": "@linuxer，关于reserved-memory节点，查看了Documentation\\devicetree\\bindings\\reserved-memory\\reserved-memory.txt和代码后， 有几个疑问：\r\n\r\n平台的设备树中reserved-mem下有以下三种类型的子节点\r\n\r\n1.other_ext_mem: other_ext_region@0 {\r\n\t\t\tcompatible = \"removed-dma-pool\";\r\n\t\t\tno-map;\r\n\t\t\treg = <0x0 0x85b00000 0x0 0xd00000>;\r\n\t\t};\r\n\r\n2.qseecom_mem: qseecom_region@0 {\r\n\t\t\tcompatible = \"shared-dma-pool\";\r\n\t\t\treusable;\r\n\t\t\talignment = <0 0x400000>;\r\n\t\t\tsize = <0 0x1000000>;\r\n\t\t};\r\n\r\n3.cont_splash_mem: splash_region@0x90001000 {\r\n\t\t\treg = <0x0 0x90001000 0x0 0x13ff000>;\r\n\t\t\tlabel = \"cont_splash_mem\";\r\n\t\t};\r\n\r\n1)对于compatible = \"removed-dma-pool\"属性的节点，其内存不会统计在 /proc/meminfo/MemTotal中吧？\r\n2)对于compatible = \"shared-dma-pool\" 和 reusable属性的节点，按照您的文章的意思，当该节点不被驱动使用的时候，其大小会被统计在 /proc/meminfo/MemAvailable中吧？\r\n3）对于第三种无compatible属性的节点，其内存大小会被怎么统计？？"
+ },
+ {
+  "id": "6026",
+  "parent": "6022",
+  "date": "2017-09-12T09:41:26+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@迷途凡人：（1）是的，不会。\r\n（2）当shared-dma-pool内存不被驱动使用，也不被内核其他模块使用的时候，其大小会被统计在 /proc/meminfo/MemAvailable中\r\n（3）这部分内存属于reserved memory，Linux不会管理的，估计是bootloader在使用的内存，不会统计在 /proc/meminfo/MemTotal中。"
+ },
+ {
+  "id": "6032",
+  "parent": "6026",
+  "date": "2017-09-12T15:59:11+08:00",
+  "author": "迷途凡人",
+  "site": "",
+  "text": "@linuxer：@ linuxer，多谢答复！\r\n也即是凡是节点中带有reg属性，静态划分的内存，都不会统在/proc/meminfo/MemTotal中。"
+ },
+ {
+  "id": "6624",
+  "parent": "0",
+  "date": "2018-03-27T14:05:40+08:00",
+  "author": "Zhenhua",
+  "site": "",
+  "text": "插一句，splash_mem  display的驱动会在之后手动放回buddy"
+ },
+ {
+  "id": "6625",
+  "parent": "5993",
+  "date": "2018-03-27T14:06:48+08:00",
+  "author": "Zhenhua",
+  "site": "",
+  "text": "@linuxer：个人理解牵扯到cma的都是contiguous   coherent看过源码对应dev->dma_mem,\r\n具体干什么用的还没遇到相关case.  需要留意:)"
+ },
+ {
+  "id": "6765",
+  "parent": "0",
+  "date": "2018-05-29T10:22:58+08:00",
+  "author": "victor",
+  "site": "",
+  "text": "@linuxer\r\n\r\n\"我们来一个实际的例子吧：我的手机，像素是1300W的，一个像素需要3B，那么拍摄一幅图片需要的内存大概是1300W x 3B ＝ 26MB。通过内存管理系统分配26M的内存，压力可是不小。\"\r\n\r\n在不修改内核的情况下，当前的伙伴系统可以分配的最大连续物理内存不是4M吗？26M如何通过伙伴系统分配"
+ },
+ {
+  "id": "6766",
+  "parent": "0",
+  "date": "2018-05-29T10:25:30+08:00",
+  "author": "victor",
+  "site": "",
+  "text": "@ linuxer,\r\n\r\n不好意思打扰了，再问一个问题，对于超过4M的连续物理内存，如何分配？"
+ },
+ {
+  "id": "6993",
+  "parent": "6625",
+  "date": "2018-10-18T17:16:50+08:00",
+  "author": "zzy",
+  "site": "",
+  "text": "@Zhenhua：Reserved 出来，buddy 不可见的物理内存，对应到这类case。"
+ },
+ {
+  "id": "7389",
+  "parent": "0",
+  "date": "2019-04-30T17:13:33+08:00",
+  "author": "jared",
+  "site": "",
+  "text": "hi linuxer , 请教一下，reserved-memory 里自定义一个 compatible = “name”及属性reusable; 自己调用RESERVEDMEM_OF_DECLARE(xxx, \"name\", function)； 这样的情况，节点不被驱动使用的时候，其大小会被统计在 /proc/meminfo/MemAvailable中嘛？"
+ },
+ {
+  "id": "8327",
+  "parent": "0",
+  "date": "2021-10-05T11:40:40+08:00",
+  "author": "qingsheng",
+  "site": "",
+  "text": "请问通过cma_allocc出来的page是带有cache的吗?"
+ },
+ {
+  "id": "8612",
+  "parent": "6766",
+  "date": "2022-05-06T16:50:01+08:00",
+  "author": "ora",
+  "site": "",
+  "text": "@victor：有同样的困惑，通过/proc/pagetypeinfo来看，CMA类型最大的order也是10(4M)，怎么做的更大连续内存的分配？"
+ }
+]

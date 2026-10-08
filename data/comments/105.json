@@ -1,0 +1,202 @@
+[
+ {
+  "id": "622",
+  "parent": "0",
+  "date": "2014-11-05T09:10:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "我曾经订阅过内核的邮件列表，每天的邮件大概200来封，坚持了3天，实在顶不住了，就悄悄的退订了，呵呵"
+ },
+ {
+  "id": "623",
+  "parent": "622",
+  "date": "2014-11-05T09:19:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：是啊，太多了，没时间看完的，不过有些信息确实挺好的。\r\n我也就只能每天瞄几眼，然后统统删掉。"
+ },
+ {
+  "id": "624",
+  "parent": "623",
+  "date": "2014-11-05T09:26:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：有没有ARM linux的邮件列表，对于我们，可能更关注ARM体系结构上的开发"
+ },
+ {
+  "id": "625",
+  "parent": "624",
+  "date": "2014-11-05T09:37:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：有，不过我没试过：http://www.arm.linux.org.uk/mailinglists/faq.php#l1\r\n\r\n1. Mailing list questions:\r\n 1.1. How do I subscribe or unsubscribe from the mailing lists. The mailing list software appends a footer to every message sent via the mailing lists:-------------------------------------------------------------------\r\nList admin: http://lists.arm.linux.org.uk/mailman/listinfo/linux-arm\r\nFAQ:        http://www.arm.linux.org.uk/mailinglists/faq.php\r\nEtiquette:  http://www.arm.linux.org.uk/mailinglists/etiquette.php\r\n If you point your web browser to the \"list admin\" address and scroll to the bottom, where you can enter your subscribed email address. Once this is done, you will be given instructions on how to unsubscribe or change your options."
+ },
+ {
+  "id": "626",
+  "parent": "625",
+  "date": "2014-11-05T09:41:34+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@wowo：这种高大上的东西，适合学生或者不愁吃穿的人来搞，像我们这种整天工作就累死累活的，只能默等邮箱被撑爆，哈哈。"
+ },
+ {
+  "id": "629",
+  "parent": "0",
+  "date": "2014-11-05T11:17:14+08:00",
+  "author": "海",
+  "site": "",
+  "text": "我订阅的就是linux-pm,邮件是很多，每天早晨坐地铁的时候看，可以感受一下趋势走向。"
+ },
+ {
+  "id": "630",
+  "parent": "629",
+  "date": "2014-11-05T11:41:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@海：这个主意不错啊，坐车的时候看看，呵呵。"
+ },
+ {
+  "id": "631",
+  "parent": "626",
+  "date": "2014-11-05T11:43:41+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@forion：是啊，不知道老外的时间咋那么多。"
+ },
+ {
+  "id": "632",
+  "parent": "629",
+  "date": "2014-11-05T12:14:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@海：上下班的时间的确是可以充分利用起来，自从我改成坐公交车上下班后，感觉思考的时间多了很多，每天都是随着公交车晃动的节奏思考，^_^"
+ },
+ {
+  "id": "633",
+  "parent": "632",
+  "date": "2014-11-05T12:24:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：怎么不开车了？坐公交了啊。不错不错。哈哈"
+ },
+ {
+  "id": "636",
+  "parent": "633",
+  "date": "2014-11-05T12:48:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：为了环保嘛，呵呵～～～开车好累，还是坐公交车比较舒服，当然，前提是要有座位，^_^"
+ },
+ {
+  "id": "685",
+  "parent": "631",
+  "date": "2014-11-06T19:03:55+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：其实在国外（指那些发达的资本主义社会），程序员和通厕所的工人收入是差不多的，因此，在国外，选择做软件工程师的那些人都是真正热爱这个行业的人，目前，国内很多都是觉得软件工程师的收入不错，就加入这个行业，其并没有发自内心的热爱。\r\n\r\n另外，更重要的是国内的环境，我们办这个网站不就是为了改变国内的环境吗？消极的做法是：大环境如此，我们随波逐流就好了，积极的想法是：改变总是有开始，从我做起就OK了。\r\n\r\n我们已经选择了积极面对"
+ },
+ {
+  "id": "1092",
+  "parent": "0",
+  "date": "2015-01-15T12:25:41+08:00",
+  "author": "perr",
+  "site": "",
+  "text": "撑爆的问题让gmail去负担,好处是可以用用google的GFS做大规模搜索.几个G的邮件没几秒就出搜索结果...这才是绝配.在pc上存LKML邮件或一般邮箱服务提供商做这个,明显是杀牛用了鸡刀.\r\n\r\nkernel缺文档是老问题了.LKML+gmail大规模搜索是很好的补充"
+ },
+ {
+  "id": "2014",
+  "parent": "0",
+  "date": "2015-06-22T00:54:46+08:00",
+  "author": "Jackson",
+  "site": "",
+  "text": "您好我订阅的时候 出现了\r\nSorry, we were unable to deliver your message to the following address.\r\n\r\n<majordomo@vger.kernel.org>:\r\nRemote host said:\r\n553 5.7.1 Hello [98.138.229.47], for your MAIL FROM address <qianshiyilv@yahoo.com> policy analysis reported: Your address is not liked source for email\r\n[MAIL_FROM]\r\n\r\n--- Below this line is a copy of the message.\r\n\r\n请问这是怎么回事"
+ },
+ {
+  "id": "2015",
+  "parent": "2014",
+  "date": "2015-06-22T08:33:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Jackson：换个邮箱吧，最好能用gmail，或者公司的邮箱更好。"
+ },
+ {
+  "id": "2016",
+  "parent": "2015",
+  "date": "2015-06-22T10:31:15+08:00",
+  "author": "Jackson",
+  "site": "",
+  "text": "@wowo：Gmail登录不上了"
+ },
+ {
+  "id": "2018",
+  "parent": "2016",
+  "date": "2015-06-23T09:08:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Jackson：是啊，没办法，这是guoqing。\r\n我用的是公司邮箱，是可以用的。"
+ },
+ {
+  "id": "2516",
+  "parent": "0",
+  "date": "2015-09-01T02:15:02+08:00",
+  "author": "dickface",
+  "site": "http://rwefefdrhargwcb",
+  "text": "另外，更重要的是国内的环境，我们办这个网站不就是为了改变国内的环境吗？消极的做法是：大环境如此，我们随波逐流就好了，积极的想法是：改变总是有开始，从我做起就OK了。"
+ },
+ {
+  "id": "4120",
+  "parent": "0",
+  "date": "2016-06-20T15:54:41+08:00",
+  "author": "金塔尖之鑫",
+  "site": "",
+  "text": "我才加入了linux-usb的订阅，但是我还向加入另一个订阅，是不是不可以了，因为我刚才试了好多次，都没有回复了。是不是这样呀？"
+ },
+ {
+  "id": "4121",
+  "parent": "4120",
+  "date": "2016-06-20T16:49:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@金塔尖之鑫：mail list不会限制这个事情的，可能是邮件出问题了（你懂的）。"
+ },
+ {
+  "id": "6980",
+  "parent": "0",
+  "date": "2018-10-14T03:30:24+08:00",
+  "author": "大傻子",
+  "site": "",
+  "text": "二人停停停"
+ },
+ {
+  "id": "7869",
+  "parent": "622",
+  "date": "2020-02-05T13:09:21+08:00",
+  "author": "小伍",
+  "site": "",
+  "text": "@linuxer：怎么推订的"
+ },
+ {
+  "id": "8240",
+  "parent": "0",
+  "date": "2021-05-30T20:19:41+08:00",
+  "author": "淋湿雨人的诗",
+  "site": "",
+  "text": "我用的是自己的163邮箱 发了两封邮件过去 没有收到回音"
+ },
+ {
+  "id": "8653",
+  "parent": "0",
+  "date": "2022-07-26T14:03:37+08:00",
+  "author": "江南王公子",
+  "site": "",
+  "text": "A级TBB"
+ },
+ {
+  "id": "8654",
+  "parent": "0",
+  "date": "2022-07-26T14:04:25+08:00",
+  "author": "江南王公子",
+  "site": "",
+  "text": "有个问题，why cannot send English content directly ?"
+ }
+]

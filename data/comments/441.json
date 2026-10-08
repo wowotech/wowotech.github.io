@@ -1,0 +1,234 @@
+[
+ {
+  "id": "6754",
+  "parent": "0",
+  "date": "2018-05-18T11:28:07+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "请问下，开了KASLR后， kernel image 加载到VMALLOC是随机变化的， 加载到物理地址还是固定的吗？\r\n因为如果不是固定，bootloader那边加载image也需要偏移的信息\r\n\r\n谢谢。"
+ },
+ {
+  "id": "6756",
+  "parent": "6754",
+  "date": "2018-05-18T19:25:36+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hzm：物理地址还是以前一样，改变的只是虚拟地址而已，物理地址在哪其实没什么影响，创建的是虚拟地址到物理地址的映射关系"
+ },
+ {
+  "id": "6757",
+  "parent": "6756",
+  "date": "2018-05-19T11:24:46+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "@smcdef：多谢解答。。另外这个过程可以理解成静态地址重定位？\r\n还有的是不大理解 为什么要0x80000这个偏移，没KASLR的版本是为了预留一段空间用来fix mapping吗? 那打开了KASLR似乎不需要这个偏移?"
+ },
+ {
+  "id": "6758",
+  "parent": "6757",
+  "date": "2018-05-19T16:15:49+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hzm：针对ARM32架构，0x80000偏移之前的物理地址是特殊用途，例如页表。但是针对ARM64架构，好像没什么作用。你说的fix mapping，可以参考另一篇fix mapping的文章。"
+ },
+ {
+  "id": "6760",
+  "parent": "6758",
+  "date": "2018-05-20T23:08:48+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "@smcdef：TEXT_OFFSET放的是哪个页表？看了窝窝内存初始化【上】这篇，说swapper进程放在bss段以后"
+ },
+ {
+  "id": "6763",
+  "parent": "6760",
+  "date": "2018-05-24T22:27:50+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hzm：注意区分ARM32和ARM64的区别"
+ },
+ {
+  "id": "6870",
+  "parent": "0",
+  "date": "2018-08-06T16:15:17+08:00",
+  "author": "litao6169",
+  "site": "",
+  "text": "addr_link = addr_run - 0xffffff80ae280000 + 0xffffff8008000000 + 0x80000 等同于：\r\naddr_link = addr_run - （0xffffff80ae280000 - 0xffffff8008000000 - 0x80000）\r\n而（0xffffff80ae280000 - 0xffffff8008000000 - 0x80000）实际就是karsl-seed 偏移地址。"
+ },
+ {
+  "id": "6934",
+  "parent": "0",
+  "date": "2018-09-06T22:09:08+08:00",
+  "author": "天津网站建设",
+  "site": "",
+  "text": "感谢博主，写得真好"
+ },
+ {
+  "id": "7012",
+  "parent": "0",
+  "date": "2018-11-03T21:52:41+08:00",
+  "author": "zhangge0409",
+  "site": "",
+  "text": "请教下博主，我想查看一个程序在运行时的符号表信息，比如程序为app1，\r\n使用nm app1查看的符号表和app1在运行时的符号表地址信息不一致（应该是链接脚本重定位地址）\r\n如何才能看到程序的符号表和运行时一致呢？？"
+ },
+ {
+  "id": "7192",
+  "parent": "0",
+  "date": "2019-02-19T19:20:04+08:00",
+  "author": "yiyeguzhou100",
+  "site": "http://blog.csdn.net/yiyeguzhou100",
+  "text": "感谢作者写了这么好的文档， 我在们的产品上用的arm64架构，  我发现CONFIG_RANDOMIZE_BASE配置了（CONFIG_RANDOMIZE_BASE=y），CONFIG_ARM64_RANDOMIZE_TEXT_OFFSET没有配置（is not set）， 我编译个若干次内核进行测试， 发现kernel image会被load到固定的位置（0xffff000010080000~0xffff000010c95000）, 其中vmalloc区域的地址是0xffff000010000000~0xffff7bffbfff0000。\r\n这样看来即使配置了CONFIG_RANDOMIZE_BASE也没有实现kernel image会被随机copy到不同的位置。 反倒时我觉得配置了CONFIG_ARM64_RANDOMIZE_TEXT_OFFSET才能实现kernel image被随机copy到不同的位置。 因CONFIG_ARM64_RANDOMIZE_TEXT_OFFSET会决定TEXT_OFFSET的值。"
+ },
+ {
+  "id": "7198",
+  "parent": "7192",
+  "date": "2019-02-21T11:58:17+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@yiyeguzhou100：当你配置CONFIG_ARM64_RANDOMIZE_TEXT_OFFSET后，你就会发现每次开机后，kernel image 映射开始地址是固定不变的。你看到现象虽然变了，但是这并不是kaslr ，kaslr 的目的是每次开机都不一样。实际上这个选项是配置编译时期使TEXT_OFFSET随机值。不配置该选项时，默认TEXT_OFFSET = 0x00080000。所以这个选项其实和kaslr 无关。该配置选项实际上还是链接地址等于最终的运行地址。但是kaslr 却不想等。\r\n你配置CONFIG_RANDOMIZE_BASE后，kaslr 没有起效。可能原因文章提到的dts kaslr-seed没有。"
+ },
+ {
+  "id": "7378",
+  "parent": "7198",
+  "date": "2019-04-27T19:14:07+08:00",
+  "author": "qifeifly",
+  "site": "",
+  "text": "@smcdef：请问开启kaslr后，kernel image被随机映射在vmalloc区，链接地址和运行地址不相等，若遇到位置相关码如何处理？"
+ },
+ {
+  "id": "7383",
+  "parent": "7378",
+  "date": "2019-04-29T16:12:02+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@qifeifly：所以打开kaslr后，会做重定位操作，否则不能运行啊"
+ },
+ {
+  "id": "7464",
+  "parent": "7383",
+  "date": "2019-06-11T15:29:37+08:00",
+  "author": "nicole",
+  "site": "",
+  "text": "@smcdef：大师您好\r\n    请问一下内核如果配置成了可重定位内核，那么内核是如何通过vmlinux.relocs这个重定位表进行重定位的？\r\n\r\n我的理解是内核会遍历vmlinux.relocs ，在每个需要修订的位置，加上内核实际加载地址和理论加载地址的差值，实现重定位；但是这只是改变了vmlinux.relocs,并没有改变位置相关码呀？\r\n\r\n请大师指点一二，谢谢。"
+ },
+ {
+  "id": "7469",
+  "parent": "7464",
+  "date": "2019-06-14T09:48:31+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@nicole：以ARM64架构为例，relocate 实现代码位于：arch/arm64/kernel/head.S __relocate_kernel() 函数。\r\n\r\n__relocate_kernel:\r\n\t/*\r\n\t * Iterate over each entry in the relocation table, and apply the\r\n\t * relocations in place.\r\n\t */\r\n\tldr\tw9, =__rela_offset\t\t// offset to reloc table\r\n\tldr\tw10, =__rela_size\t\t// size of reloc table\r\n\r\n\tmov_q\tx11, KIMAGE_VADDR\t\t// default virtual offset\r\n\tadd\tx11, x11, x23\t\t\t// actual virtual offset\r\n\tadd\tx9, x9, x11\t\t\t// __va(.rela)\r\n\tadd\tx10, x9, x10\t\t\t// __va(.rela) + sizeof(.rela)\r\n\r\n0:\tcmp\tx9, x10\r\n\tb.hs\t1f\r\n\tldp\tx11, x12, [x9], #24\r\n\tldr\tx13, [x9, #-8]\r\n\tcmp\tw12, #R_AARCH64_RELATIVE\r\n\tb.ne\t0b\r\n\tadd\tx13, x13, x23\t\t\t// relocate\r\n\tstr\tx13, [x11, x23]\r\n\tb\t0b\r\n1:\tret\r\nENDPROC(__relocate_kernel)\r\n\r\n__rela_offset和__rela_size在链接脚本(arch/arm64/kernel/vmlinux.lds.S)中可以找到。你可以看下这部分实现。"
+ },
+ {
+  "id": "7665",
+  "parent": "0",
+  "date": "2019-09-25T16:02:55+08:00",
+  "author": "TTTT",
+  "site": "",
+  "text": "@smcdef，你好，感谢分享。有问题请教：\r\n\r\nkaslr_early_init返回了offset，__create_page_tables根据offset去重新创建映射。我没搞明白，如何实现的随机化。\r\n\r\n多谢！"
+ },
+ {
+  "id": "7666",
+  "parent": "7665",
+  "date": "2019-09-25T21:05:17+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@TTTT：kaslr_early_init() 返回的 offset 得值是 BootLoader 通过 dts 传递过来的。所以，随机产生 offset 的工作由 BootLoader 完成。"
+ },
+ {
+  "id": "7999",
+  "parent": "0",
+  "date": "2020-05-28T16:23:03+08:00",
+  "author": "chenlifu2015",
+  "site": "",
+  "text": "博主，您好\r\n  请教一个问题，就算开启了KASLR（没有设置kaslr_seed。偏移应该为0）和内核代码段被映射到vmalloc区域，内核代码段的hash值应该还是不会改变的吧，我现在通过sha256去计算[_stext, _etext]范围的hash值，在内核的加载过程中会一直变化，难道内核代码段也会发生缺页中断么，我的内核版本和博主您的是一样的：4.14 ARM64"
+ },
+ {
+  "id": "8000",
+  "parent": "7999",
+  "date": "2020-05-28T17:13:08+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@chenlifu2015：我不明白你提出缺页异常和代码段变化有什么关系。当然内核的代码也不会发生缺页异常。你好奇的问题应该是代码段为什么hash值变化了？代码段发生变化，也和KASLR没有关系。我这里给你提供一点思路证明代码段确实可以发生变化。\r\n\r\n1. aarch64会有一些CPU的feature，这些feature会在系统boot的时候动态监测。如果某些feature在当前CPU是支持的，此时会有指令替换的过程，把新feature的指令替换编译期的指令。\r\n2. 类似kprobe技术，会修改代码段达到hook函数的目的。\r\n\r\n这些都可能导致代码段的hash值变化。"
+ },
+ {
+  "id": "8002",
+  "parent": "8000",
+  "date": "2020-05-29T16:24:04+08:00",
+  "author": "chenlifu2015",
+  "site": "",
+  "text": "@smcdef：感谢博主的回复，我今天去了解了一下kprobe机制，确实可能会导致内核代码段被篡改，但您说的第一点我确实没找到相关资料，能方便一点一下么，比如说一个具体的机制我能够去熟悉，或许这个动态监测的机制能够通过配置宏关闭"
+ },
+ {
+  "id": "8003",
+  "parent": "8002",
+  "date": "2020-05-29T21:15:44+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@chenlifu2015：例如atomic实现有2种方式，LSE和LL/SC。印象中LSE是armv8.2以后支持的特性。LL/SC是老的实现方式。你看看atomic实现的2个文件吧。"
+ },
+ {
+  "id": "8007",
+  "parent": "8003",
+  "date": "2020-06-01T11:05:09+08:00",
+  "author": "chenlifu2015",
+  "site": "",
+  "text": "@smcdef：我看了下我使用的SDK中内核关于atomic的代码实现，可以确定这部分是通过编译宏来决定的，并且kprobe特性在编译时也没有被打开，因此可以排除kprobe和LSE的原因导致内核代码段hash发生变化，博主，还有其它的思路么，因为我在4.12的arm32位上计算内核hash是不会发生变化的，也就是说是可以关闭掉cpu feature带来的影响，博主，我猜测了一下，这种动态检测的特性能否通过配置宏来关闭呢"
+ },
+ {
+  "id": "8008",
+  "parent": "8007",
+  "date": "2020-06-01T14:32:17+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@chenlifu2015：我让你看的目的不是为了让你确认是不是宏确认编译。而是让你看怎么根据CPU feature检测，动态替换代码的。默认情况下本身就是宏唯一确定了使用LL/SC的方式，只不过boot的时候会检测feature，如果支持LSE，就会把LSE的指令替换了LL/SC的方式。你通过编译是无法确定的。\r\n另外你在arm32上测试有什么意义呢？CPU feature检测替换这块是arm64实现的，arm32是否实现了类似机制都不确定，你的测试能说明什么呢？\r\n你应该去看看这个宏定义的作用\r\n#define ALTERNATIVE(oldinstr, newinstr, ...)"
+ },
+ {
+  "id": "8220",
+  "parent": "0",
+  "date": "2021-04-21T09:47:59+08:00",
+  "author": "蜗牛",
+  "site": "http://na",
+  "text": "您好，窝窝\r\n\r\n请问arm平台有对kaslr机制的处理的，kernel414上好像没有"
+ },
+ {
+  "id": "8333",
+  "parent": "0",
+  "date": "2021-10-14T11:24:01+08:00",
+  "author": "悟实",
+  "site": "",
+  "text": "请教wowo大佬:\r\n关于线性映射区地址也会随机化。当前调试kernel-4.14 arm64, 驱动里面kmalloc申请的buf, buf前后连续地址一直是随机的, 关闭CONFIG_RANDOMIZE_BASE之后还是随机的, 如何分析这个随机化, 感谢"
+ },
+ {
+  "id": "8488",
+  "parent": "8333",
+  "date": "2022-01-13T19:15:04+08:00",
+  "author": "zxq",
+  "site": "",
+  "text": "@悟实：你这个主要原因是因为slub使能了CONFIG_SLAB_FREELIST_RANDOM，跟CONFIG_RANDOMIZE_BASE没关系。"
+ },
+ {
+  "id": "8749",
+  "parent": "6870",
+  "date": "2023-03-08T19:48:57+08:00",
+  "author": "hymmsx",
+  "site": "",
+  "text": "@litao6169：你这个结果计算出来是A6200000和他设的A6200000不一样？"
+ },
+ {
+  "id": "8750",
+  "parent": "6870",
+  "date": "2023-03-08T19:49:01+08:00",
+  "author": "hymmsx",
+  "site": "",
+  "text": "@litao6169：你这个结果计算出来是A6200000和他设的A6200000不一样？"
+ },
+ {
+  "id": "8846",
+  "parent": "0",
+  "date": "2023-11-14T18:38:15+08:00",
+  "author": "Enlin",
+  "site": "",
+  "text": "在4.15中，我觉得节点信息应该是：kaslr-seed = <0x10000000 0x10000000>;这类格式的。\r\n\r\n因为下面有如下的判断：\r\nif (!prop || len != sizeof(u64))\r\n\r\n节点长度不够，直接return 0；"
+ }
+]

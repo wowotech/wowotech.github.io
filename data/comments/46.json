@@ -1,0 +1,154 @@
+[
+ {
+  "id": "472",
+  "parent": "0",
+  "date": "2014-09-28T15:25:26+08:00",
+  "author": "海",
+  "site": "",
+  "text": "linux社区曾讨论过PM runtime和suspend是不是可以取其一，不过目前的情况两种机制都存在，而且越来越复杂了。"
+ },
+ {
+  "id": "1678",
+  "parent": "0",
+  "date": "2015-05-03T20:37:07+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "如下copy过来后忘记修改了？呵呵。\r\n\r\ndpm_suspend，执行所有设备的“->suspend() callback(s)”，其内部动作和dpm_prepare类似：\r\n1）遍历dpm_list，依次取出挂在该list中的device指针。 -- 遍历dpm_prepared_list\r\n2）调用内部接口device_suspend，执行实际的prepare动作。 --执行suspend动作"
+ },
+ {
+  "id": "2084",
+  "parent": "0",
+  "date": "2015-06-30T16:19:57+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "pm_domain 结构体包含的应该是 struct dev_pm_ops ops;\r\n\r\n而不是 dev_pm_info 吧。。。\r\n\r\n我3.10.17 内核是这个样子滴。。"
+ },
+ {
+  "id": "2086",
+  "parent": "2084",
+  "date": "2015-06-30T17:17:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@printk：谢谢提醒，这里有笔误，马上改正~~~~"
+ },
+ {
+  "id": "2087",
+  "parent": "2086",
+  "date": "2015-06-30T17:20:26+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "@wowo：我看您的攻略都是一边看代码一边理解，哈哈"
+ },
+ {
+  "id": "2096",
+  "parent": "2087",
+  "date": "2015-06-30T21:30:02+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@printk：其实这些文章顶多算我读代码的一个记录，说实话，不会给大家太多的帮助，如果要理解的话，还是要自己去看代码的。"
+ },
+ {
+  "id": "2314",
+  "parent": "0",
+  "date": "2015-07-26T22:32:19+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "@wowo\r\n@linuxer\r\n\r\n都说设备模型的用途之一是电源管理：体现电源层次管理。比如i2c设备是挂在i2c总线上，但是i2c adpater一般是挂在platform bus上。从kernel的suspend过程中，我怎么也看不出，他体现出的层次结构。相反他是把设备挂在一个list上。一个一个的取出来suspend。kernel是怎么保证先suspend i2c client然后 suspend i2c adpater的。\r\n\r\n多谢"
+ },
+ {
+  "id": "2315",
+  "parent": "2314",
+  "date": "2015-07-27T08:56:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@heziq：adapter和client是父子关系：\r\ni2c_new_device(struct i2c_adapter *adap, struct i2c_board_info const *info)\r\n{\r\n        ...\r\n        client->dev.parent = &client->adapter->dev;\r\n        ...\r\n}\r\nsuspend的时候会先suspend children再suspend parent。"
+ },
+ {
+  "id": "2317",
+  "parent": "2315",
+  "date": "2015-07-27T09:51:57+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "@wowo：suspend的时候，什么地方的代码体现出父子关系了？我找了好久没有找到，请指点一下！"
+ },
+ {
+  "id": "2320",
+  "parent": "2314",
+  "date": "2015-07-27T10:35:36+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@heziq：在系统suspend的时候，需要一个个的、按照顺序（prepare、suspend、suspend late、suspend no irq.....）的处理整个系统的中的设备。当然，设备模型维护了bus、device、driver的树状拓扑，但是，在进行系统电源管理的时候，树状的拓扑其实不好操作，因此实际上电源管理的操作都是基于链表的。\r\n在系统初始化的时候，每个设备都是加入到dpm list中（参考device_pm_add），对于设备，永远都是parent先初始化，其后才有children的初始化，因此dpm list天然维护了这样的父子关系：parent device永远位于dpm list中的前面，而child device总是位于其parent device的后面。因此，在进行系统suspend的时候，只要沿着pm list操作（实际上有多个list参与，这里就不赘述了），那么总是可以保证child device先于parent device进入某种电源管理状态。"
+ },
+ {
+  "id": "2322",
+  "parent": "2320",
+  "date": "2015-07-27T10:55:26+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "@linuxer：thanks，明白了，我再去好好研究一下。"
+ },
+ {
+  "id": "2581",
+  "parent": "0",
+  "date": "2015-09-15T17:42:30+08:00",
+  "author": "lucky",
+  "site": "",
+  "text": "您好\r\n   感谢您的博客，对于广大入门者来说，很有帮助。\r\n   请问下device_driver  ->  const struct dev_pm_ops *pm -> suspend 怎样被调用执行的呢？\r\n\r\n博文内容：\r\ndpm_suspend，执行所有设备的“->suspend() callback(s)”，其内部动作和dpm_prepare类似：\r\n1）遍历dpm_list，依次取出挂在该list中的device指针。 \r\n2）调用内部接口device_suspend，执行实际的prepare动作。该接口会返回执行的结果。\r\n3）如果suspend失败，将该设备的信息记录在一个struct suspend_stats类型的数组中，并打印错误错误信息。\r\n4）最后将设备从其它链表（如dpm_prepared_list），转移到dpm_suspended_list链表中。\r\n内部接口device_suspend的动作和device_prepare类似，这里不再描述了。"
+ },
+ {
+  "id": "2582",
+  "parent": "2581",
+  "date": "2015-09-15T18:45:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lucky：代码中，接着往下面看就可以看到了：device_suspend-->__device_suspend"
+ },
+ {
+  "id": "5917",
+  "parent": "0",
+  "date": "2017-08-17T17:11:21+08:00",
+  "author": "melo",
+  "site": "",
+  "text": "@wowo:  对于内部接口的执行顺序有疑问\r\n原文:\r\n4）根据优先顺序，获得用于prepare的callback函数。由于设备模型有bus、driver、device等多个层级，而prepare接口可能由任意一个层级实现。这里的优先顺序是指，只要优先级高的层级注册了prepare，就会优先使用它，而不会使用优先级低的prepare。优先顺序为：dev->pm_domain->ops、dev->type->pm、dev->class->pm、dev->bus->pm、dev->driver->pm（这个优先顺序同样适用于其它callbacks）。 \r\n\r\n我看博客的时候实觉得有问题,那么这样我在驱动里还折腾什么,优先级这么低不应该阿.\r\n然后我的版本实android6.0的内核代码,发现\r\nif (dev->pm_domain) {\r\n\t\tinfo = \"preparing power domain \";\r\n\t\tcallback = dev->pm_domain->ops.prepare;\r\n\t} else if (dev->type && dev->type->pm) {\r\n\t\tinfo = \"preparing type \";\r\n\t\tcallback = dev->type->pm->prepare;\r\n\t} else if (dev->class && dev->class->pm) {\r\n\t\tinfo = \"preparing class \";\r\n\t\tcallback = dev->class->pm->prepare;\r\n\t} else if (dev->bus && dev->bus->pm) {\r\n\t\tinfo = \"preparing bus \";\r\n\t\tcallback = dev->bus->pm->prepare;\r\n\t}\r\n\r\n\tif (!callback && dev->driver && dev->driver->pm) {\r\n\t\tinfo = \"preparing driver \";\r\n\t\tcallback = dev->driver->pm->prepare;\r\n\t}\r\n也就是驱动driver->pm应该可以说是优先度最高嘛,毕竟自己的事自己最清楚."
+ },
+ {
+  "id": "5918",
+  "parent": "5917",
+  "date": "2017-08-17T18:40:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@melo：其实可以换个思路来理解：\r\n确实，很多情况下只有driver最清楚该做什么。但是，如果上层框架（例如bus）也有事情需要做怎么办？\r\n假如driver的优先级最高，就需要driver主动的调用上层框架的接口，这样耦合度就增加了。\r\n而按照当前的实现，假如上层框架有事情要做，就把控制权交给它，它做完自己的事情之后，再决定怎么把控制权交接给driver（大不了主动调用一下，可参考platform driver的例子，drivers/base/platform.c）。\r\n这背后的思考就是，上层框架要牢牢掌握总控权，底层driver，填空就行了。"
+ },
+ {
+  "id": "5975",
+  "parent": "0",
+  "date": "2017-09-02T14:06:03+08:00",
+  "author": "丛林野和尚",
+  "site": "",
+  "text": "那就是这样理解？底层的一个小模块，你等着跟着我一起关机掉电吧"
+ },
+ {
+  "id": "7720",
+  "parent": "2581",
+  "date": "2019-10-28T19:59:23+08:00",
+  "author": "吴兵",
+  "site": "http://https://wu-being.blog.csdn.net/",
+  "text": "@lucky：这一段应该有误--“1）遍历dpm_list，”，这时应该是遍历dpm_prepared_list了吧"
+ },
+ {
+  "id": "7721",
+  "parent": "0",
+  "date": "2019-10-28T20:02:01+08:00",
+  "author": "吴兵",
+  "site": "http://https://wu-being.blog.csdn.net/",
+  "text": "这时应该遍历dpm_prepared_list"
+ },
+ {
+  "id": "9161",
+  "parent": "2322",
+  "date": "2025-07-09T20:08:23+08:00",
+  "author": "zouzp",
+  "site": "",
+  "text": "@heziq：其实是把那个树状拓扑给横过来转换为链表"
+ }
+]

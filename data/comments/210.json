@@ -1,0 +1,138 @@
+[
+ {
+  "id": "2677",
+  "parent": "0",
+  "date": "2015-09-23T13:51:00+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "Hi WOWO \r\n为什么通过如下的操作可以得到cluster id，\r\nunsigned int cluster = (mpidr >> 8) & 0xf;\r\n\r\n我在datasheet没找到，cluster id 存放到 Affinitty 1 中，你知道这个说明在哪里吗？\r\nAff1, bits [15:8]\r\nAffinity level 1. Third highest level affinity field."
+ },
+ {
+  "id": "2678",
+  "parent": "2677",
+  "date": "2015-09-23T16:35:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：你看的datasheet是指“DDI0487A_d_armv8_arm.pdf”吗？体系结构不会规定具体的位放什么东西的，是否存放cluster ID，是由CPU决定的，例如A57，您可以参考这个“DDI0488G_cortex_a57_mpcore_trm.pdf”。"
+ },
+ {
+  "id": "3453",
+  "parent": "0",
+  "date": "2016-01-28T11:21:17+08:00",
+  "author": "archer",
+  "site": "",
+  "text": "写的太好了，谢谢！请教一个问题，possible cpus是boot时就确定了的，有没有什么机制可以动态插入一个cpu吗？这样的话是不是possible cpus也可以变化？"
+ },
+ {
+  "id": "3454",
+  "parent": "3453",
+  "date": "2016-01-28T11:36:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@archer：可以参考“4.2 CPU hotplug的过程分析”，hotplug会改变online状态，但possible需要事先配置好。"
+ },
+ {
+  "id": "3753",
+  "parent": "0",
+  "date": "2016-03-30T19:41:46+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "hi wowo，为什么有些时候开了hotplug会比关闭还耗电呢？按照常理来说，两个核各为20%的loading应该比单核40%耗电吧？"
+ },
+ {
+  "id": "3756",
+  "parent": "3753",
+  "date": "2016-03-30T22:13:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：\"开了hotplug\"具体指什么意思呢？动态开关核？还是在两个核都是20%的时候把其中的一个关闭？\r\n有没有使用动态调频功能？20%和40%的时候，CPU的频率和电压是一样的吗？\r\n这里面变数比较多，还真不好下结论。"
+ },
+ {
+  "id": "3760",
+  "parent": "3756",
+  "date": "2016-03-30T22:59:26+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@wowo：1.开了动态开关核，开了dvfs，其他条件都是一样的，对比开与没开动态开关核的功耗，发现没开的功耗反而低。\r\n2.这是由此产生的疑问：有两种情况（都是关了动态开关核），一种是单核2G（固定频率）运行游戏，处于40%的loading；另一种是双核1G（固定频率），运行相同的游戏，两个cpu有可能处于20%（加起来应该是40%）。困惑的是，这两种情况下，哪种耗电更多呢？"
+ },
+ {
+  "id": "3761",
+  "parent": "3760",
+  "date": "2016-03-31T08:58:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：个人观点，条件一样的情况下，应该是两个核更耗电。\r\n我们可以从能量的角度去解释：\r\n假设当前的事情需要消耗的能量是E（比如说游戏），刨除开销，无论用多少核，消耗的能力都是E（就是我们说的功耗）。也就是说，在理想情况下，40% loading的1核，和20% loading的2核，耗电应该相等。\r\n但这仅仅是理想情况，另外60%（或者80%）的idle时间，其实就是开销，这种情况下，2核肯定比1核的开销大。因此从省电的角度看，把一个core的loading提到100%之后，再开另一个core，是最划算的。"
+ },
+ {
+  "id": "3765",
+  "parent": "3761",
+  "date": "2016-03-31T15:45:06+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@wowo：谢谢wowo，茅塞顿开。"
+ },
+ {
+  "id": "3766",
+  "parent": "3765",
+  "date": "2016-04-01T14:34:43+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@cym：hi wowo,那为什么我们现在的策略不是照你说的那样去实现呢？是不是对性能会有影响？"
+ },
+ {
+  "id": "3780",
+  "parent": "3761",
+  "date": "2016-04-05T10:25:04+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@wowo：hi wowo,那为什么我们现在的策略不是照你说的那样去实现呢？是不是对性能会有影响？"
+ },
+ {
+  "id": "3783",
+  "parent": "3780",
+  "date": "2016-04-05T11:20:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：理想和现实之间，总会有差距吧，具体原因，只能具体情况具体对待了。何况，系统设计的时候，功耗只是考虑之一，稳定性和性能，也不得不考虑。"
+ },
+ {
+  "id": "3785",
+  "parent": "3783",
+  "date": "2016-04-05T15:17:54+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@wowo：wowo ，你有研究过eas吗"
+ },
+ {
+  "id": "3788",
+  "parent": "0",
+  "date": "2016-04-05T19:55:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym,没有研究过ESA"
+ },
+ {
+  "id": "5075",
+  "parent": "0",
+  "date": "2017-01-03T09:51:20+08:00",
+  "author": "zd",
+  "site": "",
+  "text": "Hi, Wowo.看了你写的cpu hotplug和cpufreq，想请教一个问题，cpuhotplug和cpufreq实现CPU调节过程中，哪个机制先调节？"
+ },
+ {
+  "id": "5078",
+  "parent": "5075",
+  "date": "2017-01-03T13:19:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zd：这应该是应用程序决定的，kernel只提供剑，至于杀谁，是人决定的。"
+ },
+ {
+  "id": "5445",
+  "parent": "0",
+  "date": "2017-04-10T16:23:35+08:00",
+  "author": "rikeyone",
+  "site": "",
+  "text": "hi 窝窝：\r\n请问一下，本文介绍说cpu hotplug内核只是提供接口，那么应用要怎么决定是否要enable/disable cpu呢？\r\n目前linux/android的完整解决方案是怎样的呢？\r\n麻烦大神解答一下"
+ }
+]

@@ -1,0 +1,50 @@
+[
+ {
+  "id": "5068",
+  "parent": "0",
+  "date": "2016-12-28T16:09:21+08:00",
+  "author": "King Jin",
+  "site": "",
+  "text": "大神写的真好。"
+ },
+ {
+  "id": "5165",
+  "parent": "0",
+  "date": "2017-01-19T08:52:33+08:00",
+  "author": "jinxinxin163",
+  "site": "",
+  "text": "请教：\r\nhttps://en.wikipedia.org/wiki/MultiMediaCard\r\n里的Comparison of technical features of MMC and SD card variants\r\n为什么没有emmc？"
+ },
+ {
+  "id": "5169",
+  "parent": "5165",
+  "date": "2017-01-20T08:35:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jinxinxin163：emmc和mmc的本质区别，就是封装的不同（以IP的形式嵌入到CPU中），其它的都差不多，所以wikipedia没有去更新吧（我猜测的）。"
+ },
+ {
+  "id": "6480",
+  "parent": "5165",
+  "date": "2018-01-16T13:59:23+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "@jinxinxin163：已经有了哦.现在"
+ },
+ {
+  "id": "7970",
+  "parent": "0",
+  "date": "2020-04-26T15:52:11+08:00",
+  "author": "eric",
+  "site": "",
+  "text": "MMC卡位从机,MMC卡为从机"
+ },
+ {
+  "id": "8099",
+  "parent": "0",
+  "date": "2020-08-18T21:41:47+08:00",
+  "author": "111",
+  "site": "",
+  "text": "https://linux.codingbelief.com/zh/\r\n里面有flash和内存的帖子（和这个网站上的帖子一样）"
+ }
+]

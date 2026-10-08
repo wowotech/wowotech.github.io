@@ -1,0 +1,18 @@
+[
+ {
+  "id": "7206",
+  "parent": "0",
+  "date": "2019-02-26T21:01:03+08:00",
+  "author": "test",
+  "site": "",
+  "text": "这种设计恰好也是书本的设计"
+ },
+ {
+  "id": "8867",
+  "parent": "7206",
+  "date": "2024-02-23T17:02:58+08:00",
+  "author": "donge",
+  "site": "http://uniondong.github.io",
+  "text": "@test：有道理"
+ }
+]

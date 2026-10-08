@@ -1,0 +1,362 @@
+[
+ {
+  "id": "447",
+  "parent": "0",
+  "date": "2014-09-15T09:09:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "打鸡血了吗，最近接连发力啊。注意细水长流哦～～～～"
+ },
+ {
+  "id": "449",
+  "parent": "447",
+  "date": "2014-09-15T18:23:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：哪有，这几篇内容不多，比较好写。呵呵"
+ },
+ {
+  "id": "450",
+  "parent": "0",
+  "date": "2014-09-16T16:58:04+08:00",
+  "author": "海",
+  "site": "",
+  "text": "挺长时间没来了，过来看看。wake lock最初掀起了一场大讨论，不过wakelock破坏了内核空间和用户空间的独立性。其实我倒是觉得只要是解决了睡眠和唤醒事件的同步关系就行了。后来安卓也使用了wakeup source后，这不又是一家人了。\r\n2）一个sysfs文件：：/sys/power/wake_lock这里是wake_unlock"
+ },
+ {
+  "id": "451",
+  "parent": "450",
+  "date": "2014-09-16T22:35:32+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@海：欢迎回来。谢谢提醒，已经改正。\r\n从软件架构上讲，wakelock确实不是一个好的设计。但是在Android诞生之初，Linux kernel还没有提供有效的、可被移动终端使用的动态电源管理机制，wakelock确实帮了很大的忙，甚至Android的盛行，它也有很大的功劳。"
+ },
+ {
+  "id": "2787",
+  "parent": "0",
+  "date": "2015-10-17T11:08:40+08:00",
+  "author": "dumb",
+  "site": "",
+  "text": "Hi @wowo\r\n\r\n对于wake_lock有点没太明白,就是它如何阻止系统休眠呢?\r\n\r\n从你之前的文章和代码中看好像只有在pm_wakeup_pending()中检查是否有wake source event正在处理(或者save_count和当你是的count不等用来做同步),有的话休眠就不进行下去; 但是该函数中有一个events_check_enabled变量控制, 该变量只有在wake_count的store接口中才会被设置为true, 也就是说没有wake_count的操作,这个变量为false, 那平时wake_lock是如何组织系统休眠的?\r\n\r\nThanks."
+ },
+ {
+  "id": "2788",
+  "parent": "2787",
+  "date": "2015-10-17T19:11:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dumb：wake_lock必须在wake_count的配合下，才有作用。\r\npm_wakeup_pending中，如果events_check_enabled为false，该接口会直接返回false，也即无论如何，系统都会休眠，此时wake_lock就没有意义了。\r\n你可以自己做个试验，随便写一个什么值到/sys/power/wake_lock，然后“echo mem > /sys/power/state”，看看系统会不会直接睡下去。"
+ },
+ {
+  "id": "2791",
+  "parent": "2788",
+  "date": "2015-10-19T09:11:53+08:00",
+  "author": "dumb",
+  "site": "",
+  "text": "@wowo：嗯, 多谢热心的回复;\r\n\r\n1. 我现在看的是android代码, 手机启动之后第一次的亮屏期间 events_check_enabled 会是0, 但是熄屏(休眠)之后会变为1, 应该是andriod 库里面有写这个wake_count这个节点; 我还需要再查查代码.\r\n\r\n2. 接着您的回答,wake lock必须在wake_count配合下才有作用; 但是kernel中在wakelock.h中提供了wake_lock等系统调用(调用的是__pm_stay_awake),也就是说wake_lock机制其实在内核中可以单独使用, 看驱动代码也有它们调用用来阻止系统休眠, 那按照您的意思内核中的wake_lock调用也必须依赖wake_count吗, 而wake_count是提供给用户空间调用的? 总感觉没有理解到位呢...\r\n\r\nThanks."
+ },
+ {
+  "id": "2795",
+  "parent": "2791",
+  "date": "2015-10-19T11:23:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dumb：wake_count是给用户空间调用的，但是suspend的发起人是谁的呢？也是用户空间。\r\n\r\n而wakeup event（无论是用户空间的wake_lock，还是内核空间的wakeup source）的终极目标是什么呢？是阻止suspend（用户空间发起的）。\r\n\r\n好了，如果用户空间程序不使用wake_count配合suspend过程，它在用户空间层面的同步都无法保证，那么Kernel的机制生效也是没有意义的。\r\n\r\n因此，不配合wake_count，kenrel的wakeup source也是没有意义的。"
+ },
+ {
+  "id": "2800",
+  "parent": "2795",
+  "date": "2015-10-19T18:19:20+08:00",
+  "author": "dumb",
+  "site": "",
+  "text": "@wowo：哦,原来是这样啊. 多谢耐心的解答!"
+ },
+ {
+  "id": "2906",
+  "parent": "0",
+  "date": "2015-10-30T20:07:47+08:00",
+  "author": "稻草人",
+  "site": "",
+  "text": "hi, wowo,\r\n关于android acquire wakelock有一点不明白的地方，就是framework层在申请acquire wakelock的时候在最后逐层的调用到JNI层的时候我看到他往kernel申请的wakelock只有一种PARTIAL_WAKE_LOCK类型：\r\nstatic void nativeAcquireSuspendBlocker(JNIEnv *env, jclass clazz, jstring nameStr) {\r\n    ScopedUtfChars name(env, nameStr);\r\n    acquire_wake_lock(PARTIAL_WAKE_LOCK, name.c_str());\r\n}\r\n百思不得其解，因为我看到framework层有申请其他类型的wakelock的（比如FULL_WAKE_LOCK），为什么一层层的调用下来最后就变成了只申请PARTIAL_WAKE_LOCK了，麻烦帮忙解惑呀！\r\nPs:上面是android JNI层的一个函数，他调用的acquire_wake_lock是HAL层的一个函数：\r\nacquire_wake_lock(int lock, const char* id)\r\n{\r\n    initialize_fds();\r\n\r\n//    ALOGI(\"acquire_wake_lock lock=%d id='%s'\\n\", lock, id);\r\n\r\n    if (g_error) return -g_error;\r\n\r\n    int fd;\r\n\r\n    if (lock == PARTIAL_WAKE_LOCK) {\r\n        fd = g_fds[ACQUIRE_PARTIAL_WAKE_LOCK];\r\n    }\r\n    else {\r\n        return -EINVAL;\r\n    }\r\n\r\n    return write(fd, id, strlen(id));\r\n}\r\n这个函数最后write的文件节点就是这篇文章开始说的/sys/power/wake_lock节点，写完之后就调用了 wake_lock_store函数，往这篇文章所写的往下面走了。\r\n想问的就是为什么上层下来的wakelock只能申请PARTIAL_WAKE_LOCK类型的partial wake。"
+ },
+ {
+  "id": "2909",
+  "parent": "2906",
+  "date": "2015-10-30T21:42:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@稻草人：我没有读过Android的这段代码，猜测如下：\r\n这里的代码应该是Android为了兼容几种不同Wakelock机制的实现，就像本文开头所说的那样。\r\ng_fds数组应该保存了这几种机制所对应的不同的文件句柄，当然，现在最正宗的wakelock机制，就对应了[ACQUIRE_PARTIAL_WAKE_LOCK]，也即“/sys/power/wake_lock”。\r\n你可以看看数组中的其它fd对应什么。\r\n至于jni中为什么只使用了ACQUIRE_PARTIAL_WAKE_LOCK，估计得问问作者了，也许是不想再节外生枝，尽量往linux原生上靠拢吧。"
+ },
+ {
+  "id": "2983",
+  "parent": "2909",
+  "date": "2015-11-02T10:00:01+08:00",
+  "author": "稻草人",
+  "site": "",
+  "text": "@wowo：@wowo:\r\n在HAL层g_fds数组中还有一个RELEASE_WAKE_LOCK成员这个对应的是“/sys/power/wake_unlock“。\r\ndevice在屏幕点亮唤醒的时候申请的应该是full wakelock，而且是上往下来申请的，所以很纳闷，为啥到下面就变成partial wakelock了，今天再加log看看~"
+ },
+ {
+  "id": "3914",
+  "parent": "0",
+  "date": "2016-05-11T15:55:25+08:00",
+  "author": "le",
+  "site": "",
+  "text": "请教一下，/sys/power/wake_unlock中有很多节点，但是wake_lock是空的，这是什么意思呀？\r\n # cat wake_unlock\r\nHVDCPD_WL KeyEvents PowerManagerService.Broadcasts PowerManagerService.Display PowerManagerService.WakeLocks qcril qcril_pre_client_init radio-interface rmt_storage_548401050688 sensor_ind tftp_server_wakelock"
+ },
+ {
+  "id": "3915",
+  "parent": "3914",
+  "date": "2016-05-11T16:12:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@le：意思是这些lock都是处于unlock状态。\r\nwake_unlock中看到的是unlock状态的东西，wake_lock中看到的是lock状态的东西。"
+ },
+ {
+  "id": "3917",
+  "parent": "3915",
+  "date": "2016-05-11T16:35:57+08:00",
+  "author": "le",
+  "site": "",
+  "text": "@wowo：unlock是怎么添加的？\r\n比如：\r\n# echo test > wake_unlock\r\n# cat wake_unlock\r\nHVDCPD_WL KeyEvents PowerManagerService.Broadcasts PowerManagerService.Display PowerManagerService.WakeLocks qcril qcril_pre_client_init radio-interface rmt_storage_548401050688 rmt_storage_548408828992 sensor_ind tftp_server_wakelock\r\n\r\n里边没有test"
+ },
+ {
+  "id": "3918",
+  "parent": "3917",
+  "date": "2016-05-11T16:49:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@le：要先lock，才能unlock。"
+ },
+ {
+  "id": "5554",
+  "parent": "0",
+  "date": "2017-05-16T15:32:02+08:00",
+  "author": "冷雨秋风少",
+  "site": "",
+  "text": "wowo：\r\n\r\n请教下如下问题，\r\n蓝牙模块和CPU之间通过中断触发事件，android系统睡眠状态，有蓝牙信号通讯时可以唤醒系统。但是现在却唤醒不了。中断处理的实现的代码如下，wowo大神能帮看下哪边有问题。感谢\r\n\r\nwake_lock_init(&rda_bt_wake_lock, WAKE_LOCK_SUSPEND,\"RDA_sleep_worker_wake_lock\");\r\n\r\nret = request_irq(bt_host_wake_irq,rda_bt_host_wake_eirq_handler,IRQF_TRIGGER_RISING | IRQF_NO_SUSPEND,\"rda_bt_host_wake_irq\", NULL);//申请蓝牙中断\r\n    static irqreturn_t rda_bt_host_wake_eirq_handler(int irq, void *dev_id)\r\n    {\r\n\trda_bt_set_wake_lock();\r\n\treturn IRQ_HANDLED;\r\n    }\r\n        void rda_bt_set_wake_lock(void)\r\n        {\r\n\tprintk(\"---rda_bt_set_wake_lock  \\n\");\r\n\twake_lock(&rda_bt_wake_lock);\r\n\tcancel_delayed_work(&rda_bt_sleep_worker);\r\n\tschedule_delayed_work(&rda_bt_sleep_worker, 6 * HZ);\r\n        }\r\n             static inline void wake_lock(struct wake_lock *lock)\r\n           {\r\n\t    __pm_stay_awake(&lock->ws);\r\n            }\r\n\r\nINIT_DELAYED_WORK(&rda_bt_sleep_worker, rda_bt_sleep_worker_task); //\r\n    void rda_bt_sleep_worker_task(struct work_struct *work)\r\n    {\r\n\tprintk(\"---rda_bt_sleep_worker_task end \\n\");\r\n\twake_unlock(&rda_bt_wake_lock);\r\n    }\r\n        static inline void wake_unlock(struct wake_lock *lock)\r\n        {\r\n\t__pm_relax(&lock->ws);\r\n        }"
+ },
+ {
+  "id": "5555",
+  "parent": "5554",
+  "date": "2017-05-16T19:18:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@冷雨秋风少：建议先查查在suspend之前，相应的硬件是否还能产生中断（电、时钟等）、GIC是否可以处理这个中断（查一下相应的寄存器）。如果都okay，再确认CPU是否已经醒来了？是否进入到你的中断处理了？等等。"
+ },
+ {
+  "id": "5557",
+  "parent": "5555",
+  "date": "2017-05-16T20:08:38+08:00",
+  "author": "冷雨秋风少",
+  "site": "",
+  "text": "@wowo：wowo，\r\n\r\nwakeup状态下，中断发生OK，中断处理正常。蓝牙传输数据，无法唤醒系统，只有按power键后，系统起来后，蓝牙才能正常通讯。抓到的log如下（截取其中一小段），中断唤醒CPU，经过noirq resume和early resume，但并未wakeup，按下power键后系统才起来：\r\n<7>PM: Entering mem sleep\r\n<4>Suspending console(s) (use no_console_suspend to debug)\r\n<3>rtc-rx8130 2-0032: rx8130_get_time: date 22s 58m 11h 2wd 16md 4m 117y\r\n<6>PM: suspend of devices complete after 98.196 msecs\r\n<6>PM: suspend devices took 0.100 seconds\r\n<6>PM: late suspend of devices complete after 0.479 msecs\r\n<6>PM: noirq suspend of devices complete after 0.634 msecs\r\n<4>Disabling non-boot CPUs ...\r\n<5>CPU1: shutdown\r\n<5>CPU2: shutdown\r\n<5>CPU3: shutdown\r\n<6>Suspended for 0.000 seconds\r\n<4>---rda_bt_host_wake_eirq_handler start//中断处理函数打印信息\r\n<4>---rda_bt_set_wake_lock\r\n<6>Enabling non-boot CPUs ...\r\n<4>CPU1: Booted secondary processor\r\n<6>CPU1 is up\r\n<4>CPU2: Booted secondary processor\r\n<6>CPU2 is up\r\n<4>CPU3: Booted secondary processor\r\n<6>CPU3 is up\r\n<6>PM: noirq resume of devices complete after 0.351 msecs\r\n<6>PM: early resume of devices complete after 0.395 msecs\r\n<4>enter matrix keypad interrupt.......................//按下power键\r\n<4>[yue.zhong:][gpio_keys_gpio_report_event][394]yue.zhong:pressed\r\n<4>\r\n<4>[yue.zhong:][gpio_keys_gpio_report_event][400]yue.zhong:pressed over\r\n<4>\r\n<4>[yue.zhong:][gpio_keys_gpio_report_event][400]yue.zhong:pressed over\r\n<4>\r\n<3>rtc-rx8130 2-0032: rx8130_get_time: date 38s 58m 11h 2wd 16md 4m 117y\r\n<6>PM: resume of devices complete after 200.679 msecs\r\n<6>PM: resume devices took 0.210 seconds\r\n<7>PM: Finishing wakeup.\r\n<4>Restarting tasks ... done.\r\n<6>PM: suspend exit 2017-05-16 11:58:38.109086667 UTC\r\n<6>period 66 ,timeout is 0, wake up is :0\r\n<6>mma enable setting active\r\n<6>request_suspend_state: wakeup (3->0) at 285186566700 (2017-05-16 11:58:38.149"
+ },
+ {
+  "id": "5558",
+  "parent": "5557",
+  "date": "2017-05-16T22:26:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@冷雨秋风少：虽然蓝牙报了一个事件上去，但application（例如android）并没有处理这个事件，接着做后续的动作。从日志上看，application只认识key的event。你可以从这个思路出发，修改应用的逻辑，让它看到蓝牙的事件后，和key一样处理。"
+ },
+ {
+  "id": "5738",
+  "parent": "0",
+  "date": "2017-06-27T09:59:20+08:00",
+  "author": "小白",
+  "site": "",
+  "text": "hi wowo,\r\n\r\n    请教一个问题，对于android来说,power manager提供api 申请/释放 wakelock，并且维护大部分userspace的wakelock，当一个申请了wakelock的app包括native程序异常崩溃，power manager通过binder 机制监听到客户端挂了，进而把这个客户端申请的wakelock remove掉。通过这种方式来保证系统中wakelock都是干净的。\r\n\r\n    对于标准linux来说，是否有这种机制？如果一个程序直接往sys文件中写入wakelock，后续崩溃了，那么这个wakelock是否就是脏的，linux对这种case是否有保证？\r\n    \r\n    谢谢！"
+ },
+ {
+  "id": "5741",
+  "parent": "5738",
+  "date": "2017-06-27T10:51:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@小白：个人观点，这种事儿不是kernel应该考虑的。kernel只负责提供wakelock机制，至于程序怎么用、怎么把它搞脏，那是程序的事儿。用户空间完全可以用一个单独的程序，去监控这种行为的发生（就像监控某一个程序异常退出后，再重启它一样）。总之呢，kernel里面没有这样的处理。"
+ },
+ {
+  "id": "5742",
+  "parent": "5741",
+  "date": "2017-06-27T11:27:27+08:00",
+  "author": "小白",
+  "site": "",
+  "text": "@wowo：明白，谢谢！"
+ },
+ {
+  "id": "5785",
+  "parent": "3917",
+  "date": "2017-07-07T15:50:47+08:00",
+  "author": "javier",
+  "site": "",
+  "text": "@le：这里的意思，我理解是不是曾经使用过的wakelock记录在rb链表中但是没有的回收清空出去，所以现在显示在/sys/power/wake_unlock中，但是不在/sys/power/wake_lock"
+ },
+ {
+  "id": "5786",
+  "parent": "5741",
+  "date": "2017-07-07T15:53:50+08:00",
+  "author": "javier",
+  "site": "",
+  "text": "@wowo：我的理解，像资源回收的事情，kernel应该是要负责清理的，比如使用内存和打开的文件在进程异常退出的过程中是能够回收的。wakelock作为一个内核资源，理论上也是应该有kernel来清理比较。不知道这样理解对不对？"
+ },
+ {
+  "id": "5788",
+  "parent": "5786",
+  "date": "2017-07-08T13:31:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@javier：是的，你的理解也有道理，不过这有一个前提：\r\n内存、文件等资源，恰恰是和进程绑在一起，以进程为单位进行管理。而进程管理又是kernel的一大任务，所以kernel可以在进程退出的时候很方便的清理它所占用的资源。从本质上看，释放进程的资源，就是进程管理的一部分。\r\n\r\n但其它的资源，例如这里的wakelock，其设计之初，没有要求必须和进程绑定，那么进程如果退出，kernel要怎么做才合适呢？估计最安全的做法就是什么也不做。因为用户空间的程序可以很容易的解决这个问题。"
+ },
+ {
+  "id": "6460",
+  "parent": "0",
+  "date": "2018-01-09T22:34:17+08:00",
+  "author": "Feynman",
+  "site": "",
+  "text": "蜗蜗大神，问个困惑的问题，就是设置了timeout之后，如果wakelock的等待时间已经超过了timeout的时间，但是此时设备还在工作，那么此时wakelock会被释放吗"
+ },
+ {
+  "id": "6476",
+  "parent": "6460",
+  "date": "2018-01-16T09:31:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Feynman：是的，不想这样的话，就不要设置timeout时间，驱动做完事情后，主动释放就行了。"
+ },
+ {
+  "id": "6488",
+  "parent": "6476",
+  "date": "2018-01-19T12:04:25+08:00",
+  "author": "Feynman",
+  "site": "",
+  "text": "@wowo：那既然这样的话，我们可以在设备工作的时候设置no timeout然后在判断到设备不工作之后再重新设置timeout的吧，还是调用pm_wake_lock接口重复设置"
+ },
+ {
+  "id": "6492",
+  "parent": "6476",
+  "date": "2018-01-22T20:59:13+08:00",
+  "author": "Feynman",
+  "site": "",
+  "text": "@wowo：还有个疑问就是，多个进程同时持有多个相同的wakelock锁，那么其中一个进程释放了这个wakelock锁，其他的进程应该是不用再释放了吧"
+ },
+ {
+  "id": "6493",
+  "parent": "6492",
+  "date": "2018-01-23T08:33:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Feynman：这些问题都是关于接口行为，直接去看代码比较简单粗暴，问我的话我也是去查代码，所以建议你看代码吧，这样理解会深刻一些~~~:-)"
+ },
+ {
+  "id": "6494",
+  "parent": "6493",
+  "date": "2018-01-23T09:27:43+08:00",
+  "author": "Feynman",
+  "site": "",
+  "text": "@wowo：嘿，其实我看了，只是不是很确认哈，那还想请教下，怎么确定当前设备是否已经释放wakelock，或者说已经suspend，查看/sys/power/state 吗？"
+ },
+ {
+  "id": "6495",
+  "parent": "6494",
+  "date": "2018-01-23T17:22:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Feynman：可以看这两个：/sys/power/wake_lock & /sys/power/wake_unlock"
+ },
+ {
+  "id": "6582",
+  "parent": "0",
+  "date": "2018-03-02T14:21:53+08:00",
+  "author": "不懂猫",
+  "site": "",
+  "text": "@wowo,请问,某个soc有个特定的timer位于始终不掉电区域,它可以做为唤醒源来唤醒ap.当ap睡下后,比如core,cluster等domain都掉电,但是在睡下去之前我需要设置这个特定的timer.以便在某段实际后唤醒ap,\r\n那我怎么找到我要设置的那个timer呢?"
+ },
+ {
+  "id": "6933",
+  "parent": "0",
+  "date": "2018-09-06T17:16:37+08:00",
+  "author": "xuwukong",
+  "site": "",
+  "text": "实际上没有wakelock 锁了，只有wake source ，\r\nandroid用的wakelock，不过是通过/sys/power/wake_lock来控制wake source? 可以这样理解吗？"
+ },
+ {
+  "id": "6936",
+  "parent": "6933",
+  "date": "2018-09-07T11:13:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xuwukong：是的。"
+ },
+ {
+  "id": "7562",
+  "parent": "0",
+  "date": "2019-07-31T20:55:01+08:00",
+  "author": "求学",
+  "site": "",
+  "text": "wowo：请教问题，如果wake_lock_timeout同一个锁调用两次，时间不同，以哪个为准？时间长的还是按照调用顺序？"
+ },
+ {
+  "id": "7567",
+  "parent": "7562",
+  "date": "2019-08-01T17:36:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@求学：这个是Android的代码？看看代码就行了，猜测是以第二次为准。也可以写个代码测试一下看看"
+ },
+ {
+  "id": "7722",
+  "parent": "0",
+  "date": "2019-10-29T17:14:03+08:00",
+  "author": "wall.e",
+  "site": "",
+  "text": "写的真好"
+ },
+ {
+  "id": "7726",
+  "parent": "0",
+  "date": "2019-10-30T12:48:20+08:00",
+  "author": "吴兵",
+  "site": "http://https://wu-being.blog.csdn.net/",
+  "text": "有误，不是drivers/power/wakelock.c，是power/power/wakelock.c"
+ },
+ {
+  "id": "7727",
+  "parent": "7726",
+  "date": "2019-10-30T16:37:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@吴兵：感谢认真的读者！感谢这几天认真的阅读和回复！\r\n太忙了不能一一回复，抱歉哈~~\r\n这里应该是kernel/power/wakelock.c\r\n我改一下，再次感谢"
+ },
+ {
+  "id": "8570",
+  "parent": "0",
+  "date": "2022-03-09T21:59:08+08:00",
+  "author": "baigl",
+  "site": "",
+  "text": "wowo，\r\n\r\n“1）如果当前wakelocks的数目小于最大值（由WL_GC_COUNT_MAX配置，当前代码为100），不回收，直接返回。”\r\n\r\n这句话我理解有些问题。 “wakelocks_gc_count”不是当前wakelocks的数量，而是自从上次回收内存之后调用pm_wake_unlock的数量。 当前wakelocks的数量包括active，和deactive(这又分为两部分，上次回收之前unlock的当时没有被回收，以及上次回收之后unlock的)"
+ },
+ {
+  "id": "8615",
+  "parent": "6936",
+  "date": "2022-05-16T14:16:53+08:00",
+  "author": "caid2012",
+  "site": "",
+  "text": "@wowo：第一、二部分似乎描述Android搞了两个wakelocks，一个销声匿迹，一个基于kernel的wakeup events框架；且新的wakelocks是kernel/power/wakelock.c\r\n\r\n第三节又描述了kernel的wakelocks机制；并且与Android的wakelocks机制作了对比\r\n\r\n但是两者都指向 kernel/power/wakelock.c 岂不是矛盾？"
+ },
+ {
+  "id": "8797",
+  "parent": "0",
+  "date": "2023-07-21T16:50:01+08:00",
+  "author": "波加查在北京",
+  "site": "",
+  "text": "这里的意思是kernel层的wakelock为android层的提供了接口，android的wakelock就是基于kernel的wakelock实现的，而kernel的wakelock本质上又是基于wakeup source。\r\n相当于三层套娃，android wakelock —> kernel wakelock -> kernel wakeup source。"
+ },
+ {
+  "id": "8913",
+  "parent": "0",
+  "date": "2024-07-14T21:59:43+08:00",
+  "author": "Aloys",
+  "site": "",
+  "text": "最新的Android版本已经不再通过/sys/power/wake_lock和/sys/power/wake_unlock来控制wake source了。\r\n当前通过SuspendControlService与/sys/power/wake_count来实现上层和kernel的锁同步"
+ }
+]

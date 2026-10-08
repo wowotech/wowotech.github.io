@@ -1,0 +1,42 @@
+[
+ {
+  "id": "3900",
+  "parent": "0",
+  "date": "2016-05-09T11:08:38+08:00",
+  "author": "小豌豆",
+  "site": "",
+  "text": "感谢楼主"
+ },
+ {
+  "id": "5294",
+  "parent": "0",
+  "date": "2017-03-08T16:50:05+08:00",
+  "author": "蓝漪",
+  "site": "",
+  "text": "窝窝文中多次提及的64字节，其计算引起了我的兴趣。\r\n我这边之前是这样算的：(4+4)+(6*8+4*1)+4=64，没错，和窝窝说的一样．\r\n但后面又查了下PE的结构，按照其数据结构，实际应该是40字节．\r\n\r\n迷惑中，我对vmlinux进行了反汇编，相关结果如下：\r\nffffffc000080000 <_text>:\r\nffffffc000080000:   91005a4d    add x13, x18, #0x16\r\nffffffc000080004:   140003ff    b   ffffffc000081000 <stext> \r\nffffffc000080008:   00080000    .word   0x00080000\r\nffffffc00008000c:   00000000    .word   0x00000000\r\nffffffc000080010:   01b7c000    .word   0x01b7c000\r\n    ...\r\nffffffc000080038:   644d5241    .word   0x644d5241\r\nffffffc00008003c:   00000040    .word   0x00000040\r\n\r\n这里可以看到，虽然定义的是quad类型，但实际vmlinux中是word类型．\r\n因此实际的计算公式应该是(4+4)+(6*4+4*1)+4=40．\r\n\r\n这里有个疑问，为什么类型会变呢？"
+ },
+ {
+  "id": "5297",
+  "parent": "5294",
+  "date": "2017-03-09T11:41:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@蓝漪：类型当然不会变，.quad代表的就是8个字节的数据。\r\n\r\n我帮你整理一下反汇编的结果你就明白了。\r\n\r\nfffffc000080000 <_text>:\r\nffffffc000080000:   91005a4d    add x13, x18, #0x16\r\nffffffc000080004:   140003ff    b   ffffffc000081000 <stext> \r\n－－－－－－－－－－对应－－－－－－－－－－－－－－－\r\nefi_head:\r\n    add    x13, x18, #0x16\r\n    b    stext \r\n\r\n\r\n\r\nffffffc000080008:   00080000    .word   0x00080000\r\nffffffc00008000c:   00000000    .word   0x00000000 \r\n－－－－－－－－－－对应－－－－－－－－－－－－－－－\r\n.quad    _kernel_offset_le"
+ },
+ {
+  "id": "5303",
+  "parent": "5297",
+  "date": "2017-03-09T22:29:58+08:00",
+  "author": "蓝漪",
+  "site": "",
+  "text": "@linuxer：嗯，这样理解的话也解决了我另一个疑惑（那个size怎么想也不应该是0的...）。\r\n那么计算的结果还是应该是64。\r\n但是我了解到的结构体是这样的：\r\ntypedef struct _IMAGE_DOS_HEADER {      // DOS .EXE header  \r\n    WORD   e_magic;                     // Magic number  \r\n    WORD   e_cblp;                      // Bytes on last page of file  \r\n    WORD   e_cp;                        // Pages in file  \r\n    WORD   e_crlc;                      // Relocations  \r\n    WORD   e_cparhdr;                   // Size of header in paragraphs  \r\n    WORD   e_minalloc;                  // Minimum extra paragraphs needed  \r\n    WORD   e_maxalloc;                  // Maximum extra paragraphs needed  \r\n    WORD   e_ss;                        // Initial (relative) SS value  \r\n    WORD   e_sp;                        // Initial SP value  \r\n    WORD   e_csum;                      // Checksum  \r\n    WORD   e_ip;                        // Initial IP value  \r\n    WORD   e_cs;                        // Initial (relative) CS value  \r\n    WORD   e_lfarlc;                    // File address of relocation table  \r\n    WORD   e_ovno;                      // Overlay number  \r\n    WORD   e_res[4];                    // Reserved words  \r\n    WORD   e_oemid;                     // OEM identifier (for e_oeminfo)  \r\n    WORD   e_oeminfo;                   // OEM information; e_oemid specific  \r\n    WORD   e_res2[10];                  // Reserved words  \r\n    LONG   e_lfanew;                    // File address of new exe header  //PE头的偏移地址\r\n  } IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;  \r\n其中是18个word类型即18*2=36字节；加上最后的long4字节，只有40字节。\r\n既然这里是伪装成PE格式的，大小对不上，这个不应该的吧？"
+ },
+ {
+  "id": "5772",
+  "parent": "5303",
+  "date": "2017-07-05T07:10:22+08:00",
+  "author": "mahjong",
+  "site": "",
+  "text": "@蓝漪：e_lfanew指向PE header, dos header和pe header之间是长度不定的dos兼容代码"
+ }
+]

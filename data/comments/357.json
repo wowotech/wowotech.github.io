@@ -1,0 +1,178 @@
+[
+ {
+  "id": "5079",
+  "parent": "0",
+  "date": "2017-01-03T13:58:19+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "hello  linuxer\r\n==================================================================================\r\n。PHYS_OFFSET是物理内存的起始地址，SWAPPER_INIT_MAP_SIZE 是启动阶段kernel direct mapping的size。也就是说，从PHYS_OFFSET到PHYS_OFFSET + SWAPPER_INIT_MAP_SIZE的区域，所有的页表（各个level的translation table）都已经OK，不需要分配，只需要把描述符写入页表即可。因此，如果将当前memblock分配的上限设定在这里将不会产生内存分配的动作（因为页表都已经ready）。\r\n==================================================================================\r\n我看到SWAPPER_INIT_MAP_SIZE,如果系统是4K page ，使用section page的话，这个大小是PUD_SHIFT，这个pud size，这个4K大小。是这样的吗？"
+ },
+ {
+  "id": "5317",
+  "parent": "0",
+  "date": "2017-03-15T09:28:01+08:00",
+  "author": "langyijiang",
+  "site": "",
+  "text": "hello linuxer\r\n   目前项目中DDR是512M的，设备树中使用448M作为系统内存，留下64M做特殊用处，当在内核中特殊处理完成以后，我想将64M空间返还给内核，请问有什么策略吗？\r\n                                                           望回复！！！！！！！！！"
+ },
+ {
+  "id": "5325",
+  "parent": "5317",
+  "date": "2017-03-16T09:18:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@langyijiang：使用free_reserved_area这个接口函数可以将reserved page归还给伙伴系统。"
+ },
+ {
+  "id": "5326",
+  "parent": "5079",
+  "date": "2017-03-16T09:35:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：这个问题看来以前是漏掉了，呵呵～～～\r\n\r\n你说的pud size是指pud translation table size吧，当然是4K了，因为translation table size是跟随page size的。"
+ },
+ {
+  "id": "5408",
+  "parent": "5325",
+  "date": "2017-04-01T09:51:09+08:00",
+  "author": "langyijiang",
+  "site": "",
+  "text": "@linuxer：不好意思，这段时间有事耽搁了，没看到回复哈。\r\n这64M在系统起来的时候，并没有被MMU管理，使用这个接口释放内存不会是系统崩溃么？"
+ },
+ {
+  "id": "5500",
+  "parent": "0",
+  "date": "2017-04-28T17:43:08+08:00",
+  "author": "Murphy",
+  "site": "",
+  "text": "Hi linuxer， \r\n在ARM的页表中有一个domain区域，在我的理解中用户进程的0~3G区间的全局页目录中的domain区域应该是 DOMAIN_USER ,但我在内核中没找到设定用户进程页目录domain区域的地方，不知能否告知下？"
+ },
+ {
+  "id": "5501",
+  "parent": "5408",
+  "date": "2017-04-28T17:47:37+08:00",
+  "author": "Murphy",
+  "site": "",
+  "text": "@langyijiang：不会，前提是要将这64M内存在内核中设为保留"
+ },
+ {
+  "id": "6103",
+  "parent": "0",
+  "date": "2017-10-12T07:35:46+08:00",
+  "author": "时间为贵",
+  "site": "",
+  "text": "@linuxer\r\nmemory type类型的数组减去reserved type类型的数组，从集合论的角度看，reserved type类型的数组是memory type类型的数组的真子集\r\n==》为什么会是真子集？在membloc_reserve的时候不会将对应region从memory type中移除吗？"
+ },
+ {
+  "id": "6115",
+  "parent": "6103",
+  "date": "2017-10-16T16:49:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@时间为贵：至于是不是子集，可以先从debugfs中看看结论，例如：\r\nflo:/ $ cat /sys/kernel/debug/memblock/memory\r\n   0: 0x80200000..0x88dfffff\r\n   1: 0x8a000000..0x8d9fffff\r\n   2: 0x8ec00000..0x8effffff\r\n   3: 0x8f700000..0x8fdfffff\r\n   4: 0x90000000..0x9fdfffff\r\n   5: 0xa5d00000..0xfe9fefff\r\nflo:/ $ cat /sys/kernel/debug/memblock/reserved\r\n   0: 0x80204000..0x80207fff\r\n   1: 0x80208180..0x81580efb\r\n   2: 0x82200000..0x823c42c4\r\n   3: 0x88d00000..0x88dfffff\r\n   4: 0xa9fdb000..0xa9ffefff\r\n   5: 0xa9fff8c0..0xaaffffff\r\n至于为什么不移除，也很好理解，memory就是所有的memory，reserve就是从所有的memory里面reserve一点。"
+ },
+ {
+  "id": "6153",
+  "parent": "0",
+  "date": "2017-10-31T09:19:46+08:00",
+  "author": "时间为贵",
+  "site": "",
+  "text": "@wowo\r\n如此，前面文章中的部分表述是否不太合适？\r\n==>\r\n内存初始化代码分析（二）：内存布局\r\n......\r\n（3）size等于0的memory region表示这是一个动态分配region，base address尚未定义，因此我们需要通过__reserved_mem_alloc_size函数对节点进行分析（size、alignment等属性），然后调用memblock的alloc接口函数进行memory block的分配，最终的结果是确定base address和size，并将这段memory region从memory type的数组中移到reserved type的数组中。当然，如果定义了no-map属性，那么这段memory会从系统中之间删除（memory type和reserved type数组中都没有这段memory的定义）。"
+ },
+ {
+  "id": "6176",
+  "parent": "0",
+  "date": "2017-11-06T17:29:44+08:00",
+  "author": "神品江湖",
+  "site": "",
+  "text": "hello linuxer\r\n====================================================================================================\r\n如果当前pgd entry是全0的话，说明还没有对应的下级PUD页表内存，因此需要进行PUD页表内存的分配。需要说明的是这时候，伙伴系统没有ready，分配内存仍然使用memblock模块，pgd_populate用来建立pgd entry和PUD 页表内存的关系。\r\n====================================================================================================\r\n上文说分配内存仍然使用memblock模块，memblock模块分配的是物理内存，这个内存是没有建立页表映射的，那如何访问它呢？"
+ },
+ {
+  "id": "7011",
+  "parent": "6176",
+  "date": "2018-11-02T16:43:13+08:00",
+  "author": "vedic",
+  "site": "",
+  "text": "@神品江湖：页表存储的就是物理地址， memblock里面记录的也是物理地址， 所以刚好"
+ },
+ {
+  "id": "7255",
+  "parent": "0",
+  "date": "2019-03-08T17:23:15+08:00",
+  "author": "cs350203",
+  "site": "",
+  "text": "hell  linuxer \r\n\r\n一直不是很明白memblock_reserve 和memblock_remove      memblock_reserve是被操作系统保留了，但是还会在系统中建立映射关系，而memblock_remove表示这段memory会从系统中之间删除，mam_mem不会建立映射关系，换句话税就是被memblock_remove 的内存是不是就没办法访问了。但是我实际测试发现用memblock_remove溢出一段物理内存后，在系统起来之后用/dev/mem还能访问，难道是我用/dev/mem访问重新建立了页表关系吗！"
+ },
+ {
+  "id": "7270",
+  "parent": "7255",
+  "date": "2019-03-12T09:14:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@cs350203：其实你可以自己在内核代码中找到答案的......"
+ },
+ {
+  "id": "7282",
+  "parent": "0",
+  "date": "2019-03-14T23:04:10+08:00",
+  "author": "casio8040",
+  "site": "",
+  "text": "有点疑问，如果是三级映射在create_mapping中也要alloc_init_pud,分配PUD页表内存并填充相应的描述符，这有用吗，三级映射不是没有pud吗？"
+ },
+ {
+  "id": "7981",
+  "parent": "0",
+  "date": "2020-05-07T17:02:41+08:00",
+  "author": "kidesire",
+  "site": "",
+  "text": "你好，感谢分享。有些疑问求教下,我原本的理解是,假设内核现在需要访问虚拟地址为virt对应的物理地址为phys上的内容, 那么MMU通过存放内核页表的寄存器得的内核页表swapper_pg_dir的虚拟地址即PGD页表基地址,然后根据virt计算对应的PGD entry(PGD页表基地址 + virt计算得到的offset, 后面PUD/PMD类似),从PGD entry中得到PUD页表基地址的虚拟地址,然后根据virt计算对应的PUD entry, 从PUD entry中得到PMD页表基地址的虚拟地址,然后根据virt计算对应的PMD entry,从PMD entry中得到PTE页表基地址的虚拟地址,然后根据virt计算PTE entry,从PTE entry中得到phys所在的物理页帧地址,加上virt计算得到的偏移后得到virt对应的物理地址,执行访问指令.经过上述描述,我一直有一个问题不解,PGD/PUD/PMD 的各个entry中存放的应该是下级页表基地址的虚拟地址才对,文章中和源码中却是 phys|port.不知我的思考哪里出了问题, 还望指点,万分感谢."
+ },
+ {
+  "id": "7985",
+  "parent": "0",
+  "date": "2020-05-07T19:16:44+08:00",
+  "author": "kidesire",
+  "site": "",
+  "text": "由于我一直以来认为mmu是通过页表的虚拟地址来访问页表的,这个想法可能是错的.由于一直以来的可能错误的想法给我阅读源码和博客时造成困惑, 因此重置固有想法,再进行思考.\r\n假设mmu访问页表是通过物理地址直接访问的而不通过虚拟地址访问页表,也即ttbr0,ttbr1存储的是页表的物理地址, 以及各个pgd/pud/pmd/pte的entry中存储的也是物理地址相关值, 那么此问题就迎刃而解了.\r\n因此我再次思考, mmu可以直接读取物理地址, 不需要通过虚拟地址转换. 并且重新查看__enable_mmu代码, 发现,\r\nENTRY(__enable_mmu)\r\n\t...\r\n\tadrp\tx2, idmap_pg_dir\r\n\tphys_to_ttbr x1, x1\r\n\tphys_to_ttbr x2, x2\r\n\tmsr\tttbr0_el1, x2\t\t\t// load TTBR0\r\n\tmsr\tttbr1_el1, x1\t\t\t// load TTBR1\r\n        ...\r\nENDPROC(__enable_mmu)\r\n\r\n#ifdef CONFIG_ARM64_PA_BITS_52\r\n#define phys_to_ttbr(addr)\t(((addr) | ((addr) >> 46)) & TTBR_BADDR_MASK_52)\r\n#else\r\n#define phys_to_ttbr(addr)\t(addr)\r\n#endif\r\n\r\nttbr中确实为物理地址. 同时在paging_init实现中各级页表的entry存放的也是物理地址相关值.\r\n\r\n不知以上描述是否正确或者说是否准确."
+ },
+ {
+  "id": "7986",
+  "parent": "0",
+  "date": "2020-05-07T19:50:17+08:00",
+  "author": "kidesire",
+  "site": "",
+  "text": "文章很好, 受益匪浅. 从研究内核的角度出发, 有一处细节不知是否还有更精确的描述: \"从集合论的角度看，reserved type类型的数组是memory type类型的数组的真子集\", 有两个例子(如有考虑不全的地方, 希望指出):\r\n\r\n一. 如果reserved-memory中有内除区A带有no-map标签, 那么这段地址会从memory region中移除. 这种情况下A在reserved-memory region中, A不在memory region中, 这时\"reserved type类型的数组是memory type类型的数组的真子集\"说法不符合当前情况.\r\n\r\n二. 以下是源码https://elixir.bootlin.com/linux/latest/source/arch/arm64/boot/dts/hisilicon/hi6220-hikey.dts\r\n\r\n\tmemory@0 {\r\n\t\tdevice_type = \"memory\";\r\n\t\treg = <0x00000000 0x00000000 0x00000000 0x05e00000>,\r\n\t\t      <0x00000000 0x05f00000 0x00000000 0x00001000>,\r\n\t\t      <0x00000000 0x05f02000 0x00000000 0x00efd000>,\r\n\t\t      <0x00000000 0x06e00000 0x00000000 0x0060f000>,\r\n\t\t      <0x00000000 0x07410000 0x00000000 0x1aaf0000>,\r\n\t\t      <0x00000000 0x22000000 0x00000000 0x1c000000>;\r\n\t};\r\n\r\n\treserved-memory {\r\n\t\t#address-cells = <2>;\r\n\t\t#size-cells = <2>;\r\n\t\tranges;\r\n\r\n\t\tramoops@21f00000 {\r\n\t\t\tcompatible = \"ramoops\";\r\n\t\t\treg = <0x0 0x21f00000 0x0 0x00100000>;\r\n\t\t\trecord-size\t= <0x00020000>;\r\n\t\t\tconsole-size\t= <0x00020000>;\r\n\t\t\tftrace-size\t= <0x00020000>;\r\n\t\t};\r\n\r\n\t\t/* global autoconfigured region for contiguous allocations */\r\n\t\tlinux,cma {\r\n\t\t\tcompatible = \"shared-dma-pool\";\r\n\t\t\treusable;\r\n\t\t\tsize = <0x00000000 0x08000000>;\r\n\t\t\tlinux,cma-default;\r\n\t\t};\r\n\t};\r\n此源码中ramoops的保留内存区域不在memory表达的范围.\r\n\r\n以上是我的观察, 期待指导."
+ },
+ {
+  "id": "7989",
+  "parent": "7985",
+  "date": "2020-05-12T11:52:53+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@kidesire：正确，如果MMU通过虚拟地址访问的话，岂不是陷入了“先有鸡还是先有蛋”的问题。"
+ },
+ {
+  "id": "7990",
+  "parent": "7985",
+  "date": "2020-05-12T11:52:57+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@kidesire：正确，如果MMU通过虚拟地址访问的话，岂不是陷入了“先有鸡还是先有蛋”的问题。"
+ },
+ {
+  "id": "8252",
+  "parent": "6176",
+  "date": "2021-07-16T16:21:14+08:00",
+  "author": "明天",
+  "site": "",
+  "text": "@神品江湖：我理解memblock申请的内存是物理地址，要将该地址填充到页表中，页表就是需要物理地址的，所以该地址也就可以通过页表访问了"
+ },
+ {
+  "id": "8332",
+  "parent": "7986",
+  "date": "2021-10-13T14:33:38+08:00",
+  "author": "zxq",
+  "site": "",
+  "text": "@kidesire：我也发现了这个问题，别的不说，你可以看一下这个函数int __init __weak early_init_dt_alloc_reserved_memory_arch(phys_addr_t size,\r\n\tphys_addr_t align, phys_addr_t start, phys_addr_t end, bool nomap,\r\n\tphys_addr_t *res_base)\r\n{\r\n\tphys_addr_t base;\r\n\t/*\r\n\t * We use __memblock_alloc_base() because memblock_alloc_base()\r\n\t * panic()s on allocation failure.\r\n\t */\r\n\tend = !end ? MEMBLOCK_ALLOC_ANYWHERE : end;\r\n\tbase = __memblock_alloc_base(size, align, end);\r\n\tif (!base)\r\n\t\treturn -ENOMEM;\r\n\r\n\t/*\r\n\t * Check if the allocated region fits in to start..end window\r\n\t */\r\n\tif (base < start) { //__memblock_alloc_base不保证返回的base大于start，这里再次检查\r\n\t\tmemblock_free(base, size);\r\n\t\treturn -ENOMEM;\r\n\t}\r\n\r\n\t*res_base = base;\r\n    /*\r\n     * 如果nomap属性，则将其从memory中移除，但是这里并没有从reserve区域移除，\r\n     * 那么reserve不就不是memory的真子集了吗？\r\n     */\r\n\tif (nomap) \r\n\t\treturn memblock_remove(base, size);\r\n\treturn 0;\r\n}\r\n\r\n__memblock_alloc_base调用将找到的base区域添加到了reserve区域，但是在函数最后，如果有nomap属性，则将其从memory区域移除了，这样看reserve区域并不满足是memory区域真子集的说法了。"
+ }
+]

@@ -1,0 +1,18 @@
+[
+ {
+  "id": "8555",
+  "parent": "0",
+  "date": "2022-02-14T18:07:36+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "一个问题：\r\n1、cpu idle在arm的实现，cpu会 disable local irq后进入wfi，此时能否被irq唤醒？ 唤醒后 是往下走还是进入irq handler？\r\n\r\n看了下wfi的实现：\r\n首先cpu disable local irq后进入wfi，肯定能被irq唤醒。唤醒后，是往下面的指令走，常用来做cpu idle。\r\n如果cpu enable了local irq后进入wfi，被irq唤醒后是 进入irq handler，处理完后才会回到原来的地方。"
+ },
+ {
+  "id": "8556",
+  "parent": "8555",
+  "date": "2022-02-14T19:40:48+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@bsp：首先cpu disable local irq后进入wfi，肯定能被irq唤醒。唤醒后，是往下面的指令走，常用来做cpu idle。local_irq_enable后 再进入irq handler。"
+ }
+]

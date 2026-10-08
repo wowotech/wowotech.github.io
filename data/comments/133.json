@@ -1,0 +1,218 @@
+[
+ {
+  "id": "1158",
+  "parent": "0",
+  "date": "2015-02-03T13:36:24+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "1.禁止cpuidle\r\n2.将cpufreq_scaling_max 调成最大\r\n\r\n以上两点可以保证cpu 永远在最大负载运行"
+ },
+ {
+  "id": "1159",
+  "parent": "0",
+  "date": "2015-02-03T14:11:23+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "cpuidle 子系统70% 以上代码都在和sysfs 较劲。"
+ },
+ {
+  "id": "1160",
+  "parent": "1159",
+  "date": "2015-02-03T16:48:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@schedule：也不全是这样的，governor还有不少代码呢。"
+ },
+ {
+  "id": "1593",
+  "parent": "0",
+  "date": "2015-04-24T18:03:15+08:00",
+  "author": "Tekkaman Ninja",
+  "site": "",
+  "text": "并判断新注册governor的rating是狗大于当前governor \r\nwell, Pinyin input method   :-)"
+ },
+ {
+  "id": "1613",
+  "parent": "1593",
+  "date": "2015-04-27T21:46:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Tekkaman Ninja：已改正，多谢提醒。Haha, Pinyin input method :-)"
+ },
+ {
+  "id": "1676",
+  "parent": "0",
+  "date": "2015-05-03T14:09:40+08:00",
+  "author": "quote",
+  "site": "",
+  "text": "请教：\r\n  如果系统用了no_hz,有一个周期性的tick存在，这个tick的周期一般是多少？之前linux一般设置为100hz，在用了no_hz之后，还是100hz吗？\r\n   如果用了no_hz之后，周期性tick仍然是100hz，一旦idle进入了最深的级别，local timer被停止了，这时候有一个广播的timer来负责给idle 的cpu提供timer信号？是否可以理解为即使CPU进入了最深级别的idle，广播timer仍然会以100hz的频率来唤醒CPU？"
+ },
+ {
+  "id": "1680",
+  "parent": "1676",
+  "date": "2015-05-03T22:04:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@quote：如果系统用了no_hz,有一个周期性的tick存在，这个tick的周期一般是多少？\r\n----------------------------------------------------------------------\r\ntick的周期设定和是否配置了NO HZ无关，一般而言，普通的嵌入式系统会设定HZ=100，对于服务器平台，缺省设定为1000.\r\n\r\n\r\n如果用了no_hz之后，周期性tick仍然是100hz，一旦idle进入了最深的级别，local timer被停止了，这时候有一个广播的timer来负责给idle 的cpu提供timer信号？是否可以理解为即使CPU进入了最深级别的idle，广播timer仍然会以100hz的频率来唤醒CPU？\r\n------------------------------------------------------------------------\r\n不是。1~2个星期之内会有一份文档为您解惑，敬请期待，呵呵~~~"
+ },
+ {
+  "id": "2766",
+  "parent": "0",
+  "date": "2015-10-15T09:59:20+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "hi wowo\r\n    请问下，我们知道中断会使cpu退出wfi，而这些中断是很经常发生的（进入/退出wfi很频繁），那这些中断主要都是些什么类型的中断呢？"
+ },
+ {
+  "id": "2767",
+  "parent": "2766",
+  "date": "2015-10-15T10:27:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：正常情况下，几乎任何类型的中断，都应该退出wfi。如果系统繁忙，idle对省电的贡献是不大的。"
+ },
+ {
+  "id": "2768",
+  "parent": "2767",
+  "date": "2015-10-15T11:10:40+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@wowo：1.当手机待机的时候，是什么中断导致进入idle 的standby的呢？\r\n2.手机开机的时候usage就已经达到10000多次了？\r\n刚学idle，还有许多不甚了解地方。"
+ },
+ {
+  "id": "2769",
+  "parent": "2768",
+  "date": "2015-10-15T11:33:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：1. 手机待机通常不会进idle，而是进standby等低功耗状态。\r\n2. idle一般用在cpu没事可干的时候，但是整个系统都是活的，知道cpu有新的事情为止。所以100000多次也正常。"
+ },
+ {
+  "id": "2770",
+  "parent": "2769",
+  "date": "2015-10-15T14:07:55+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@wowo：hi wowo\r\n1.cpu没事做的时候，idle会进入wfi（state0），那肯定是要有中断才会唤醒的呀，那哪里会产生这么多次的中断，使之进入idle那么多次。再者，这么频繁的进入wfi，对于省电的贡献大吗？"
+ },
+ {
+  "id": "2771",
+  "parent": "2770",
+  "date": "2015-10-15T15:04:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：比如系统tick，比如数据传输的中断，等等。\r\n如果系统繁忙，频繁进出idle，省电性能会打折扣的。但CPU那么快，还是能省一些的。"
+ },
+ {
+  "id": "2772",
+  "parent": "2771",
+  "date": "2015-10-15T15:41:24+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@wowo：系统的tick是指时钟中断吗？"
+ },
+ {
+  "id": "2774",
+  "parent": "2771",
+  "date": "2015-10-15T16:36:30+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@wowo：tick中断不是周期性发生的吗，那岂不是每次进入wfi就会被tick打断了？"
+ },
+ {
+  "id": "2775",
+  "parent": "2769",
+  "date": "2015-10-16T08:14:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：tick中断不是周期性发生的吗，那岂不是每次进入wfi就会被tick打断了？\r\n------------------------------------------------------------------\r\n是的，如果配置成周期性tick的话，每次周期性tick到来的时候就会打断idle"
+ },
+ {
+  "id": "2776",
+  "parent": "2775",
+  "date": "2015-10-16T08:55:24+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@linuxer：在cpu_idle_loop里，有执行了tick_nohz_idle_enter，是不是表示已经关闭时钟了呢？"
+ },
+ {
+  "id": "2777",
+  "parent": "2776",
+  "date": "2015-10-16T09:27:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@cym：看你的系统配置，如果配置了dynamic tick，那么tick_nohz_idle_enter不是空函数，在该函数中会根据当前系统设定的timer的情况设定下次tick的时间点。"
+ },
+ {
+  "id": "2778",
+  "parent": "2776",
+  "date": "2015-10-16T10:23:05+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@cym：好的，谢谢大虾！"
+ },
+ {
+  "id": "2799",
+  "parent": "0",
+  "date": "2015-10-19T16:01:10+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "cpuidle_device的定义（实例化）在哪里呢？\r\n是这句吗：DEFINE_PER_CPU(struct cpuidle_device *, cpuidle_devices);"
+ },
+ {
+  "id": "2801",
+  "parent": "2799",
+  "date": "2015-10-20T08:56:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：有两个：\r\nDEFINE_PER_CPU(struct cpuidle_device *, cpuidle_devices);                       \r\nDEFINE_PER_CPU(struct cpuidle_device, cpuidle_dev);    \r\n后面是真正的变量，前面是指针，方便后面使用。"
+ },
+ {
+  "id": "3920",
+  "parent": "0",
+  "date": "2016-05-11T19:19:45+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "@wowo，有一个困扰我的问题想请问一下：cpu idle和cpu suspend的关系是什么呀？"
+ },
+ {
+  "id": "3923",
+  "parent": "3920",
+  "date": "2016-05-12T09:03:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zyq1228：idle和suspend的低功耗级别不同。\r\n从硬件角度看，suspend会关掉更多的clock和power，不过具体要看CPU平台的具体实现。\r\n从软件角度看，idle对系统的大部分软件透明，也就要求系统可以随时回来。suspend则不会，很多时候需要软件参与才能进入，并且不是所有事件都能唤醒。"
+ },
+ {
+  "id": "5308",
+  "parent": "0",
+  "date": "2017-03-12T14:39:10+08:00",
+  "author": "paoshapaoxue",
+  "site": "",
+  "text": "wowo,\r\n   请教您，系统在降低功耗的时候可以选在降低CPU的频率也可以选在关闭某一个CPU，那么到底是选择哪一种来降低功耗，这个依据有什么，您知道吗？"
+ },
+ {
+  "id": "5309",
+  "parent": "5308",
+  "date": "2017-03-13T15:27:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@paoshapaoxue：这应该根据实际的硬件情况、应用场景去综合判断，可能还需要一些实验数据。"
+ },
+ {
+  "id": "6761",
+  "parent": "0",
+  "date": "2018-05-24T11:36:31+08:00",
+  "author": "cazima",
+  "site": "",
+  "text": "hi，wowo\r\n我在抓取pmu（performance monitor unit）事件时，如果内核在idle状态，则系统会挂死\r\n请教下在内核的其他地方，想要判断当前cpu是否处于idle状态，应该怎么做？这样，我可以在读pmu前判断一下cpu的状态"
+ },
+ {
+  "id": "7725",
+  "parent": "6761",
+  "date": "2019-10-30T09:51:22+08:00",
+  "author": "陈茹",
+  "site": "",
+  "text": "@cazima：您好，请问您的问题得到解决了吗，我现在也遇到同样问题，想向您请教"
+ }
+]

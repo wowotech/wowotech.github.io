@@ -1,0 +1,82 @@
+[
+ {
+  "id": "560",
+  "parent": "0",
+  "date": "2014-10-23T19:12:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "我之前和Wowo谈起来的时候还说：好想买一台ARM64的服务器来玩一玩。\r\n\r\nARM64应该是ARM公司向Intel公司的服务器市场提出挑战的一个方案，我感觉目前中低档的服务器市场还是Intel把持住，如果这个市场失手，估计Intel就危险了。\r\n\r\nWowo他们公司要出ARM64的芯片了，有机会让他给大家讲讲，呵呵～～～"
+ },
+ {
+  "id": "563",
+  "parent": "0",
+  "date": "2014-10-23T19:48:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "我一直有这个想法，写一些讨论ARM64的文章。\r\n但个人意见，软件方面ARM32和ARM64的区别并不是特别明显（正因为这样才容易过度）。就我们熟知的Linux kernel而言，最大的变化，就是forion提到的：强制使用DTS。由此带来了最振奋人心的改变是：不再有arch/arm/mach_xxx或arch/arm/plat_xxx目录了，所有的driver都分散在各个framework中。我想Linuxer对这个变化应该深有体会！\r\n最大的变化，是在硬件体系结构上，特别是虚拟化和安全性上面，例如：增加了新的运行等级，最低级别连kernel都没有权限访问，而必须使用类似系统调用的指令，陷入到一个类似firmware的模块中，请求模块帮忙执行。但这方面我的积累和理解不是特别深刻，所以迟迟没有“动笔”。"
+ },
+ {
+  "id": "564",
+  "parent": "0",
+  "date": "2014-10-23T19:54:34+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@forion, 我把你的权限修改成“发表文章不需要审核”了，畅所欲言吧，呵呵。"
+ },
+ {
+  "id": "565",
+  "parent": "0",
+  "date": "2014-10-23T20:07:43+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "我一直都认为，架构是任何代码或者芯片的重中之重。\r\nARM64架构的改变，从EL0到EL3，指令集的改变，trust zone，这些要吃透还是需要花费一些功夫的。\r\nwowo要进行64位芯片的bring up了么？那么可以分享经验啦。\r\n\r\n另外wowo freescale也做过？freescale的IPU做的很牛x啊，我当时搞模拟摄像头的时候可是很难搞。"
+ },
+ {
+  "id": "566",
+  "parent": "565",
+  "date": "2014-10-23T21:50:27+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@forion：是啊，正在如火如荼的调试中，估计这两周能出demo，如果有什么心得的话，一定和大家分享。\r\nFreescale只接触过它的单片机，ARM没有做过。"
+ },
+ {
+  "id": "582",
+  "parent": "0",
+  "date": "2014-10-29T15:34:26+08:00",
+  "author": "rockwu",
+  "site": "",
+  "text": "你所说的最低级别的类似于firmware应该就是trust boot，在uboot前又加了一级。启动的时候由trust boot来加载uboot。这个技术应该在A7架构上就支持了，主要通过SMC指令来穿梭于secure world和non-secure world之间，A7也是可以支持虚拟化技术的。官网的ARM Architecture Reference Manual中有详细描述。"
+ },
+ {
+  "id": "583",
+  "parent": "0",
+  "date": "2014-10-29T15:37:15+08:00",
+  "author": "rockwu",
+  "site": "",
+  "text": "纠正下，前面准确的说应该是armv7-A版本的内核。"
+ },
+ {
+  "id": "584",
+  "parent": "583",
+  "date": "2014-10-29T16:49:54+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@rockwu：是的 高通的B family芯片已经实现了trust zone\r\n比如8916 8926\r\n32位cpu，支持trust zone"
+ },
+ {
+  "id": "585",
+  "parent": "582",
+  "date": "2014-10-29T21:55:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@rockwu：嗯，这一块确实很有意思，希望能有机会系统的学习一下。"
+ },
+ {
+  "id": "586",
+  "parent": "585",
+  "date": "2014-10-30T10:05:39+08:00",
+  "author": "rockwu",
+  "site": "",
+  "text": "@wowo：芯片设计公司是有机会拿到这部分源码的，这部分代码需要烧在内部rom上。"
+ }
+]

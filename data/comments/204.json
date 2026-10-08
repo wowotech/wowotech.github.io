@@ -1,0 +1,306 @@
+[
+ {
+  "id": "2561",
+  "parent": "0",
+  "date": "2015-09-12T08:09:22+08:00",
+  "author": "mj",
+  "site": "",
+  "text": "2个NUMA节点node0和node1，node0下面有CPUA、CPU B，node1下面有CPU C、CPU D。\r\n系统启动后，系统默认的workqueue会在A、B、C、D CPU下面分别创建2个线程池，系统还会给node0和node1下面分别创建一个默认的1个线程池。系统有2个默认的workqueue，分别是per-CPU类型的和unbound类型的，对于per-CPU的workqueue会分别在4个CPU下分别挂入一个pool_workqueue，应该是挂入的低优先级的线程池；对于unbound的workqueue会分别在node0和node1的线程池下面各挂入一个pool_workqueue。\r\n\r\n现在某个系统模块要创建一个workqueue，这个是per-CPU类型的，而且是高优先级的，那么这个workqueue会在4个CPU下的高优先级线程池下分别挂入一个pool_workqueue。\r\n系统中的另外一个模块创建一个unbound的workqueue，但是它只允许在CPU1和CPU3下运行，且属性和默认的unbound的workqueue属性不一样，也指定了要使用NUMA，那么系统会在node0和node1下面再分别创建1个线程池，并将这个workqueue 的pool_workqueue分别挂入新创建的两个线程池下。\r\n我理解的对不？\r\n\r\n另外，假设对于某个线程池有3个线程，且都是idle,现在有4个work，挂入线程池时，现场池会唤醒一个线程执行work0，但是work0在执行过程中阻塞了，现场池会再唤醒一个线程继续执行work1。问题是，这个线程中有几个活动现场，几个空闲线程？"
+ },
+ {
+  "id": "2566",
+  "parent": "0",
+  "date": "2015-09-13T00:55:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "2个NUMA节点node0和node1，node0下面有CPUA、CPU B，node1下面有CPU C、CPU D。\r\n系统启动后，系统默认的workqueue会在A、B、C、D CPU下面分别创建2个线程池，系统还会给node0和node1下面分别创建一个默认的1个线程池。系统有2个默认的workqueue，分别是per-CPU类型的和unbound类型的，对于per-CPU的workqueue会分别在4个CPU下分别挂入一个pool_workqueue，应该是挂入的低优先级的线程池；对于unbound的workqueue会分别在node0和node1的线程池下面各挂入一个pool_workqueue。 \r\n---------------------------------------------------------------------------------\r\n这一段描述还保留了旧的workqueue的影子，CMWQ中的per cpu线程池（两个，优先级不同）是一直存在的，和workqueue的创建没有任何的关系。per cpu的workqueue在创建的时候仅仅是创建pool wq，建立和线程池的关系而已。unbound线程池和workqueue是有关系的，创建了一个有独特属性A的workqueue的时候，往往会创建一个线程池，但是，该线程池和workqueue也是没有一一对应的关系，当创建了另外一个属性A的 unbound workqueue的时候，不会新创建线程池，仅仅是link到之前创建的那个unbound线程池上而已。\r\n\r\n另外，假设对于某个线程池有3个线程，且都是idle,现在有4个work，挂入线程池时，现场池会唤醒一个线程执行work0，但是work0在执行过程中阻塞了，现场池会再唤醒一个线程继续执行work1。问题是，这个线程中有几个活动现场，几个空闲线程？\r\n-----------------------------------------------------------------------------------------------\r\n线程池的策略是只要有一个处于active的worker thread在处理work，它就不会启动新的worker线程。"
+ },
+ {
+  "id": "3594",
+  "parent": "0",
+  "date": "2016-03-06T14:23:10+08:00",
+  "author": "c",
+  "site": "",
+  "text": "文中有一段话：\r\n“如果该workqueue是unbound类型的话，那么该work由unbound thread pool处理并把调度该work去哪一个CPU执行这样的策略交给系统的调度器模块来完成，对于scheduler而言，它会考虑CPU core的idle状态，从而尽可能的让CPU保持在idle状态，从而节省了功耗”\r\ncpu load balance尽可能的把进程分摊到负荷比较低的cpu去执行，所以unbound work会很频繁的唤醒处于idle的cpu？ 这个跟节能是不是矛盾了。"
+ },
+ {
+  "id": "3596",
+  "parent": "3594",
+  "date": "2016-03-06T22:12:24+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@c：负载平衡的算法本来就是要面对这样的矛盾：如果启动负载平衡的机制过于频繁，虽然负载时均衡了，但是cache 命中率会降低（从而影响性能和功耗）。"
+ },
+ {
+  "id": "3605",
+  "parent": "3596",
+  "date": "2016-03-07T23:40:31+08:00",
+  "author": "c",
+  "site": "",
+  "text": "@郭健：我的疑点是： unbound work的代码注释说的是这种work是很save power的（即scheduler会尽量不唤醒idle的cpu，把这个work所在的线程调度到正在工作cpu的就绪队列上）。 然后实际的情况是，unbound work是被load balance管辖的，而load balance的策略是往idle cpu上push/pull任务。 这个跟上面的不唤醒idle cpu的解释是矛盾的。"
+ },
+ {
+  "id": "3606",
+  "parent": "3605",
+  "date": "2016-03-08T08:41:19+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@c：而load balance的策略是往idle cpu上push/pull任务\r\n----------------------------------------------\r\n我没有看过负载均衡的算法，不过我总觉得向idle cpu上压入任务而实现负载均衡有点过于粗暴，你确定linux kernel是这么做的吗？"
+ },
+ {
+  "id": "3748",
+  "parent": "0",
+  "date": "2016-03-29T19:16:50+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "分别限定per cpu workqueue和unbound workqueue的最大可以创建的worker thread的数目\r\n//-------------------\r\n我怎么觉得好像是分别限定这个workqueue可以处理的work的数量 ？"
+ },
+ {
+  "id": "3758",
+  "parent": "3748",
+  "date": "2016-03-30T22:15:44+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@madang：正常情况下，如果work不会引起阻塞，那么是不会创建新的worker thread的，也就是说，如果当前正在处理的work导致当前的worker thread进入sleep状态，那么新的worker thread会被创建，处理队列中的下一个work。在这种情况下，其实有两个worker thread是active的，当然，也可以说有两个work是active的（指正在处理），只不过其中一个是处于阻塞状态。\r\n\r\n因此，我们两个的说法是类似的，当然，如果更严密一些的话，你的表述可以修正为：\r\n....限定这个workqueue的active（或者说in flight，或者说“处理中”状态） work的数量"
+ },
+ {
+  "id": "3921",
+  "parent": "3605",
+  "date": "2016-05-11T21:09:27+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@c：在linux的SMP调度算法里确实是这样，但是随着功耗在嵌入式设备中越来越受到重视，特别是HMP + EAS的出现，就让workqueue的power efficient的作用得到体现。以高通为例子，在worker thread被唤醒后，会调用select_task_rq_fair进行CPU选择。高通设计了自己的HMP调度，在这里面就会尽可能使用非idle CPU或者睡眠最浅的CPU，这样就实现了workqueue power efficient的初衷。在idle balance的时候，高通也会考虑到Idle cpu的情况，所以感觉必须是EAS这类的能量感知调度加入后才能让workqueue的作用体现出来。"
+ },
+ {
+  "id": "4133",
+  "parent": "0",
+  "date": "2016-06-22T16:51:00+08:00",
+  "author": "zcjfish",
+  "site": "",
+  "text": "现在的ARM core都有hotplug功能，就是说如果loading很低的话，除了CPU0之外，CPU1， CPU2，CPU3...都会plugout, 那么非CPU0的per cpu workqueue thread会同步的被destory吗？   第二个问题是假设有4个CPU core,但是在创建per cpu workqueue thread时， 只有CPU0 &CPU1 在执行， 那么此时会创建CPU2&CPU3的per cpu workqueue thread吗？"
+ },
+ {
+  "id": "4134",
+  "parent": "4133",
+  "date": "2016-06-22T16:52:50+08:00",
+  "author": "zcjfish",
+  "site": "",
+  "text": "@zcjfish：修正下第二个问题：  第二个问题是假设有4个CPU core,但是在创建per cpu workqueue thread时， 只有CPU0 &CPU1  online, CPU2&CPU3处于offline状态（plugout）， 那么此时会创建CPU2&CPU3的per cpu workqueue thread吗？"
+ },
+ {
+  "id": "4138",
+  "parent": "4134",
+  "date": "2016-06-23T09:34:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zcjfish：第二个问题是假设有4个CPU core,但是在创建per cpu workqueue thread时， 只有CPU0 &CPU1  online, CPU2&CPU3处于offline状态（plugout）， 那么此时会创建CPU2&CPU3的per cpu workqueue thread吗？\r\n--------------------------------------\r\n不会"
+ },
+ {
+  "id": "4585",
+  "parent": "0",
+  "date": "2016-09-21T21:42:24+08:00",
+  "author": "西人",
+  "site": "",
+  "text": "我的两个问题，请wowo大神指点，谢谢：\r\n（1）对于文中一段话，“workqueue中的成员包括两个类别：global类型和per thread pool类型的，我们把那些per thread pool\r\n\r\n类型的数据集合起来就形成了pool_workqueue的定义。”感觉是不是有歧义啊，这样感觉只有per thread pool类型的才能是\r\n\r\npool_workqueue的\r\n\r\n（2）根据workqueue_attrs，一个workqueue_struct会对应一个worker_pool，pool_workqueue是中间桥梁，而一个pool_workqueue\r\n\r\n对应一个worker_pool，那么应该是一个workqueue_struct会对应一个pool_workqueue，为什么还会有workqueue_struct->pwqs这个\r\n\r\n链表来连接好几个pool_workqueue啊"
+ },
+ {
+  "id": "4586",
+  "parent": "4585",
+  "date": "2016-09-22T08:46:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@西人：这里是linuxer的主场哈:-)~~~~"
+ },
+ {
+  "id": "4599",
+  "parent": "4586",
+  "date": "2016-09-22T21:26:52+08:00",
+  "author": "西人",
+  "site": "",
+  "text": "@wowo：linuxer大神，请指点一下吧，谢谢，上面的格式真乱，我重写两个问题：\r\n（1）对于文中一段话，“workqueue中的成员包括两个类别：global类型和per thread pool类型的，我们把那些per thread pool 类型的数据集合起来就形成了pool_workqueue的定义。”感觉是不是有歧义啊，这样感觉只有per thread pool类型的才能是 pool_workqueue的 \r\n\r\n（2）根据workqueue_attrs，一个workqueue_struct会对应一个worker_pool，pool_workqueue是中间桥梁，而一个pool_workqueue 对应一个worker_pool，那么应该是一个workqueue_struct会对应一个pool_workqueue，为什么还会有workqueue_struct->pwqs这个链表来连接好几个pool_workqueue啊"
+ },
+ {
+  "id": "4600",
+  "parent": "4599",
+  "date": "2016-09-23T10:23:06+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@西人：其实你问的问题是一个，只要能够理清workqueue、pool workqueue和worker thread pool以及worker thread之间的关系就OK了。\r\n\r\n在过去（非CMWQ），内核抽象了workqueue、cpu workqueue和worker thread三个数据结构来完成对workqueue逻辑的控制。那时候，这三个数据结构的关系非常简单，cpu workqueue和worker thread是一一对应，而workqueue和cpu workqueue关系也非常简单，系统有多少个cpu，那么workqueue就拥有多少个cpu workqueue。为何有cpu workqueue？无它，唯性能尔。因此，对于一个workqueue的实例，其数据有两种，一种是全局的，例如workqueue的名字，这个和哪个cpu没有关系。还有有一些数据是per cpu的，例如：worker thread，work list。上面说的是通常意义的workqueue，实际上还有一种single thread workqueue，但是内核在内存分配的时候，不管是否是single thread workqueue，其对应的cpu workqueue数据结构总是per cpu分配的（没错，简直是浪费），当然，实际上对于single thread workqueue而言，我们只会使用其中之一。\r\n\r\n来到CWMQ后，我们引入worker thread pool的概念，因此，workqueue只能看到worker thread pool这个层次，具体底层如何创建线程来处理work，它就不关心了。所以，在设计workqueue数据结构的时候，我们需要包括：\r\n（1）全局的数据成员，和哪一个worker thread pool没有关系。\r\n（2）和worker thread pool相关的数据\r\n如果workqueue和worker thread pool是一一对应的，那么struct workqueue_struct可以包括（1）和（2）中的成员，但是事实并非如此，一个workqueue可以对应多个worker thread pool，因此，（2）的那些数据成员被合成一个struct pool_workqueue的数据结构。\r\n\r\n对于bounded类型的workqueue，其对应的pool_workqueue是per cpu的（参考cpu_pwqs成员），对于unbounded类型的workqueue，其对应pool_workqueue是per node的（参考pwqs和numa_pwq_tbl）。\r\n\r\nBTW，我写文章的时候可能有些遣词不是那么规范，见谅，呵呵～～～"
+ },
+ {
+  "id": "4601",
+  "parent": "4600",
+  "date": "2016-09-23T13:28:15+08:00",
+  "author": "西人",
+  "site": "",
+  "text": "@linuxer：谢谢您的回答，另外我不理解的一点是：\r\n就像您说的，“对于bounded类型的workqueue，其对应的pool_workqueue是per cpu的”，也就是此时的workqueue->cpu_pwqs是指向一个对应的pool_workqueue，那么此时的workqueue->pwqs这个链表中，是不是只有一个pool_workqueue，就是上面那个对应的pool_workqueue啊"
+ },
+ {
+  "id": "4602",
+  "parent": "4601",
+  "date": "2016-09-24T23:08:05+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@西人：对于bounded类型的workqueue，其对应的pool_workqueue是per cpu的，如果系统中有N个cpu，那么就有N个pool_workqueue，一方面保存在workqueue->cpu_pwqs，此外，workqueue->pwqs链表中也会挂入N个pool_workqueue的节点。"
+ },
+ {
+  "id": "4604",
+  "parent": "4602",
+  "date": "2016-09-25T18:55:21+08:00",
+  "author": "西人",
+  "site": "",
+  "text": "@linuxer：那我觉得既然已经在workqueue->cpu_pwqs有pool_workqueue的节点了，为什么还要有workqueue->pwqs这个链表来多此一举呢，感觉这不是重复了吗？对这点还不是很明白，难道有其他用途吗"
+ },
+ {
+  "id": "4605",
+  "parent": "4600",
+  "date": "2016-09-26T09:52:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：@西人，对于bounded类型的workqueue，其实不需要workqueue->pwqs这个链表也OK的，当需要遍历一个workqueue上的所有pool_workqueue节点的时候，通过workqueue->cpu_pwqs就OK了，但是，这仅限于bounded类型的workqueue，对于unbound类型的workqueue，其线程池不是per cpu的，workqueue->cpu_pwqs也就没有节点，只能是依靠workqueue->pwqs这个链表了。虽然这个设计看起来有些冗余，不过当flush或者destroy一个workqueue的时候，不需要区分workqueue的类型，直接使用for_each_pwq就可以遍历一个workqueue上的所有pool_workqueue了。"
+ },
+ {
+  "id": "4606",
+  "parent": "4605",
+  "date": "2016-09-26T10:38:08+08:00",
+  "author": "西人",
+  "site": "",
+  "text": "@linuxer：哦，我明白了，谢谢linuxer不耐其烦的答惑，^_^"
+ },
+ {
+  "id": "4989",
+  "parent": "0",
+  "date": "2016-12-07T20:28:09+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "值得一提的是wq_calc_node_cpumask这个函数，这个函数会根据该node的cpu情况以及workqueue attribute中的cpumask成员来更新tmp_attrs->cpumask，因此，在pwq_tbl[node] = alloc_unbound_pwq(wq, tmp_attrs); 这行代码中，为该node分配pool workqueue对应的线程池的时候，去掉了本node中不存在的cpu。例如node 0中有CPU A和B，workqueue的attribute规定work只能在CPU A 和C上运行，那么创建node 0上的pool workqueue以及对应的worker thread pool的时候，需要删除CPU C，也就是说，node 0上的线程池的属性中的cpumask仅仅支持CPU A了。\r\n-------------------------------------------------------------------------------------------------\r\n大神，关于wq_calc_node_cpumask()函数的疑问。先贴下代码的实现：\r\nstatic bool wq_calc_node_cpumask(const struct workqueue_attrs *attrs, int node,\r\n\t\t\t\t int cpu_going_down, cpumask_t *cpumask)\r\n{\r\n\tif (!wq_numa_enabled || attrs->no_numa)\r\n\t\tgoto use_dfl;\r\n\r\n\t/* does @node have any online CPUs @attrs wants? */\r\n\tcpumask_and(cpumask, cpumask_of_node(node), attrs->cpumask);\r\n\tif (cpu_going_down >= 0)\r\n\t\tcpumask_clear_cpu(cpu_going_down, cpumask);\r\n\r\n\tif (cpumask_empty(cpumask))\r\n\t\tgoto use_dfl;\r\n\r\n\t/* yeap, return possible CPUs in @node that @attrs wants */\r\n\tcpumask_and(cpumask, attrs->cpumask, wq_numa_possible_cpumask[node]);\r\n\treturn !cpumask_equal(cpumask, attrs->cpumask);\r\n\r\nuse_dfl:\r\n\tcpumask_copy(cpumask, attrs->cpumask);\r\n\treturn false;\r\n}\r\n我的理解是：假设node1有cpu0和cpu1,node2有cpu2和cpu3，那么wq_numa_possible_cpumask[1] = 0011, wq_numa_possible_cpumask[2] = 1100;\r\n而如果unbound workqueue的work能在cpu0和cpu2上运行那这里的attr->cpumask即为0101，两者按位与后得出cpumask = 0001;这样的话cpumask_equal返回的值就为false了，但这样就直接走了dfl_pwq的分支了，感觉与您说的就不符了，不知道我哪理解错了"
+ },
+ {
+  "id": "4991",
+  "parent": "4989",
+  "date": "2016-12-08T10:14:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@chen_chuang：在进入代码分析之前，我们先解释一下传入的参数：\r\nattrs：本次要创建的workqueue的属性\r\nnode：当前节点\r\ncpu_going_down：与本场景无关\r\ncpumask：输出参数\r\n\r\nstatic bool wq_calc_node_cpumask(const struct workqueue_attrs *attrs, int node,\r\n\t\t\t\t int cpu_going_down, cpumask_t *cpumask)\r\n{\r\n如果系统没有打开unbound NUMA affinity选项（这个选项其实就是是否创建per node的pwq）或者该属性disable了NUMA affinity选项，那么就直接使用default好了。\r\n\tif (!wq_numa_enabled || attrs->no_numa)\r\n\t\tgoto use_dfl;\r\n\r\n将该node的cpu mask（我们称之A）和属性中的cpu mask（我们称之B）相与，以此判断该node中是否和创建workqueue属性中的cpu mask有交集，结果保存在cpumask变量中\r\n\tcpumask_and(cpumask, cpumask_of_node(node), attrs->cpumask);\r\n\r\n本场景传入-1，因此本段代码不执行。\r\n\tif (cpu_going_down >= 0)\r\n\t\tcpumask_clear_cpu(cpu_going_down, cpumask);\r\n\r\n如果A和B完全没有交集，那么使用default\r\n\tif (cpumask_empty(cpumask))\r\n\t\tgoto use_dfl;\r\n\r\n下面是在有交集的情况下的处理\r\n\tcpumask_and(cpumask, attrs->cpumask, wq_numa_possible_cpumask[node]);\r\n\treturn !cpumask_equal(cpumask, attrs->cpumask);－－如果A==B，我们要返回false，否则返回true。\r\n\r\nuse_dfl:\r\n\tcpumask_copy(cpumask, attrs->cpumask);\r\n\treturn false;\r\n}\r\n－－－－－－－－－－－－－－－－－－－－－－－－\r\n现在回到你说的例子，在你给出的例子中：\r\n1、A和B不相等\r\n2、A和B有交集\r\n这时候，wq_calc_node_cpumask返回true，创建per node的pwq，只有在A和B完全相等的情况下，wq_calc_node_cpumask返回false，使用default，因为这时候没有必要创建per node的pwq。"
+ },
+ {
+  "id": "4996",
+  "parent": "4991",
+  "date": "2016-12-08T14:24:24+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "@linuxer：谢谢大神讲解，不过我还是有几点点不太明白：\r\n1. 您所说的B有两处，一处是cpumask_of_node(node)，另一处是wq_numa_possible_cpumask[node]，这两者是等价的吗，因为我以arm为例，我查看到的cpumask_of_node(node)是cpu_online_mask。不知道这两者是什么关系。\r\n\r\n2. 在有交集的情况下，如果A==B，说明work只会在该node下运行，并且该node的任意一CPU均可处理，这样理解对吗。如果对的话，我觉得也应该创建per node，因为别的node不执行该work;如果不对，还望大神指点一二"
+ },
+ {
+  "id": "5001",
+  "parent": "4996",
+  "date": "2016-12-08T19:23:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@chen_chuang：好吧，上面我的描述想偷一下懒，因此模糊了cpu电源管理的内容。为了方便描述，我们给出标记如下：\r\n1、cpumask_of_node(node)是B1，表示当前该节点online cpu的掩码。\r\n2、wq_numa_possible_cpumask[node]是B2，表示当前该节点possible cpu的掩码。\r\n当然，想要理解oneline cpu和possible cpu可以参考蜗窝网站的文章这里不再描述了，只要知道和cpu hotplug相关就OK了。\r\n\r\nOK，回到代码逻辑，在B1处，如果unbound wq的cpu mask和当前节点的online cpu没有交集，那么有必要创建per node的pwq吗？当然没有必要，例如：\r\npossible的cpu如下：\r\nnode 0有cpu0、1、2、3\r\nnode 1有cpu4、5、6、7\r\nonline的cpu如下：\r\nnode 0有cpu2、3\r\nnode 1有cpu6、7\r\nunbound wq希望运行的cpu包括：\r\nnode 0有cpu0、1\r\nnode 1有cpu6、7\r\n对于这个unbound wq，在node 0上，虽然该wq期望在node 0的cpu0和cpu1上运行，但是这两个cpu没有oneline，即便为该node创建一个pwq其实也没有什么实际的意义，对于该node而言，即便创建了per node的线程池，也无法调度work在该node的cpu上运行，因为没有online的cpu。对于node 1，当然可以为其创建per node的pwq了，因为6、7cpu是oneline的。\r\n\r\n在B2处，代码逻辑是这样的，虽然有该node有oneline cpu，并且也是unbound wq打算运行其上的，但是是不是一定要创建per node的pwq呢？也不一定，例如：\r\npossible的cpu如下：\r\nnode 0有cpu0、1、2、3\r\nnode 1有cpu4、5、6、7\r\nonline的cpu如下：\r\nnode 0有cpu2、3\r\nnode 1有cpu6、7\r\nunbound wq希望运行的cpu包括：\r\nnode 1有cpu4、5、6、7\r\n\r\n在这种情况下，该unbound wq实际上是期望在node 1的任何一个cpu上运行而不在其他cpu上运行，这时候，创建per node pwq是没有意义的，使用default就OK了。\r\n\r\n当然，workqueue的代码也需要处理cpu hotplug的event，当cpu up或者down的时候，需要作出相应的调整。\r\n\r\n上面是我的理解。"
+ },
+ {
+  "id": "5030",
+  "parent": "5001",
+  "date": "2016-12-16T15:23:51+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "@linuxer：好的，谢谢大神，明白了。"
+ },
+ {
+  "id": "5581",
+  "parent": "0",
+  "date": "2017-05-22T15:43:48+08:00",
+  "author": "hhtrace",
+  "site": "",
+  "text": "最近在学习NUMA，有个问题不明白：\r\n比如一个驱动，使用的是per cpu workqueu，但是使用的内存却在node0上，那么workqueue最后会跑到node1上运行吗？\r\n\r\n谢谢"
+ },
+ {
+  "id": "5582",
+  "parent": "5581",
+  "date": "2017-05-22T15:48:04+08:00",
+  "author": "hhtrace",
+  "site": "",
+  "text": "@hhtrace：是不是任意指定一个cpu运行？"
+ },
+ {
+  "id": "5586",
+  "parent": "5581",
+  "date": "2017-05-22T19:18:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@hhtrace：如果一个驱动使用了per cpu workqueue，那么所有node上的所有的cpu都会有对应的pool_workqueue数据结构，进而有自己的线程池（worker_pool）。当queue work的时候，除非你指定cpu，否则会挂入local cpu对应的那个work list中。\r\n\r\n回到你的问题中来，使用per cpu workqueue的驱动，使用node0的内存，当queue work发生在node 1上的CPU的时候，那么该work会被node 1上的某个cpu上的worker线程处理。\r\n\r\n不过一般而言，我们是在该驱动的中断handler中queue work，那么问题来了，如果驱动使用的内存在node 0上，那么其irq为何送达node 1的cpu呢？这样驱动的设计其实就不合理了，应该将该驱动的irq affinity设定为node 0的cpu，这样，work就总在node 0上处理，从而不会影响性能。"
+ },
+ {
+  "id": "6119",
+  "parent": "0",
+  "date": "2017-10-18T09:48:46+08:00",
+  "author": "steven",
+  "site": "",
+  "text": "Hi wowo,\r\n请教几个问题：\r\n1.如果自己创建workqueue，用什么接口函数？\r\n2.使用系统默认的workqueue指的是不需要用create_workqueue函数去重新创建？只需要初始化一个work_struct,并用queue_work调度下就可以了？"
+ },
+ {
+  "id": "6122",
+  "parent": "6119",
+  "date": "2017-10-18T13:22:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@steven：1. 建议你看一下include/linux/workqueue.h，里面有各种alloc workqueue，然后queue_work就行了。\r\n2. 还是建议你看一下include/linux/workqueue.h，系统定义了一堆堆的默认workqueue，你可以根据需求使用。"
+ },
+ {
+  "id": "7002",
+  "parent": "0",
+  "date": "2018-10-26T14:40:02+08:00",
+  "author": "xuwukong",
+  "site": "",
+  "text": "每次执行alloc_workqueue 创建一个bounded workqueue，都会要申请per cpu 的变量pool_workqueue,那如果系统一共有10个bounded workqueu，那是不是每个cpu 下面有10个对应的pool_workqueue变量副本？"
+ },
+ {
+  "id": "7037",
+  "parent": "0",
+  "date": "2018-11-14T16:58:21+08:00",
+  "author": "SearchTheTruth",
+  "site": "",
+  "text": "对于文中开头WQ_POWER_EFFICIENT的讲解，贴一段原文帮助大家理解\r\nWorkqueues marked with WQ_POWER_EFFICIENT are per-cpu by default \r\nbut become unbound if workqueue.power_efficient kernel param is\r\nspecified.  Per-cpu workqueues which are identified to\r\ncontribute significantly to power-consumption are identified and\r\nmarked with this flag and enabling the power_efficient mode\r\nleads to noticeable power saving at the cost of small\r\nperformance disadvantage."
+ },
+ {
+  "id": "7435",
+  "parent": "0",
+  "date": "2019-05-22T14:17:03+08:00",
+  "author": "ele",
+  "site": "",
+  "text": "@linuxer 请教下这种情况怎么处理：对于per cpu的workqueue，如果queue_work的cpu非常繁忙（大量中断或者有线程长时间占用），workqueque有可能很久才被执行吧？使用unbound workqueue是否是个好方法，由调度器调度到空闲cpu上。"
+ },
+ {
+  "id": "8102",
+  "parent": "5001",
+  "date": "2020-08-21T20:48:46+08:00",
+  "author": "每天一小步",
+  "site": "",
+  "text": "@linuxer：-------------------\r\n在这种情况下，该unbound wq实际上是期望在node 1的任何一个cpu上运行而不在其他cpu上运行，这时候，创建per node pwq是没有意义的，使用default就OK了。\r\n------------------\r\n这里有个疑问，如果只想在node1上任何一个cpu运行而不在其它cpu上运行，为何创建per node pwq没有意义呢？ 使用deault的话不是就可能在其它cpu运行了吗？"
+ },
+ {
+  "id": "8856",
+  "parent": "7435",
+  "date": "2024-01-05T23:02:10+08:00",
+  "author": "坚强的小孩",
+  "site": "",
+  "text": "@ele：以下是一些自己的看法，麻烦看看有什么不对的地方，希望大家指出来，谢谢。\r\n1、workqueue的调度其实还是依赖与进程调度吧，虽然是软中断触发的，但是调度还是进程的调度，所以不存在有大量的线程长时间占用，而调度不到workqueue的情况，只是workqueue会等待的时间比正常的时间长一点而已；\r\n2、大量的中断到来，导致系统频繁的处理中断程序，从而导致进程一直获取不到cpu，从而阻塞系统的正常运行（一般硬中断占用的时间不长，一般是soft irq占用资源长），不过内核，内部有检测，但发生大量的中断到来，大量触发软中断，系统会把soft irq进行线程化softirqd,这是是有进程的调度器接管系统资源，这个时候就是正常的进程调度，workqueue也还是能正常的进行调度\r\n3，虽然上面分析workqueue肯定会得到调用，但是关于是per workqueue和unbound workqueue哪一个性能好一点，这里确实不太清楚。"
+ },
+ {
+  "id": "9189",
+  "parent": "8102",
+  "date": "2026-04-27T09:02:29+08:00",
+  "author": "玖伍贰柒",
+  "site": "",
+  "text": "@每天一小步：你好，讨论的这块代码的调用路径是这样的：\r\nalloc_and_link_pwqs\r\n\tapply_workqueue_attrs\r\n\t\tdfl_pwq = alloc_unbound_pwq(wq, new_attrs)\r\n\t\tif (wq_calc_node_cpumask())\r\n\t\t\talloc_unbound_pwq();\r\n\t\telse\r\n\t\t\tdfl_pwq->refcnt++;\r\n从这里可知：\r\n1. 每一个新建的unbound workqueue都会有自己专属的default pwq\r\n2. default pwq创建时用的attrs是new_attrs，基本上和apply_workqueue_attrs函数的第二个参数一样，也就是该unbound wq的attrs。按照楼上的例子，unbound wq希望自己的work可以在node1上任何一个cpu运行，新建的default pwq就能满足它的需求，所以不需要额外再建一个pwq"
+ },
+ {
+  "id": "9190",
+  "parent": "8856",
+  "date": "2026-04-27T09:04:13+08:00",
+  "author": "玖伍贰柒",
+  "site": "",
+  "text": "@坚强的小孩：3，虽然上面分析workqueue肯定会得到调用，但是关于是per workqueue和unbound workqueue哪一个性能好一点，这里确实不太清楚。\r\n-----------------------------------------------------\r\n你好，per cpu的wq有更好的性能表现，因为它有更好的局部性优势，比如更高的缓存命中等。"
+ }
+]

@@ -1,0 +1,74 @@
+[
+ {
+  "id": "6735",
+  "parent": "0",
+  "date": "2018-05-06T16:51:39+08:00",
+  "author": "gnx",
+  "site": "",
+  "text": "固定映射空间分为两部分：永久映射和临时映射，其中临时映射和kmap（持久映射）在32位系统上有一些纠葛。在32位系统上，如果使能了高端内存，虚拟地址的最后两部分分别是持久映射和固定映射，这个持久映射不要和永久固定映射搞混淆了。持久映射是可以通过kmap和kunmap建立和解除映射的，持久映射可以理解为是一种将高端内存映射到内核虚拟地址空间的一种方式。但是kmap函数有个问题，他可能导致阻塞因而不能用在中断上下文中，所以内核搞了一个临时映射kmap_atomic，从固定映射空间拿了一块虚拟内存出来，这部门内存空间就处于固定映射的临时映射区域。所以内核在计算固定映射大小时不会把临时映射区域计算在内，当然在64位系统上没有高端内存，也就没有所谓的持久映射，但是代码为了向前兼容，就依然保持这样的计算方式，而且这也并不影响固定映射的使用。以上是我的个人理解，不对之处请指正！"
+ },
+ {
+  "id": "6736",
+  "parent": "6735",
+  "date": "2018-05-06T17:57:43+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@gnx：关于文章中“FIXADDR_SIZE是permanent fixed addresses区域的大小。我对这个地方很奇怪，为什么不包括temporary fixed addresses区域的大小呢？”这个疑问，我也有自己的想法。\r\n我是这么想的，临时映射仅仅是系统启动初期，ioremap等子系统还没有ready的时候使用，当内存管理等各个子系统ready之后，临时映射在ARM64中实际上就没有用武之地了，当然此时也不会有相关的模块还是用临时映射区域。所以临时映射区域的虚拟地址实际上并没有占用（内存管理系统没有ready的时候才占用），因此不需要显示的宏定义告诉你这部分地址被分配了。\r\n这位兄弟，你觉得呢？"
+ },
+ {
+  "id": "6837",
+  "parent": "0",
+  "date": "2018-07-06T16:44:48+08:00",
+  "author": "蓮之物",
+  "site": "",
+  "text": "(  )5.關於fixmap address,下列何者正確 \r\n(1) 在kernel啟動初期,我們藉著使用ioremap接口創建虛擬地址和物理地址的映射\r\n(2) fixmap區域是地址空間範圍從FIXADDR_START到FIXADDR_TOP結束, FIXADDR_SIZE是temporary fixed addresses區域的大小\r\n(3) kernel正常運作時,運作temporary fixed addresses的資料必須是特權指令的\r\n(4) FIX_FDT是給dtb創建映射的區域。例如需要得到FDT的虛擬地址，即可以利用__virt_to_fix(x)得到虛擬地址,也就是運作(FIXADDR_TOP - ((x) << PAGE_SHIFT))\r\n(5) Device Tree Blob中包含bootloader傳遞過來的內存信息,而我們得到的是Device Tree Blob的物理地址"
+ },
+ {
+  "id": "6838",
+  "parent": "6837",
+  "date": "2018-07-06T16:46:07+08:00",
+  "author": "蓮之物",
+  "site": "",
+  "text": "@蓮之物：up寫得太好\r\n情不自禁的做了個單選題"
+ },
+ {
+  "id": "6840",
+  "parent": "0",
+  "date": "2018-07-09T11:11:59+08:00",
+  "author": "win.lin",
+  "site": "",
+  "text": "对的。fix-map分:fix-map与temporary fix_map。和Permanent不是一回事。"
+ },
+ {
+  "id": "6841",
+  "parent": "0",
+  "date": "2018-07-09T11:28:11+08:00",
+  "author": "win.lin",
+  "site": "",
+  "text": "恩，我理解错了。这里面有几个词要分清，permanent-fix-map(永久固定映射)/temporary-fix-map(临时固定映射)。还有一个是persisent-kernel-mapping(持久内核映射)。要翻译过来都很接近。"
+ },
+ {
+  "id": "7079",
+  "parent": "0",
+  "date": "2018-12-12T15:33:34+08:00",
+  "author": "rikeyone",
+  "site": "",
+  "text": "ffc00000    ffefffff    Fixmap mapping region.  Addresses provided\r\n                by fix_to_virt() will be located here.\r\n\r\n\r\n PKMAP_BASE  PAGE_OFFSET-1   Permanent kernel mappings\r\n                 One way of mapping HIGHMEM pages into kernel\r\n                 space.\r\n\r\n我看arm的内存分布，fixmap仅仅代表的是临时映射，永久映射区的定义在PKMAP那里。\r\n\r\nPKMAP也就是Permanent kernel mappings 永久映射。\r\n\r\n\r\n我的理解看来和楼主有点不同"
+ },
+ {
+  "id": "7080",
+  "parent": "6841",
+  "date": "2018-12-12T15:44:47+08:00",
+  "author": "rikeyone",
+  "site": "",
+  "text": "@win.lin：可以去看一下代码，kmap就是永久内存映射，最后映射到的地址就是跟PKMAP_BASE有关，所以我认为这个理解上，博主可能出现点差错。\r\n\r\n当然如果是我有错，请大家指正。"
+ },
+ {
+  "id": "7085",
+  "parent": "7079",
+  "date": "2018-12-16T00:03:00+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@rikeyone：ARM的设计我不是很了解，其实文章的引言部分已经注明了架构是ARM64。所以我说的ARM64平台。"
+ }
+]

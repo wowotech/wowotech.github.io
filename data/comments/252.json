@@ -1,0 +1,130 @@
+[
+ {
+  "id": "3386",
+  "parent": "0",
+  "date": "2016-01-13T07:10:54+08:00",
+  "author": "simonzhang",
+  "site": "",
+  "text": "4 example 3 中既然CPU2 可以看到b == 1, 然后由于CPU0中line2，CPU2一定也可以看到a已经是1了，这样的话assert总是ok的，其他的code对于assert而言似乎是冗余的了，当然也不会产生问题"
+ },
+ {
+  "id": "3398",
+  "parent": "3386",
+  "date": "2016-01-14T19:24:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@simonzhang：我觉得你说的也很有道理啊。其实CPU2执行到assert代码的时候，a always 等于 1的。"
+ },
+ {
+  "id": "3433",
+  "parent": "0",
+  "date": "2016-01-21T23:11:25+08:00",
+  "author": "Nadia永远",
+  "site": "",
+  "text": "感谢你的翻译，有个问题一直没有想明白想请教一下\r\n在Example 1中cpu2在执行x = a时由于先前cpu0执行a=1导致a的值并没有在node2 cache中。那么cpu2需要Read从cpu0获得a的值。虽然cpu0的Message queue满了。但是cpu2只有获得了a的值才会继续执行。所以cpu2会等待cpu0的Read Response然后继续执行。那么assert失败也就不会成立。"
+ },
+ {
+  "id": "3434",
+  "parent": "3433",
+  "date": "2016-01-22T08:33:30+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@Nadia永远：如果CPU2的local cache中就有a变量的值，那么CPU2根本不会发送read message，当然也就不需要等read response了"
+ },
+ {
+  "id": "3435",
+  "parent": "3434",
+  "date": "2016-01-22T12:47:43+08:00",
+  "author": "Nadia永远",
+  "site": "",
+  "text": "@郭健：问题是cpu0一开始执行了a=1会向cpu2发送Invalidate, cpu2响应Invalidate 把变量a放入Invalidate queue。接下来由于cpu2在执行x=a之前有smp_rmb(),cpu2需要先处理Invalidate queue，这就导致变量a从Node2的cache中删除。然后就有了我的疑问。。"
+ },
+ {
+  "id": "3436",
+  "parent": "3435",
+  "date": "2016-01-22T16:04:34+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@Nadia永远：前面有一个条件：我们假设CPU 0最近经历了太多cache miss，以至于它的message queue满了\r\n因此，即便是cpu0执行了a=1，从而导致向其他cpu发送Invalidate消息，但是这个消息由于message queue是满的，无法传递给Node 1上的CPU2"
+ },
+ {
+  "id": "3752",
+  "parent": "0",
+  "date": "2016-03-30T15:34:42+08:00",
+  "author": "nswcfd",
+  "site": "",
+  "text": "尝试帮忙翻译一段TODO。\r\n\r\nFinally, IA64 offers a global total order for “release” operations, including the “mf” instruction. This provides the notion of transitivity, where if a given code fragment sees a given access as having happened, any later code fragment will also see that earlier access as having happened. Assuming, that is, that all the code fragments involved correctly use memory barriers.\r\n\r\n对release语义（前面的访存指令不能排到后面去，包含mf指令），IA64提供了全局的total order(全序，集合论中关系的一种，满足反对称&传递&完全 http://math.wikia.com/wiki/Total_order)。因此，rel语义是有传递性的（根据全序的定义），也就是说，如果一段代码（B）观察到某个访问（A）已经发生了，那么它之后的代码（C）也将会观察到前面的那个访问（A）已经发生了。当然，前提是所有的代码（ABC）都正确的使用了内存屏障。（注：不是所有的模型都满足传递性，或者说多核环境下很难定义一个全局的顺序，好像在这篇文章的某个地方也提到了）"
+ },
+ {
+  "id": "3755",
+  "parent": "3752",
+  "date": "2016-03-30T22:03:02+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@nswcfd：多谢！各种CPU arch的内容的确应该由熟悉该CPU平台的人来写。"
+ },
+ {
+  "id": "5065",
+  "parent": "3436",
+  "date": "2016-12-26T20:11:14+08:00",
+  "author": "zecho",
+  "site": "",
+  "text": "@郭健：即便是cpu0执行了a=1，从而导致向其他cpu发送Invalidate消息，但是这个消息由于message queue是满的，无法传递给Node 1上的CPU2---->按照翻译的Why memory barrier的上篇，可以知道如果接受不到cpu2发的invalidate response，cpu0中的数据会一直在store buffer里面，不能到cache中，这样的cpu1中的b也会一直是0啊，与Nadia永远有相同的疑问。这样与Why memory barrier上篇矛盾。"
+ },
+ {
+  "id": "5724",
+  "parent": "5065",
+  "date": "2017-06-22T23:35:43+08:00",
+  "author": "harriszh",
+  "site": "",
+  "text": "@zecho：cpu0 和 cpu1是在node0里， message queue是在cache和bus之间，所以cpu0对a的值可以更新到cpu0和cpu1的共享cache里，所以cpu1可以看到， 但\r\ncpu0的message queue是满了，所以invalidate的消息发不到cpu2.\r\n\r\n所以这里的核心问题是message queue是在cache下面（图中)，而不是cache上面"
+ },
+ {
+  "id": "6166",
+  "parent": "0",
+  "date": "2017-11-03T14:54:03+08:00",
+  "author": "Hisenberg",
+  "site": "",
+  "text": "请教linuxer，看了一下kernel_4.4中ARM的smp_mb()实现：dmb(ish)。似乎kenel只保证本cpu的更改被同一个inner shareable domain内的obersver看到之后，就会继续smp_mb()之后的内存操作。那如果我期望自己所做的更改需要被outer shareable domain内的obsers都观察到甚至整个系统中的observers，那这样调用是不是有问题呢？这种情况下，需要手动调用dmb(osh)或者dmb(sy)吗？谢谢~"
+ },
+ {
+  "id": "6691",
+  "parent": "5724",
+  "date": "2018-04-23T16:35:24+08:00",
+  "author": "Mr. Jan",
+  "site": "",
+  "text": "@harriszh：cpu0和cpu1的共享cache到底是个什么东西？cache？cache+storebuffer？\r\n\r\n1、如果单纯是cache，那么没有收到ack就写入跟上文有根本性的矛盾。\r\n2、如果包含storebuffer，那么我理解为写入仅仅写入storebuffer，由于cpu0和cpu1共享storebuffer，所以相互写入可见。但根据上文，cpu0写入a时没有收到ack，应该是写入storebuffer并标记，那么cpu1写入c时由于storebuffer存在被标记的entry，那么它也只能写入storebuffer而不是cache，这样来说cpu2应该是看不到c=1\r\n\r\nso，求大神解答"
+ },
+ {
+  "id": "6831",
+  "parent": "5065",
+  "date": "2018-07-01T15:32:00+08:00",
+  "author": "leidong",
+  "site": "",
+  "text": "@zecho：若CPU0和CPU1共享store buffer就可以解释你的疑问了。这也是当前SMT的大多数解决方案"
+ },
+ {
+  "id": "6832",
+  "parent": "0",
+  "date": "2018-07-01T15:36:25+08:00",
+  "author": "leidong",
+  "site": "",
+  "text": "Alpha处理器没有rmb指令"
+ },
+ {
+  "id": "7107",
+  "parent": "6831",
+  "date": "2018-12-26T01:20:47+08:00",
+  "author": "newwow",
+  "site": "",
+  "text": "@leidong：是这样的吗？ 看到这里也有这个疑问。"
+ },
+ {
+  "id": "8250",
+  "parent": "3434",
+  "date": "2021-06-29T11:26:44+08:00",
+  "author": "muduo.qin",
+  "site": "",
+  "text": "@郭健：初始值，a=b=c=0\r\ncpu0-cpu3中默认都已经缓存有a、b、c,这个信息很关键，但是英文资料中没提及。这个基础条件是理解三个例子的关键。"
+ }
+]

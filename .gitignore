@@ -1,0 +1,22 @@
+# 凭据：绝不入库
+config/config.ini
+config/*.local.ini
+
+# 原始 dump 与探查产物：含用户邮箱/IP 及垃圾数据，且体积大
+recon/
+*.sql
+*.sql.gz
+
+# 构建与本地产物
+# Hugo 二进制按平台下载，不入库（见 README）
+tools/bin/
+public/
+resources/_gen/
+.hugo_build.lock
+.venv/
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+Thumbs.db
+desktop.ini

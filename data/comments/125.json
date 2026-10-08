@@ -1,0 +1,338 @@
+[
+ {
+  "id": "897",
+  "parent": "0",
+  "date": "2014-12-18T10:12:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "有个问题探讨一下：\r\n你文章中说到：“当任意事件把CPU从idle状态唤醒时，接着运行idle进程，idle进程会判断是否有其它进程需要运行，如果有则发起一次调度，将CPU让给其它进程。”\r\n\r\n当ARM处理器调用WFI指令进入idle状态的时候，可以唤醒它的至少应该包括下面的场景：\r\n（1）来自其他处理器的SEV指令\r\n（2）送达本处理器上的中断\r\n\r\n当是中断唤醒的场景的时候，是否应该立刻执行中断handler？难道还是要先运行idle进程？我猜想应该先执行中断handler，在handler中会wakeup某些进程，在handler返回的时候进行调度（而不是idle进程判断是否要有其他进程需要运行），当没有其他进程需要调度执行的时候，调度器会恢复idle进程的执行，当然，idle进程不做什么，继续进入idle状态，等待下一次的wakeup"
+ },
+ {
+  "id": "898",
+  "parent": "897",
+  "date": "2014-12-18T12:30:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：传统的使用WFI的idle，确实应该是这样子啊，还是你总结的好，哈哈，等等我把这段话抄上去。\r\n对于后面比较复杂的idle framework，是否会存在像suspend/resume那样的场景，可以在idle时suspend，然后返回时继续往下执行，这个还不太清楚，要往下继续看。\r\n\r\nPS：WFE才会有SEV指令，WFI没有。"
+ },
+ {
+  "id": "899",
+  "parent": "898",
+  "date": "2014-12-18T13:08:38+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：呵呵～～我看错了，WFE是用在spin lock中， 我刚才还想在idle的时候使用WFE怪怪的，原来是自己看错了。"
+ },
+ {
+  "id": "1113",
+  "parent": "897",
+  "date": "2015-01-20T23:31:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：我更新了这篇文章的最后一节，结果还真和我们想象的不一样，在cpuidle framework中，进入idle时，是关中断的，因此从idle回来后，只能先回到idle thread，打开中断后，才能执行中断handler。"
+ },
+ {
+  "id": "1265",
+  "parent": "0",
+  "date": "2015-03-03T11:07:19+08:00",
+  "author": "tim",
+  "site": "",
+  "text": "如果 cpu 进入的 idle 状态是 WFI(C0 state)，则退出的流程是，先是 cpu 退出 WFI 状态，此时中断是被关闭的，所以不会响应中断，代码继续执行，当然执行的代码是 idle 线程，之后打开中断，执行中断处理函数。\r\n如果 cpu 进入是其他状态(C1/C2 state)，退出时，则是 cpu 会重新上电，然后从 BROM 运行，之后是 mcpm_entry_point 函数 -> cpu_resume 函数。此时 cpu 的上下文已经恢复，上下文还是之前的 idle 线程，之后的流程与 C0 类似。"
+ },
+ {
+  "id": "2229",
+  "parent": "1113",
+  "date": "2015-07-15T22:54:37+08:00",
+  "author": "Y",
+  "site": "",
+  "text": "@wowo：从C1被中断唤醒后，是继续执行 enter(C1)的下一条指令,不需要软件参与吗？ 我看到楼上有兄弟说从BROM开始重新执行？ 到底哪个是对的 \r\nthanks"
+ },
+ {
+  "id": "2231",
+  "parent": "2229",
+  "date": "2015-07-16T08:44:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Y：idle指令执行之后，CPU要做那些事情，idle回来之前，CPU要做哪些事情，都是和具体的平台有关的。不同平台，有不同的实现。\r\n因此，回到您的问题，哪个都有可能是对的。这也是这篇文章没有涉及这部分内容的原因。\r\n但有一点是可以保证的，对cpuidle framework本身，它“看到的”，是一致的，即：从哪里进去，就从哪里出来。"
+ },
+ {
+  "id": "2285",
+  "parent": "1113",
+  "date": "2015-07-22T11:12:13+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@wowo：进入idle时，是关中断的，因此从idle回来后，只能先回到idle thread，打开中断后，才能执行中断handler\r\n   ----有点小疑惑，既然关中断了。中断还能唤醒WFI状态吗？多谢！"
+ },
+ {
+  "id": "2292",
+  "parent": "2285",
+  "date": "2015-07-22T13:17:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@shoujixiaodao：可以的，具体可参考linuxer同学在这里的回复：/pm_subsystem/suspend_and_resume.html#2191"
+ },
+ {
+  "id": "2295",
+  "parent": "2292",
+  "date": "2015-07-22T13:48:44+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@wowo：学习力，涨姿势。多谢！"
+ },
+ {
+  "id": "2511",
+  "parent": "0",
+  "date": "2015-08-30T20:01:37+08:00",
+  "author": "firo",
+  "site": "http://firoyang.org",
+  "text": "因而framework需要从对上（consumer）和对下（consumer）两个角度进行软件抽象；\r\n两个consumer?"
+ },
+ {
+  "id": "2513",
+  "parent": "2511",
+  "date": "2015-08-31T09:02:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@firo：抱歉，笔误，等下会改正，谢谢~~"
+ },
+ {
+  "id": "2792",
+  "parent": "0",
+  "date": "2015-10-19T09:38:57+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "hi wowo,每个cpu都有一个idle进程（或叫线程），他们的pid是一样的吗？或者叫做一个线程组更为合适？"
+ },
+ {
+  "id": "2793",
+  "parent": "2792",
+  "date": "2015-10-19T10:37:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@cym：系统有多少个cpu core，就有多少个idle进程，BSP的idle进程的pid是0，其他的cpu的idle进程是在init进程（pid＝1）中初始化的，因此secondary cpu的idle进程和BSP 的idle进程的pid是不同的。"
+ },
+ {
+  "id": "2794",
+  "parent": "2793",
+  "date": "2015-10-19T11:06:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：关于CPU的idle线程的创建过程，可以参考“/pm_subsystem/cpu_hotplug.html”中有关的章节。\r\n\r\nidle thread的创建过程是：fork_idle-->copy_process\r\n\r\n我对进程管理看的不多，不知道问题的答案（是，或者不是），但根据这个过程，我觉得所有的idle thread的pid应该是一个，即init_struct_pid。linuxer，是不是这样呢？"
+ },
+ {
+  "id": "2796",
+  "parent": "2794",
+  "date": "2015-10-19T12:05:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：我也没有仔细看，我的直觉是觉得fork一个进程当然要分配一个pid了，要不还是等晚上有时间仔细看看代码好了"
+ },
+ {
+  "id": "2797",
+  "parent": "2794",
+  "date": "2015-10-19T12:27:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：你说的是对的，我又看进去copy_process的代码，其中有一段：\r\n\r\n\tif (pid != &init_struct_pid) {\r\n\t\tpid = alloc_pid(p->nsproxy->pid_ns_for_children);\r\n\t\tif (IS_ERR(pid)) {\r\n\t\t\tretval = PTR_ERR(pid);\r\n\t\t\tgoto bad_fork_cleanup_io;\r\n\t\t}\r\n\t}\r\n\r\n看起来如果是init_struct_pid就不再分配pid了。"
+ },
+ {
+  "id": "2798",
+  "parent": "2797",
+  "date": "2015-10-19T13:50:42+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@linuxer：谢谢众大虾！"
+ },
+ {
+  "id": "2845",
+  "parent": "0",
+  "date": "2015-10-26T20:39:16+08:00",
+  "author": "pingchangxin",
+  "site": "",
+  "text": "请教一个问题，现在内核支持supend to RAM，这个流程会在pm.c中有***_pm_enter,里面有PM_SUSPEND_STANDY或者PM_SUPEND_MEM，而现在cpuidle，应该也可以在**_enter_idle里面可以根据此时的硬件状态，来做现在是WFI，还是进deep sleep，总感觉这两个有点重合，不知道，你理解的这两者是怎么结合起来的，谢谢！"
+ },
+ {
+  "id": "2846",
+  "parent": "2845",
+  "date": "2015-10-26T20:49:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@pingchangxin：我的理解是：\r\nSTR和cpuidle，不是同一个事物，它们的目标不同，不具有可比性。\r\n如果碰巧，它们通过相同的手段达到目的，这只是一个假象而已。\r\n例如，系统进入STR状态时，就不会有idle的概念（idle线程被冻结了）。\r\n所以，您的问题：怎么结合的？我觉得应该不会结合。"
+ },
+ {
+  "id": "2856",
+  "parent": "2846",
+  "date": "2015-10-27T13:50:24+08:00",
+  "author": "pingchangxin",
+  "site": "",
+  "text": "@wowo：谢谢你，可能我被这个假象糊弄了，总觉得他们直接是不是有什么猫腻，呵呵"
+ },
+ {
+  "id": "3141",
+  "parent": "0",
+  "date": "2015-11-26T11:11:01+08:00",
+  "author": "zozowit",
+  "site": "",
+  "text": "请问，“由于该进程的优先级是最低的，所以当idle进程被调度到时，则说明系统的其它进程不再运行了，也即CPU idle了”，这个进程的优先级是最低的，是在哪里有设置吗？"
+ },
+ {
+  "id": "3165",
+  "parent": "3141",
+  "date": "2015-11-27T16:46:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zozowit：抱歉，评论太多把您这个漏了……\r\nKernel调度器对idle thread有特殊照顾，具体可参考kernel/sched/core.c：\r\nstatic void set_load_weight(struct task_struct *p)                              \r\n{                                                                               \r\n        int prio = p->static_prio - MAX_RT_PRIO;                                \r\n        struct load_weight *load = &p->se.load;                                 \r\n                                                                                \r\n        /*                                                                      \r\n         * SCHED_IDLE tasks get minimal weight:                                 \r\n         */                                                                     \r\n        if (p->policy == SCHED_IDLE) {                                          \r\n                load->weight = scale_load(WEIGHT_IDLEPRIO);                     \r\n                load->inv_weight = WMULT_IDLEPRIO;                              \r\n                return;                                                         \r\n        }                                                                       \r\n                                                                                \r\n        load->weight = scale_load(prio_to_weight[prio]);                        \r\n        load->inv_weight = prio_to_wmult[prio];                                 \r\n}"
+ },
+ {
+  "id": "3181",
+  "parent": "3165",
+  "date": "2015-12-01T17:53:20+08:00",
+  "author": "zozowit",
+  "site": "",
+  "text": "@wowo：感谢解答，还有一点请您赐教，SCHED_IDLE是在哪里设定的？"
+ },
+ {
+  "id": "3182",
+  "parent": "3181",
+  "date": "2015-12-02T10:34:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zozowit：抱歉，我为上面的回复以及文中的表述道歉，关于idle进程的优先级，应该是这样的（对进程管理的理解有限，可能还有错误）：\r\n1. idle进程的优先级并不是最低的，实际上，它的用户优先级（user nice）是0，正常情况下，算得上系统中最高的了。\r\n2. idle进程并不会参与调度，因此当无进程调度的时候执行idle进程，是调度器保证的，这一点并不依赖它的优先级。\r\n3. idle进程的优先级怎么来的？\r\n    a）start_kernel后kernel执行的第一个进程，不是由do_fork动态生成的，而是静态定义的（也就是传说中的init_task），init_task的优先级为（include/linux/init_task.h）：\r\n        .prio           = MAX_PRIO-20,                                  \\       \r\n        .static_prio    = MAX_PRIO-20,                                  \\       \r\n        .normal_prio    = MAX_PRIO-20, \r\n        也就是说，全部是120，转换为user nice为0，user nice的范围是-20~19，值越大优先越低，因此init_task的优先级算是比较高的了。\r\n    b）随后的kernel运行过程中，都是在init_task的上下文中，最后init_task会变成boot cpu的idle线程，因此boot cpu的idle线程的优先级就继承了init_task的了。\r\n    c）对于其它CPU来说，执行如下操作（具体可参考”/pm_subsystem/cpu_hotplug.html“）：rest_init-->kernel_init-->kernel_init_freeable-->smp_init—>idle_threads_init—>idle_init-->fork_idle-->copy_process-->dup_task_struct(current)\r\n        这个过程会两次task copy：第一次是在reset_init中，调用kernel_thread fork kernel_init线程；第二次是fork_idle时将current task copy到idle task中，因此，最终非boot cpu的idle task的优先级，也是继承自init_task。\r\n4. 关于这个标记--SCHED_IDLE，现在kernel的调度器貌似没有使用的。\r\n\r\n进程管理的东西太复杂了，看着战战巍巍的，希望高手指正！也希望有高手把进程管理的东西给大家分析一下。"
+ },
+ {
+  "id": "3183",
+  "parent": "3182",
+  "date": "2015-12-02T10:43:55+08:00",
+  "author": "zozowit",
+  "site": "",
+  "text": "@wowo：您好，恕我愚笨。请问“ idle进程并不会参与调度，因此当无进程调度的时候执行idle进程，是调度器保证的”这个是否有代码可以阅读。另外之前您列出的代码，看上去确实是把这个优先级调低诶？\r\n /*                                                                      \r\n         * SCHED_IDLE tasks get minimal weight:                                \r\n         */                                                                    \r\n        if (p->policy == SCHED_IDLE) {                                          \r\n                load->weight = scale_load(WEIGHT_IDLEPRIO);                    \r\n                load->inv_weight = WMULT_IDLEPRIO;                              \r\n                return;                                                        \r\n        }"
+ },
+ {
+  "id": "3184",
+  "parent": "3183",
+  "date": "2015-12-02T10:52:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zozowit：调度器的行为，我也没有细看，太复杂了。\r\n我之前贴出的这一段代码，确实是这个逻辑，但我找了现在kernel的代码，没有发现哪个进程使用SCHED_IDLE这个policy，可能是kernel提供的一种方法吧，只是现在没有人用。"
+ },
+ {
+  "id": "3185",
+  "parent": "3184",
+  "date": "2015-12-02T11:29:58+08:00",
+  "author": "zozowit",
+  "site": "",
+  "text": "@wowo：您好，我看了一下，是在start_kernel-->init_idle中执行了rq->curr = rq->idle = idle\r\nschedule函数中，按照rt ，cfs，idle这三种调度方式顺序，寻找各自的运行任务，那么如果rt和cfs都未找到运行任务，那么最后会调用idle schedule的idle进程，作为schedule函数调度的下一个任务。"
+ },
+ {
+  "id": "3186",
+  "parent": "3183",
+  "date": "2015-12-02T11:42:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zozowit：确实，idle作为一个单独的schedule class了，\r\nconst struct sched_class idle_sched_class\r\n至于schedule class的含义，我就不了解了。"
+ },
+ {
+  "id": "4168",
+  "parent": "3186",
+  "date": "2016-07-01T17:40:13+08:00",
+  "author": "Foreveryoung",
+  "site": "",
+  "text": "@wowo：crash64> sym _sched_class\r\nsymbol not found: _sched_class\r\npossible alternatives:\r\n  ffffffc0009cfd28 (r) fake_sched_class\r\n  ffffffc0009d08d8 (R) idle_sched_class\r\n  ffffffc0009d0ac8 (R) fair_sched_class\r\n  ffffffc0009d0d00 (R) rt_sched_class\r\n  ffffffc0009d0ed8 (R) dl_sched_class\r\n  ffffffc0009d1000 (R) stop_sched_class\r\ncrash64> struct sched_class ffffffc0009d08d8\r\nstruct sched_class {\r\n  next = 0x0,\r\n  enqueue_task = 0x0,\r\n  dequeue_task = 0xffffffc0000d7d08 <dequeue_task_idle>,\r\n  yield_task = 0x0,\r\n  yield_to_task = 0x0,\r\n  check_preempt_curr = 0xffffffc0000d7cdc <check_preempt_curr_idle>,\r\n  pick_next_task = 0xffffffc0000d7b90 <pick_next_task_idle>,\r\n  put_prev_task = 0xffffffc0000d7cb0 <put_prev_task_idle>,\r\n  select_task_rq = 0xffffffc0000d7b64 <select_task_rq_idle>,\r\n  migrate_task_rq = 0x0,\r\n  post_schedule = 0x0,\r\n  task_waking = 0x0,\r\n  task_woken = 0x0,\r\n  set_cpus_allowed = 0x0,\r\n  rq_online = 0x0,\r\n  rq_offline = 0x0,\r\n  set_curr_task = 0xffffffc0000d7be8 <set_curr_task_idle>,\r\n  task_tick = 0xffffffc0000d7bd0 <task_tick_idle>,\r\n  task_fork = 0x0,\r\n  task_dead = 0x0,\r\n  switched_from = 0x0,\r\n  switched_to = 0xffffffc0000d7c70 <switched_to_idle>,\r\n  prio_changed = 0xffffffc0000d7c34 <prio_changed_idle>,\r\n  get_rr_interval = 0xffffffc0000d7c00 <get_rr_interval_idle>,\r\n  update_curr = 0xffffffc0000d7c1c <update_curr_idle>,\r\n  task_move_group = 0x0\r\n}\r\n整个体系好像有六种sched_class，芯片架构为arm64 V8，大神清楚分别对应什么么？"
+ },
+ {
+  "id": "4169",
+  "parent": "2792",
+  "date": "2016-07-01T17:46:09+08:00",
+  "author": "Foreveryoung",
+  "site": "",
+  "text": "@cym：crash64> ps |grep \"swapper\"\r\n>     0      0   0  ffffffc000f80160  RU   0.0       0      0  [swapper/0]\r\n>     0      0   1  ffffffc13ca00c00  RU   0.0       0      0  [swapper/1]\r\n>     0      0   2  ffffffc13ca01800  RU   0.0       0      0  [swapper/2]\r\n>     0      0   3  ffffffc13ca02400  RU   0.0       0      0  [swapper/3]\r\n>     0      0   4  ffffffc13ca03000  RU   0.0       0      0  [swapper/4]\r\n>     0      0   5  ffffffc13ca03c00  RU   0.0       0      0  [swapper/5]\r\n>     0      0   6  ffffffc13ca04800  RU   0.0       0      0  [swapper/6]\r\n>     0      0   7  ffffffc13ca05400  RU   0.0       0      0  [swapper/7]\r\npid都是0，每个cpu上独立的线程，相互之间也扯不上什么关系吧，谈不上线程组，这个swapper线程就是所谓的idle线程。"
+ },
+ {
+  "id": "4171",
+  "parent": "0",
+  "date": "2016-07-01T21:11:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Foreveryoung，schedule的东西还没有深入研究呢。"
+ },
+ {
+  "id": "4172",
+  "parent": "4169",
+  "date": "2016-07-01T21:12:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Foreveryoung：是的。"
+ },
+ {
+  "id": "5810",
+  "parent": "2285",
+  "date": "2017-07-15T21:40:40+08:00",
+  "author": "Allen",
+  "site": "",
+  "text": "@shoujixiaodao：4种方法\r\nThe WFI instruction has the effect of suspending execution until the core is woken up by one of the following conditions:\r\n• An IRQ interrupt, even if the CPSR I-bit is set.\r\n• An FIQ interrupt, even if the CPSR F-bit is set.\r\n• An asynchronous abort.\r\n• A Debug Entry request, even if JTAG Debug is disabled."
+ },
+ {
+  "id": "6738",
+  "parent": "0",
+  "date": "2018-05-07T15:04:21+08:00",
+  "author": "psg",
+  "site": "",
+  "text": "wowo,你好\r\n有遇到过偶发关机时无缘无故死机的问题，没有panic等异常log,多次测试发现取消CONFIG_CPU_IDLE内核配置项就不会出现，有试过把kernel hacking的一些调试选项打开，问题也不会出现。\r\n1）遇到这种问题该如何分析定位？\r\n2）关闭该内核选项会对产品造成什么后果？"
+ },
+ {
+  "id": "6740",
+  "parent": "6738",
+  "date": "2018-05-08T09:11:41+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@psg：能查到死在什么状态了吗？实在没办法，可以把CONFIG_CPU_IDLE的关键代码一点点屏蔽一下，查查是哪里导致的问题。\r\n如果连idle都没法开，这个cpu就太水了。\r\n至于后果，就是功耗、发热之类的可能会上去吧。"
+ },
+ {
+  "id": "6741",
+  "parent": "6740",
+  "date": "2018-05-08T15:06:54+08:00",
+  "author": "psg",
+  "site": "",
+  "text": "@wowo：这个问题最主要没有错误信息，我只能一点一点在函数里面加printk,每次出现问题的时候最后的打印是在关机过程中usb控制器的shutdown函数里面，但每次的打印都不是完整的，一句话可能输出了一半。\r\n例如这种：\r\n[ 110.908373] sunxi-ehci 1c1c000.ehci2-controller: shutdown\r\n[ 110.914589] drivers/usb/host/ehci_sunxi.c sunxi_ehci_\r\n或者这种：\r\n[ 177.662155] [ohci2-controller]: ohci shutdown end\r\n[ 177.667322] sunxi-ehci 1c1c000.\r\n或者这种：\r\n[ 47.538096] drivers/usb/host/sunxi_hci.c close_clock 406 \r\n[ 47.544242] drivers/usb/host/ohci_sunxi.c sunxi_ohci_hcd_\r\n\r\n这问题还偶发，自动化测试一两个小时才出现一次。实在找不到好的对策或者继续排查的办法。后来对比原厂的改动才动到IDEL的配置的，他们的代码里面早就取消了这个config"
+ },
+ {
+  "id": "7413",
+  "parent": "0",
+  "date": "2019-05-13T00:09:04+08:00",
+  "author": "G",
+  "site": "",
+  "text": "hi wowo,\r\n  看了您的cpuidle framework系列，受益匪浅。现在有个实际场景：我们的线程运行结束后进入某个特定的cpuidle state时(或从该cpuidle state恢复时，具体未知)，性能会跑得异常差，其他idle state均正常。请问：\r\n  1. 目前想到的解决方案是将sys/devices/system/cpu/cpux/cpuidle下的disable写成1。这种方法在实际中是否有明显已知的问题？\r\n  2. 内核是否有提供某个API来控制某个cpuidle state的使能状态？\r\n  3. 是否有其他解决该问题的思路？"
+ },
+ {
+  "id": "7456",
+  "parent": "0",
+  "date": "2019-06-05T01:01:30+08:00",
+  "author": "吴兵",
+  "site": "",
+  "text": "系统启动后0号线程初始化后变为idle线程，而多核有多核idle线程么？"
+ },
+ {
+  "id": "7459",
+  "parent": "7456",
+  "date": "2019-06-05T17:59:32+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@吴兵：每个核都有一个idle进程"
+ },
+ {
+  "id": "8101",
+  "parent": "5810",
+  "date": "2020-08-20T17:24:14+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@Allen：In Cortex A series WFI would be executed  and the processor would enter the standby mode.\r\n\r\nInterrupts which are pending would not prevent processor to suspend execution.\r\n\r\nWhen the processor is in WFI and an interrupt occurs:\r\nThis wakes up the processor  and the processor jumps to the interrupt handler associated with that interrupt.\r\n\r\nBut when CPSR.I is disabled  this just wakes up the processor  and the processor starts executing the next instruction from the program counter."
+ },
+ {
+  "id": "8791",
+  "parent": "3186",
+  "date": "2023-06-20T18:10:00+08:00",
+  "author": "zzzz",
+  "site": "",
+  "text": "@wowo：sched_class是调度类，linux调度类中包含cfs（完全公平调度），rt（实时调度）以及idle等。优先级由高到低为rt->cfs->idle。每个调度类有其对应的运行队列，在linux调度选择下一个需要运行的进程时，会按照优先级由高到低扫描每一个调度类，找到可以运行的进程。也就是说，rt调度类的进程会比cfs的进程优先运行"
+ }
+]

@@ -1,0 +1,154 @@
+[
+ {
+  "id": "234",
+  "parent": "0",
+  "date": "2014-07-17T14:56:46+08:00",
+  "author": "foiron",
+  "site": "http://meiyou",
+  "text": "hi linuxer\r\n这篇介绍gic的文章，写的真不错。不过不知道楼主有没有用gic自己实现一个IPI呢？还有一个问题，我看到有些厂商的dts文件中，interrupts = <0 number 0x0>; 最后一个0x0，我在任何的文档中都没有看到他的解释。难道是这里不设置处罚方式，而是在code中设置？\r\nBTW 什么时候更新gpio的文档啊，好期待。：）"
+ },
+ {
+  "id": "235",
+  "parent": "234",
+  "date": "2014-07-17T22:50:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@foiron：多谢捧场。也多谢你的问题，让我重新看了看文档发现了一些错误（我是离线写，然后发布，总会出现一些问题）。我现在在家里，明天到公司再修正错误。\r\n对于使用gic的外设而言，它的interupt属性由3个cell组成，最后一个数字是触发方式。不同的interrupt controller其interrupt属性值得解释是不同的，具体的解释都可以在linux-3.14/Documentation/devicetree/bindings目录下的文档找到解释。具体的代码一定是根据dts中的描述进行触发方式的设定，在各个外设的驱动中可以找到这部分的内容，本文是描述GIC interrupt controller，因此没有涉及这部分的内容。\r\n\r\n目前我从事的项目都没有涉及IPI的内容，因此我也没有用gic自己实现一个IPI，不过如果有机会可以写一篇关于IPI的文档。\r\n关于GPIO，我本来是没有安排在本月完成的，本月主要是内核同步的一些内容，我正在写RCU的文档，如果你有兴趣了解，那么我可以下个星期完成GPIO的文档。"
+ },
+ {
+  "id": "236",
+  "parent": "0",
+  "date": "2014-07-17T23:16:10+08:00",
+  "author": "forion",
+  "site": "http://meiyou",
+  "text": "hi linuxer\r\n您的博客是我看到的最有干货的了，真心期待持续更新啊！阅读了之后再对照代码，很是享受！您的技术功底，可见一斑！  gic里面我感觉还缺少级联的irq controler的相应代码，以及中断号 是怎么一级一级转换的，比如一个耳机中断的调用过程，从__irq_svc到相应的耳机中断handler的调用过程，这个对理解irq domain应该会更加形象！"
+ },
+ {
+  "id": "237",
+  "parent": "236",
+  "date": "2014-07-18T09:06:20+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：多谢您的评价，蜗窝会一如既往的继续专注于linux相关的技术。也希望蜗窝可以为热爱技术、热爱linux kernel的工程师提供一个交流平台，让大家可以分享技术以及技术带来的欢乐。\r\n\r\n其实关于linux kernel的中断子系统本来是有若干份文档要写，不过，考虑还是一篇一篇的写，然后再重新整理。本来近期是有想再出一份文档描述linux kernel中interrupt subsystem的文档，不过想写的内容太多，暂时还没有完成。多谢你的建议，中断处理也是可以独立成篇的，已经放入schedule，相信很快就会出来。"
+ },
+ {
+  "id": "238",
+  "parent": "234",
+  "date": "2014-07-18T09:15:14+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@foiron：已经更新了文档中的错误。看来以后发布之后还是要自己阅读一遍，呵呵，再一次多谢你。\r\n\r\n你问的interrupts属性一定可以找到解释的，主要看你用的是什么平台，然后到linux-3.14\\Documentation\\devicetree\\bindings目录下找相关的信息"
+ },
+ {
+  "id": "239",
+  "parent": "238",
+  "date": "2014-07-19T20:51:07+08:00",
+  "author": "forion",
+  "site": "http://meiyou",
+  "text": "@linuxer：hi linuxer\r\n关于dts里面中断触发方式为0，我看irq.h中全0定义为None 默认的触发方式，然后我想应该是驱动程序在 request_irq的时候再指定触发方式"
+ },
+ {
+  "id": "246",
+  "parent": "0",
+  "date": "2014-07-22T10:40:29+08:00",
+  "author": "foiron",
+  "site": "http://meiyou",
+  "text": "对于uart3而言，其interrupt specifier就是，也就是说， 这里需要修改一下"
+ },
+ {
+  "id": "247",
+  "parent": "246",
+  "date": "2014-07-22T12:25:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@foiron：已修正，蜗窝有你这样热心的读者真好，泪牛满面啊～～～\r\n\r\nPS：有兴趣的话，其实你也可以写文章在这里发表的"
+ },
+ {
+  "id": "250",
+  "parent": "0",
+  "date": "2014-07-23T10:15:36+08:00",
+  "author": "foiron",
+  "site": "http://meiyou",
+  "text": "hi linuxer\r\n下面解释了一下IRQF_TRIGGER_NONE，应该是如果写IRQF_TRIGGER_NONE的话，就是硬件自己设定的触发方式，而不是我软件配置的。\r\nThese are bits, so a logical OR (ie |) of a subset of these can be passed in; and if none apply, then the empty set is perfectly fine -- ie a value 0 for the flags parameter.\r\n\r\nSince IRQF_TRIGGER_NONE is 0, passing 0 into request_irq() just says leave the triggering configuration of the IRQ alone -- ie however the hardware/firmware configured it."
+ },
+ {
+  "id": "254",
+  "parent": "239",
+  "date": "2014-07-23T11:41:18+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：你说的是GIC吗？因为interrupts这个属性是具体的interrupt controller解释的。对于GIC，interrupt属性解释如下：\r\n＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋\r\nThe 3rd cell is the flags, encoded as follows:\r\n\tbits[3:0] trigger type and level flags.\r\n\t\t1 = low-to-high edge triggered\r\n\t\t2 = high-to-low edge triggered\r\n\t\t4 = active high level-sensitive\r\n\t\t8 = active low level-sensitive\r\n\tbits[15:8] PPI interrupt cpu mask.  Each bit corresponds to each of\r\n\tthe 8 possible cpus attached to the GIC.  A bit set to '1' indicated\r\n\tthe interrupt is wired to that CPU.  Only valid for PPI interrupts.\r\n＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋\r\n其实并没有规定第三个cell数值等于0的行为。的确，在include/dt-bindings/interrupt-controller/irq.h文件中，0对应的就是IRQ_TYPE_NONE。\r\n在具体的设备初始化的时候，会解析interrupt属性，然后调用interrupt subsystem的接口（例如request_irq、irq_set_irq_type）进行具体的设定。request_irq和irq_set_irq_type是殊路同归，最后都是调用了interrupt controller driver对应的set type函数，对于gic，这个函数是gic_set_type，不过从代码看起来并没有处理IRQ_TYPE_NONE，我大概过了一下interrupt subsystem的代码，也没有看到相关的处理，看来的确应该是具体的驱动程序自己处理了。当然，我不认为这是合理的处理方式。"
+ },
+ {
+  "id": "255",
+  "parent": "250",
+  "date": "2014-07-23T11:50:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@foiron：多谢你的解释，我看了看request_irq的代码，发现：\r\n＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋\r\n\t\t/* Setup the type (level, edge polarity) if configured: */\r\n\t\tif (new->flags & IRQF_TRIGGER_MASK) {\r\n\t\t\tret = __irq_set_trigger(desc, irq,\r\n\t\t\t\t\tnew->flags & IRQF_TRIGGER_MASK);\r\n\r\n\t\t\tif (ret)\r\n\t\t\t\tgoto out_mask;\r\n\t\t}\r\n＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋＋\r\n的确，如果不传递相关的trigger flag，request_irq会略过设定trigger部分的内容。当然驱动程序也可以在request irq之前调用irq_set_irq_type设定触发类型，当然，也有可能是hardware/firmware已经处理，具体的driver不需要关注。"
+ },
+ {
+  "id": "363",
+  "parent": "0",
+  "date": "2014-08-28T12:08:29+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "这份文档写的不是很好，其中也有一些错误（例如对PPI的描述），我准备重新写一份，这份文档状态是废弃，不建议阅读了。"
+ },
+ {
+  "id": "364",
+  "parent": "363",
+  "date": "2014-08-28T18:25:22+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：又有新作啦，等待啊。\r\n我感觉我们这个网站会越来越火啊。之前哪有人网上发文章还会自己review，然后自己修改，而且还回复别人的，等你整理一下文章，就可以出书啦。哈哈，或者出视频。"
+ },
+ {
+  "id": "365",
+  "parent": "364",
+  "date": "2014-08-28T18:55:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：借你吉言啊，^_^。我觉得如果我们的网站越来越火就说明国内的环境有所改善了，大家不再是推崇快餐文化，而是对产品精雕细琢\r\n\r\n最近一直在看中国好声音，我比较喜欢汪峰（虽然很多人讨厌他），他提出的问题多和理想、信念、态度有关，做音乐需要执着于自己的理想，做人、做产品、处理事情、写文章也是如此，都需要有理念支撑。对于蜗窝科技发出的每一份文档、只要它标识了蜗窝科技这四个字，我希望能够象维护自己的名誉一样维护这份文档的名誉，这是我们的理念\r\n\r\n不过，有你（或许之后有其他的网友）参与review，我们的文档质量会越来越好的"
+ },
+ {
+  "id": "366",
+  "parent": "365",
+  "date": "2014-08-28T19:02:38+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：抬举了啊，我也是本着蜗窝科技的精神，读文档就是要读懂，弄懂每一个细节。当然可能我现在还可能会忽略一些，但是我认为这是一个过程，慢慢的就会形成习惯，对自己很有裨益的。"
+ },
+ {
+  "id": "391",
+  "parent": "0",
+  "date": "2014-09-02T15:19:48+08:00",
+  "author": "maotou",
+  "site": "",
+  "text": "hi linuxer,看了好几遍您的文章,我刚接触linux内核,从arm中的中断处理开始,看了一个月还是挺迷茫,虽然感觉自己对原理理解了,可还是不知道怎么从代码中去看,因为各个代码都是散的,没有一个很清楚的调理.linuxer前辈有些什么好的建议么? 还有对于GIC有个不能理解的是,一个GIC能提供1024个中断号,那么他是有1024个引脚去接到设备中么?"
+ },
+ {
+  "id": "393",
+  "parent": "391",
+  "date": "2014-09-02T16:35:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@maotou：你的第一个问题我要思考一下，先回答第二个问题。\r\nGIC其实是一个ARM公司的architecture specification，它最大可以支持1024个中断号，但是，实际的产品应该是GIC-400或者GIC-500这样具体型号的东西。我们以GIC-400为例，它最大支持480个SPI，那么实际上GIC-400就是要提供480个实际的信号线作为interrupt source，当然，实际vendor在整合SOC系统的时候未必需要这么多signal，因此可以进行裁剪（GIC-400是一个可配置的IP），也就是说，你配置了多少个SPI，就有有多少个实际的物理引脚，这里不是说SOC的物理引脚，因为很多GIC的SPI interrupt signal是SOC内部的。\r\n上面说的是SPI，对于SGI，不需物理上的signal信号。\r\n对于PPI，还要复杂一些，我们假设你的SOC配置了6个PPI interrupt signal，CPU的数目是4个，那么实际的interrupt source signal需要6x4＝24个实际的物理signal"
+ },
+ {
+  "id": "394",
+  "parent": "393",
+  "date": "2014-09-02T16:36:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：其实是我写的不清楚，因此才会废弃这份文档的。新的GIC代码分析文档本星期会出来，相信会把这些描述清楚。"
+ },
+ {
+  "id": "400",
+  "parent": "391",
+  "date": "2014-09-03T12:35:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@maotou：对于你的第一个问题，其实我也只能泛泛而谈（参考给其他新人的建议），未必能够给出很多建议。让问题变得更具体一些才容易让别人回答。其实很多时候，你能够清楚而具体的描述问题，其实距离答案已经很近了。\r\n\r\n因此，我对你的建议是把问题具体化：你在看中断代码，哪个地方不懂，哪段代码不理解，如果你觉得你对原理是理解的，那么你认为代码应该怎样写？你不理解的代码违反了你关于中断处理常识的哪些逻辑？\r\n另外，我建议你从ARM中断处理开始看，也就是linux kernel的中断子系统之（六）：ARM中断处理过程这份文档，然后针对这份文档，提出你的问题，要具体，只有这样，大家才能帮助你"
+ }
+]

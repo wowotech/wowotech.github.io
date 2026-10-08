@@ -1,0 +1,42 @@
+[
+ {
+  "id": "1510",
+  "parent": "0",
+  "date": "2015-04-15T21:25:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "帮顶，看看有没有路过的camera专家，明天去公司也帮你请教一下同事！\r\nPS：以后如果有任何问题需要和大家讨论，请直接在留言板留言。因为发布日志需要审核，而我们很少会登陆后台，所以会很久才能看到。抱歉！！"
+ },
+ {
+  "id": "1511",
+  "parent": "0",
+  "date": "2015-04-16T08:50:46+08:00",
+  "author": "Robin",
+  "site": "",
+  "text": "可以试试mjpg-streamer\r\nhttp://sourceforge.net/p/mjpg-streamer/code/HEAD/tree/mjpg-streamer/"
+ },
+ {
+  "id": "1529",
+  "parent": "0",
+  "date": "2015-04-17T10:00:52+08:00",
+  "author": "syhdjf",
+  "site": "",
+  "text": "感谢Robin和wowo，暂时找了个直接拍图片的研究了下，先测试了下摄像头普通功能是没有问题的。接着尝试下mjpg-streamer，看看效果。\r\n以后会注意直接留言到留言板的，呵呵。"
+ },
+ {
+  "id": "2302",
+  "parent": "0",
+  "date": "2015-07-23T11:41:26+08:00",
+  "author": "dd",
+  "site": "http://blog.z-dd.net/",
+  "text": "前段时间刚刚调过USB camera，用的是Gstreamer，后面也移植过motion。"
+ },
+ {
+  "id": "3811",
+  "parent": "0",
+  "date": "2016-04-07T21:58:02+08:00",
+  "author": "Musiclover",
+  "site": "",
+  "text": "这么早的问题，估计楼主老早以前就解决了，不过还是说一下我的实验经验，希望对其他看到的人有帮助。\r\n最近交叉编译了motion，发现确实linux/videodev.h头文件，解决方法是下载libv4l并编译安装，然后将libv4l中的libv4l-videodev.h软连接到linux/videodev.h就可以了。"
+ }
+]

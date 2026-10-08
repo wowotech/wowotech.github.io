@@ -1,0 +1,258 @@
+[
+ {
+  "id": "6634",
+  "parent": "0",
+  "date": "2018-04-02T11:10:37+08:00",
+  "author": "rafal",
+  "site": "",
+  "text": "redzone = 63 – (S - 1) % 32。--->似乎改成redzone = 64 – S % 32更好理解"
+ },
+ {
+  "id": "6637",
+  "parent": "0",
+  "date": "2018-04-02T14:29:28+08:00",
+  "author": "rafal",
+  "site": "",
+  "text": "最后一个例子有画龙点睛的作用"
+ },
+ {
+  "id": "6638",
+  "parent": "6634",
+  "date": "2018-04-03T12:35:50+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@rafal：我是为了兼容 S%32 == 0的情况，这个公式同样适用。但是你说的redzone = 64 – S % 32却不适用这种情况，你说是不是呢！哈哈"
+ },
+ {
+  "id": "6639",
+  "parent": "6638",
+  "date": "2018-04-03T13:12:29+08:00",
+  "author": "rafal",
+  "site": "",
+  "text": "@smcdef：哈哈，还是楼主考虑的全面，边界出问题的代码还是挺多的"
+ },
+ {
+  "id": "6799",
+  "parent": "0",
+  "date": "2018-06-13T10:29:57+08:00",
+  "author": "phybio",
+  "site": "",
+  "text": "请问KASAN对vmalloc分配的内存，出现的use-after-free和out-of-bounds，能否检测出来？\r\n还是只是对kmalloc分配的slub可以检测？"
+ },
+ {
+  "id": "6801",
+  "parent": "6799",
+  "date": "2018-06-13T23:06:06+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@phybio：不能检测，因为KASAN初始化的时候没有为vmalloc区域分配shadow memory，当然检测功能还有全局变量等，更详细的检测可以参考kasan提供的测试代码，见lib/test_kasan.c"
+ },
+ {
+  "id": "6804",
+  "parent": "0",
+  "date": "2018-06-15T11:27:29+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "最后一个例子 kernel的地址是 ffff8800693bc5d3\r\n公式：（shadow_addr = (kaddr >> 3)  + KASAN_SHADOW_OFFSE）\r\n怎么计算shadow memory出来的地址跟例子不符合？"
+ },
+ {
+  "id": "6808",
+  "parent": "6804",
+  "date": "2018-06-15T21:14:59+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hzm：举的例子中，我并没有说KASAN_SHADOW_OFFSE等于多少啊！你怎么知道不符合呢？"
+ },
+ {
+  "id": "6810",
+  "parent": "6808",
+  "date": "2018-06-19T10:31:53+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "@smcdef：哦，那例子中的ffff8800693bc580这个地址，应该要先知道KASAN_SHADOW_OFFSE这个才能推出来的吧？我还以为文章说的和例子说的offset是一样的"
+ },
+ {
+  "id": "6811",
+  "parent": "6810",
+  "date": "2018-06-19T10:36:15+08:00",
+  "author": "smcdef_tmp",
+  "site": "",
+  "text": "@hzm：其实是不一样的。举例中其实是随便找的一份log，这个KASAN_SHADOW_OFFSE是不知道的。其实我们也没必要知道。当然了根据这份log可以计算出KASAN_SHADOW_OFFSE，但是好像也没什么用"
+ },
+ {
+  "id": "6812",
+  "parent": "6811",
+  "date": "2018-06-19T16:43:20+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "@smcdef_tmp：这样的话怎么知道哪个是出问题地址 相对应的 shadow memory呀？ 看不明白，如果不知道shadown memory的话，下面的结论推不出来\r\n\r\n2) 申请的内存大小是123 bytes，即p = kamlloc(123);\r\n\r\n劳烦LZ解答一下，谢谢"
+ },
+ {
+  "id": "6813",
+  "parent": "6812",
+  "date": "2018-06-20T09:32:49+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hzm：仔细看下下面的log，还有红色数字，其实log中已经将shadow memory的内容打印出来了。不需要自己计算和推倒。出问题的地址也是log打印出来的，最后一个事例就是一份完整的log，这所有的信息都是已知的。"
+ },
+ {
+  "id": "6834",
+  "parent": "0",
+  "date": "2018-07-03T14:50:36+08:00",
+  "author": "fjling",
+  "site": "",
+  "text": "这篇文章很赞。\r\n\r\n请教一个slub相关的问题。\r\n比如，alloc/free track这块区域有数据写入时，这里可能是slub代码本身的操作，也可能是kernel driver误操作。\r\n编译器不可能对这块区域做特殊处理吧。那么后者会报错吗？能说说这里的细节吗？\r\n\r\n谢谢！"
+ },
+ {
+  "id": "6835",
+  "parent": "6834",
+  "date": "2018-07-03T15:06:19+08:00",
+  "author": "fjling",
+  "site": "",
+  "text": "@fjling：刚才看了下代码，似乎自己搞明白了。自问自答一下，如果我理解有错，请指正。\r\n\r\n在kernel/mm等一些内核目录，属于可信赖的代码模块。\r\n在这些目录下的Makefile里，会加入KASAN_SANITIZE :=n，告诉编译器不需要做内存访问的检查。"
+ },
+ {
+  "id": "6926",
+  "parent": "0",
+  "date": "2018-09-04T10:12:50+08:00",
+  "author": "berton",
+  "site": "",
+  "text": "有个疑问，为什么shadow memroy要用1byte来标记对应的原本内存的8字节，3bit就可以表示8字节前多少个字节被使用，考虑到方便对齐等问题，4bit就可以实现对应的操作。就是1/2byte的shadow memory对应原本内存的8byte。不是更节省内存吗？\r\n但是，在KASAN这么设计的原因是啥？"
+ },
+ {
+  "id": "6927",
+  "parent": "6926",
+  "date": "2018-09-04T10:15:25+08:00",
+  "author": "berton",
+  "site": "",
+  "text": "@berton：4bit不光是对齐问题，还有一个都不可以使用的问题，但是同样是4bit就可以了\r\n弱弱的问一下这个问题"
+ },
+ {
+  "id": "6930",
+  "parent": "6927",
+  "date": "2018-09-06T09:54:30+08:00",
+  "author": "smc",
+  "site": "",
+  "text": "@berton：我猜测是是为了方便计算，如果采用1byte，计算一个地址对应的shadow memory地址可以直接用公式shadow_addr = (kaddr >> 3)  + KASAN_SHADOW_OFFSE得到。然后就可以直接填充对应的数值。如果使用4bit表示的话，计算地址和填充数据变得复杂。"
+ },
+ {
+  "id": "6948",
+  "parent": "6930",
+  "date": "2018-09-13T20:22:30+08:00",
+  "author": "berton",
+  "site": "",
+  "text": "@smc：采用4bit操作的话，其实也不会带来太多的计算上的麻烦，使用位操作，对1byte的前4bit和后4bit位操作，也不会太麻烦，位操作也不会带来很高的性能损耗。\r\n预留其他的标志位？4bit的话同样可以预留7种情况，还可以节省一半的虚拟地址，对于32位系统下尤为珍贵，单纯为了计算方便损耗1/16的虚地址，感觉有点浪费。。。。。"
+ },
+ {
+  "id": "6995",
+  "parent": "6801",
+  "date": "2018-10-19T08:22:28+08:00",
+  "author": "zecard",
+  "site": "",
+  "text": "@smcdef：伙伴算法没有做redzone  怎么防止OOB？ 比如两块相邻的内存块都被申请过 影子内存都是0 .  即使一块越界到另一边也没办法检测！"
+ },
+ {
+  "id": "6998",
+  "parent": "0",
+  "date": "2018-10-22T17:03:05+08:00",
+  "author": "nzg",
+  "site": "",
+  "text": "您好，请问一下：\r\n我的环境kenrel 版本是4.4.83, 虚拟地址39bits， 4kb page size.\r\nKASAN 区间应该是在kernel 起始的64GB。\r\nkernel image (只看一下代码段)\r\n_stext =ffffff8008081000\r\n_etext = ffffff8008ac7000 ， kernel 起始地址 VA_START=0xffffff8000000000\r\n\r\n这样 Kasan区域是不是就把kernel 覆盖了阿？ 会有问题吗"
+ },
+ {
+  "id": "6999",
+  "parent": "6998",
+  "date": "2018-10-22T17:07:15+08:00",
+  "author": "nzg",
+  "site": "",
+  "text": "@nzg：找到答案了，code中 kimage也会顺着偏移^^"
+ },
+ {
+  "id": "7004",
+  "parent": "0",
+  "date": "2018-10-29T11:25:27+08:00",
+  "author": "xx",
+  "site": "",
+  "text": "static __always_inline bool memory_is_poisoned_1(unsigned long addr)\r\n{\r\n        s8 shadow_value = *(s8 *)kasan_mem_to_shadow((void *)addr);\r\n\r\n        if (unlikely(shadow_value)) {\r\n                s8 last_accessible_byte = addr & KASAN_SHADOW_MASK;\r\n                return unlikely(last_accessible_byte >= shadow_value);\r\n        }\r\n\r\n        return false;\r\n}\r\n\r\n从这个代码看，你的分析貌似不对哦。这个并不是 1 个 bit 对应一个 byte"
+ },
+ {
+  "id": "7045",
+  "parent": "7004",
+  "date": "2018-11-21T11:30:17+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@xx：我的描述如下：\r\n连续8 bytes内存（8 bytes align）使用1 byte shadow memory标记。如果8 bytes内存都可以访问，则shadow memory的值为0；如果连续N(1 =< N <= 7) bytes可以访问，则shadow memory的值为N；如果8 bytes内存访问都是invalid，则shadow memory的值为负数。\r\n\r\n关注的是shadow memory的值，并没有说1 个 bit 对应一个 byte。\r\n\r\n请问你指出的不对的地方是这个吗？如果我理解有问题，还请麻烦详细指出“分析貌似不对”的地方，以免影响后面的读者。谢谢"
+ },
+ {
+  "id": "7086",
+  "parent": "6835",
+  "date": "2018-12-16T00:11:00+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@fjling：除了一些信任模块，可以在这些目录下的Makefile里，会加入KASAN_SANITIZE :=n以外。\r\n针对你说的问题：alloc/free track这块区域数据的写入，会在写入前metadata_access_enable();访问结束后调用metadata_access_disable();\r\nmetadata_access_enable()其实就是关闭kasan的检测bug report机制（即使检测不能访问，也不报错）。\r\n\r\n可以参考代码：https://elixir.bootlin.com/linux/v4.15.7/source/mm/slub.c#L503"
+ },
+ {
+  "id": "7103",
+  "parent": "0",
+  "date": "2018-12-22T16:51:38+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "在这里补充一下：为什么KASAN不支持vmalloc分配的内存呢？\r\n\r\n答案在文章的“4.3. 如何建立shadow memory的映射关系？”节已经说了。当然说的不够明确。在这一节中可以看到整个KASAN shadow memory的映射关系。VMALLOC区域对应的shadow memory映射到kasan_zero_page物理页面。kasan_zero_page是一个0页。整个页的内容都是0。回想一下，0在shadow memory中意味着什么。就是代表所有的VMALLOC区域的内存访问都是合法的。所以间接的也表明，KASAN不能检测VMALLOC分配的内存越界等问题。"
+ },
+ {
+  "id": "7489",
+  "parent": "0",
+  "date": "2019-06-26T15:42:13+08:00",
+  "author": "keith",
+  "site": "",
+  "text": "struct {\r\n    char original[4];\r\n    char redzone[60];\r\n} a; //32 bytes aligned\r\n\r\n请教一下大神，请问要通过怎样的方法，才能看到编译器的填充结构体呢？谢谢，望解答。"
+ },
+ {
+  "id": "8051",
+  "parent": "0",
+  "date": "2020-07-10T14:00:46+08:00",
+  "author": "pete",
+  "site": "",
+  "text": "\"KASAN不能检测VMALLOC分配的内存越界等问题\"，那么vmalloc的问题有什么办法看吗？"
+ },
+ {
+  "id": "8711",
+  "parent": "7103",
+  "date": "2022-12-01T09:52:38+08:00",
+  "author": "kongsuozt",
+  "site": "",
+  "text": "@smcdef：vmalloc也可以做，不过得自己去实现shadow memory的映射、状态更新以及分配释放的hook插入"
+ },
+ {
+  "id": "8774",
+  "parent": "6995",
+  "date": "2023-04-19T11:12:08+08:00",
+  "author": "ecjtusbs",
+  "site": "",
+  "text": "@zecard：“两块相邻的内存块都被申请过 影子内存都是0” 这种情况的越界检测是否有效，不知道答主有没有明确的结论，我的感觉应该无法区分。"
+ },
+ {
+  "id": "8890",
+  "parent": "6995",
+  "date": "2024-04-25T14:52:38+08:00",
+  "author": "卷心菜",
+  "site": "",
+  "text": "@zecard：这种情况kasan应该检测不出来"
+ },
+ {
+  "id": "8894",
+  "parent": "8051",
+  "date": "2024-05-02T13:57:30+08:00",
+  "author": "elliot",
+  "site": "",
+  "text": "@pete：KASAN目前已经支持vmalloc的检测了"
+ },
+ {
+  "id": "8895",
+  "parent": "7489",
+  "date": "2024-05-02T13:58:16+08:00",
+  "author": "elliot",
+  "site": "",
+  "text": "@keith：有一个工具叫做pahole，可以解决你的问题"
+ }
+]

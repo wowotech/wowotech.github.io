@@ -1,0 +1,210 @@
+[
+ {
+  "id": "4311",
+  "parent": "0",
+  "date": "2016-07-25T10:12:59+08:00",
+  "author": "tinylaker",
+  "site": "",
+  "text": "好文点赞"
+ },
+ {
+  "id": "4331",
+  "parent": "0",
+  "date": "2016-07-28T10:30:05+08:00",
+  "author": "程序老猿",
+  "site": "",
+  "text": "看了u-boot启动流程分析两篇文章，学了很多知识，受到很多启发，比ARM的手册什么来得快得多，迫切等待u-boot启动流程分析的后续大作，谢谢！"
+ },
+ {
+  "id": "4335",
+  "parent": "4331",
+  "date": "2016-07-28T18:25:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@程序老猿：多谢鼓励~"
+ },
+ {
+  "id": "4394",
+  "parent": "0",
+  "date": "2016-08-13T14:28:13+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "hi,wowo,目前开始移植uboot.bin了，然后看到sp的设置，想对比一下uboot.spl的堆栈设置，但是发现有个问题实在搞不清楚。\r\n在之前uboot.spl中还没有移植DDR初始化代码的时候，就已经在board_init_f点亮LED了。\r\n但是在arch/arm/lib/crt0.S中\r\n 73 #if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_STACK)\r\n 74     ldr sp, =(CONFIG_SPL_STACK)\r\n 75 #else\r\n 76     ldr sp, =(CONFIG_SYS_INIT_SP_ADDR)\r\n 77 #endif\r\n但是其实我现在发现CONFIG_SPL_STACK我并没有配置，编译uboot-spl的时候，也确实是ldr sp, =(CONFIG_SYS_INIT_SP_ADDR)，但是这个地址其实是在DRAM空间，也就是我还没初始化的那部分DDR的空间，理论上堆栈的使用应该会有问题才对，C函数应该也不能调用，但是为什么board_init_f却可以正常调用呢？？？\r\n\r\n这个问题昨天研究了一天了还是没搞清楚。\r\n怎么去查这个堆栈地址呢？"
+ },
+ {
+  "id": "4395",
+  "parent": "4394",
+  "date": "2016-08-13T15:56:08+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "@ooonebook：通过arm-none-linux-gnueabi-objdump把uboot-spl反汇编出来看了一下，sp里的堆栈地址确实是有问题的\r\n00000110 <_main>:                                                                                                                                                                            \r\n 110:   e59fd01c    ldr sp, [pc, #28]   ; 134 <_main+0x24>\r\n 114:   e3cdd007    bic sp, sp, #7\r\n 118:   e1a0000d    mov r0, sp\r\n 11c:   eb000012    bl  16c <board_init_f_alloc_reserve>\r\n 120:   e1a0d000    mov sp, r0\r\n 124:   e1a09000    mov r9, r0\r\n 128:   eb000012    bl  178 <board_init_f_init_reserve>\r\n 12c:   e3a00000    mov r0, #0\r\n 130:   eb000009    bl  15c <board_init_f>\r\n 134:   20ffff40    rscscs  pc, pc, r0, asr #30\r\n\r\n 110:   e59fd01c    ldr sp, [pc, #28]   ; 134 <_main+0x24>\r\n所以堆栈的地址是134:   20ffff40，这个确实是DRAM的地址，所以是有问题的。\r\n但是从反汇编出来的文件中可以看出来，C函数可以正常的原因是因为没有汇编的过程中并没有被解析出push和pop指令：\r\n0000015c <board_init_f>:\r\n 15c:   e3a00001    mov r0, #1\r\n 160:   eafffff4    b   138 <tiny210_early_debug>\r\n\r\n00000164 <lowlevel_init>:\r\n 164:   e3a00004    mov r0, #4\r\n 168:   eafffff2    b   138 <tiny210_early_debug>\r\n\r\n00000138 <tiny210_early_debug>:                                                                                                                                                              \r\n 138:   e350000f    cmp r0, #15\r\n 13c:   c3a00000    movgt   r0, #0\r\n 140:   e59f3010    ldr r3, [pc, #16]   ; 158 <tiny210_early_debug+0x20>\r\n 144:   e3012111    movw    r2, #4369   ; 0x1111\r\n 148:   e1e00000    mvn r0, r0\r\n 14c:   e5832280    str r2, [r3, #640]  ; 0x280\r\n 150:   e5830284    str r0, [r3, #644]  ; 0x284\r\n 154:   e12fff1e    bx  lr\r\n 158:   e0200000    eor r0, r0, r0\r\n\r\n并且反汇编出来的汇编文件中，都没有看到push和pop的指令，这也许就是sp设置错误但是还是可以正常调用C函数的原因吧。\r\n\r\n不过我还是把CONFIG_SPL_STACK设置成正确的RAM地址比较靠谱吧。"
+ },
+ {
+  "id": "4396",
+  "parent": "4395",
+  "date": "2016-08-13T16:01:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：对的，因为你的C函数调用被编译器优化了。你可以试试不让它优化，哈哈~"
+ },
+ {
+  "id": "4413",
+  "parent": "0",
+  "date": "2016-08-16T22:50:47+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "hi,wowo\r\n如果在SPL里面初始化了DDR之后，并且跳到了DDR上的对应位置开始执行uboot，那么relocation的操作可以直接无视，只需要实现gd中对应变量的设置以及内存的规划？\r\n\r\n还有个问题：\r\n1）考虑到后续的kernel是在RAM的低端位置解压缩并执行的，为了避免麻烦，u-boot将使用DRAM的顶端地址，即gd->ram_top所代表的位置。其中gd->ram_top是由setup_dest_addr函数配置的。\r\n所以我uboot最好是使用DRAM的高地址空间吗？\r\n如果我用uboot后面的未使用RAM来解压kernel，会有什么后果吗？\r\ndts应该会传个memory的节点给kernel，kernel应该也可以以此来判断哪些空间可以使用哪些空间不能使用，感觉uboot之前使用的RAM空间还是可以被kernel使用的。"
+ },
+ {
+  "id": "4414",
+  "parent": "4413",
+  "date": "2016-08-17T09:41:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：其实这几个地方都不是强制的。\r\n关于relocation，说实话，现在大多嵌入式系统的u-boot，在relocation之前，已经位于DRAM中了，按理说可以不用再relocate了。不过u-boot（特别是ARM64平台的）并没有给出一个简单的开关，可以关闭relocate的动作，我的理解，原因有三：\r\n1. 如果代码已经在u-boot中了，relocation的代价是极小的（就是一个ram copy而已），因此没有太大的必要做出两个分支，区别对待（因为赚不到什么好处）。\r\n2. relocate的过程中，也一并做了其它事情，特别是很多空间的预留（可以参考本文图片1的总结），就算不需要relocate，这些事情也是避免不了的。\r\n3. 就是你后一个疑问了，u-boot在加载kernel之前，要尽量把自己移到DRAM的高端地址。\r\n\r\n另一个疑问，u-boot必须放在DRAM的高端地址吗？\r\n我觉的不一定，但是linux kernel默认把DRAM的低地址map给自己使用了，u-boot要怎么做呢？尽量离它远点咯……"
+ },
+ {
+  "id": "5246",
+  "parent": "0",
+  "date": "2017-02-24T21:26:32+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "__dtb_dt_begin是在哪里赋值的？\r\ngrep遍整个源码，没看到在lds文件里赋值过，就看到下面这个信息：\r\n__dtb_dt_begin:\r\n.incbin \"dts/dt.dtb\" \r\n\r\n这是啥意思？"
+ },
+ {
+  "id": "5250",
+  "parent": "5246",
+  "date": "2017-02-24T22:37:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@callme_friend：等有时间了我帮你查查~~"
+ },
+ {
+  "id": "5618",
+  "parent": "0",
+  "date": "2017-05-31T22:35:44+08:00",
+  "author": "gavin",
+  "site": "",
+  "text": "hi wowo,\"按理说可以不用再relocate了。不过u-boot（特别是ARM64平台的）并没有给出一个简单的开关，可以关闭relocate的动作\"\r\n\r\nrelocate那定义了CONFIG_SPL_BUILD 就不会执行relocate了啊。没明白你说uboot没有开关关闭relocate动作。\r\n\r\n \t#if !defined(CONFIG_SPL_BUILD)\r\n\t/*\r\n\t* Set up intermediate environment (new sp and gd) and call\r\n\t* relocate_code(addr_moni). Trick here is that we'll return\r\n\t* 'here' but relocated.\r\n\t*/\r\n\tldr x0, [x18, #GD_START_ADDR_SP]\t/* x0 <- gd->start_addr_sp */\r\n\tbic sp, x0, #0xf\t/* 16-byte alignment for ABI compliance */\r\n\tldr x18, [x18, #GD_BD]\t/* x18 <- gd->bd */\r\n\tsub\tx18, x18, #GD_SIZE /* new GD is below bd */\r\n\r\n\t#endif /* !CONFIG_SPL_BUILD */"
+ },
+ {
+  "id": "5619",
+  "parent": "5618",
+  "date": "2017-06-01T08:37:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@gavin：如果定义了CONFIG_SPL_BUILD，会编出来两个bin，一个spl，一个uboot。spl bin不会relocate，uboot bin会relocate。\r\n如果没有定义CONFIG_SPL_BUILD ，那就只有uboot bin，会relocate。\r\n所以CONFIG_SPL_BUILD的用法不是你理解的那样。"
+ },
+ {
+  "id": "5622",
+  "parent": "0",
+  "date": "2017-06-02T10:45:57+08:00",
+  "author": "Sky",
+  "site": "",
+  "text": "你好，在这里问一个比较不搭边的问题。\r\n请问楼主对手机的在线升级有了解吗？\r\n有的话可以指导下吗？"
+ },
+ {
+  "id": "5625",
+  "parent": "5622",
+  "date": "2017-06-05T18:22:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Sky：抱歉啊，不是很了解这块儿的东西哦。"
+ },
+ {
+  "id": "5777",
+  "parent": "0",
+  "date": "2017-07-06T10:25:47+08:00",
+  "author": "orange",
+  "site": "",
+  "text": "非常有参考价值！感谢分享"
+ },
+ {
+  "id": "6617",
+  "parent": "0",
+  "date": "2018-03-21T17:22:10+08:00",
+  "author": "niufei",
+  "site": "",
+  "text": "你好！蜗蜗，我有好几个问题想请教一下，我用的是friendlyarm的uboot-nanopi2,这个uboot跟你们说的都不太一样。\r\n下面是我粘贴的start.s代码\r\n\r\n\t.globl reset\r\n\r\nreset:\r\n\tbl\tsave_boot_params\r\n\tmrs\tr0, cpsr\r\n\tbic\tr0, r0, #0x1f\r\n\torr\tr0, r0, #0xd3\r\n\tmsr\tcpsr,r0\r\n\r\n\r\n#ifndef CONFIG_SKIP_LOWLEVEL_INIT\r\n\tbl\tcpu_init_cp15\r\n\tbl\tcpu_init_crit\r\n#endif\r\n\r\n#ifdef CONFIG_RELOC_TO_TEXT_BASE\r\n\r\nrelocate_to_text:\r\n\t/*\r\n\t * relocate u-boot code on memory to text base\r\n\t * for nexell arm core (add by jhkim)\r\n\t */\r\n\tadr\tr0, _stext\t\t\t\t/* r0 <- current position of code   */\r\n\tldr\tr1, TEXT_BASE\t\t\t/* test if we run from flash or RAM */\r\n\tcmp r0, r1              \t/* don't reloc during debug         */\r\n\tbeq clear_bss\r\n\r\n\tldr\tr2, _bss_start_ofs\r\n\tadd\tr2, r0, r2\t\t\t\t/* r2 <- source end address         */\r\n\r\ncopy_loop_text:\r\n\tldmia\tr0!, {r3-r10}\t\t/* copy from source address [r0]    */\r\n\tstmia\tr1!, {r3-r10}\t\t/* copy to   target address [r1]    */\r\n\tcmp\tr0, r2\t\t\t\t\t/* until source end addreee [r2]    */\r\n\tble\tcopy_loop_text\r\n\r\n\tldr\tr1, TEXT_BASE\t\t\t/* restart at text base */\r\n\tmov pc, r1\r\n\r\nclear_bss:\r\n\tldr\tr0, _bss_start_ofs\r\n\tldr\tr1, _bss_end_ofs\r\n\tldr\tr4, TEXT_BASE\t\t\t/* text addr */\r\n\tadd\tr0, r0, r4\r\n\tadd\tr1, r1, r4\r\n\tmov\tr2, #0x00000000\t\t\t/* clear */\r\n\r\nclbss_l:str\tr2, [r0]\t\t\t/* clear loop... */\r\n\tadd\tr0, r0, #4\r\n\tcmp\tr0, r1\r\n\tbne\tclbss_l\r\n\r\n#ifdef CONFIG_MMU_ENABLE\r\n\tbl\tmmu_turn_on\r\n#endif\r\n\r\n\tldr\tsp, =(CONFIG_SYS_INIT_SP_ADDR)\r\n\tbic\tsp, sp, #7\t\t\t\t\t/* 8-byte alignment for ABI compliance */\r\n\tsub\tsp, #GD_SIZE\t\t\t\t/* allocate one GD above SP */\r\n\tbic\tsp, sp, #7\t\t\t\t\t/* 8-byte alignment for ABI compliance */\r\n\tmov\tr9, sp\t\t\t\t\t\t/* GD is above SP */\r\n\tmov\tr0, #0\r\n\tbl\tboard_init_f\r\n\r\n\tmov\tsp, r9\t\t\t\t\t\t/* SP is GD's base address */\r\n\tbic\tsp, sp, #7\t\t\t\t\t/* 8-byte alignment for ABI compliance */\r\n\tsub\tsp, #GENERATED_BD_INFO_SIZE\t/* allocate one BD above SP */\r\n\tbic\tsp, sp, #7\t\t\t\t\t/* 8-byte alignment for ABI compliance */\r\n\r\n\tmov\tr0, r9\t\t\t\t\t\t/* gd_t *gd */\r\n\tldr r1, TEXT_BASE\t\t\t\t/* ulong text */\r\n\tmov r2, sp\t\t\t\t\t\t/* ulong sp */\r\n\tbl\tgdt_reset\r\n\r\n\t/* call board_init_r(gd_t *id, ulong dest_addr) */\r\n\tmov\tr0, r9\t\t\t\t\t\t\t/* gd_t */\r\n\tldr\tr1,  =(CONFIG_SYS_MALLOC_END)\t/* dest_addr for malloc heap end */\r\n\t/* call board_init_r */\r\n\tldr\tpc, =board_init_r\t\t\t\t/* this is auto-relocated! */\r\n\r\n#else\t/* CONFIG_RELOC_TO_TEXT_BASE */\r\n\r\n\tbl\t_main\r\n#endif\r\n\r\n/*------------------------------------------------------------------------------*/\r\n\r\nENTRY(c_runtime_cpu_setup)\r\n/*\r\n * If I-cache is enabled invalidate it\r\n */\r\n#ifndef CONFIG_SYS_ICACHE_OFF\r\n\tmcr\tp15, 0, r0, c7, c5, 0\t@ invalidate icache\r\n\tmcr     p15, 0, r0, c7, c10, 4\t@ DSB\r\n\tmcr     p15, 0, r0, c7, c5, 4\t@ ISB\r\n#endif\r\n/*\r\n * Move vector table\r\n */\r\n\t/* Set vector address in CP15 VBAR register */\r\n\tldr     r0, =_stext\r\n\tmcr     p15, 0, r0, c12, c0, 0  @Set VBAR\r\n\r\n\tbx\tlr\r\n\r\nENDPROC(c_runtime_cpu_setup)\r\nENTRY(save_boot_params)\r\n\tbx\tlr\t\t\t@ back to my caller\r\nENDPROC(save_boot_params)\r\n\t.weak\tsave_boot_params\r\nENTRY(cpu_init_cp15)\r\n\tmov\tr0, #0\t\t\t@ set up for MCR\r\n\tmcr\tp15, 0, r0, c8, c7, 0\t@ invalidate TLBs\r\n\tmcr\tp15, 0, r0, c7, c5, 0\t@ invalidate icache\r\n\tmcr\tp15, 0, r0, c7, c5, 6\t@ invalidate BP array\r\n\r\n\tdsb\r\n\tisb\r\n\r\n\tmrc\tp15, 0, r0, c1, c0, 0\r\n\tbic\tr0, r0, #0x00002000\t@ clear bits 13 (--V-)\r\n\tbic\tr0, r0, #0x00000007\t@ clear bits 2:0 (-CAM)\r\n\torr\tr0, r0, #0x00000002\t@ set bit 1 (--A-) Align\r\n\torr\tr0, r0, #0x00000800\t@ set bit 11 (Z---) BTB\r\n#ifdef CONFIG_SYS_ICACHE_OFF\r\n\tbic\tr0, r0, #0x00001000\t@ clear bit 12 (I) I-cache\r\n#else\r\n\torr\tr0, r0, #0x00001000\t@ set bit 12 (I) I-cache\r\n#endif\r\n\tmcr\tp15, 0, r0, c1, c0, 0\r\n\tmov\tpc, lr\t\t\t@ back to my caller\r\nENDPROC(cpu_init_cp15)\r\n\r\n#ifndef CONFIG_SKIP_LOWLEVEL_INIT\r\nENTRY(cpu_init_crit)\r\n\r\n\tb\tlowlevel_init\t\t@ go setup pll,mux,memory\r\nENDPROC(cpu_init_crit)\r\n#endif\r\n\r\n这里面有个配置项叫   CONFIG_RELOC_TO_TEXT_BASE  这个板子现在用的是SD卡启动，理论上是肯定要relocate的对吗？？？\r\n再往下看，\t\r\nbl\tcpu_init_cp15\r\nbl\tcpu_init_crit\r\n之后直接就进入了\r\ncopy_loop_text:\r\n\tldmia\tr0!, {r3-r10}\t\t/* copy from source address [r0]    */\r\n\tstmia\tr1!, {r3-r10}\t\t/* copy to   target address [r1]    */\r\n\tcmp\tr0, r2\t\t\t\t\t/* until source end addreee [r2]    */\r\n\tble\tcopy_loop_text\r\n\r\n\tldr\tr1, TEXT_BASE\t\t\t/* restart at text base */\r\n\tmov pc, r1\r\n\r\n关键是最后两行ldr r1,TEXT_BASE mov pc,r1,上面几行就是将从stext开始的代码拷贝到了TEXT_BASE的地址，这两句的意思是说回到TEXT_BASE地址处执行代码，这样不就是把uboot（从reset 入口开始）重新运行了一遍吗？我感觉是这样，蜗蜗你说呢？？？我想确认一下。还有uboot那么多代码，不同的板子有各自的代码，uboot是通过mkfile和.mk文件来识别的吗？\r\n谢谢了，新手linuxer 拜谢。"
+ },
+ {
+  "id": "6619",
+  "parent": "6617",
+  "date": "2018-03-22T19:09:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@niufei：1. 是的。relocate之后会重新执行，然后代码会判断是否已经relocate了，如果是，正常执行即可。\r\n2. 差不多是这样的，本质上就是使用GNU的Kconfig机制。"
+ },
+ {
+  "id": "6849",
+  "parent": "0",
+  "date": "2018-07-19T09:55:22+08:00",
+  "author": "fengzi",
+  "site": "",
+  "text": "大侠，求教一下。linux待机恢复的时候是从UBOOT哪里跳到Kernel去的啊，要跳到哪个地址去？"
+ },
+ {
+  "id": "7135",
+  "parent": "0",
+  "date": "2019-01-12T16:09:08+08:00",
+  "author": "zhoubo",
+  "site": "",
+  "text": "有个疑问，reloc之后，执行函数调用的时候，如何保证正确跳转的。比如：\r\ninitr_caches这个函数反汇编出来的结果，里面\r\n8201c5ac:   97ff9649    bl  82001ed0 <enable_caches>\r\n这一条，reloc之后，enable_caches的地址已经变了，如何跳转过去的。\r\n是因为bl是相对跳转？\r\n\r\n  static int initr_caches(void)\r\n  {\r\n      8201c5a4:   a9bf7bfd    stp x29, x30, [sp,#-16]!\r\n      8201c5a8:   910003fd    mov x29, sp\r\n      /* Enable caches */\r\n      enable_caches();\r\n      8201c5ac:   97ff9649    bl  82001ed0 <enable_caches>\r\n      return 0;\r\n  }\r\n      8201c5b0:   52800000    mov w0, #0x0                    // #0\r\n      8201c5b4:   a8c17bfd    ldp x29, x30, [sp],#16\r\n      8201c5b8:   d65f03c0    ret"
+ },
+ {
+  "id": "7136",
+  "parent": "7135",
+  "date": "2019-01-14T09:11:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zhoubo：reloc之后的代码逻辑是不一样的，下面的留言有讨论这个问题，你可以搜索relocate_to_text看一下，然后自己跟一下代码。"
+ },
+ {
+  "id": "8006",
+  "parent": "5246",
+  "date": "2020-05-31T00:45:09+08:00",
+  "author": "BeDook",
+  "site": "",
+  "text": "@callme_friend：.incbin伪指令用于将一个目标文件或数据文件包含到当前的源文件中，被包含的文件不作任何变动的存放在当前文件中，编译器从其后开始继续处理,\"dts/dt.dtb\"设备树文件，本质就是一二进制文件，且汇编指令中标签\"_dtb_dt_begin\"就表示地址，不用赋值的。。。"
+ },
+ {
+  "id": "8055",
+  "parent": "0",
+  "date": "2020-07-20T12:39:26+08:00",
+  "author": "renameit",
+  "site": "",
+  "text": "这篇文章exciting~，解答了我的疑惑。"
+ },
+ {
+  "id": "8059",
+  "parent": "8055",
+  "date": "2020-07-22T11:34:31+08:00",
+  "author": "三五十旅",
+  "site": "",
+  "text": "@renameit：这位兄弟的昵称。。。"
+ },
+ {
+  "id": "8060",
+  "parent": "8059",
+  "date": "2020-07-22T16:02:05+08:00",
+  "author": "VincentLi",
+  "site": "",
+  "text": "@三五十旅：学linux的后台很硬"
+ },
+ {
+  "id": "8505",
+  "parent": "0",
+  "date": "2022-01-23T08:53:53+08:00",
+  "author": "董先生",
+  "site": "http://dongni.work",
+  "text": "个人详细总结了Uboot驱动模型，感兴趣的可以查阅！\r\nhttps://zhuanlan.zhihu.com/p/460754843"
+ },
+ {
+  "id": "8641",
+  "parent": "0",
+  "date": "2022-07-12T19:43:59+08:00",
+  "author": "qp123",
+  "site": "",
+  "text": "谢谢你这么无私的人"
+ }
+]

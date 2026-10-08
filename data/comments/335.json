@@ -1,0 +1,130 @@
+[
+ {
+  "id": "4579",
+  "parent": "0",
+  "date": "2016-09-20T16:35:30+08:00",
+  "author": "维尼",
+  "site": "",
+  "text": "内核 /dev下已经有好多TTY了  tty又演变成驱动了"
+ },
+ {
+  "id": "4582",
+  "parent": "4579",
+  "date": "2016-09-21T15:41:55+08:00",
+  "author": "熊猫盼盼",
+  "site": "",
+  "text": "@维尼：这段时间也一直再看tty相关的东西，起因是在弄lxc/docker时，不明白ｌｘｃ/docer的ｃｏｎｓｏｌｅ/tty 是怎么实现的。 正如ｗｏｗｏ所说的，ｔｔｙ是unix/linux 下一个既熟悉又陌生的东西。　非常期待ｗｏｗｏ后续的文章，　如果能把　设备下的文件 /dev/console /dev/tty /dev/ttyN /dev/pty 之间的关系　以及　实现讲清楚，　那就更好了！"
+ },
+ {
+  "id": "4584",
+  "parent": "4582",
+  "date": "2016-09-21T17:17:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@熊猫盼盼：多谢建议，为我写后续的文章指了一条明路:-)"
+ },
+ {
+  "id": "4596",
+  "parent": "0",
+  "date": "2016-09-22T15:11:00+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "这篇文章来的太及时了，前两天正准备部关于tty的相关东西，有一些概念还没有理清楚：\r\nterminal console vt tty pseudo terminal等，再加上control terminal, session等\r\n纠缠在一起！"
+ },
+ {
+  "id": "4644",
+  "parent": "0",
+  "date": "2016-10-04T15:50:01+08:00",
+  "author": "lucifer",
+  "site": "",
+  "text": "请教大奖一个基础的C语言的问题或者说对指针的理解吧\r\n我在2.6.10中看到\r\n#define subsys_set_kset(obj,_subsys)  (obj)->subsys.kset.kobj.kset = &(_subsys).kset\r\n还有down_write(&kobj->kset->subsys->rwsem);  \r\n怎么理解这么多的->或者. --- 什么时候该用  ‘ .’\r\n什么时候用->"
+ },
+ {
+  "id": "4645",
+  "parent": "0",
+  "date": "2016-10-04T15:51:48+08:00",
+  "author": "lucifer",
+  "site": "",
+  "text": "还有就是 类似这种链表操作比较多的。\r\nstatic int sysfs_readdir(struct file * filp, void * dirent, filldir_t filldir)\r\n 366{\r\n .......................................      \r\n 370        struct list_head *p, *q = &cursor->s_sibling;\r\n 371        ino_t ino;\r\n 372        int i = filp->f_pos;\r\n 373\r\n 374        .........................................*/\r\n 389                default:\r\n 390                        if (filp->f_pos == 2) {\r\n 391                                list_del(q);\r\n 392                                list_add(q, &parent_sd->s_children);\r\n 393                        }\r\n 394                        for (p=q->next; p!= &parent_sd->s_children; p=p->next) {\r\n 395                                struct sysfs_dirent *next;\r\n 396                                const char * name;\r\n 397                                int len;\r\n 398\r\n 399                                next = list_entry(p, struct sysfs_dirent,\r\n 400                                                   s_sibling);\r\n 401                                if (!next->s_element)\r\n 402                                        continue;\r\n 403\r\n 404                                name = sysfs_get_name(next);\r\n 405                                len = strlen(name);\r\n 406                                if (next->s_dentry)\r\n 407                                        ino = next->s_dentry->d_inode->i_ino;\r\n 408                                else\r\n 409                                        ino = iunique(sysfs_sb, 2);\r\n 410\r\n 411                                if (filldir(dirent, name, len, filp->f_pos, ino,\r\n 412                                                 dt_type(next)) < 0)\r\n 413                                        return 0;\r\n 414\r\n 415                                list_del(q);\r\n 416                                list_add(q, p);\r\n 417                                p = q;\r\n 418                                filp->f_pos++;\r\n 419                        }\r\n 420        }\r\n 421        return 0;\r\n 422}\r\n\r\n\r\n=====\r\n我读起来迷迷糊糊的"
+ },
+ {
+  "id": "4647",
+  "parent": "4644",
+  "date": "2016-10-04T16:28:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lucifer：->是指针，例如struct device *p;p->name;\r\n.是变量，例如struct device aa; aa.name;"
+ },
+ {
+  "id": "4783",
+  "parent": "0",
+  "date": "2016-10-26T21:22:03+08:00",
+  "author": "笨小孩",
+  "site": "",
+  "text": "窝窝你好，想问一下，在linux的U-BOOT启动时，有一个CONSOLE = ttySA0 ,在启动后，信息会通过串口打印到屏幕上，那应该这个ttySA0应该代表的是控制台吧，为何在进行其他的操作时，却要求提升用户权限呢？这又是为什么？"
+ },
+ {
+  "id": "4785",
+  "parent": "4783",
+  "date": "2016-10-26T21:50:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@笨小孩：是的的，console指定的是控制台。\r\n对于权限的事情，是这样的：\r\n用户空间程序是通过文件系统（字符设备，/dev/ttySA0）访问TTY设备的，只要在用户空间牵涉到文件操作，都有权限的概念。"
+ },
+ {
+  "id": "4787",
+  "parent": "4785",
+  "date": "2016-10-27T08:50:23+08:00",
+  "author": "笨小孩",
+  "site": "",
+  "text": "@wowo：谢谢窝窝！"
+ },
+ {
+  "id": "4897",
+  "parent": "4582",
+  "date": "2016-11-20T21:22:20+08:00",
+  "author": "wink",
+  "site": "",
+  "text": "@熊猫盼盼：我也是啊，"
+ },
+ {
+  "id": "4968",
+  "parent": "0",
+  "date": "2016-12-06T10:59:02+08:00",
+  "author": "feixiahn",
+  "site": "",
+  "text": "您好，我想问一个问题，我们如何修改串口工具登录时的root权限的密码呢？\r\n能解释一下如何更改吗？"
+ },
+ {
+  "id": "4971",
+  "parent": "4968",
+  "date": "2016-12-06T13:21:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@feixiahn：是在PC上修改target的密码吗（最好把问题描述清楚;-）？\r\n可以用openssl命令：\r\nopenssl passwd -1\r\n输入两次密码后，会生成MD5加密的字符串，然后替换/etc/shadow中对应的字段就可以了。"
+ },
+ {
+  "id": "4985",
+  "parent": "4971",
+  "date": "2016-12-07T14:39:07+08:00",
+  "author": "fexiahn",
+  "site": "",
+  "text": "@wowo：@wowo,谢谢，您的文章写的确实不错的"
+ },
+ {
+  "id": "4986",
+  "parent": "4985",
+  "date": "2016-12-07T14:48:50+08:00",
+  "author": "fexiahn",
+  "site": "",
+  "text": "@fexiahn：如果将从代码中/etc/passwd路径改为etc_us/passwd，那么修改用户名的密码时是不是要将/etc/shadow的路径一同修改，我最近在看这部分的资料，没有搞明白/etc/passwd和/etc/shadow之间的关系，麻烦wowo帮忙分析一下，谢谢"
+ },
+ {
+  "id": "4990",
+  "parent": "4986",
+  "date": "2016-12-08T09:23:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@fexiahn：用户空间的东西，我也是一知半解，一时半会儿没办法给你讲啊，抱歉哈～～"
+ }
+]

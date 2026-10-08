@@ -1,0 +1,26 @@
+[
+ {
+  "id": "5282",
+  "parent": "0",
+  "date": "2017-03-02T17:27:49+08:00",
+  "author": "codingbelief",
+  "site": "",
+  "text": "想了解下哪些子系统或者场景如何使用这些 id，有没有计划加一个章节描述下这几个 id 在内核的应用场景 ~ ~\r\n另外，期待 cgroup、namespace、虚拟化这块的文章 ~ ~"
+ },
+ {
+  "id": "5283",
+  "parent": "5282",
+  "date": "2017-03-03T09:30:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@codingbelief：内核的各个子系统并不使用这些ID，主要是用户空间程序利用这些ID做进程间通信、job control什么的。\r\n\r\n虚拟化我的确也很感兴趣，完成进程和内存管理部分，准备向虚拟化进军。"
+ },
+ {
+  "id": "5790",
+  "parent": "0",
+  "date": "2017-07-09T03:20:24+08:00",
+  "author": "perr",
+  "site": "",
+  "text": "现在主副线程并不是通过二图中PID NODE串联, 而是通过task->thread_group和task->thread_node,出现两个这样的组织链表是历史问题,还未有人改进. 见[_do_fork()->copy_process()]"
+ }
+]

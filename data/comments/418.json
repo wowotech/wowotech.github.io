@@ -1,0 +1,178 @@
+[
+ {
+  "id": "6510",
+  "parent": "0",
+  "date": "2018-01-29T21:31:06+08:00",
+  "author": "cainiu",
+  "site": "",
+  "text": "请教大神：对cpu进行唤醒是硬件实现的么，还是也有相关的中断服务函数。我最近在调试一个按键唤醒的驱动，确实向您说的我申请的按键中断服务函数在唤醒时并没有最先执行。我想知道在按键按下的一刻，难道不是进入到一个中断服务程序中么，还是硬件进行的唤醒？"
+ },
+ {
+  "id": "6513",
+  "parent": "6510",
+  "date": "2018-01-30T08:50:41+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cainiu：CPU要先醒来，才有机会进中断服务程序。"
+ },
+ {
+  "id": "6515",
+  "parent": "6513",
+  "date": "2018-01-30T11:27:37+08:00",
+  "author": "cainiu",
+  "site": "",
+  "text": "@wowo：cpu醒来后执行的第一条指令是什么呢？是接着原来的指令继续执行，还是会跳转到相关服务程序中去？"
+ },
+ {
+  "id": "6525",
+  "parent": "6515",
+  "date": "2018-02-01T17:26:09+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@cainiu：我理解的是睡眠停止的位置开始执行，中断来了，什么时候跳转服务函数，在文章中已经详细说明了。"
+ },
+ {
+  "id": "6526",
+  "parent": "6525",
+  "date": "2018-02-01T20:13:22+08:00",
+  "author": "deven",
+  "site": "",
+  "text": "@smcdef：肯定是继续从执行睡眠指令的后面一条指令执行~"
+ },
+ {
+  "id": "6530",
+  "parent": "0",
+  "date": "2018-02-05T16:01:47+08:00",
+  "author": "好运气",
+  "site": "",
+  "text": "请教大神：我在devicetree里面的gpio-keys节点中增加了wakeup-source属性，gpio-keys里面自动处理了suspend-resume的逻辑。现在发现按键无法唤醒系统，我想看是resume的时候哪个环节失败了。此时串口没有输出，请问有什么好的方法可以debug这种case吗？"
+ },
+ {
+  "id": "6534",
+  "parent": "0",
+  "date": "2018-02-06T17:32:06+08:00",
+  "author": "melo",
+  "site": "",
+  "text": "hi,对于文章结尾提到的\r\n\"irqflags传入0即可，在request_threaded_irq()中会自动帮我们调用irqd_get_trigger_type()获取\"\r\n这个用法很感兴趣，在网上没有看到过相关信息。。\r\n\r\n我自己动手试了一下，一开始我直接写了个0,中断申请失败了，然后我去看了下irqd_get_trigger_type()这个函数，返回值和IRQF_TRIGGER_MASK相与了，因为我的驱动中断的顶半部传的NULL,这里我之前研究过是__setup_irq里有一个判断是，如果顶半部是默认的primary_handler 同时没有IRQF_ONESHOT这个标识就会报错，申请失败。\r\n\r\n然后我就传了一个IRQF_ONESHOT进去，正常申请中断，调试也正常\r\n我追代码没有成功理解整个过程。从结果上看起来是，传入的irqflags和IRQF_TRIGGER_MASK相与的值为0就会尝试调用irqd_get_trigger_type()?  可以提点一下这个过程吗，感激不尽"
+ },
+ {
+  "id": "6543",
+  "parent": "6534",
+  "date": "2018-02-08T09:39:00+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@melo：首先你要确定，你的内核版本是否支持传递0，在request_threaded_irq()中是否有判断0时调用irqd_get_trigger_type()，因为不同的版本kernel这块差别挺大的。假如你的kernel不支持，那就自己调用request_threaded_irq()传递的flags通过irqd_get_trigger_type()获取，既然你的handler是NULL，那就要保证irqd_get_trigger_type()获取的flags包含IRQF_ONESHOT，你可以修改dts中interrupts属性的flags加上IRQF_ONESHOT，例如0x2008这个0x2000就是IRQF_ONESHOT。"
+ },
+ {
+  "id": "6544",
+  "parent": "6530",
+  "date": "2018-02-08T09:51:07+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@好运气：1.首先会确定gpio-keys的驱动是否支持wakeup-source property，解析的时候是不是自动帮我们调用了device_init_wakeup()和dev_pm_set_wake_irq()。\r\n2.你可以先在不睡眠的情况下验证一下key是否正常工作。例如中断是否可以正常触发，可以看下proc/interrupts节点信息。\r\n3.如果不睡眠可以工作的话，我有个问题，什么是“唤醒系统”，你说的这个现象是什么？亮屏？准确的来说，key仅仅是唤醒了cpu，上报了事件，这个事件上层用来干什么是由上层决定的，例如亮屏。\r\n你所说的串口无法输出是指resume中有串口输出没有打印？所以你想排查resume环节吗？还是还说串口不能用？你的平台没有相关的log保存机制吗？可以把log导出来。如果没有的话，不知道有没有led灯，或许也可以帮助你debug一下进度。"
+ },
+ {
+  "id": "6787",
+  "parent": "0",
+  "date": "2018-06-07T16:09:25+08:00",
+  "author": "maiba",
+  "site": "",
+  "text": "中断handler执行完毕了，work queue 也正常运行了，cpu这些都正常了，app部分还是无法唤醒，怎么唤醒Android的上层应用呢？"
+ },
+ {
+  "id": "7167",
+  "parent": "0",
+  "date": "2019-01-30T11:35:54+08:00",
+  "author": "morgan",
+  "site": "",
+  "text": "唤醒安卓上层应用，这个需要在framwork监听来自kernel的消息才能。中断触发之后，通过驱动函数内input子系统唤醒framework系统也行或者通过netlink去唤醒安卓应用。\r\n去看电源键的唤醒流程"
+ },
+ {
+  "id": "7709",
+  "parent": "6526",
+  "date": "2019-10-21T22:25:52+08:00",
+  "author": "wangyunqian",
+  "site": "",
+  "text": "@deven：不一定，看sleep的硬件实现了。想我们公司的cpu，resume是从bootrom开始执行的。"
+ },
+ {
+  "id": "7710",
+  "parent": "0",
+  "date": "2019-10-21T22:29:23+08:00",
+  "author": "wangyunqian",
+  "site": "",
+  "text": "不一定，看soc实现了。我们公司的cpu，resume是从bootrom开始执行的。"
+ },
+ {
+  "id": "7780",
+  "parent": "0",
+  "date": "2019-12-10T15:39:08+08:00",
+  "author": "qxrk",
+  "site": "",
+  "text": "请问下作者，我在我自己的SOC平台下将suspends_ops->enter()实现为进入WFI状态，等待一个中断唤醒，但是这个中断在进入WFI之前就已经产生了，产生的时间范围大概在suspends_ops->enter()至WFI状态之间，依然能够唤醒WFI，这是为什么，不应该是在WFI之后的中断才能唤醒吗？谢谢"
+ },
+ {
+  "id": "7815",
+  "parent": "7780",
+  "date": "2020-01-04T18:13:47+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@qxrk：你所理解“在WFI之后的中断才能唤醒”应该是指唤醒CPU，也就是硬件角度的唤醒。但是对于suspend的流程来说，任何的中断都会阻止系统进入休眠。所以只要在suspend的过程中有中断产生就会唤醒系统。这里面的唤醒纯粹是软件生命的理解。"
+ },
+ {
+  "id": "7949",
+  "parent": "0",
+  "date": "2020-04-15T16:24:49+08:00",
+  "author": "hhb",
+  "site": "",
+  "text": "写的真好，谢谢"
+ },
+ {
+  "id": "8009",
+  "parent": "7709",
+  "date": "2020-06-03T15:01:19+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@wangyunqian：是的，比附 使用PSCI协议通过TrustZone（EL3/Secure-EL1）处理cpu_suspend时：https://github.com/torvalds/linux/blob/master/drivers/firmware/psci/psci.c#L306\r\ncpu重新上电后，第一步会执行__pa_symbol(cpu_resume)，这里必须是物理地址。"
+ },
+ {
+  "id": "8010",
+  "parent": "7709",
+  "date": "2020-06-03T16:39:55+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@wangyunqian：分享下通过psci处理suspend_ops->enter的流程：\r\n\r\nPSCI(power supply control interface), 是arm定义的一套处理cpu on/off/suspend等的协议，\r\n比如Linux-kernel发送相应的cpu operation到和Trust-Zone（EL3 by smc）或Hypervirsor(EL2 by hvc)，再由TZ或Hyp做对应的操作：\r\n比如： Linux-kernel 要offline、suspend一个cpu，Hypervisor只是把这个cpu给其它的OS使用。\r\n\r\n回到suspend：\r\n1， psci初始化：suspend_set_ops(&psci_suspend_ops);\r\n\tstatic const struct platform_suspend_ops psci_suspend_ops = {\r\n\t\t.enter          = psci_system_suspend_enter,\r\n\t};\r\n\r\n2， psci_system_suspend：\r\n\tstatic int psci_system_suspend(unsigned long unused)\r\n\t{\r\n\t\treturn invoke_psci_fn(PSCI_FN_NATIVE(1_0, SYSTEM_SUSPEND),\r\n\t\t\t\t\t  __pa_symbol(cpu_resume), 0, 0);\r\n\t}\r\n\t2.1，这里通过psci组装smc指令，跳转到TZ执行；\r\n\t2.2 cpu_resume是物理地址；\r\n\t2.3 Qualcom中TZ会和PMIC通信 power down此cpu；\r\n\t2.4 唤醒cpu重新power-up时，第一步执行cpu_resume；\r\n\t\t因为此时mmu还未打开，所以2.2必须传入cpu_resume的物理地址；\r\n\t\tcpu_resume中会打开mmu；\r\n\r\n3， suspend_ops->enter，即\t\r\n\tstatic int psci_system_suspend_enter(suspend_state_t state)\r\n\t{\r\n\t\treturn cpu_suspend(0, psci_system_suspend);\r\n\t}\r\n\t\r\n\tarch/arm64/kernel/suspend.c\r\n\tint cpu_suspend(unsigned long arg, int (*fn)(unsigned long))\r\n\t{\r\n\t\tstruct sleep_stack_data state;\r\n\t\tif (__cpu_suspend_enter(&state)) {\r\n\t\t\tret = psci_system_suspend(arg);\r\n\t\t}\r\n\t\t\t\r\n4， arch/arm64/kernel/sleep.S\r\n\tENTRY(__cpu_suspend_enter)\r\n\t第一步保存当前lr到state中\r\n\tstp     x29, lr, [x0, #SLEEP_STACK_DATA_CALLEE_REGS]\r\n\t...\r\n\tmov     x0, #1\t\t//这里返回1\r\n\tret\r\n\tENDPROC(__cpu_suspend_enter)\r\n\r\n\tENTRY(cpu_resume)\r\n\t\t\tbl      el2_setup               // if in EL2 drop to EL1 cleanly\r\n\t\t\tbl      __cpu_setup\r\n\t\t\t/* enable the MMU early - so we can access sleep_save_stash by va */\r\n\t\t\tbl      __enable_mmu\r\n\t\t\tldr     x8, =_cpu_resume\r\n\t\t\tbr      x8\r\n\tENDPROC(cpu_resume)\r\n\t\r\n\tENTRY(_cpu_resume)\r\n\t\t...\r\n        ldp     x29, lr, [x29]\t//从之前的state中恢复lr\r\n        mov     x0, #0\t\t\t//返回值为0\r\n        ret\t\t\t\t\t\t//return到__cpu_suspend_enter下一行\r\n\tENDPROC(_cpu_resume)\r\n\r\n5， __cpu_suspend_enter/cpu_resume类似fork，有返回两次的效果：\r\n\tpower-on-cpu时第一步会call cpu_resume；\r\n\t而cpu_resume返回时会返回到__cpu_suspend_enter的下一行。\r\n    if (__cpu_suspend_enter(&state)) {\r\n        /* 第一次返回1， 执行psci_system_suspend*/\r\n        ret = psci_system_suspend(arg);\r\n    } else {\r\n\t\t//由于cpu_resume返回值为0，那么resume后执行这一步：\r\n        __cpu_suspend_exit();\r\n    }"
+ },
+ {
+  "id": "8128",
+  "parent": "0",
+  "date": "2020-10-20T17:43:45+08:00",
+  "author": "Wilson",
+  "site": "",
+  "text": "@smcdef, 请教大神文章开头说的具有唤醒功能的外设一般都有interrupt pin连接到soc的gpio pin，想问下这个连接跟中断request line是同一条吗？另外这个唤醒功能的line是直接由外设连接soc吗？是否通过interrupt controller作为媒介呢？求解答！"
+ },
+ {
+  "id": "8441",
+  "parent": "0",
+  "date": "2021-12-21T14:00:44+08:00",
+  "author": "Jason",
+  "site": "",
+  "text": "请问前辈，一个中断配置可以唤醒系统，在系统 suspend 以后，唤醒需要触发30-60秒以后，系统才起来，这个问题如何debug？"
+ },
+ {
+  "id": "8600",
+  "parent": "7709",
+  "date": "2022-04-28T17:34:41+08:00",
+  "author": "orangeboyye",
+  "site": "",
+  "text": "@wangyunqian：你那个不是suspend to ram吧，suspend to disk才会从bootrom开始执行，相当于是关机重启了，重启时会加载disk上存的东西，恢复现场。"
+ },
+ {
+  "id": "8769",
+  "parent": "0",
+  "date": "2023-04-11T17:39:08+08:00",
+  "author": "一只卤蛋",
+  "site": "",
+  "text": "写的真好哇，逻辑好清楚"
+ }
+]

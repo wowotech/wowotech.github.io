@@ -1,0 +1,314 @@
+[
+ {
+  "id": "3235",
+  "parent": "0",
+  "date": "2015-12-14T16:19:31+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "请教一下DMA对cache一致性的影响，dma_alloc_coherent和dma_map_single的准确差别。在网上看到很多说dma_alloc_coherent会独占寄存器之类，感觉比较迷惑。请linuxer帮忙科普一下"
+ },
+ {
+  "id": "3237",
+  "parent": "3235",
+  "date": "2015-12-14T23:34:59+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：你问的问题完全可以写一篇文章了，呵呵~~天色已晚，我随便聊两句吧，明天如果有时间再补充吧。\r\n\r\ndma_alloc_coherent中的coherent是consistent的意思，即分配的memory是consistent memory。具体怎么一致呢？实际上是从cpu的角度以及dma controller的角度来看DMA buffer这段内存，这两个bus master可以获得一致性的视角。即任何一方对DMA buffer这段memory内容的修改都可以立刻被另外一方观察到，不需要考虑cache的影响。\r\n\r\n我们举一个具体的例子：例如LCD moudle驱动，这种外设一般会需要ram中的一段内存作为framebuffer，系统中一般会存在专门的LCD的DMA controller可以以可以配置的频率（例如每秒60Hz的速度）将framebuffer中的数据搬移到LCD module这个外设上去。在这样的驱动中，framebuffer这个DMA buffer需要使用consistent memory，cpu写入frame buffer中的数据，都需要实时的体现在DMA controller的观察中。\r\n\r\ndma_map_single中single是一次的意思，也就是说DMA buffer是一次性的，用完就算，不会像framebuffer那样长期存在。它的使用场景有两种，一种是从DMA buffer送往外设，这时候，程序分配一段memory作为DMA buffer，CPU写入要送往外设的数据，然后触发一次DMA传输，DMA完成之后，释放这段DMA buffer。\r\n\r\n我们仍然使用LCD driver来作为这个场景的例子：例如一个smart LCD moudle的驱动，这种外设的多半会build in VRAM作为framebuffer。LCD moudle内部会有控制器不断的将VRAM中的数据搬移到panel上进行显示。对于这种LCD module的驱动，当需要更新界面的时候，我们可以考虑分配一个一次性的DMA buffer，CPU写入要显示的内容到DMA buffer，然后clean这一段DMA buffer对应的cache line，确保DMA controller可以访问到target的memory，然后触发DMA操作，将DMA buffer的内容传到VRAM中，传输完成后，释放DMA buffer。\r\n\r\n另外一个场景是外设数据传递到dma buffer中，类似，这里就不描述了。"
+ },
+ {
+  "id": "3238",
+  "parent": "3237",
+  "date": "2015-12-15T09:07:33+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：谢谢了，大概了解了0~0"
+ },
+ {
+  "id": "3241",
+  "parent": "3237",
+  "date": "2015-12-15T11:23:19+08:00",
+  "author": "云",
+  "site": "",
+  "text": "@linuxer：解释得很传神，受教了。\r\n平时对于怎么使用DMA是没问题的， 但是您清晰的文字表达使我更对这块的理解更上一层楼"
+ },
+ {
+  "id": "3243",
+  "parent": "0",
+  "date": "2015-12-15T17:43:52+08:00",
+  "author": "descent",
+  "site": "",
+  "text": "翻譯的很流暢, 技術高強, 文字表達也厲害。"
+ },
+ {
+  "id": "3244",
+  "parent": "3243",
+  "date": "2015-12-15T20:48:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@descent：客气客气，不知道这位台湾同学是否了解大陆网络用语？有时候顺便写一些“然并卵”之类的流行语，可能会给您带来困扰，呵呵~~~"
+ },
+ {
+  "id": "3249",
+  "parent": "3244",
+  "date": "2015-12-16T10:29:03+08:00",
+  "author": "descent",
+  "site": "",
+  "text": "@linuxer：看不懂這些用語是必然的, 看著看著也覺得有趣, 沒有困擾, 能欣賞到這樣的文章實在是技術人的幸福。"
+ },
+ {
+  "id": "3253",
+  "parent": "0",
+  "date": "2015-12-17T04:40:52+08:00",
+  "author": "誠斯",
+  "site": "",
+  "text": "還有與虛擬記憶位址之間的關聯阿(TLB PTE)\r\n\r\n一整個弄進來就複雜........"
+ },
+ {
+  "id": "3326",
+  "parent": "0",
+  "date": "2016-01-01T10:20:40+08:00",
+  "author": "dida_327",
+  "site": "",
+  "text": "vxworks搞了很多年, linux内核刚学习一年, 不得不说网上的linux资料, 蜗窝科技的文章质量绝对是数一数二. 受益良多."
+ },
+ {
+  "id": "3328",
+  "parent": "3326",
+  "date": "2016-01-02T10:42:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dida_327：多谢夸奖~~~"
+ },
+ {
+  "id": "3330",
+  "parent": "0",
+  "date": "2016-01-03T17:35:01+08:00",
+  "author": "simonzhang",
+  "site": "",
+  "text": "有个小小的疑问，\r\n在（1）， CPU 0发了一个read invalidate，\r\n然后（4）CPU 0 又回了一个read response给 CPU 1\r\n（5）CPU 1收到了 CPU 0的read response\r\n（8）CPU 1收到 了CPU0 的read invalidate\r\n所以这里我的问题：消息后发先到？一个比较容易解释是message的收发有不确定性？"
+ },
+ {
+  "id": "3333",
+  "parent": "3330",
+  "date": "2016-01-03T23:19:16+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@simonzhang：是哪一个章节的，这个文档中有太多的（1）（4）（5）（8）了"
+ },
+ {
+  "id": "3334",
+  "parent": "3333",
+  "date": "2016-01-04T15:05:17+08:00",
+  "author": "simonzhang",
+  "site": "",
+  "text": "@linuxer：sorry，应该是四.3吧"
+ },
+ {
+  "id": "3336",
+  "parent": "3330",
+  "date": "2016-01-04T16:41:38+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@simonzhang：我的理解是这样的：\r\n1、各个CPU core通过支持cache coherent协议的总线进行互联，总线上传递的是一个个的协议消息，我们称之message，例如read invalidate、read response等\r\n2、总线上的一组message组成了transaction，完成一个指定的cache操作。例如CPU A发生invalidate message，收到invalidate response(可能是多个response，和CPU core的个数相关)，完成一次transaction\r\n3、为了性能，总线上的transaction不可能是串行的，因此，总线往往支持多个transaction并发进行\r\n\r\n如果在上面3点上达成共识，那么不难理解这里的message的行为了：\r\n在步骤（1），CPU 0发了一个read invalidate，这个message会立刻到达其他CPU，包括CPU1，但是，由于CPU1的cache异常繁忙，因此无法应用这个message到它的local cache中，因此也就无法回复response。\r\n\r\n在后续的操作中，transaction继续进行，因此（2）～（7）完成了各种其他的transaction\r\n\r\n在步骤（8）中，CPU1终于找到机会操作其cache，并回送response，但为时已晚。\r\n\r\n因此，不是消息先发后到，而是是否及时处理的问题。"
+ },
+ {
+  "id": "3339",
+  "parent": "3336",
+  "date": "2016-01-04T18:51:12+08:00",
+  "author": "simonzhang",
+  "site": "",
+  "text": "@linuxer：首先我们一致同意了CPU间的不同消息传递时间是应该没有什么差别的，其实我之前就认为及时收到，和及时处理是两个不同的问题，但是CPU就算不能及时处理，既然CPU及时收到，那么它完全可以标记一下，这样CPU执行（7）时至少知道已经invalidate了，然后可以相应正确的处理。\r\n不过我没有分析任何SMP处理器的体系结构，只是觉得理论上这个实现不难做到。不知道CPU实现会不会这样做？ARMv7，或ARMv8是如何处理这个的？"
+ },
+ {
+  "id": "3340",
+  "parent": "3339",
+  "date": "2016-01-04T19:27:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@simonzhang：是的，你说的是对的，这不正是write memory barrier和read memory barrier指令的作用吗？各个CPU通过这样的内存屏障指令来mark store buffer和invalidate queue中的条目，从而保证了memory order"
+ },
+ {
+  "id": "4755",
+  "parent": "0",
+  "date": "2016-10-20T16:17:35+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "问下arm 体系架构现在还是non-coherent的吗，如果这样的话，那么arm平台下，dma_alloc_coherent实际分配和操作的dma内存都是uncached，通过这个来保证coherent的吧？"
+ },
+ {
+  "id": "4765",
+  "parent": "4755",
+  "date": "2016-10-20T23:58:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@温柔海洋：问下arm 体系架构现在还是non-coherent的吗？\r\n----------------------\r\n我先重复一下你的问题好了，我想你应该问的是：对于一个ARM系统而言，各个cpu core和dma controller对内存的访问是coherent的吗？\r\n这个问题其实是不好回答的，因为arm体系结构只是定义了PE的操作行为，并没有定义DMA controller的行为，因此，我只能说，是否coherent是和具体的系统实现有关，哈哈。\r\n\r\n当然，想要理解cpu core、dma controller或者其他的bus master or agent在进行数据访问的时候是否是coherent的，首先需要理解shareable domain的概念。如何划分shareable domain是和系统设计相关，我们假设一个系统的domain分配如下：\r\n（1）所有的cpu core属于一个inner shareable domain\r\n（2）所有的cpu core和dma controller属于一个outer shareable domain\r\n\r\n在ARM architecture中，对一个normal memory location而言，是否是coherent是和它的页表中的shareability attribute的设定相关。\r\n（1）non-shareable。根本不会再多个agent之间共享，不存在coherent的问题。\r\n（2）inner-shareable。说明inner shareable domain中的所有的agent在对该内存进行数据访问的时候，硬件会保证coherent。\r\n（3）outer-shareable。说明outer shareable domain中的所有的agent在对该内存进行数据访问的时候，硬件会保证coherent。\r\n\r\n已经有点晚了，另外一个问题，我改天再回答吧！"
+ },
+ {
+  "id": "4766",
+  "parent": "4755",
+  "date": "2016-10-21T00:22:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@温柔海洋：算了，还是说两句吧，对于第二个问题，arm平台下，dma_alloc_coherent实际分配和操作的dma内存都是uncached，通过这个来保证coherent的吧？我是这么考虑的：\r\n-----------------------\r\n如果在该arm系统中，所有的物理内存都是inner shareable的，而cpu core和dma controller又不在一个inner shareable domain，也就是说，HW 无法维护内存数据访问的一致性，在这种情况下，dma_alloc_coherent函数分配的DMA BUFFER只能是uncached，因为只有这样，才能保证coherence。\r\n当然，如果在ARM系统设计的时候，也可以引入一些HW block，对cpu core上的cache进行嗅探，维护cpu和dma controller数据访问的一致性，那么在这样的系统中，dma_alloc_coherent实际分配和操作的dma内存也可以是cached。"
+ },
+ {
+  "id": "4767",
+  "parent": "4766",
+  "date": "2016-10-21T10:27:26+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "@linuxer：太感谢了，哈哈，在我的内核arch/arm/mm/dma-mapping.c函数__dma_alloc里面\r\n有个arch_is_coherent（）函数返回值判断，但是我grep了整个Linux 内核代码树，发现只有arch/arm/include/asm/memory.h里面定义了这个函数:\r\n\r\n#define arch_is_coherent()                0\r\n\r\n如果为0，就代表该arch不是coherent, 即函数__dma_alloc会走__dma_alloc_remap从consistent 区域分配一块虚存区域。\r\n如果该arch为 coherent 的话，会走page_address函数，就是直接返回该物理页面对应的虚存地址即可。\r\n\r\n所以是不是比如我的soc芯片是NXP imx6,在厂商的kernel代码包定义arch_is_coherent 返回值为0，就说明该SOC在该kernel里面实现为non-coherent arch.是不是就可以推测出该SOC硬件上无法保证cache一致性？是不是就可以进一步推测出dma_coherent系统函数最后分配操作的内存都是uncached？\r\n\r\n因为国内做SOC级别的嵌入式工程师比较多些，对arch coherent 仅仅是熟悉，会灵活运用，知道它对内核态驱动开发产生的影响就行了。所以我比较关注它的实际应用。\r\n\r\n最后对于Linuxer这种精通arm arch的人，只能再次膜拜，哈哈。"
+ },
+ {
+  "id": "4768",
+  "parent": "4767",
+  "date": "2016-10-21T11:42:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@温柔海洋：其实在新的内核中（我正在读的是4.4.6的代码），arch_is_coherent() 已经消失了，因此我找了旧内核的代码（2.6.23）并简单的看了看。你的推断是对的，如果arch_is_coherent() 等于0，则说明在硬件设计中，有DMA能力的设备并不会“snooping”cache，也就是说，如果打开了cache，那么cpu对dma buffer的访问不会及时的更新到main memory中，可能暂存在cache中，这时候，dma controller访问dma buffer的时候将访问到旧的数据，从而产生了一致性问题。解决这个问题的方法就是设定dma buffer是uncached。"
+ },
+ {
+  "id": "4769",
+  "parent": "4768",
+  "date": "2016-10-21T12:14:57+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "@linuxer：谢谢答疑。"
+ },
+ {
+  "id": "4811",
+  "parent": "4769",
+  "date": "2016-10-31T16:21:06+08:00",
+  "author": "RaulXiong",
+  "site": "",
+  "text": "@温柔海洋：从4.4的kernel代码上来看，dma_alloc_coherent分配的memory，在ARM/ARM64平台上都是uncached，在X86平台上则是cachable的。这说明，X86的架构有能力支持DMA的device和CPU cache之间的coherency。"
+ },
+ {
+  "id": "4818",
+  "parent": "4811",
+  "date": "2016-11-01T11:22:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@RaulXiong：这样的说法太过于武断了，在ARM/ARM64平台上，通过dma_alloc_coherent分配的memory一定是coherent的，但并非都是uncached，这和系统架构相关。如果在系统设计过程中引入SMMU（IOMMU）这样的组件，那么连接在该组件上的master设备（例如GPU、DMA Controller等）和cpu core之间的memory coherence是由HW来处理的，也就是说，这时候，dma buffer可以是cached。"
+ },
+ {
+  "id": "4822",
+  "parent": "4811",
+  "date": "2016-11-01T14:40:49+08:00",
+  "author": "RaulXiong",
+  "site": "",
+  "text": "@RaulXiong：你说的很准确，对，dma_alloc_coherent支持让device去重载它的实现，所以根据不同的硬件能力分配的buffer是可以不同属性的。我仅仅是看了默认的dma_alloc_coherent实现。\r\n不过，就算是有IOMMU，如果不能snoop CPU的cache，那么分配的buffer也不能是cached。如有错误请指教。"
+ },
+ {
+  "id": "4825",
+  "parent": "4811",
+  "date": "2016-11-01T14:59:54+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "@RaulXiong：这个话题非常好，讨论着也很有实用性，跟你说，我看到我这边内核：\r\nsound/core/pcm_native.c里面有这么一段话：\r\n\r\n/*\r\n * Only on coherent architectures, we can mmap the status and the control records\r\n * for effcient data transfer.  On others, we have to use HWSYNC ioctl...\r\n */\r\n#if defined(CONFIG_X86) || defined(CONFIG_PPC) || defined(CONFIG_ALPHA)\r\n/*\r\n * mmap status record\r\n */\r\nstatic int snd_pcm_mmap_status_fault(struct vm_area_struct *area,\r\n                                                struct vm_fault *vmf)\r\n{\r\n        struct snd_pcm_substream *substream = area->vm_private_data;\r\n        struct snd_pcm_runtime *runtime;\r\n\r\n        if (substream == NULL)\r\n                return VM_FAULT_SIGBUS;\r\n        runtime = substream->runtime;\r\n        vmf->page = virt_to_page(runtime->status);\r\n        get_page(vmf->page);\r\n        return 0;\r\n}\r\n\r\nstatic const struct vm_operations_struct snd_pcm_vm_ops_status =\r\n{\r\n        .fault =        snd_pcm_mmap_status_fault,\r\n};\r\n#endif\r\n大家一看就知道 ，大概是想重载 缺页异常里面的那个回调，实现内核态和用户态的自由数据通讯。但是代码也只是说明了在这些非arm架构下可以实现。说明X86架构实现的比较高档，可以从硬件级别做到coherence。"
+ },
+ {
+  "id": "4830",
+  "parent": "4811",
+  "date": "2016-11-01T22:26:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@RaulXiong：回复RaulXiong同学，同意你的说法，就算是有IOMMU，也不能保证cached DMA buffer是coherent的，重点应该是连接CPU core以及device的互联器件是否支持coherence，如果有这个能力，那么就能够snoop CPU cache。"
+ },
+ {
+  "id": "4831",
+  "parent": "4811",
+  "date": "2016-11-01T22:49:04+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@RaulXiong：回复温柔海洋，X86架构比较单纯，基本上的组件都是标准的，涉及DMA buffer访问的路径有两条：\r\n1、CPU core<----前端总线--->北桥芯片<---->DDR memory。\r\n2、设备（内嵌DMA控制器，有能力发起DMA操作）<------PCIe总线----->北桥芯片<---->DDR memory\r\n由于北桥芯片有snoop的能力，因此，X86架构下，所有的memory访问都是coherent的。这也许就是你贴的代码注释中的“coherent architectures”的含义吧。\r\n\r\n对于ARM架构，它不是那么玩的，ARM的策略是大家一起来玩，也就是博采众家之长。它采用license IP的方式，让更多的厂商加入ARM建立的生态系统。当然，这也就意味着架构的多样性。我们以你例子中的声卡驱动为例，在ARM arch下，其实系统拓扑有多种，例如声卡设备可以结在AMBA（APB）总线上（大部分的嵌入式设备应该这样），也可以接在PCIe总线上（然后通过AMBA bus接到CPU core上），即便是声卡设备和CPU core是通过AMBA连接，也许互联器件不支持coherence。因此，ARM是不是coherent architecture呢？我只能说是和具体的实现相关。随着ARM公司在服务器领域的耕耘，我猜ARM应该可以慢慢的象X86那么“高档”的，哈哈"
+ },
+ {
+  "id": "6912",
+  "parent": "0",
+  "date": "2018-08-24T18:40:35+08:00",
+  "author": "小艾的",
+  "site": "",
+  "text": "关于modified状态的cacheline描述中说“memmory中都没有最新数据”是否不太准确，因为write-through模式会直接回写到memory中，文章应该默认cache使用write-back模式吧。"
+ },
+ {
+  "id": "7047",
+  "parent": "0",
+  "date": "2018-11-21T15:02:30+08:00",
+  "author": "求学者123",
+  "site": "",
+  "text": "非常好的文章收益匪浅，\r\n但是请教您两个问题，\r\n第一个问题：3. Store Buffers and Memory Barriers这章里面第二个加了smp_mb(); 内存屏障的例子的\r\n5）CPU 0 receives the “read” message and transmits the cache line containing the original value of “b” to \r\nCPU 1. It also marks its own copy of this cache line as “shared”. CPU 0收到了read message，将b值”0“（新值”1“还在store buffer中）回送给CPU 1，同时将b cacheline的状态设定为shared。\r\n这里前面不是说有Store Forwarding机制吗？那么这个时候CPU 0应该先去读store buffer吗？读到了是1啊，为什么这里直接就去读cahce了呢？\r\n第二个问题：接上一个问题，猜测Store Forwarding机制运行的时候是不是会根据Cache Line的state进行判断，如果是Modified才先去读store buffer，否则就直接读cache，这样的话就解释的通了。没有内存屏障的状态下，写入store buffer前会把cacheline的状态改成Modified（虽然此时为了性能buffer还没回写CacheLine）。有了内存屏障后，b的值虽然暂时保存在buffer中但是状态并未更改（shared状态），所以直接读cache，Store Forwarding并未生效。\r\n谢谢"
+ },
+ {
+  "id": "7083",
+  "parent": "0",
+  "date": "2018-12-13T11:10:49+08:00",
+  "author": "darell",
+  "site": "",
+  "text": "此处介绍的 SMP 的 cache coherency，那么 NUMA 架构的呢？"
+ },
+ {
+  "id": "7263",
+  "parent": "7047",
+  "date": "2019-03-11T22:51:38+08:00",
+  "author": "Connor",
+  "site": "",
+  "text": "@求学者123：一开始我也是觉得你说的很有道理，后来想了半个小时吗，是不是该这么理解：\r\nstore forwarding机制是针对load操作的，只有cpu执行load指令的时候才会从cache中读取，文中cpu0收到read message不是load指令，是MESI的总线消息，所以只会从local cache中取数据然后回传，所以应该不是你说的第二个问题里的原因。\r\n当然，上述也是我的猜测，未找到对应的解释"
+ },
+ {
+  "id": "7441",
+  "parent": "0",
+  "date": "2019-05-26T23:08:16+08:00",
+  "author": "farmer",
+  "site": "",
+  "text": "@linuxer\r\n\r\n> 在ARM architecture中，对一个normal memory location而言，是否是coherent是和> 它的页表中的shareability attribute的设定相关。 \r\n> （1）non-shareable。根本不会再多个agent之间共享，不存在coherent的问题。 \r\n> （2）inner-shareable。说明inner shareable domain中的所有的agent在对该内存>进行数据访问的时候，硬件会保证coherent。 \r\n> （3）outer-shareable。说明outer shareable domain中的所有的agent在对该内存进行数据访问的时候，硬件会保证coherent。 \r\n\r\n您好，我是arm新手，请教个问题：\r\n\r\n这里说“硬件会保证coherent”，既然硬件会保证，为啥还需要软件管理cache？\r\n我的一种猜测是这样的：硬件按照一致性协议能够保证真实的执行顺序的结果在shareable domain里看到的是一致的，但是硬件不能保证按照软件顺序执行，所以需要软件参与控制。 这种理解对吗？\r\n\r\n望您指点，谢谢 :)"
+ },
+ {
+  "id": "7591",
+  "parent": "0",
+  "date": "2019-08-14T18:48:30+08:00",
+  "author": "barry",
+  "site": "",
+  "text": "您好 请教一个困扰我很久的问题 \r\n第六章中 “对于read memory barrier指令，它只是约束执行CPU上的load操作的顺序，具体的效果就是CPU一定是完成read memory barrier之前的load操作之后，才开始执行read memory barrier之后的load操作。read memory barrier指令象一道栅栏，严格区分了之前和之后的load操作。” \r\n\r\n对于上边提到的作用于invalidatequeue上的读屏障  保障的是屏障之前load操作能load到新的数据  之后才能经过屏障执行后边的load操作   这里没有任何load操作乱序的问题啊    也就是说之前的讨论load都是顺序的   怎么突然就跳到乱序了   感觉逻辑有点问题"
+ },
+ {
+  "id": "7592",
+  "parent": "7591",
+  "date": "2019-08-14T18:56:15+08:00",
+  "author": "barry",
+  "site": "",
+  "text": "@barry：游客居然回复 哈哈 只是不能修改 最后这段话打错了 修改下\r\n\r\n对于上边提到的作用于invalidatequeue上的读屏障  保障的是屏障之后load操作能load到新的数据   之后才能顺利执行下去   这里没有任何load操作乱序的问题啊    也就是说之前的讨论load都是顺序的   怎么突然就跳到乱序了   感觉逻辑有点问题"
+ },
+ {
+  "id": "7774",
+  "parent": "0",
+  "date": "2019-12-05T20:43:43+08:00",
+  "author": "study",
+  "site": "",
+  "text": "void foo()\r\n { \r\n    a = 1;\r\n    b = 1;\r\n}\r\nvoid bar() \r\n{\r\nwhile(b == 0) continue;\r\n    assert(a == 1);\r\n}\r\n大佬你好,我想请教一下这个例子中b是什么时候更新到Memory的？\r\n假设CPU0中b已经将最新值1写入了cache line中,此时其状态为M。\r\n那是不是CPU0立即把b=1更新到Memory,然后CPU0中b cache line状态变为E。\r\n然后CPU1发送read 命令,CPU0把b=1 response给了CPU1,最后CPU0和CPU1状态都变为S了？"
+ },
+ {
+  "id": "7926",
+  "parent": "0",
+  "date": "2020-03-23T09:46:26+08:00",
+  "author": "内存屏障",
+  "site": "",
+  "text": "尊敬额博主：\r\n当我读Why Memory Barriers？中文翻译（上）的时候遇到了两个问题：\r\n1.引入Invalidate Queue的例子\r\n\r\n1 void foo(void)\r\n2 {\r\n3 a = 1;\r\n4 smp_mb();\r\n5 b = 1;\r\n6 }\r\n7\r\n8 void bar(void)\r\n9 {\r\n10 while (b == 0) continue;\r\n11 assert(a == 1);\r\n12 }\r\n\r\n（4） CPU 0 receives the response from CPU 1, and is therefore free to proceed past the smp_mb() on line 4 above, moving the value of “a” from its store buffer to its cache line. \r\nCPU 0收到了CPU 1的invalidate ACK之后，即可以越过程序设定内存屏障（第四行代码的smp_mb() ），这样a的新值从store buffer进入cacheline，状态变成Modified。\r\n在第4步描述：为什么CPU 0收到了CPU 1的invalidate ACK之后，即可以越过程序设定内存屏障\r\n\r\n\r\n2.加入读写屏障的一个问题\r\n1 void foo(void)\r\n2 {\r\n3 a = 1;\r\n4 smp_mb();\r\n5 b = 1;\r\n6 }\r\n7\r\n8 void bar(void)\r\n9 {\r\n10 while (b == 0) continue;\r\n11 smp_mb();\r\n12 assert(a == 1);\r\n13 }\r\n\r\n原文是先执行5再执行6\r\n（5） CPU 0 executes b = 1. It already owns this cache line (in other words, the cache line is already in either the “modified” or the “exclusive” state), so it stores the new value of “b” in its cache line. CPU 0 越过memory barrier后继续执行b=1的赋值操作（这时候该cacheline或者处于modified状态，或者处于exclusive状态），由于b值在CPU 0的local cache中，因此store操作完成并进入cache line。\r\n\r\n（6） CPU 0 receives the “read” message, and transmits the cache line containing the now-updated value of “b” to CPU 1, also marking the line as “shared” in its own cache. CPU 0收到了read消息后将b的最新值“1”回送给CPU 1，并修正该cacheline为shared状态。\r\n\r\n有没有这种情况先执行6再执行5，如果是这样的话第10步while (b == 0) 这个循环是不是就无法跳出了，11-12永远不能执行了"
+ },
+ {
+  "id": "8087",
+  "parent": "7263",
+  "date": "2020-08-08T12:20:09+08:00",
+  "author": "pangqiu",
+  "site": "",
+  "text": "@Connor：我也是这么猜测的，不然应该解释不通，只有cpu自己的load操作才会去读store buffer，而其它应该是从cache中读取的。"
+ },
+ {
+  "id": "8771",
+  "parent": "0",
+  "date": "2023-04-12T09:08:16+08:00",
+  "author": "icy_river",
+  "site": "",
+  "text": "从store_buffer和invalid_queue的角度, 能很好的理解rmb(), wmb(), mb(); 怎么从这种硬件的角度理解半屏障呢? ldaxr, stxr这样的指令执行之后, 在store_buffer和invalid_queue上,是个怎样的行为呢?\r\n\r\n最终从外部observer看起来, 半屏障外部的指令可以乱序进入半屏障, 半屏障内部的指令出不来?"
+ }
+]

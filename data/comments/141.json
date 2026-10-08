@@ -1,0 +1,122 @@
+[
+ {
+  "id": "1164",
+  "parent": "0",
+  "date": "2015-02-03T21:26:23+08:00",
+  "author": "米粒秀",
+  "site": "http://www.milixiu.com",
+  "text": "呵呵，没太看懂。"
+ },
+ {
+  "id": "1266",
+  "parent": "0",
+  "date": "2015-03-03T11:21:53+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "那 posix timer 跟init_timer 这个timer的区别是什么呢？\r\n我还是有点没有理清楚"
+ },
+ {
+  "id": "1267",
+  "parent": "1266",
+  "date": "2015-03-03T22:52:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：如果把内核的时间子系统看成一个提供服务的模块，那么它至少服务两种模块：\r\n1、内核的驱动模块或者其他子系统\r\n2、各种userspace的用户进程\r\n\r\n对于第一种模块，旧的时间子系统提供了低精度timer的接口（init_timer就是其一），对于第二种模块，librt提供了posix timer的接口，在内核态，posix timer模块（本文主要描述的内容）用来应对用户态的timer需求。\r\n本质上，这些定时服务的底层逻辑都是一样的，但是，对于内核态模块，可以直接设定callback函数，这些callback函数会在timer到期后在softirq context上，或者在softirq的内核线程上执行。对于用户态的posix timer，到期后，是需要通知到调用posix timer的那个用户进程的，有两种方式：使用signal通知或者创建线程执行callback函数。"
+ },
+ {
+  "id": "1864",
+  "parent": "0",
+  "date": "2015-05-26T11:25:34+08:00",
+  "author": "ace",
+  "site": "",
+  "text": "信号触发方式只能在单线程进程中使用吗？"
+ },
+ {
+  "id": "1873",
+  "parent": "1864",
+  "date": "2015-05-26T19:17:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ace：不会啊，多线程也可以使用啊"
+ },
+ {
+  "id": "1877",
+  "parent": "1873",
+  "date": "2015-05-27T10:03:12+08:00",
+  "author": "ace",
+  "site": "",
+  "text": "@linuxer：http://www.ibm.com/developerworks/cn/linux/l-cn-timers/ \r\n这里的清单9、清单10 写着不可以在多线程环境下使用\r\n\r\n我自己使用的时候，信号触发方式传参数，在回调函数\r\nstatic void GlobalTimerHandler(int signo, siginfo_t* info, void* context)\r\n中 info 这个指针有的时候内容不对或者为NULL， 这种情况偶尔发生，基本都是在中断系统调用之后才有几率发生，最近查了好多资料还是没搞懂为什么"
+ },
+ {
+  "id": "1881",
+  "parent": "1877",
+  "date": "2015-05-27T12:14:06+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ace：POSIX timer中只是定义了SIGEV_SIGNAL的行为，即timer超期后向创建该timer的进程发送信号。linux扩展了posix timer的功能，增加了SIGEV_THREAD_ID这个flag，这样，如果在创建timer的时候设定SIGEV_SIGNAL | SIGEV_THREAD_ID，那么信号可以发送给指定的线程。\r\n从可移植的角度来看，SIGEV_THREAD_ID不推荐使用，如果你打算让你的程序只是运行在linux之上，那么go ahead，不要犹豫，大胆使用SIGEV_THREAD_ID，但是，如果你想让你的程序运行在多个平台上，那么符合posix标准是一个不错的选择。\r\n\r\n好吧，如果我们不使用SIGEV_THREAD_ID，那么多线程环境中会怎样？当然，仍然可以使用timer_create来创建posix timer，只不过，在信号发送给进程（由多个线程组成）的时候，其行为是这样规定的：\r\n发送给进程（由若干线程组成）的信号, 将被对应的这一组线程所共享, 并且被其中的任意一个\"线程\"处理\r\n\r\n如果你的程序逻辑可以接受上面的定义，那么其实也可以在多线程环境下使用标准的posix timer。"
+ },
+ {
+  "id": "2430",
+  "parent": "0",
+  "date": "2015-08-05T16:08:11+08:00",
+  "author": "huangzhongmin",
+  "site": "",
+  "text": "看POSIX timer两篇文章有点头晕，特别是进程这些，望大牛解惑一下：\r\n\r\nPosix也是基于hrtimer实现的对吗，具体的应用场景是哪些呢\r\n1.跟闹钟的实现（alarm_dev.c）这里有什么区别吗\r\n2.各种sleep函数，工作队列这些也相当于定时实现的，是基于POSIX来实现吗？\r\n谢谢。"
+ },
+ {
+  "id": "2431",
+  "parent": "2430",
+  "date": "2015-08-05T17:42:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@huangzhongmin：内核中的posix timer主要是向用户空间提供接口的，用户空间的程序可以使用这些linux kernel提供的定时服务。具体的应用场景我随便想了一个：例如用户空间的程序需要每隔5s查看一下电池的状态，然后更新status bar上的电池icon。\r\n\r\nalarm_dev.c也是内核中的文件吗？我们从来没有看过这个文件的代码，不好回答。\r\n各个内核模块也会使用定时服务，不过不需要通过posix timer，直接使用低精度timer或者高精度timer模块提供的接口就OK了"
+ },
+ {
+  "id": "5007",
+  "parent": "0",
+  "date": "2016-12-09T16:30:57+08:00",
+  "author": "owentang",
+  "site": "",
+  "text": "楼主,\r\n你好,看了你这篇文件非常感触.最近发现一个问题,通过setitimer设置一个定时器每隔5s,发一个alarm信号,但是有一次系统全部用到alarm定时都全部失效.系统重启才恢复正常.平台信息：linux内核3.18，高通mdm9x07 。这个估计哪里出了问题?\r\n\r\nsignal(SIGALRM, alarm_handler);\r\n\r\ntimerval.it_interval.tv_sec = INTERVAL;\r\ntimerval.it_interval.tv_usec = 0;\r\ntimerval.it_value.tv_sec = INTERVAL;\r\ntimerval.it_value.tv_usec = 0;\r\n\r\nif (setitimer(ITIMER_REAL, &timerval, NULL) < 0) {\r\nERR(\"%s(%d): setitimer fail\\n\", __FUNCTION__, __LINE__);\r\ngoto err;\r\n}"
+ },
+ {
+  "id": "5277",
+  "parent": "0",
+  "date": "2017-03-01T22:11:22+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "“需要注意的是：在任意的时刻，特定timer的信号只会挂入一次，也就是说，该信号产生到该信号被投递到进程之间，如果timer又一次超期触发了，这时候，signal pending队列不会再次挂入信号（即便该signal是一个real-time signal），只会增加overrun的次数”\r\n-----------------------------------------\r\n我有几点疑问：\r\n1.假如一个或多个timerid绑定了同一个信号（比如SIGRTIMN），那么当当一个timer到期后，该信号的处理函数中阻塞了，另一个（或同一个）绑定了相同信号（如SIGRTMIN）的会被丢弃，但overrun会增1。这样理解对吗？\r\n\r\n2.对于触发不同的两个信号的timer又是会怎样的呢，比如：timer1到期通过SIGRTMIN信号通知，此时该信号处理函数阻塞了，而绑定了不同信号(SIGRTMIN+1)的timer2到期了，此时是什么情景，是等SIGRTMIN的信号处理函数返回再触发，还是被丢弃，还是会中断SIGRTMIN的信号处理函数(不知道信号有没有优先级)。\r\n\r\n3.如果使用的是创建线程的方式，那么如果timer1到期执行的callback函数阻塞后，timer2到期后的函数是不是就不用等前面的函数返回就执行了\r\n\r\n谢谢"
+ },
+ {
+  "id": "5278",
+  "parent": "5277",
+  "date": "2017-03-02T09:16:21+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "@chen_chuang：对于1 2我好像理解错了，定时器超限只能发生在同一个定时器产生的信号上，所以应该是如果timer1到期后发出SIGRTMIN信号，该信号阻塞期间timer2到期后发出相同或不同的信号，此时都会入队，而不会增加overrun。类似于串行执行。大神指点下我这样理解对不对"
+ },
+ {
+  "id": "5279",
+  "parent": "5278",
+  "date": "2017-03-02T12:06:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@chen_chuang：是的，每个posix timer都有自己的overun。"
+ },
+ {
+  "id": "5280",
+  "parent": "5279",
+  "date": "2017-03-02T14:15:20+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "@linuxer：但是我用线程发方式的时候，好像就没有这种overrun的情况了。我写了个测试程序：定时器每个1秒到期，到后调用回调线程，回调函数中我会sleep 5秒，但是运行的时候会每隔一秒触发回调线程，这正常吗？"
+ },
+ {
+  "id": "5281",
+  "parent": "5280",
+  "date": "2017-03-02T15:17:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@chen_chuang：这里交流不太方便，要不去讨论区开一个新贴子，然后把整个程序贴出来，这样方便了解情况。"
+ }
+]

@@ -1,0 +1,66 @@
+[
+ {
+  "id": "5214",
+  "parent": "0",
+  "date": "2017-02-12T20:22:00+08:00",
+  "author": "狂奔的蜗牛",
+  "site": "",
+  "text": "---------那么所有的cpu看到的顺序都是符合一个全局的顺序{3,1,4,2}-----\r\n这个可以是{4，3，1，2}吗？四个CPU的执行顺序也是乱序的么？single total order的字面意思好像是顺序是唯一的？"
+ },
+ {
+  "id": "5216",
+  "parent": "5214",
+  "date": "2017-02-13T09:22:12+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@狂奔的蜗牛：我的理解是可以的，当然只是我的看法，仅供参考。\r\n\r\n假设一次运行后，\r\ncpu 1看到的序列是{1,2}，\r\ncpu 2看到的序列是{2}，\r\ncpu 3看到的序列是{3,2}，\r\ncpu 4看到的序列是{4,2}，\r\n{4，3，1，2}或者{3，4，1，2}或者{3，1，4，2}都可以，因为这些全局顺序和各个cpu的观察结果是coherent的。"
+ },
+ {
+  "id": "6207",
+  "parent": "0",
+  "date": "2017-11-16T15:10:32+08:00",
+  "author": "yupluo",
+  "site": "",
+  "text": "这个文章写得不错。\r\n\r\n几个疑问：\r\n1）Multi-copy atomicity对cpu performance伤害很大,我的理解是这个不一定。 Intel架构是支持Multi-copy atomicity的。 ARM和Power不支持。 \r\n\r\n对ARM架构来说来说，issuing write的那个core A做了一个store后， A可以直接看到这个write，但是其他的core未必能看到。感觉主要是是否能snoop到write buffer。\r\n\r\n对于bus， fabric设计来说。支持Multi-copy atomicity，要求某个store要到endpoint，假如bus上有个buffer，一个core写后，其他的core未必能看到，这样需要把barrier的transaction发送到外面。 现在ARMv8 cpu不建议barrier外发。所有bus设计必须考虑到这个要求。\r\n\r\n2） 我也比较好奇这个copy在 single-copy atomic里面的意思。 估计需要 $313.85 买那本书：\t \r\n\r\nfrom one article \"A Tutorial Introduction to the ARM and POWER Relaxed Memory Models\", it says \":\r\n\r\nA memory read or write by an instruction is access-atomic (or single-copy atomic, in the terminology of Collier [Col92]—though note that single-copy atomic is not the opposite of multiple-copy atomic) if it gives rise to a single access to the memory.\r\n\r\nMaybe only the book \"Reasoning About Parallel Architectures , February 1, 1992\" could tell ?"
+ },
+ {
+  "id": "6213",
+  "parent": "6207",
+  "date": "2017-11-17T15:57:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@yupluo：ARM ARM太难理解了，我也是把自己的疑问和自己的看法表达出来，不一定对。估计真正能给解答的是IC设计人员吧。^_^"
+ },
+ {
+  "id": "6214",
+  "parent": "0",
+  "date": "2017-11-17T17:19:21+08:00",
+  "author": "yupluo",
+  "site": "",
+  "text": "做IC的人也不清楚，这个应该是语言的差距。和内部人交流后。下面的答案比较靠谱：\r\n\r\ncopy 类似 ”observed values“，这样就比较清楚了\r\n\r\n\r\nIt's using copy as a noun, as in \"I have a copy of the Lord Of The Rings in paperback, and I have another copy in hardback\".\r\n\r\nSo, for \"single-copy atomic\", any one of the copies (i.e. observed value) is guaranteed to be atomically updated; for \"multi-copy atomic\", all copies are atomically updated."
+ },
+ {
+  "id": "7055",
+  "parent": "0",
+  "date": "2018-11-24T12:02:26+08:00",
+  "author": "anonymous",
+  "site": "",
+  "text": "其实copy不是“复制”的意思。它是名词，是“份”的意思。就像“I heard about your article. May I have a copy (of it)?”以及“I need two copies of your application form.”一样，是“一份”、“一式两份”里的“份”的意思。"
+ },
+ {
+  "id": "7056",
+  "parent": "5216",
+  "date": "2018-11-27T10:11:42+08:00",
+  "author": "xuwukong",
+  "site": "",
+  "text": "@linuxer：可以这样总结吗，各个CPU看到的最后一个值一定是同一个值，比如这里举例说的，四个CPU看到的最后一个值都是2，这样的顺序一定是coherent order。"
+ },
+ {
+  "id": "7064",
+  "parent": "7055",
+  "date": "2018-11-30T09:10:39+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@anonymous：你这个说挺有道理的，有空的时候再把这部分梳理一下。"
+ }
+]

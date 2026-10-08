@@ -1,0 +1,210 @@
+[
+ {
+  "id": "4660",
+  "parent": "0",
+  "date": "2016-10-08T14:54:05+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "非常好的文章，赞一个"
+ },
+ {
+  "id": "4661",
+  "parent": "0",
+  "date": "2016-10-08T17:32:04+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "问下，我的kernel版本是3.0.35，里面搜early_ioremap,搜到的都是ia64和x86平台的，arm平台没有实现这个函数。\r\n还有我的这个版本内核early_prink的实现，最终通过CONFIG_DEBUG_LL对应的debug.S 里面的几个汇编函数来实现串口寄存器级别的发送字符操作过程，你文章中的early printk的实现应该和CONFIG_DEBUG_LL没有任何关系。\r\n\r\n是不是高版本的Linux内核 早期串口输出字符已经完全脱离了CONFIG_DEBUG_LL？而且高版本的也有arm平台的early_ioremap的实现，可以让早期串口输出可以放在start_kernel里面的任何位置？"
+ },
+ {
+  "id": "4662",
+  "parent": "0",
+  "date": "2016-10-08T17:51:34+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "再问个问题，我这边飞思卡尔imx6内核中又找到一个early_console的实现，没有通过CONFIG_DEBUG_LL来完成串口的寄存器级别收发，而是通过ioremap,enable_clk等内核API来完成的。但是这个early console 的初始化，竟然放在了start_kernel里面比较靠后的time_init 里面。这样的话，这个脱离汇编代码的early console实现，也不是个真正的早期串口console。\r\n\r\n你的early_ioremap 比较不错，有了它，应该在start_kernel里面很早位置处（比如在page_init之前，是否可以？），就可以操作控制外设了。能大概讲下它和fixmap结合起来时，到底具体是怎么实现的啊。\r\n\r\npage_init里面会调用具体机器的map_io,建立device 的静态映射。之后也可以通过IO_ADDRESS直接访问外设寄存器，我好奇的是你的early_ioremap如果依赖fixmap的话，并且也能在setup_arch-> page_init这些函数之前被成功被调用发挥作用的话，究竟实现思路是什么。"
+ },
+ {
+  "id": "4663",
+  "parent": "4661",
+  "date": "2016-10-08T18:09:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@温柔海洋：earlycon是一个比较新的东西,具体是哪个版本加进来的,我没有看.\r\n至于early_ioremap,因该很早之前就有了."
+ },
+ {
+  "id": "4664",
+  "parent": "4662",
+  "date": "2016-10-08T18:12:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@温柔海洋：是的,以前arm早期的打印,是在一个叫做debug.S的汇编代码里面弄的，后来printk.c也加过一个early console，不过是比较晚才能用。\r\n对arm64平台来说，利用early_ioremap+earlycon，在setup_arch时候就能用了。\r\n至于early_ioremap的原理，请参考这篇文章：\r\n/memory_management/fixmap.html"
+ },
+ {
+  "id": "4666",
+  "parent": "4664",
+  "date": "2016-10-09T09:14:40+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "@wowo：你的early_ioremap是得到setup_arch阶段才可以用，还有一种方法是setup_arch->pageinit->device_iomap->具体machine的map_io调用时，建立一些针对soc所有外设的静态映射表。一旦建立起来后，用IO_ADDRESS宏也可以方便地对外设寄存器进行操作（拉GPIO电平，配置串口clock，寄存器）。\r\n这种提前建立好静态映射的方法，和你的文章中的early_ioremap起的作用效果是否相同？都是映射建立好后，就可以随心所欲操作外设了？\r\n\r\n还有这两种方法都是要在setup_arch阶段最后建立页表时才能发挥作用，如果要在更靠前面的地方打印信息的话，是否就不能不借助CONFIG_DEBUG_LL对应的那个汇编代码串口收发指令来工作了啊？"
+ },
+ {
+  "id": "4667",
+  "parent": "4666",
+  "date": "2016-10-09T09:50:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@温柔海洋：关于early的ioremap，再整理一下思路，我的理解是这样的：\r\n1. early_ioremap是一个比较新的功能，我检查了手上的两份kernel：\r\n一份是3.10,只有arm64平台提供了该功能（arch/arm64/include/asm/fixmap.h）;\r\n另一份是x project所使用的kernel（版本是基于4.6.0-rc5的一个分支），arm和arm64都支持了（arch/arm/include/asm/fixmap.h）。\r\n\r\n2. early_ioremap什么时候可以使用\r\n（这里的描述基于4.6.0-rc5。）\r\n\r\nearly_ioremap在start_kernel-->setup_arch-->early_fixmap_init/early_ioremap_init之后，就可以使用了。\r\n至于你提到的start_kernel-->setup_arch-->paging_init-->devicemaps_init，首先，它没有early_ioremap早，其次，好像只有arm平台才有（也就是说将要被抛弃了）。具体能否使用，我也没有研究过。\r\n\r\n3. printk可用的时机\r\n其实在\"start_kernel-->setup_arch-->parse_early_param之后就可以使用了。\r\n再往前，我觉得，没有打印的必要，因为都是arch无关的标准代码，不会出问题。之所以需要打印，是因为我们执行了arch相关的代码，有出问题的可能。\r\n当然，如果一定要打印，只能用一些非标的东西，例如CONFIG_DEBUG_LL。"
+ },
+ {
+  "id": "4668",
+  "parent": "0",
+  "date": "2016-10-09T10:21:37+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "hi,wowo\r\n移植步骤写得很详细，学习到了。:D有个问题请教下\r\n----注2：“EARLYCON_DECLARE”是实现early console的一种方法，另外我们也可以使用device tree的方式，为了不增加复杂度，本文就不提及相关的实现了。----\r\n这个有点困惑，我觉得EARLYCON_DECLARE应该是必须的，我的理解是这个宏是把earlycon_id放在一个init段里面，这个device tree个人感觉应该做不到。我觉得是earlycon的串口指定可以用earlycon=owl_serial来指定也可以用device tree里面的“linux,stdout-path”的属性来指定。"
+ },
+ {
+  "id": "4669",
+  "parent": "4668",
+  "date": "2016-10-09T13:38:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：抱歉,我这里的表述有一些歧义,其实我想说的另一种方法,是OF_EARLYCON_DECLARE,例如:\r\nstatic int __init s5pv210_early_console_setup(struct earlycon_device *device,\r\n                                              const char *opt)\r\n{\r\n        device->port.private_data = &s5pv210_early_console_data;\r\n        return samsung_early_console_setup(device, opt);\r\n}\r\nOF_EARLYCON_DECLARE(s5pv210, \"samsung,s5pv210-uart\",\r\n                        s5pv210_early_console_setup);\r\n到最后都会将earlycon信息注册到__earlycon_table。\r\n\t\t\t\t\t\r\n其实使用of_的方式，隐含了的思路是：串口驱动是现成的，可以摇身一变把它变成earlycon。当然，这种方法是标准做法，最后一定要变成这样。\r\n而本文所展示的，是最简单的做法：在串口驱动还没有的情况下，怎么用最简单的方法实现earlycon。"
+ },
+ {
+  "id": "4670",
+  "parent": "0",
+  "date": "2016-10-09T14:17:01+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "还有个问题请教下：\r\n\r\n注3：为了简单，early console和u-boot[3]使用相同的串口，并且使用相同的配置，因此不需要额外的初始化操作。\r\n\r\n这句话意思是不是说只要uboot阶段能成功驱动串口打印出信息，Linux内核初始化早期阶段如果想做early_serial_console功能的话，就不用再初始化配置串口了，直接操作串口发送数据就行了。因为这个时候，串口波特率设置，控制寄存器设置都是沿用uboot阶段的配置。换句话说，就是uboot阶段对SOC各个外设控制器（SPI,I2C,UART,lcd,sdio...还有它们的clock tree设置），在Linux kernel初始化阶段不会自动清零，除非手动再次执行外设相关驱动（比如在do_basic_setup里面执行各个外设驱动init函数），再次去配置寄存器。"
+ },
+ {
+  "id": "4671",
+  "parent": "4669",
+  "date": "2016-10-09T15:33:56+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "@wowo：OK,理解你的意思了，谢谢wowo"
+ },
+ {
+  "id": "4672",
+  "parent": "4670",
+  "date": "2016-10-09T15:56:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@温柔海洋：是的."
+ },
+ {
+  "id": "4673",
+  "parent": "4672",
+  "date": "2016-10-09T16:00:20+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "@wowo：谢谢指点，非常感谢你的技术文章,你的文章如果将来出书了，肯定大卖。"
+ },
+ {
+  "id": "4676",
+  "parent": "4671",
+  "date": "2016-10-09T19:44:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：不用客气哈~~"
+ },
+ {
+  "id": "4677",
+  "parent": "4673",
+  "date": "2016-10-09T19:45:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@温柔海洋：多谢鼓励,现在还只是写着玩玩,出书的事情还没考虑呢:-)"
+ },
+ {
+  "id": "5015",
+  "parent": "4667",
+  "date": "2016-12-13T14:02:29+08:00",
+  "author": "misaka",
+  "site": "",
+  "text": "@wowo：其实现在earlyprintk就是注册个early console 底层的操作函数是调用low level实现的printascii之类的函数  还是有联系的。"
+ },
+ {
+  "id": "6328",
+  "parent": "0",
+  "date": "2017-12-08T16:31:29+08:00",
+  "author": "foxtang",
+  "site": "",
+  "text": "serial early console 能在32位的arm上用吗？比如2440。"
+ },
+ {
+  "id": "6329",
+  "parent": "0",
+  "date": "2017-12-08T16:40:28+08:00",
+  "author": "foxtang",
+  "site": "",
+  "text": "开mmu之前可以点灯，开了之后就点不了了，有什么办法在开了mmu后点灯？"
+ },
+ {
+  "id": "6331",
+  "parent": "6328",
+  "date": "2017-12-08T22:36:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@foxtang：应该可以的，这个不区分平台。"
+ },
+ {
+  "id": "6332",
+  "parent": "6329",
+  "date": "2017-12-08T22:37:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@foxtang：可以参考这篇文章：/memory_management/fixmap.html\r\n关于这个话题，之前碰巧讨论过:-)"
+ },
+ {
+  "id": "6333",
+  "parent": "0",
+  "date": "2017-12-10T12:05:44+08:00",
+  "author": "foxtang",
+  "site": "",
+  "text": "老师，arm926t的芯片，local_flush_tlb_all()后就没打印了，也没重启，是不是earlycon已经不能用了？"
+ },
+ {
+  "id": "6335",
+  "parent": "6333",
+  "date": "2017-12-11T09:47:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@foxtang：可以试试点灯看看跑到哪里了。靠猜不是一个好习惯:-)"
+ },
+ {
+  "id": "6337",
+  "parent": "6335",
+  "date": "2017-12-11T11:01:00+08:00",
+  "author": "foxtang",
+  "site": "",
+  "text": "@wowo：暂时注释掉可以跑下去，等串口驱动做好了再打开看看。"
+ },
+ {
+  "id": "7013",
+  "parent": "0",
+  "date": "2018-11-04T15:04:08+08:00",
+  "author": "BREAKO",
+  "site": "",
+  "text": "wowo:\r\n   您好！我想请问一下，我的打印Log每次从Starting kernel....开始好像都只有250个左右字符，每次打印一些我就把它注释掉，就可以看见后面打印的字符了，我在earlycon_xxx_setup()函数里也添加了打印，有Log出来，说明执行到了这里，我怀疑是缓存buffer的问题，但是不知道该怎么查，请问您有这方面的相关经历吗？谢谢您！"
+ },
+ {
+  "id": "7014",
+  "parent": "0",
+  "date": "2018-11-04T16:12:23+08:00",
+  "author": "BREAKO",
+  "site": "",
+  "text": "还有哦!在执行early_xxx_setup之前也有很多打印，比如用pr_info等的打印，这些打印也都能打印出来，请问这个是为什么呢？"
+ },
+ {
+  "id": "7015",
+  "parent": "7014",
+  "date": "2018-11-05T09:16:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@BREAKO：应该是earlycon的tx做错了，可能buffer发完后，没有重新触发TX的发送。"
+ }
+]

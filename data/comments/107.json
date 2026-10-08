@@ -1,0 +1,258 @@
+[
+ {
+  "id": "1368",
+  "parent": "0",
+  "date": "2015-03-22T18:49:24+08:00",
+  "author": "cainiao",
+  "site": "",
+  "text": "hi,wowo：\r\n  请教一个问题，假如android手机关机了，系统时钟的时间停止不动，也就是开机时间还是之前开机的时间，问题可能会出现在哪里呢？如果手机重启，时间恢复到了1970年，问题可能出现在哪里呢？期待wowo大神出书，持续关注中..."
+ },
+ {
+  "id": "1369",
+  "parent": "1368",
+  "date": "2015-03-22T20:24:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cainiao：系统启动时，会从RTC中同步系统时间，如果RTC时间非法，系统时间则设为0（可能是1970）。因此，您这第一种情况可能是RTC停止了，没有更新。第二种情况可能是RTC直接返回无效值了。具体可以参考/timer_subsystem/timekeeping.html，或者让我们华南区时间子系统首席linuxer同学再详细解释一下。"
+ },
+ {
+  "id": "1370",
+  "parent": "0",
+  "date": "2015-03-22T20:58:01+08:00",
+  "author": "cainiao",
+  "site": "",
+  "text": "好感谢wowo的回复！"
+ },
+ {
+  "id": "1811",
+  "parent": "0",
+  "date": "2015-05-15T16:40:28+08:00",
+  "author": "qinghu",
+  "site": "",
+  "text": "你好，我在看了你的文章后，有个疑问，在ＰＭ　suspend的过程中，会时不时的调用函数\r\npm_wakeup_pending，来检查是否有wakeup.　第一，调用这个函数的时间点可以改动吗＞还是原来的位置是有特别意义的？第二，freezing  process的过程中，如果有wakeup event.怎么检查唤醒源是谁？那个进程持有的wakeup source 被active 了？有什么调试方法吗？谢谢！"
+ },
+ {
+  "id": "1812",
+  "parent": "1811",
+  "date": "2015-05-15T17:14:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@qinghu：第1个问题：\r\n对suspend而言，pm_wakeup_pending的调用时机也不多啊，就两个地方：\r\n1）process freeze之后。\r\n2）arch_suspend_disable_irqs调用之后。\r\n\r\n调用的时间点是否能改动呢？可以很坚决的说，不可以（当然，你在自己的代码中多添加几个检查点是可以的）。原因有二：\r\n1）不要随意修改kernel的原有实现（除非必要），这是我们linux工程师应该坚守的原则。\r\n2）这两个检查点，确实是经过考虑的。\r\n\r\n第一个检查点，所有task已经被freeze了，也就是说，这个时候所有的wakeup event都不能被用户空间处理了。所以有必要检查一下是否需要放弃本次suspend动作。其实这个检查可以推后到任何时候（直到第二个检查点），但代价是用户进程的处理延迟。\r\n\r\n第二个检查点，中断被关闭了，也就意味着此时不可能再产生wakeup event了。这时检查一次，可以处理第一个检查点到第二个检查点之间的这段时间产生的event。\r\n\r\n那第二个检查点之后的事情呢？由具体的suspend指令保证。"
+ },
+ {
+  "id": "1813",
+  "parent": "1811",
+  "date": "2015-05-15T17:19:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@qinghu：第二个问题：\r\nfreezing  process的过程中产生了wakeup event.，分两种情况：\r\n1）处理这个event的进程还活着，CPU调度到该进程，该进程根据实际情况，处理event，阻止或者运行系统继续suspend。\r\n2）处理这个event的进程被freeze了，就回到第一个问题中的第一个检查点了。\r\n“怎么检查唤醒源是谁？”，我不太明白是什么意思。谁检查呢？"
+ },
+ {
+  "id": "1814",
+  "parent": "1811",
+  "date": "2015-05-15T17:27:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@qinghu：第三个问题：\r\n进程信息？首要对kernel态的wakeup source来说，没有进程的概念。\r\n只有wakelocks是由进程创建的，从数据结构中看，没有保存进程信息。但这个wakelocks是哪个进程创建的、取什么名字，设计者应该很清楚吧？如果真的需要，就在创建的时候，加入自身的信息吧。"
+ },
+ {
+  "id": "1815",
+  "parent": "1814",
+  "date": "2015-05-15T17:41:59+08:00",
+  "author": "qinghu",
+  "site": "",
+  "text": "@wowo：您能这么快回复，而且如此仔细，真的好专业，非常非常感动．\r\n我是遇到个问题，在进行suspend 的过程中．发现进行不下去了．\r\nFreezing user space processes ... \r\n[   54.280000] PM: Wakeup pending, aborting suspend\r\n[   54.290000] last active wakeup source: mmc_delayed_work\r\n应该是在下面的调用过程中，\r\npm_suspend-->enter_state-->suspend_prepare-->suspend_freeze_processes-->freeze_processes-->try_to_freeze_tasks．你所说的第一个检查点调用pm_wakeup_pending后，发现active wakeup source : mmc_delayed_work，所以睡不下去了．\r\n我怎么找到这个wakelock所属的进程信息呢？是谁拿着锁不让系统睡下去的？"
+ },
+ {
+  "id": "1842",
+  "parent": "1815",
+  "date": "2015-05-20T15:34:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@qinghu：mmc_delayed_work阻止了系统的睡眠。"
+ },
+ {
+  "id": "2022",
+  "parent": "0",
+  "date": "2015-06-24T03:01:36+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo, 请教下PM runtime, PM domain, system suspend搅在一起的问题：\r\n1.PM domain和设备在system suspend中的callback之间的关系究竟是什么样的？我看到在power domain的相关函数pm_genpd_XXX中（比如pm_genpd_prepare），都会先判断power domain是否处于off的状态，如果是的话就直接返回。那这是不是意味着在系统suspend过程中，属于这个power domain的设备所有的.prepare/.suspend/.suspend_noirq等函数都不会被调到了？如果是的话，这样做合理么？如果保证power domain off时其设备所处的状态就和比如.suspend中设置的状态一样呢？\r\n2.前面和你讨论过，系统suspend的时候为了不让设备的PM runtime和.suspend等函数一起使用，在系统suspend的不同阶段增加了pm_runtime_get_noresume，__pm_runtime_disable等。但是我发现对于使用PM domain的设备来说，在pm_genpd_prepare中如果发现domain是on的状态，就会直接调__pm_runtime_disable来禁止该dev的pm runtime，这是什么原因呢？是系统suspend一开始就让该设备完全由PM domain来控制么? 谢谢！"
+ },
+ {
+  "id": "2024",
+  "parent": "2022",
+  "date": "2015-06-24T12:19:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：问题1：\r\n如果设备从属于某个pm domain，那么设备的runtime pm就会被pm domain接管，在设备的引用计数为0（调用pm_runtime_put系列函数）时，其pm domain的pm_genpd_runtime_suspend函数会被调用。\r\npm domain在其下面所有的设备的引用计数为0时，power off 该PM domain（有些例外，例如PM_QOS_FLAG_NO_POWER_OFF等等），使domain的状态为GPD_STATE_POWER_OFF。\r\n因此，如果device所在的pm domain都已经OFF了，device driver的suspend就没有意义了（因为设备已经power off了）。这就是pm domain的初衷：\r\n具有pm domain的设备，如果它允许在runtime suspend的时候被power off，是不需要实现suspend/resume等常规机制的，因为pm domain配合runtime pm，会更彻底。"
+ },
+ {
+  "id": "2025",
+  "parent": "2024",
+  "date": "2015-06-24T13:25:30+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：wowo, 我能不能这样理解：\r\n1. 具有pm domain的设备，它根本就无法实现suspend/resume等函数，因为这些都被它的PM domain接管了。所以原本在suspend/resume中实现的内容，都要放在设备的runtime PM中实现了。\r\n2. 没有pm domain的设备，其suspend/resume函数和PM runtime是没有关系的。比如设备在系统suspend之前已经调用了PM runtime，其suspend函数还是会被调到。"
+ },
+ {
+  "id": "2026",
+  "parent": "2025",
+  "date": "2015-06-24T14:04:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：不完全是这样，虽然pm domain接管了，但是还可以调用到driver的suspend：\r\npm_genpd_suspend->genpd_suspend_dev"
+ },
+ {
+  "id": "2027",
+  "parent": "2025",
+  "date": "2015-06-24T14:05:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：具有pm domain的设备，也可以不用runtime pm，不用pm domain，转而使用常规的suspend、resume。"
+ },
+ {
+  "id": "2028",
+  "parent": "2022",
+  "date": "2015-06-24T14:10:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：问题2：\r\npm domain的prepare函数被调用时，说明系统进入了常规的suspend、resume过程（参考“/pm_subsystem/suspend_and_resume.html”），prepare是在为suspend调用做准备，因此顺便把runtime PM禁止掉，处理会比较简单。"
+ },
+ {
+  "id": "2029",
+  "parent": "2026",
+  "date": "2015-06-24T14:48:26+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：如果suspend和runtime suspend都实现的话，会不会造成这样的问题：\r\n1. 在系统suspend之前power domain是ON的；\r\n2. 调用driver->suspend函数，在这个函数里会将driver的clk关掉；\r\n3. 在pm_genpd_suspend_noirq中，会调用该driver的runtime suspend，这个函数可能会读写寄存器，但因为在步骤2中clk已经关掉了，会造成问题。\r\n\r\n如果存在这个问题的话，我觉得driver的suspend还是不应该实现，只要有runtime suspend就可以了，当然runtime suspend要能完成suspend的所有功能。"
+ },
+ {
+  "id": "2030",
+  "parent": "2028",
+  "date": "2015-06-24T14:55:47+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：也就是说，\r\n1. 对于只使用了PM RUNTIME的设备，在device_suspend_late中才会将pm runtime disable掉；\r\n2. 而对于使用了PM DOMAIN的设备， 在device_prepare中就会将pm runtime disable掉？ \r\n唉，觉得open source这样的设计真是复杂无比，看得头疼。干脆都在系统suspend的prepare阶段把pm runtime都干掉算了...."
+ },
+ {
+  "id": "2031",
+  "parent": "2030",
+  "date": "2015-06-24T15:44:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：是啊，确实比较复杂。可能pm domain涉及到供电，比较谨慎吧。也可能是suspend/resume、runtime pm、pm domain不是一起进化的，可能未来的某一天会简化一些。"
+ },
+ {
+  "id": "2032",
+  "parent": "2029",
+  "date": "2015-06-24T15:49:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：是不是这种情况不太好说，要看看代码。\r\n我一直觉得runtime pm思路很好，但做的太复杂了，又和suspend/resume、pm domain等搅在一起。简单的用一下，还okay。但往仔细里使用，是相当头大的。"
+ },
+ {
+  "id": "2033",
+  "parent": "2032",
+  "date": "2015-06-24T16:05:26+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：是的。个人觉得这三者搅在一起，有些问题根本就无法解决啊：比如device的suspend函数原本有：\r\n1. 保存软件状态； \r\n2. 关闭clk;\r\n3. 掉电；\r\n4. 使能suspend下的wakeup事件（只在系统进入suspend的时候使能）。\r\n\r\n当使用了PM domain后，操作1可以塞到device的pm runtime函数中， 操作2，3可以塞到power domain的runtime中，但是操作4就没地方塞了，就算放在suspend函数中也可能不被调到。这种问题是不是就不能用PM domain了？"
+ },
+ {
+  "id": "2034",
+  "parent": "0",
+  "date": "2015-06-24T16:33:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015 \r\n4. 使能suspend下的wakeup事件（只在系统进入suspend的时候使能）。 \r\n=============\r\n这个功能放到driver里面做本来就不规范啊，kernel有标准的实现，可以在suspend的时候，自动enable作为wakeup source的设备的中断。你可以参考“/pm_subsystem/wakeup_events_framework.html”中的讨论。"
+ },
+ {
+  "id": "2036",
+  "parent": "2034",
+  "date": "2015-06-24T18:23:30+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：多谢。确实是这样的，不应该放在driver里面做。那这样应该是没问题的。\r\n\r\n我在想，如果device使用了power domain，就表示即使在系统没有suspend的时候，设备的power也有可能被关掉，这是不是其实就意味着设备PM runtime时的就可能处于最深的power down状态，而不是像单纯的PM runtime那样还可以选择某些较浅的状态？\r\n\r\n还有一个问题请教下，如果想实现级联设备的pm runtime的话，需要怎么指定某个device的parent？是在dts中么？还是需要自己实现呢？"
+ },
+ {
+  "id": "2037",
+  "parent": "2036",
+  "date": "2015-06-24T21:01:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：对，pm domain是用来控制power的。runtime pm描述的是级联设备之间的电源状态转换，是相对规则的关系。然而，任意设备之间，都可能共用power domain。这就是区别。\r\n对于级联设备，最好能在DTS中体现，你可以利用simple-bus。"
+ },
+ {
+  "id": "2038",
+  "parent": "2037",
+  "date": "2015-06-25T19:22:01+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@wowo：谢谢wowo。我今天给team里面做的了pm runtime，power domain和系统suspend的training，真复杂啊，说的口干舌燥。\r\n\r\n还有个小问题确认下，如果device用异步操作pm_runtime_get的话，当这个函数返回的时候是不保证此时runtime resume函数被调到的。那么driver owner是不是要在之后的硬件操作中先判断下设备是否已经ACTIVE了呢？这样感觉比较麻烦啊。"
+ },
+ {
+  "id": "2039",
+  "parent": "2038",
+  "date": "2015-06-25T19:38:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：不必客气。呵呵，看不明白不如写明白，写明白不如讲明白，你也做了好事一桩啊~~~\r\n对于异步操作，需要思考一点，driver为什么要异步suspend？因为suspend中要等一些东西（例如传输完成等）。这个时候，driver owner本身就有比较复杂的逻辑，维护一个自身的状态，也是有必要的。只要逻辑清晰、合理，是不怕麻烦的。"
+ },
+ {
+  "id": "4467",
+  "parent": "0",
+  "date": "2016-08-30T08:52:03+08:00",
+  "author": "bypass",
+  "site": "",
+  "text": "power domain一般是用于SOC内部的电源分区吗，同样是电源控制，它与regulator的差异点在哪里呢？"
+ },
+ {
+  "id": "4468",
+  "parent": "4467",
+  "date": "2016-08-30T08:58:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bypass：power domain关注的是“供电的有无”，通常会有几个相互独立的模块共用同一路供电，不一定都是SOC内部。\r\nregulator关注的是电压/电流（电压多一些）的大小。\r\n二者所对应的物理器件不同，因此使用了不同的软件抽象。"
+ },
+ {
+  "id": "4674",
+  "parent": "0",
+  "date": "2016-10-09T16:05:34+08:00",
+  "author": "twinkle",
+  "site": "",
+  "text": "hi,wowo:\r\n   非常感谢分享这么好的文章，一直在跟着你的文章对照linux设备驱动开发进行学习，\r\n   您在这篇文章最后写道：具体的on/off流程，会在下一篇文章继续分析，我没有找到相应的文章，很好的学习资料，期待wowo能够在空闲的时候继续分享！"
+ },
+ {
+  "id": "4678",
+  "parent": "4674",
+  "date": "2016-10-09T19:46:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@twinkle：\"会在下一篇文章继续分析\"这篇文章确实没有接着写（考虑到PM domian使用还不是很广泛）~~"
+ },
+ {
+  "id": "4924",
+  "parent": "0",
+  "date": "2016-11-24T11:24:18+08:00",
+  "author": "youmuchenghuai",
+  "site": "http://muyou",
+  "text": "你好，我想实现插入耳机时，平板（android 4.4）linux-3.4 从深度休眠唤醒。插入时CODEC的SWITCH部分会有中断.\r\n1. 在SWITCH驱动里面 调用了     device_set_wakeup_capable（），device_init_wakeup（），在request_irq()加 IRQF_NO_SUSPEND 标志， 然后enable_irq_wake（），跟代码发现 gic_set_wake（）里面的相关gic_arch_extn.irq_set_wake为空，---所以好像没效果。\r\n2.  我另外一个功能是通过GPIO唤醒的，这个已经实现（但不是通过1方法，是SDK在arch/arm/mach-xxx/pm里面做了支持）， 所以我想到可能是深度休眠时，SOC有些模块可能power off了，导致无法产生中断。 但是我不知到这个SOC 内部的各模块USB、CODEC等的power_domain具体是怎么划分的？  代码里面可以知道么？ 要怎么打开SOC内部CODEC模块的电源以实现休眠唤醒？"
+ },
+ {
+  "id": "4926",
+  "parent": "4924",
+  "date": "2016-11-24T11:45:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@youmuchenghuai：1. 你确信你的irqchip是gic_arch_extn不是gic_chip吗？如果是的话，就要自己想办法咯。\r\n2. 看看代码中pm domain有关的实现，应该可以推出来。"
+ },
+ {
+  "id": "7765",
+  "parent": "4678",
+  "date": "2019-11-27T09:49:44+08:00",
+  "author": "yui",
+  "site": "",
+  "text": "@wowo：runtime PM和pm domain还会再写吗，代码看的有点懵"
+ }
+]

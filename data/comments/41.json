@@ -1,0 +1,314 @@
+[
+ {
+  "id": "147",
+  "parent": "0",
+  "date": "2014-05-20T15:25:06+08:00",
+  "author": "木树",
+  "site": "http://wood-tree.com",
+  "text": "纯技术性博客..看不懂 顶一个 哈哈"
+ },
+ {
+  "id": "419",
+  "parent": "0",
+  "date": "2014-09-10T10:25:43+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "hi linuxer 有一个问题想要请教一下，比如据我的了解SDRAM的拷贝效率，同一个bank，切不同的row，这样效率最低，如果比如我做一个memory test的测试，源地址 目的地址的 bank不同，这样的话效率应该要比，源地址目的地址 在同一个bank效率高。\r\n我不知道上面的信息，对于我实际的软件编程有什么指导意义，因为从操作系统的角度，你申请的内存都是操作系统给你提供好了，你不太可能去操作实际的地址，其实Linux也比较忌讳这么做。"
+ },
+ {
+  "id": "420",
+  "parent": "419",
+  "date": "2014-09-10T12:20:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：我非常喜欢你的问题，因为我也是在这个问题上思考了很久，很遗憾，我也没有答案。你的疑惑也是我的疑惑。毫无疑问，目前linux没有任何的机制可以让程序员在分配内存的时候指定bank、row这些参数，因此，对于linux上的程序员（无论是内核还是用户空间），了解了SDRAM的这些内部操作的知识也无法指导工程师编写更优秀的程序。当然，如果对linux的内存管理进行修改的话还是可以提高代码的性能的。例如：修改linux kernel中内存管理，让它变成可以针对SDRAM上的每个bank分别管理，这样，程序可以在指定的bank上分配一个free page，如果有这样的机制，我们程序员才好操作。\r\n基于当前的linux框架，我有考虑是否可以将4个bank分成四个memory node（这时候要引入NUMA），这样，我们可以在指定的node上分配page。但这似乎不是NUMA的初衷。\r\n\r\n注：上面都是我自己瞎想的，仅供参考"
+ },
+ {
+  "id": "421",
+  "parent": "420",
+  "date": "2014-09-10T13:38:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：我觉得这样做是不太妥的，可能我们从事驱动的工作太久，才会有这样的疑惑。OS kernel关注的是大格局，并不是性能至上（否则直接裸跑就可以了），因此很多时候，会牺牲一些小性能。就SDRAM来说，OS的宗旨是屏蔽硬件差异和细节，如果要把BANK之类的概念，开放到kernel之外，甚至用户空间，就违反了这样的宗旨。哪怕能在个别场合提升一些性能，也是得不偿失。\r\n从另一个角度说，SDRAM的这种BANK差异，只是技术长河中的一个个案，对性能的影响又不是特别明显，以Linux kernel的格局，不应为它开绿灯。"
+ },
+ {
+  "id": "428",
+  "parent": "421",
+  "date": "2014-09-10T15:10:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：同意，SDRAM bank这样的概念的确不应该开放到用户空间，不过对于kernel的内存管理还是有可能关注的，当然，前提条件是性能影响到一定的程序。当前linux kernel没有关注到这里一定是因为对系统性能影响不大。如果真的影响很大的话，linux kernel一定会处理的。\r\n\r\n另外，这一点和软硬件系统设计有关。如果系统没有cache，SDRAM bank的影响应该还是比较大的，但是现代的系统设计都是有L1、L2的cache，因此，SDRAM bank对系统性能的影响被弱化了。\r\n\r\n关于封装和性能，我的看法是这样的：在用户空间，毫无疑问，更倾向于软件封装，哪怕损失一些性能，也要让软件模块有更好的封装特性（很多大型用户空间软件采用了C＋＋而不是性能更好的c）。但对于内核，它对性能是非常关注的，一条系统调用很可能短时间内被成千上万次的调用，因此，很多linux kernel的代码在底层扣的很细。\r\n\r\n不过，这个问题就是天平的两端，没有对错，看你如何平衡。"
+ },
+ {
+  "id": "805",
+  "parent": "0",
+  "date": "2014-12-04T16:10:10+08:00",
+  "author": "qianzhibing",
+  "site": "",
+  "text": "我的理解：\r\n一般SDRAM和接口控制器都支持同时打开多个BANK工作，因此在不同bank操作效率是比较好的，设计的好能背靠背交错访问，减少不少等待的时间，但这一般都是底层设备驱动需要大数据量的内存操作才会考虑，比如显示相关的内存。及时这种场景，大部分系统也不会考虑专门设计，因为这确实比较麻烦，而带来的性能提升也不明显。\r\n同一BANK切row因为需要precharge等待时间，因此效率偏低，但一般对于用户空间程序，本身对大块连续内存的操作的需求也很少，并且对这点效率损失也基本可以忽略。"
+ },
+ {
+  "id": "807",
+  "parent": "805",
+  "date": "2014-12-04T18:29:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@qianzhibing：同意，在实际的系统中，由于L1 L2甚至L3的cache的引入，实际上SDRAM上性能的提升反应到系统应该非常小的。"
+ },
+ {
+  "id": "844",
+  "parent": "0",
+  "date": "2014-12-07T14:29:48+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "今天看了一点，一个bank的supercell矩阵是由8196行根1024列组成\r\n看不太懂，这里一行 一列 应该不是对应WL BL吧？"
+ },
+ {
+  "id": "845",
+  "parent": "844",
+  "date": "2014-12-07T15:19:07+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@tigger：或者说 从cpu的角度应该看不到cell吧，他能访问到的最小的单位是supecell吗？"
+ },
+ {
+  "id": "846",
+  "parent": "0",
+  "date": "2014-12-07T15:33:32+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "还有一个问题，就是ddr bitflip这种现象一般是什么阶段出现呢？\r\n当cpu 的额sleep之后，为了省电，这个时候ddr phy 应该是掉点吧。我想知道这个时候ddr的数据都丢失了吗？\r\n据我的现有认识，cpu deep sleep之后的code应该会跑在iram，那么resume的时候一定是从iram跳到ddr，这个时候ddr应该要做一系列的操作保障ddr工作正常。比如ddr training 等等，不知道楼主对这一系列操作有没有了解啊？"
+ },
+ {
+  "id": "847",
+  "parent": "0",
+  "date": "2014-12-07T17:39:28+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "还有这个里面有很多时间点的缩写，但是好像没有具体的时序图啊？"
+ },
+ {
+  "id": "848",
+  "parent": "0",
+  "date": "2014-12-07T17:50:25+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "Precharge 没看到能对row进行操作啊，为啥可以deactive呢？ACTIVE是选中一行，但是之前的描述PRRCHARGE是将BL电压设置到Vs/2。\r\n不好意思，我没有先去查看网上的其他文章就直接提问了。按照常理我应该先学习再来发问的。"
+ },
+ {
+  "id": "849",
+  "parent": "844",
+  "date": "2014-12-07T22:41:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：WL和BL是真对一个cell描述时使用的术语。\r\n当我们描述一个SDRAM芯片的时候，最小的寻址单位就是supercell，“8196行、1024列”都是针对一个supercell而言。\r\n\r\n针对这个场景，1024列上的所有cell共享一个WL，选中某一行，就是设定WL为高电平，导通1024列上的所有cell的M1三极管，共计1024 X 16个cell。选中某一列，则选中了一个supercell，共计16个BL"
+ },
+ {
+  "id": "850",
+  "parent": "845",
+  "date": "2014-12-07T22:44:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：CPU看不到cell，CPU只能看到线性地址。SDRAM controller把CPU的地址操作转换成行地址、列地址，bank地址。\r\n\r\nCPU能访问的最小单位就是supercell。不过也不需要纠缠于supercell这个概念，这不是一个通用的概念。"
+ },
+ {
+  "id": "851",
+  "parent": "846",
+  "date": "2014-12-07T22:59:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：cpu deep sleep之后不会跑着iram中的code，因为这时候CPU已经不会取指令运行了。好的CPU应该在deep sleep之后应该shutdown包括CPU核心电压在内的大部分供电，仅仅保留一个非常小的SOC 上的一个HW block的供电，这个供电域应该包括RTC，2~3个GPIO，从deep sleep唤醒的逻辑电路，至少有一个scratch寄存器，保护了sleep那一点的PC值。\r\n\r\n如果你想suspend to RAM的话，DDR的供电一定要保持。如果是suspend to disk的话，当然也可以shutdown DDR chip的供电。\r\n\r\n当resume的时候，由于cpu core是完全下电的，因此cpu通用寄存器的内容全部都保持不住了（iram是否能保持住数据是和SOC系统的电源管理设计相关的），这时候，PC一般会等于0，也就是说从0地址开始取指令执行，具体0地址是什么也是和SOC设计相关，可能是ROM代码，也可能是NOR flash代码（也就是bootloader的代码了），但无论如何，最终是从scratch寄存器中恢复PC至，跳转到DDR ram中执行\r\n\r\nddr training和ddr bitflip我没有接触过，你可否给讲一讲？"
+ },
+ {
+  "id": "852",
+  "parent": "847",
+  "date": "2014-12-07T23:00:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：datasheet中的时序图非常多，我就没有贴上去，有空也可以补上"
+ },
+ {
+  "id": "853",
+  "parent": "848",
+  "date": "2014-12-07T23:08:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：这里我没有说明清楚，这里有两个precharge的词语，用在两个不同的场景中，一个是描述在进行cell的读操作的时候，使用了precharge讲BL的电压升到Vs/2。另外一个场景描述SDRAM controller发送PRECHARGE的命令，这个操作仅仅是操作WL，将一个行中的所有cell的M1三极管处于截止状态。\r\n\r\n为了不引起歧义，我还是把第一个场景中的precharge修改一下吧"
+ },
+ {
+  "id": "900",
+  "parent": "0",
+  "date": "2014-12-18T17:21:34+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "下面地址里面讲内存的文章也不错。讲的也很细致。可以对照楼主的文章来看。\r\nhttp://bbs.pceva.com.cn/thread-29050-1-1.html"
+ },
+ {
+  "id": "901",
+  "parent": "851",
+  "date": "2014-12-18T20:10:44+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：The DQS signal on the memory interface is bidirectional.  The PHY in many (not all) memory architectures will generate a DQS gate signal that switches the read DQS capture logic on and off - on for reads and off for writes.  Gate training is the process of setting the timing of the read DQS gate to turn on prior to the first read DQS.  For DFI, the dfi_rddata_en signal is often used as part of the read DQS gate signal generation.  A delay line may be used to locate and set the optimal timing margin for the gate.  One way to do gate training, as discussed above, is to first align the rising edge of the gate signal to the rising edge of the first read DQS in a read burst.  Once this alignment is know, the gate signal can be moved back far enough from the first read DQS to provide necessary timing margin.  There may be other ways to do gate training as well."
+ },
+ {
+  "id": "902",
+  "parent": "851",
+  "date": "2014-12-18T20:12:15+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：从ddr phy的datasheet上面来看，ddr training过程就是写几个training的寄存器。实际的操作我还要继续探索才知道"
+ },
+ {
+  "id": "915",
+  "parent": "902",
+  "date": "2014-12-22T18:25:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：貌似Linuxer同学这一段时间比较忙？估计又被老板盯上了，哈哈"
+ },
+ {
+  "id": "917",
+  "parent": "915",
+  "date": "2014-12-22T19:16:17+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：有可能，我前段时间也比较忙，文档都没仔细看了，等后面要补上了"
+ },
+ {
+  "id": "918",
+  "parent": "917",
+  "date": "2014-12-22T19:31:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：是啊，年底了，都很忙。大家要努力工作挣钱，不然年都不好过啊~~~~呵呵"
+ },
+ {
+  "id": "920",
+  "parent": "915",
+  "date": "2014-12-23T09:25:39+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：每当target board回来的时候总会忙一阵子......不过话说回来，如何定义忙呢？有没有绝对的忙呢，忙是不是相对的？处于静止状态的tigger和乘坐0.5倍光速的列车上的wowo同学观察到linuxer忙的程度是否一样呢？继续思考中......\r\n\r\nPS:最近在思考狭义相对论"
+ },
+ {
+  "id": "921",
+  "parent": "920",
+  "date": "2014-12-23T09:59:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：帅哥想多了，一个是物理学，一个是心理学，木可比性~~\r\n就像老板和老妈，看到自己的忙碌程度绝对是不一样的啊，哈哈"
+ },
+ {
+  "id": "922",
+  "parent": "921",
+  "date": "2014-12-23T10:11:52+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：好吧，说是心理学也OK，我的思考方向是用功率来定义一个人的忙和闲，所谓功率就是每秒做的功，因此忙或者闲是和时间相关的，因此要考虑时间的相对行，要考虑时间和空间的关系，要考虑时间的方向，所谓时间的方向就是熵增的方向（根据热力学第二定律，对于一个孤立系统，其内部自发进行的与热相关的过程必然向熵增的方向进行。一个孤立系统如果不受外界任何影响，且系统最终处于平衡态，那么在平衡态时，系统的熵取最大值），因此要考虑宇宙大爆炸，要考虑很多很多，还是让我继续考虑吧.......哈哈哈"
+ },
+ {
+  "id": "934",
+  "parent": "921",
+  "date": "2014-12-23T16:53:02+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：我的思考方向是用功率来定义一个人的忙和闲\r\n两个不同的人，解决同样一个问题。\r\n一个人用1s就解决了，另一个人用1天来解决。那怎么从功率上来定义一个人的忙跟闲呢？\r\n这也是我一直在思考的问题，同一个公司，两个人拿基本相同的薪水，一个人看起来很忙，其实是他水平有限，问题解决需要更多时间。另一人看起来很闲，因为交给他的任务都很快解决了。但是两个人负责不同的模块，那么怎么来评判这两人对公司的价值呢？领导又怎么能知道这两人价值的不同呢？"
+ },
+ {
+  "id": "936",
+  "parent": "0",
+  "date": "2014-12-23T18:22:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tiger, 功率大不一定效率高啊，所以功率和忙闲对应倒也恰当。"
+ },
+ {
+  "id": "937",
+  "parent": "0",
+  "date": "2014-12-23T18:23:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "tigger同学，你偷换了我的概念哦。一个人的忙和闲与创造的价值是无关的。一个人负责一个模块，由于代码结构不好，不断的挖坑（有issue），不断的填坑（fix issue），当然很忙，也做了功，出了力，不过创造的价值（对公司而言）是非常少的。\r\n\r\n公司在评价一个人的时候还是要看给公司带来的价值而不是忙闲程度，如果那样的话，很多人都会装作很忙的样子，也有人会自己挖坑，不过很遗憾，很多公司做不到这一点，对管理者而言，判断忙闲还是比较简单的，判断一个人的价值相对要困难一些的，需要一个聪明的领导才行。"
+ },
+ {
+  "id": "939",
+  "parent": "937",
+  "date": "2014-12-24T09:55:04+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：嘿嘿 被你发现了\r\n这是我好久都在思考的问题，比如还有下面的问题\r\n一个linuxer是找一个正常上班时间就足够的工作，有很多业余时间去给自己充电，不断提高的工作呢\r\n还是找一个每天都很busy，但是都是辛苦钱的工作呢\r\n我还是比较纠结\r\n到底是要挣辛苦钱呢？还是钱少点，但是轻松点。这个命题我一直在思考，没有结论。我现在是第二个工作状态。哈哈哈"
+ },
+ {
+  "id": "940",
+  "parent": "939",
+  "date": "2014-12-24T09:58:21+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@tigger：现在是每天都很busy，挣辛苦钱的阶段。嘿嘿"
+ },
+ {
+  "id": "941",
+  "parent": "940",
+  "date": "2014-12-24T10:16:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：我觉得，理想的工作状态，是你这两个状态的结合：工作既轻松（指的是内心，热爱这份工作）、又挣钱、还能积累很多知识为自己充电。\r\n并且，个人意见，一个成熟、完善的社会里，各行各业，都应如此。这也是“关于蜗窝”中所想表述的、类似乌托邦似的理想。"
+ },
+ {
+  "id": "943",
+  "parent": "941",
+  "date": "2014-12-24T10:31:21+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：我的个人的愚见啊，一个成熟、完善的社会里，社会的保障制度会做的非常的好，一个人可以不为吃不上饭而发愁。做任何的工作都能至少保持温饱。这样人就会选择自己爱好的东西作为职业。而不是势力的选择挣money多的。比如举个例子，很多欧美的有完善社会保障体系的国家，普通女生找老公可以不为钱出发，在乎的是男生幽默不幽默，有没有才华，爱不爱我。这也是前段时间发生很多原配杀小三事件我的思考。\r\n当一个家庭主妇跟男主人离婚之后，她没有了生活的保障。因为她为了家庭把自己的才华都磨灭了，然后当她的生活来源得不到保障的时候。她就会本能的憎恨那个抢她男人的。\r\n当然上面的可能是片面的思考，但是我感觉make sense"
+ },
+ {
+  "id": "944",
+  "parent": "943",
+  "date": "2014-12-24T11:11:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：好吧，我想说的被你说了。我不说的原因是，任何事情，一旦涉及到社会问题，对我们来说，都是无解的。我们能做的，就是尽个人的努力，做好自己的本职工作。然后，如果可以，为改变现状做一点点努力，哪怕一点点，都可以…"
+ },
+ {
+  "id": "945",
+  "parent": "944",
+  "date": "2014-12-24T11:48:05+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：我也是一时没有忍住，哈哈。所以社会问题的根源可以知道，但是讨论就不必了。因为现在看来是无解的。我现在心态已经很平和了，体制就是在这里，无法撼动。我们能做的就是一点点的为改变而努力。这也是我喜欢wowo的原因啊。if you want something,try your best and god will do the rest"
+ },
+ {
+  "id": "2805",
+  "parent": "0",
+  "date": "2015-10-20T20:18:01+08:00",
+  "author": "floater",
+  "site": "",
+  "text": "文章是说ddr的概念和工作原理，有没有关于ddr驱动的介绍？一般来说可能是对IP的软件应用"
+ },
+ {
+  "id": "2806",
+  "parent": "2805",
+  "date": "2015-10-20T22:09:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@floater：ddr驱动一般就是初始化代码而已，在bootloader中，有了这些基础知识，其实ddr的驱动或者初始化部分的配置是非常容易理解的。"
+ },
+ {
+  "id": "5014",
+  "parent": "0",
+  "date": "2016-12-13T11:59:05+08:00",
+  "author": "HelloWorld",
+  "site": "",
+  "text": "您好，我想问一下关于内存读取和寻址的问题~最近看了不少相关文章，感觉有点混乱。。。\r\n\r\n寻址是个什么概念？是不是说只是把行列地址给解码了，但并没有对行列（或者说字线和位线）进行操作？"
+ },
+ {
+  "id": "5018",
+  "parent": "5014",
+  "date": "2016-12-14T09:15:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@HelloWorld：我的看法和理类似的，寻址的操作仅仅是定位到cell，而不进行实际的read或者write的操作。但是，实际上，寻址往往是和load或者store捆绑在一起的，是一个不可分隔的整体。"
+ }
+]

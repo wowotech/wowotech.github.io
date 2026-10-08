@@ -1,0 +1,34 @@
+[
+ {
+  "id": "8283",
+  "parent": "0",
+  "date": "2021-08-27T12:00:34+08:00",
+  "author": "JovenGeek",
+  "site": "",
+  "text": "linux的时间子系统的七到十一章不打算写了吗。。。。。。"
+ },
+ {
+  "id": "8285",
+  "parent": "0",
+  "date": "2021-09-01T15:17:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "等我从绿厂退休就会补齐的，哈哈。"
+ },
+ {
+  "id": "8289",
+  "parent": "8285",
+  "date": "2021-09-03T17:36:52+08:00",
+  "author": "大哥您好",
+  "site": "",
+  "text": "@linuxer：同样期待啊。。。"
+ },
+ {
+  "id": "8661",
+  "parent": "0",
+  "date": "2022-08-02T14:54:08+08:00",
+  "author": "eexplorer",
+  "site": "",
+  "text": "crash> dma_pool ffff9d0fa45f4c00 -x\r\nstruct dma_pool {\r\n...\r\n  pools = {\r\n    next = 0xdead000000000100, \r\n    prev = 0xdead000000000200\r\n  }\r\n}\r\n\r\n从dma_pool.pools这个指针的值，可以判定这个dma_pool已经被destroy了，所以后续去访问这个dma_pool的fields都是不正确的。\r\n\r\n比如，page_list.prev的值是指向自己，但是page_list.next不是，所以这个list不是空的。page_list.prev应该是指向最后一个entry的，但是现在确实指向自己，所以这个时候去解析dma_pool里的fields，会得到一些奇怪的结论。\r\n\r\ncrash> dma_pool ffff9d0fa45f4c00 -x\r\nstruct dma_pool {\r\n  page_list = {\r\n    next = 0xffff9d0fa45f4c80, \r\n    prev = 0xffff9d0fa45f4c00"
+ }
+]

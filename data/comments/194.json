@@ -1,0 +1,130 @@
+[
+ {
+  "id": "2021",
+  "parent": "0",
+  "date": "2015-06-24T02:46:03+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "能否介绍下确定一款SOC的频点和电压的原则或方法？比如拿到一款新的SOC，我们应该给它选定哪些频点和电压呢。个人理解选好了这个，再加上cpufreq的软件框架，才能很好的达到power优化的目标吧？"
+ },
+ {
+  "id": "2023",
+  "parent": "2021",
+  "date": "2015-06-24T09:45:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：据我所知，选频点的一般做法是：\r\n1. 根据SOC的spec，确定soc支持的频率和电压范围。\r\n2. 基于性能和功耗的考量，在允许范围内，选出一些潜在的组合。\r\n3. 通过大规模的老化测试（一般一天测试一个频点，需要尽量多的设备参与），剔除那些不稳定的频点，同时选出可工作的最低和最高频点。\r\n4. 根据实际的应用情况，在cpufreq中保留几个，用作日常调频。一般3~5个就够了。"
+ },
+ {
+  "id": "2214",
+  "parent": "0",
+  "date": "2015-07-14T21:43:04+08:00",
+  "author": "dashan",
+  "site": "",
+  "text": "你好蜗窝，感谢你分享了这么好的文章。现在有一个问题请教一下，我的系统ca9，双核，cpu1&cpu0,自己开发的网卡驱动，工作正常，假设其中断为neta-irq, 如果把beta-irq亲和性设置到cpu1, 发流正常，中断在cpu1正确处理，之后offline cpu1, 中断迁移到cpu 0上，中断依然可以正确处理，收发正常，但是再执行online命令把cpu1启动起来的时候却失败了，这个问题必须发流触发中断才能复现，我分析下来发现cpu-secondary-kernel没有执行，您能否给点建议，我看不出哪里出错了，谢谢"
+ },
+ {
+  "id": "2215",
+  "parent": "2214",
+  "date": "2015-07-14T22:09:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dashan：建议从“为什么”cpu secondary kernel“没有执行查起，大致的调用流程是：\r\ncpu_up-->_cpu_up-->__cpu_up(arch/arm/kernel/smp.c)-->smp_ops.smp_boot_secondary\r\n在这些函数里面加一些打印，查一下在哪里终止的，大概就明白原因了。"
+ },
+ {
+  "id": "2236",
+  "parent": "2215",
+  "date": "2015-07-17T12:41:44+08:00",
+  "author": "dashan",
+  "site": "",
+  "text": "@wowo：谢谢，当时有点记错了，是secondary_start_kernel没有被执行，这部分代码是汇编相关的。请问怎么在汇编加打印？ 下面是当时写的邮件：\r\naxxx_secondary_startup    secondary_startup  __secondary_switched  secondary_start_kernel\r\n\r\nin C function “arm_xxx_boot_secondary” (located in file platsmp-xxx.c), pointer of “axxx_secondary_startup” is written to a address as following, do you know when and where to run the code in that address of “pmsu_mp_base + PMSU_BOOT_ADDR_REDIRECT_OFFSET(hw_cpu)”?\r\n\r\nif want to start cpu1, secondary_start_kernel must be called, but from my log, this function is not called when the issue happen? I need to know why it is not called.\r\n\r\nWould you like to tell me some details about it? thank you.\r\n\r\npmsu_set_cpu_boot_addr(cpu, axxx_secondary_startup);\r\n\r\n……\r\n\r\nvoid pmsu_set_cpu_boot_addr(int hw_cpu, void *boot_addr)\r\n{\r\n         writel(virt_to_phys(boot_addr), pmsu_mp_base +\r\n                   PMSU_BOOT_ADDR_REDIRECT_OFFSET(hw_cpu));\r\n}\r\n谢谢"
+ },
+ {
+  "id": "2237",
+  "parent": "2236",
+  "date": "2015-07-17T14:23:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dashan：据您描述，cpu_die之后，CPU1应该是被掉电了。然后在.smp_boot_secondary()中，会重新上电，CPU1从bootloader开始执行，执行的代码就是“pmsu_mp_base + PMSU_BOOT_ADDR_REDIRECT_OFFSET(hw_cpu)”。\r\ncpu up失败，没有执行secondary_startup的原因，可能包括：\r\n1. 上电失败，CPU压根没有执行。\r\n2. CPU上电到执行“pmsu_mp_base + PMSU_BOOT_ADDR_REDIRECT_OFFSET(hw_cpu)”处代码之间，出现问题。\r\n3. “pmsu_mp_base + PMSU_BOOT_ADDR_REDIRECT_OFFSET(hw_cpu)”中的数据丢失，\r\n但和网卡的中断发流有什么关系呢？发流导致有些内存被覆盖？\r\n正面的查法，还是顺着secondary cpu boot的流程，检查异常的位置。不用打印，可以用其它方法，比如点LED，实在不行，拉GPIO也行。找到异常位置之后，就很好找到原因。\r\n侧面的查法，可以让网卡只产生中，不发流，看看是否出问题，这样可以知道到底是中断的原因，还是发流的原因，然后再进一步debug。"
+ },
+ {
+  "id": "2243",
+  "parent": "2237",
+  "date": "2015-07-17T22:19:20+08:00",
+  "author": "dashan",
+  "site": "",
+  "text": "@wowo：非常感谢您的回复，我会尝试按你说的调试，有发现再告诉你"
+ },
+ {
+  "id": "2484",
+  "parent": "0",
+  "date": "2015-08-20T17:15:07+08:00",
+  "author": "paoshapaoxue",
+  "site": "",
+  "text": "hi，wowo：\r\n   你在本文中说的 hot plut 功能可以参考文章“Linux CPU core的电源管理(4)_cpu control” 这个文章我怎么一直没找到呢，是不是还没有完成啊？"
+ },
+ {
+  "id": "2485",
+  "parent": "2484",
+  "date": "2015-08-20T17:37:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@paoshapaoxue：是的，没有加超链接的引用，就是没来得及写，抱歉哈"
+ },
+ {
+  "id": "2704",
+  "parent": "0",
+  "date": "2015-09-27T15:18:08+08:00",
+  "author": "paoshapaoxue",
+  "site": "",
+  "text": "hi，wowo：\r\n   文中多次提到cpu core 自动调频，可以根据自身的负载进行调频，只需要软件设置频率最大和最小调节范围即可，这个自调节是硬件自己实现的吗？之前没听说过，有没有相关的资料或者代码之类的可以阅读参考?"
+ },
+ {
+  "id": "2705",
+  "parent": "2704",
+  "date": "2015-09-27T17:26:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@paoshapaoxue：是这样的。据我所知，kernel中支持cpufreq的那些CPU中，只有intel和索尼的LongRun有这样的特性。代码可以参考“drivers/cpufreq/longrun.c”，不过最好能拿到这些CPU的资料，遗憾的是我也没有。"
+ },
+ {
+  "id": "3600",
+  "parent": "0",
+  "date": "2016-03-07T20:45:16+08:00",
+  "author": "kobe.bao",
+  "site": "",
+  "text": "Hi wowo:\r\n\r\n   关于电源管理，有个问题请教，是这样的（高通soc芯片）：\r\n\r\n   需要regulator供电的外设，都会在其DTS中对regulator进行设置(暂且称之为regulator设置节点)，例如：\r\n\r\n   qcom,ctrl-supply-entry@0 {\r\n\r\n         qcom,supply-name = \"vdda\";\r\n\r\n         qcom,supply-min-voltage = <1250000>;\r\n\r\n         qcom,supply-max-voltage = <1250000>;\r\n\r\n        ...\r\n\r\n         };\r\n\r\n    驱动代码中会对该节点进行解析，利用regulator_get、regulator_count_voltages等API函数进行设置。\r\n\r\n    通常，外设的DTS中还有一个这样的节点，例如：\r\n\r\n    vdda-supply = <&pm8994_l2>\r\n\r\n    该节点的解释是“Phandle for vreg regulator device node”，暂且称为regulator设备节点。但是我在代码中并没有找到对该节点的解析，我想请问，regulator设备节点与regulator设置节点是怎么联系起来的？"
+ },
+ {
+  "id": "3601",
+  "parent": "3600",
+  "date": "2016-03-07T20:47:15+08:00",
+  "author": "kobe.bao",
+  "site": "",
+  "text": "@kobe.bao：sorry，我发错地方了"
+ },
+ {
+  "id": "3735",
+  "parent": "0",
+  "date": "2016-03-27T18:20:28+08:00",
+  "author": "seven",
+  "site": "",
+  "text": "1）如果控制CPU core的电压和频率。\r\n挑一个错别字, 应该是 “如何控制“ 吧"
+ },
+ {
+  "id": "5004",
+  "parent": "0",
+  "date": "2016-12-09T08:52:18+08:00",
+  "author": "lolo84",
+  "site": "",
+  "text": "群主，我是那个一直在问怎么在linux下运用api函数动态调整时钟频率的，请问devfreq 的调整有相应的帖子吗？"
+ },
+ {
+  "id": "5005",
+  "parent": "5004",
+  "date": "2016-12-09T09:42:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lolo84：抱歉啊，我没有写过devfreq，因为觉得现在用到的不是很多。"
+ }
+]

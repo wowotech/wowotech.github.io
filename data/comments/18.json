@@ -1,0 +1,234 @@
+[
+ {
+  "id": "76",
+  "parent": "0",
+  "date": "2014-04-09T22:39:25+08:00",
+  "author": "来看看",
+  "site": "",
+  "text": "\"该数据结构的第一个变量必须是struct attribute类型的变量\", 必须吗？"
+ },
+ {
+  "id": "85",
+  "parent": "76",
+  "date": "2014-04-14T09:29:38+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@来看看：多谢指正，还真不一定。\r\n要弄清楚所以然，还得看container_of（include/linux/kernel.h, line 783)宏定义。该宏定义的目的是：从一个内部指针中（struct attribute attr），获得上层数据结构的指针（也就是container，例如struct class_attribute）。\r\n/**\r\n * container_of - cast a member of a structure out to the containing structure\r\n * @ptr:    the pointer to the member.\r\n * @type:   the type of the container struct this is embedded in.\r\n * @member: the name of the member within the struct.\r\n *\r\n */\r\n#define container_of(ptr, type, member) ({          \\\r\n    const typeof( ((type *)0)->member ) *__mptr = (ptr);    \\\r\n    (type *)( (char *)__mptr - offsetof(type,member) );})\r\n\r\n其中ptr返回欲获取指针的地址，type是该指针的类型（如struct class_attribute），member是该结构内部的一个成员（如上面的attr）。由该宏定义可知，内核不会限制内部成员的顺序。\r\n\r\n～～～～～～～～～～～～～～～\r\n马上改正。"
+ },
+ {
+  "id": "811",
+  "parent": "0",
+  "date": "2014-12-04T22:47:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "puppypyb在《Linux设备模型(5)_device和device driver》中评论非常对，这篇文章写的太过简单、模糊了。甚至一个很重要的概念（attribute group）都没有提。\r\n另外，“4. sysfs在设备模型中的应用总结”中的例子，如果换成device_attribute会更好，它在driver开发过程中会经常使用。\r\n很多人写driver，需要export出来一些信息的时候，总会胡来，直接自定义attribute（或group），然后调用sysfs_create_file（或者sysfs_create_group），导致/sys/devices\r\n/中的目录、文件乱飞（在wowo工作的team中，这种事很常见）。\r\n这种情况下，使用DEVICE_ATTR（struct device_attribute），然后调用 device_create_file创建文件，是比较规范的一种做法，这样创建出来的attribute文件，都会集中在\"/sys/devices/xxx/driver/\"目录下（其中xxx为driver名）。\r\n\r\n总之，设备模型系列的文章，wowo只是把自己写明白了，远远没有达到让大家明白的程度，有时间要再重写几遍。"
+ },
+ {
+  "id": "2349",
+  "parent": "0",
+  "date": "2015-07-29T11:05:52+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo，sysfs_create_bin_file创建的节点是怎么用的？现在想用这个节点，但是不太清楚bin file这种节点和普通的file节点间的却别，和如何使用的"
+ },
+ {
+  "id": "2350",
+  "parent": "2349",
+  "date": "2015-07-29T11:07:26+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@passerby：现在有个驱动中创建了bin file的节点，我在shell中需要怎么操作这个节点？想普通的sysfs file一样echo或者read吗？还是其他的？"
+ },
+ {
+  "id": "2351",
+  "parent": "2350",
+  "date": "2015-07-29T11:21:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：普通的节点，是字符串形式的，例如读一个数据，它的值是1，你读出来的就是“1”这个字符串。\r\n但bin file的话，读出来的真的就是1。\r\n你要知道自己为什么需要bin格式的，例如为了dump出某一段内存，内存的数据是一幅图片。你应该不希望它变成一大堆无意义的字符串，所以使用bin file，直接拿出来，加一个header，就可以用图片查看工具看了。"
+ },
+ {
+  "id": "2352",
+  "parent": "2351",
+  "date": "2015-07-29T11:23:41+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：嗯，谢谢了。"
+ },
+ {
+  "id": "3590",
+  "parent": "85",
+  "date": "2016-03-05T11:17:30+08:00",
+  "author": "ldy",
+  "site": "",
+  "text": "@蜗蜗：“其中ptr返回欲获取指针的地址，type是该指针的类型（如struct class_attribute），member是该结构内部的一个成员（如上面的attr）。由该宏定义可知，内核不会限制内部成员的顺序”；\r\nptr是内部成员的地址吧"
+ },
+ {
+  "id": "3592",
+  "parent": "3590",
+  "date": "2016-03-05T18:04:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ldy：是的，您说的对。多谢指正。说实话，我都有点看不懂那个时候的表述了，呵呵~"
+ },
+ {
+  "id": "3833",
+  "parent": "0",
+  "date": "2016-04-18T22:05:06+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "着重看了下sysfs文件系统，有点疑问。\r\n    sysfs在创建目录文件和普通文件时，有所区别：创建目录时，创建了sysfs_dirent、inode、dentry；而创建普通文件时，只创建了sysfs_dirent。总之，创建目录或文件时，已经创建了sysfs_dirent结构。   \r\n    而在打开目录文件和普通文件时，应该是分别调用sysfs_dir_open()、sysfs_open_file()。\r\n    在sysfs_dir_open()中，居然又新建了sysfs_dirent结构！！\r\nstatic int sysfs_dir_open(struct inode *inode, struct file *file)\r\n{\r\n\tfile->private_data = sysfs_new_dirent(parent_sd, NULL);\r\n}\r\n\r\nstatic int sysfs_open_file(struct inode *inode, struct file *file)\r\n{\r\n\tfile->private_data = buffer;\r\n}\r\n不知为何，对于目录文件，为何要新建两次sysfs_dirent呢？"
+ },
+ {
+  "id": "3837",
+  "parent": "3833",
+  "date": "2016-04-19T10:10:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@callme_friend：这种做法应该是很旧的kernel版本吧？现在稍微新一点的版本都没有这样的代码了。\r\n如果要追究原因，建议以file->private_data为突破口，看看它是做什么的，为什么需要new dirent。\r\n我手头上没有旧的kernel版本，就先不帮你看了。"
+ },
+ {
+  "id": "5126",
+  "parent": "3592",
+  "date": "2017-01-10T22:35:08+08:00",
+  "author": "hony",
+  "site": "",
+  "text": "@wowo：时间过得快哈~~"
+ },
+ {
+  "id": "5648",
+  "parent": "0",
+  "date": "2017-06-10T09:16:21+08:00",
+  "author": "kobj",
+  "site": "",
+  "text": "为什么会出现如kobject_attribute、class_attribute、device_attribute之类的结构呢？不直接使用attribute吗？"
+ },
+ {
+  "id": "5649",
+  "parent": "5648",
+  "date": "2017-06-10T14:28:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@kobj：你可以自己推演一下：attribute就这么简单，连show、store都没有，怎么办呢？"
+ },
+ {
+  "id": "5651",
+  "parent": "5649",
+  "date": "2017-06-10T15:39:42+08:00",
+  "author": "kobj",
+  "site": "",
+  "text": "@wowo：因为sysfs_ops中已经有了show和store接口了，按文中的意思是不是因为sysfs_ops中提供的接口只能处理所有属性的公共部分，所以提出了比如xxx_attribute这样的结构体来实现各自具体的show和store功能？如果是的话，那么sysfs_ops中的show和store是不是就没用了呢？"
+ },
+ {
+  "id": "5655",
+  "parent": "5651",
+  "date": "2017-06-12T11:15:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@kobj：你可以把sysfs_ops中的show和store看作一个桥梁，将文件的read/write，绕道具体attribute的show/store之上。"
+ },
+ {
+  "id": "6872",
+  "parent": "5655",
+  "date": "2018-08-07T18:50:43+08:00",
+  "author": "miroor",
+  "site": "",
+  "text": "@wowo：是否可以理解为就像面向对象那样，attribute作为kobject_attribute、class_attribute、device_attribute……的基类？"
+ },
+ {
+  "id": "6882",
+  "parent": "0",
+  "date": "2018-08-13T15:25:30+08:00",
+  "author": "chunyan",
+  "site": "",
+  "text": "s/attibute/attribute\r\n\r\n好像这里有typo？"
+ },
+ {
+  "id": "7226",
+  "parent": "0",
+  "date": "2019-03-06T15:08:23+08:00",
+  "author": "木子",
+  "site": "",
+  "text": "linux 4.18 的内核中找不到sysfs_file_operations。是不是被sysfs_file_ops替换了呢？"
+ },
+ {
+  "id": "7273",
+  "parent": "5655",
+  "date": "2019-03-13T16:58:56+08:00",
+  "author": "ask_dir",
+  "site": "",
+  "text": "@wowo：@wowo:是不是可以这样理解，定义device_attr之类结构体时先将其中的attr和sysfs_ops注册到kobject的ktype中去，然后读或者写时，vfs会调用ktype的sysfs_ops"
+ },
+ {
+  "id": "7274",
+  "parent": "7273",
+  "date": "2019-03-13T19:23:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ask_dir：是的，vfs看到的都是统一的API，不用关心具体的实现。"
+ },
+ {
+  "id": "7515",
+  "parent": "0",
+  "date": "2019-07-08T16:56:50+08:00",
+  "author": "wmc",
+  "site": "",
+  "text": "蜗窝我有一个不明白的地方，sysfs_ops中的show和store是对kobject创建的目录读写吗？比如device_attribute这个结构体中的show和store是对属性文件读写，他们之间有什么关系吗？小白提的问题可能比较乱。"
+ },
+ {
+  "id": "7695",
+  "parent": "0",
+  "date": "2019-10-14T15:42:29+08:00",
+  "author": "落花非雪",
+  "site": "",
+  "text": "你好，不知道您怎么称呼。就叫你大神吧。我这边想请教下你一个问题：目前我在做一个mipi显示这块，有一个问题就是mipi显示这块的mipi-dsi显示控制器层驱动的某些方法只开放给内核使用了。我现在想江这些方法（读写mipi屏寄存器的方法）开放给用户空间使用，不知道有没有好的方法，目前驱动层是开发板官方提供的，点屏也是可以的只是通过内核设备树去配置点屏的初始化代码，这部分执行都是内核做的。现在就想用户空间就可以将点屏的初始化代码通过驱动层方法给执行下去。"
+ },
+ {
+  "id": "8089",
+  "parent": "811",
+  "date": "2020-08-12T14:11:14+08:00",
+  "author": "爱德华",
+  "site": "",
+  "text": "@wowo：之所以不用device_create_file，而直接用sysfs_create_file，原因有两种：一是血的人自己没用过device_create_file，看到别人用sysfs_create_file就照抄sysfs_create_file，二是虽然自己知道应该使用device_create_file，但是嫌device_create_file生成的路径太长了，想偷懒省事，用sysfs_create_file的话直接可以在/sys/下操作节点，不用cd到/sys/device/xxx/yyy/zzz去操作。"
+ },
+ {
+  "id": "8090",
+  "parent": "0",
+  "date": "2020-08-12T14:40:47+08:00",
+  "author": "爱德华",
+  "site": "",
+  "text": "使用sysfs_create_file要注意一点：如果没有传入device的kobj，而是自己手动创建的kobj，就不要使用 DEVICE_ATTR 宏去定义attr，而应当使用struct kobj_attribute去定义attr，因为show和store传参形式是在ktype中定义的，如果使用DEVICE_ATTR并且使用自己创建的kobj，无法填入内核自带的device_ktype，因为drivers\\base\\core.c中，该ktype用static限制了作用域：\r\nstatic struct kobj_type device_ktype ，\r\n\r\n除非自己再手动定义一个ktype，构造和device_ktype 相同的dev_attr_show和dev_attr_store，但是那样就显得多此一举了。"
+ },
+ {
+  "id": "8091",
+  "parent": "811",
+  "date": "2020-08-12T14:50:45+08:00",
+  "author": "爱德华",
+  "site": "",
+  "text": "@wowo：其实用sysfs_create_file也是可以的，只要传入&dev->kobj，并且使用struct device_attribute定义attr，效果和device_create_file时一样的"
+ },
+ {
+  "id": "8094",
+  "parent": "7226",
+  "date": "2020-08-13T00:11:45+08:00",
+  "author": "爱德华",
+  "site": "",
+  "text": "@木子：从linux3.14开始，sysfs已经采用新的kernfs框架实现。蜗窝这篇文章参考的是3.13之前的内核代码"
+ },
+ {
+  "id": "8107",
+  "parent": "8091",
+  "date": "2020-09-02T18:58:02+08:00",
+  "author": "调试者",
+  "site": "",
+  "text": "@爱德华：您好，关于struct device_attribute的使用有点疑问，不知能否帮忙解答一二。假设我在一个驱动里静态定义并初始化了一个struct device_attribute dev变量，然后调用kobject_create_and_add和sysfs_create_file（传入&dev->kobj），那么当我echo文件节点时，内核大致的路径应该是：dynamic_kobj_ktype -> kobj_sysfs_ops -> kobj_attr_store -> dev下具体的store回调。但是在kobj_attr_store中调用的是struct kobj_attribute里的store回调，其原型是ssize_t (*store)(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count);，而struct device_attribute里的store回调原型是ssize_t (*store)(struct device *dev, struct device_attribute *attr, const char *buf, size_t count);两个store指针指向的函数类型明显不一样，调用流程却可以正常的走下去，这种情况想不到比较合理的解释。"
+ },
+ {
+  "id": "8827",
+  "parent": "0",
+  "date": "2023-09-19T10:46:05+08:00",
+  "author": "xiaotonga",
+  "site": "",
+  "text": "文中介绍的比较清楚，用户对kernel空间特定数据属性访问是通过sysfs来实现，具体形式为读写设备文件属性。文中对calss.c进行分析说明但对device driver实现kobj->ktype->sysfs_ops->show调用逻辑理解不是特别清楚；\r\n结合kernel driver的实现补充，进一步理解其调用关系；\r\n调用栈：user（read(dev_file)）->syscall(read)->vfs(file_operations.read)->sysfs(sysfs_file_operation.read->fill_read_buffer->sysfs_ops.show)->driver(xxx_sysfs_ops.show)\r\n\r\n1.vfs提供统一文件操作接口，sysfs需要实现vfs文件操作结构file_operations,即sysfs_file_operations;\r\n\r\n2.sysfs_file_operations中sysfs file相关操作接口,负责sysfs文件及其属性的打开、读、写等\r\n\r\n/*\r\n\r\nconst struct file_operations sysfs_file_operations = {\r\n\r\n.read = sysfs_read_file,\r\n\r\n.write = sysfs_write_file,\r\n\r\n.llseek = generic_file_llseek,\r\n\r\n.open = sysfs_open_file,\r\n\r\n.release = sysfs_release,\r\n\r\n.poll = sysfs_poll,\r\n\r\n};\r\n\r\n*/\r\n\r\n4.对于“每一个Kobject，都会对应sysfs中的一个目录”，说明sysfs_ops通过kobject与device driver关联；\r\n\r\n5.“该变量以sysfs attribute的形式开放出来”：通过sysfs接口开放attribute给用户，用户设置atrribute来控制driver函数调用或功能\r\n\r\n6..sysfs_ops中相关函数怎么关联至driver中sysfs_ops实现呢？\r\n\r\n通过kobj对象来关联具体device driver：\r\n\r\nsysfs_read_file->fill_read_buffer.sysfs_ops.ops->show(kobj,attr_sd->s_attr.attr, buffer->page)->driver.show()\r\n\r\n对dma中sysfs_ops回调函数的实现如下：\r\n\r\n（linux/v2.6.39.4/source/fs/sysfs/inode.c#L269）\r\nsys_file_operations：主要用户操作sysfs_kobj_attr;\r\n\r\n```C\r\n\r\n///linux/v2.6.39.4/source/drivers/dma/ioat/dma.c#L1142\r\nconst struct sysfs_ops ioat_sysfs_ops = {\r\n.show = ioat_attr_show,\r\n\r\n};\r\n\r\n//sysfs_ops回调dma的ioat_attr_show，具体实现功能由dma driver负责。\r\nstatic ssize_t\r\nioat_attr_show(struct kobject *kobj, struct attribute *attr, char *page)\r\n\r\n{\r\n\r\nstruct ioat_sysfs_entry *entry;\r\nstruct ioat_chan_common *chan;\r\n\r\nentry = container_of(attr, struct ioat_sysfs_entry, attr);\r\n\r\nchan = container_of(kobj, struct ioat_chan_common, kobj);\r\n\r\n\r\nif (!entry->show)\r\n\r\nreturn -EIO;\r\n\r\nreturn entry->show(&chan->common, page);\r\n\r\n}\r\n\r\n```"
+ }
+]

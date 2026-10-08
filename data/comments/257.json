@@ -1,0 +1,434 @@
+[
+ {
+  "id": "3405",
+  "parent": "0",
+  "date": "2016-01-15T17:51:23+08:00",
+  "author": "LT_Eric",
+  "site": "",
+  "text": "先生，您好！有广州上市公司Linux嵌入式开发工程师的职位，若您有意可随时咨询QQ3040541940，打扰海涵！"
+ },
+ {
+  "id": "3409",
+  "parent": "3405",
+  "date": "2016-01-15T21:43:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@LT_Eric：多谢！路过的蜗牛们有感兴趣的也可以咨询一下，但注意安全，以免上当受骗。"
+ },
+ {
+  "id": "4196",
+  "parent": "0",
+  "date": "2016-07-06T09:31:50+08:00",
+  "author": "dodo",
+  "site": "",
+  "text": "楼主你好，请问下，如果BLE蓝牙连接容易断开，可能是哪个地方出了问题？"
+ },
+ {
+  "id": "4197",
+  "parent": "4196",
+  "date": "2016-07-06T09:59:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dodo：你有办法在系统中抓到断开原因吗？\r\n连接断开无外乎有两种原因：主动断开和意外断开。\r\n意外断开的话，可能和链路的质量以及连接参数---connInterval（Conn_Interval_Min和Conn_Interval_Max）、connSlaveLatency（Conn_Latency）、connSupervisionTimeout（Supervision_Timeout）有关。\r\n建议你用抓包工具抓一下包，很容易找到原因。"
+ },
+ {
+  "id": "4470",
+  "parent": "0",
+  "date": "2016-08-30T10:08:01+08:00",
+  "author": "qshchenmo",
+  "site": "",
+  "text": "4）BR/EDR Page Scan Physical Channel用于蓝牙设备的发现操作（discovery），即我们常用的搜索其它蓝牙设备（discover）以及被其它蓝牙设备搜索（discoverable）。\r\n5）BR/EDR Inquiry Scan Physical Channel用于蓝牙设备的连接操作（connect），即我们常用的连接其它蓝牙设备（connect）以及被其它蓝牙设备连接（connectable）。\r\n\r\n这里好像写反了\r\n\r\n\r\nPS 楼主写的真的很好 受益良多"
+ },
+ {
+  "id": "4476",
+  "parent": "4470",
+  "date": "2016-08-30T18:15:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@qshchenmo：多谢提醒，确实是写反了，感谢您的细心:-)"
+ },
+ {
+  "id": "4568",
+  "parent": "0",
+  "date": "2016-09-17T12:18:27+08:00",
+  "author": "xiazixi",
+  "site": "",
+  "text": "大哥，看了你的文章，原来技术还可以这么玩，真心感觉是在享受！之前看过蓝牙体系结构图,也在controller里有一个LMP层，你这里没有提到，感觉我把L2CAP和LMP弄混了，能指教下他俩的区别和联系吗，还有就是楼主是怎么学习蓝牙的，对一个初学者有何建议，有什么好的资料（书籍，博客，网站．．．）推荐的，谢谢！不胜感激～！"
+ },
+ {
+  "id": "4569",
+  "parent": "4568",
+  "date": "2016-09-18T09:40:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xiazixi：LMP是Link Manager进行链路管理的时候所使用的protocol。这里的链路，指的是逻辑链路；管理，指的是逻辑链路的建立、维持、参数更新等。\r\nL2CAP，是逻辑链路之上的一层协议，目的是基于两个设备之间的唯一的逻辑链路，通过时分的方式，抽象出多条虚拟的channel（可以类比为TCP/IP中的端口），满足不同应用场景下“独占”通道的需求。\r\n至于蓝牙的资料和书籍，很少，真的要看的话，看蓝牙的spec吧。"
+ },
+ {
+  "id": "4578",
+  "parent": "4569",
+  "date": "2016-09-19T19:44:39+08:00",
+  "author": "xiazixi",
+  "site": "",
+  "text": "@wowo：多谢多谢！"
+ },
+ {
+  "id": "4865",
+  "parent": "0",
+  "date": "2016-11-11T16:18:04+08:00",
+  "author": "yxw",
+  "site": "",
+  "text": "楼主你好，最近在看蓝牙核心协议，感觉很是琐碎，无法贯通。楼主是怎么做到的，有木有好的方法？谢谢"
+ },
+ {
+  "id": "4866",
+  "parent": "0",
+  "date": "2016-11-12T23:01:41+08:00",
+  "author": "蓝牙新手",
+  "site": "",
+  "text": "有个问题，困扰了我一段时间，就是ASB和CSB的区别，您在文章里描述，ASB是基于链接的，这个怎么理解？CSB用于PBD的传输，看HCI的一些命令，还能体会下用法；针对ASB还没有线索；其实，暂时理解不了无连接这个词语怎么理解。"
+ },
+ {
+  "id": "4868",
+  "parent": "4865",
+  "date": "2016-11-13T21:04:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yxw：我觉得我也没有贯通啊，这太难了:-)\r\n有好方法的话，也就是多看（协议）、多做、多思考。"
+ },
+ {
+  "id": "4869",
+  "parent": "4866",
+  "date": "2016-11-13T21:16:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@蓝牙新手：其实我对经典蓝牙的“广播”，也不是特别理解，因为平时没有用接触过这样的应用场景，所以文中写的也不是很清楚。抱歉了~\r\n如果你有一些想法，可以分享一下。"
+ },
+ {
+  "id": "4871",
+  "parent": "4869",
+  "date": "2016-11-14T00:34:03+08:00",
+  "author": "蓝牙新手",
+  "site": "",
+  "text": "@wowo：看到蜗蜗的回复，还是很激动.我后面有了进展，一定和大家一起交流下:)"
+ },
+ {
+  "id": "4880",
+  "parent": "4868",
+  "date": "2016-11-16T19:57:22+08:00",
+  "author": "yxw",
+  "site": "",
+  "text": "@wowo：3Q楼主,看来还是看的少啊！"
+ },
+ {
+  "id": "4916",
+  "parent": "0",
+  "date": "2016-11-23T14:37:18+08:00",
+  "author": "果核中的猫",
+  "site": "",
+  "text": "第一次想主动注册个账号，但是找到不到注册网页的...\r\n最近在看蓝牙协议，帮助很大！"
+ },
+ {
+  "id": "4918",
+  "parent": "4916",
+  "date": "2016-11-23T15:35:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@果核中的猫：多谢关注～～\r\n话说博客之前是可以注册的，不过后来觉得没有什么用处，大家可以直接留言（留个邮箱就行了），我就关掉了。\r\n不过这里有个讨论区，/forum/，可以注册。"
+ },
+ {
+  "id": "5220",
+  "parent": "0",
+  "date": "2017-02-14T16:51:47+08:00",
+  "author": "xusiyan0217",
+  "site": "",
+  "text": "多谢，对我刚开了解蓝牙协议很有帮助"
+ },
+ {
+  "id": "5433",
+  "parent": "0",
+  "date": "2017-04-07T17:18:44+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "wowo大神你好，\r\n我对跳频技术一点都不了解，看了文章之后有几个疑问：“采用跳频技术（hopping），也就是说，某一个物理信道，并不是固定的占用79个channel中的某一个，而是以一定的规律在跳动（该规律在技术上叫做\"伪随机码\"，就是\"假\"的随机码）。” \r\n1. 物理信道不是physical channel吗，\r\n2. 跳频的意思是不是不是换一个channel\r\n3. 为什么某一个一个物理信道不是固定的占用channel中的某一个，物理信道不是和channel等同吗。\r\n4. 如果通信的时候master换了channel，那slave如何知道。\r\n谢谢"
+ },
+ {
+  "id": "5438",
+  "parent": "5433",
+  "date": "2017-04-10T09:18:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chen_chuang：物理信道也好，physical channel也好，都是一个定义而已。这个定义，要映射到什么上面，要具体情况具体对待。一般的通信系统，会对应到某一个频率范围。\r\n而对蓝牙来说，它对应的是一系列的、跳变的频率范围（如果你把频率范围理解我channel，也没关系，我的建议是不要死扣某个词语，理解原理才关键）。\r\n至于master和slave怎么同步的去跳频（更换你所谓的“channel”），这正是跳频技术要解决的，一两句话肯定说不明白了。"
+ },
+ {
+  "id": "5493",
+  "parent": "0",
+  "date": "2017-04-28T07:34:33+08:00",
+  "author": "yikeshualicia",
+  "site": "",
+  "text": "wowo~ 真的好牛！看了好多篇，在此留言膜拜下~"
+ },
+ {
+  "id": "5497",
+  "parent": "5493",
+  "date": "2017-04-28T13:30:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yikeshualicia：多谢夸奖～"
+ },
+ {
+  "id": "5593",
+  "parent": "0",
+  "date": "2017-05-23T16:52:26+08:00",
+  "author": "dinasind01",
+  "site": "",
+  "text": "赞一个，正在学习蓝牙"
+ },
+ {
+  "id": "5774",
+  "parent": "0",
+  "date": "2017-07-05T17:43:35+08:00",
+  "author": "AleXDTu",
+  "site": "",
+  "text": "物理链路中的主要特征的第二点，“分别是AMP Physical Link、LE Active Physical Link、LE Advertising Physical Channel”中的最后一个单词Channel应该不是Channel吧？是Link吧？"
+ },
+ {
+  "id": "5776",
+  "parent": "5774",
+  "date": "2017-07-06T09:12:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@AleXDTu：多谢指正，确实是写错了，等下改回来。谢谢～～～"
+ },
+ {
+  "id": "5867",
+  "parent": "0",
+  "date": "2017-08-03T09:25:14+08:00",
+  "author": "tidyjiang8",
+  "site": "http://https://github.com/tidyjiang8",
+  "text": "\"这一划分，相当使人崩溃，要多花费大量的脑细胞去理解它们\"\r\n这个相当认同，尤其是还在菜鸟阶段的我，崩溃崩溃再崩溃~\r\n希望认真阅读，多花心思，BT能入门，然后能把zephyr os中关于蓝牙部分理解透~\r\n包括蓝牙5.0以及前几天刚出的蓝牙mesh~\r\n任重而道远~"
+ },
+ {
+  "id": "5877",
+  "parent": "5867",
+  "date": "2017-08-07T10:02:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tidyjiang8：任重而道远~加油！！"
+ },
+ {
+  "id": "5921",
+  "parent": "0",
+  "date": "2017-08-18T14:04:48+08:00",
+  "author": "昵称",
+  "site": "",
+  "text": "蓝牙写的很赞!!如果能增加实例分析就好了.比如什么什么场景用到了什么什么技术.\r\n但也知道开发人员忙.加油哈."
+ },
+ {
+  "id": "5929",
+  "parent": "5921",
+  "date": "2017-08-21T08:49:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@昵称：多谢鼓励啊，确实太忙了，业余时间少的可怜，有机会一定补充。谢谢～～"
+ },
+ {
+  "id": "6012",
+  "parent": "0",
+  "date": "2017-09-10T17:45:31+08:00",
+  "author": "dong",
+  "site": "",
+  "text": "BLUETOOTH SPECIFICATION Version4.2 [Vol1,PartA] page53\r\nThere are 37 LE piconnel channels.\r\n\r\nBLUETOOTH SPECIFICATION Version4.2 [Vol1,PartA] page54\r\nAn LE piconet channel can be shared by any number of LE devices,limited only by the resources avaliable on the piconet master device.\r\n\r\nBLUETOOTH SPECIFICATION Version4.2 [Vol1,PartA] page74\r\nUnlike BR/EDR slaves,LE slaves do not share a common physical channel with the master.\r\n\r\n我的问题是：;LE piconet channel和LE piconet physical channel是什么关系啊？如果等价的话，那么page54和page74这两段话不会有矛盾吗？求wowo指导"
+ },
+ {
+  "id": "6013",
+  "parent": "6012",
+  "date": "2017-09-10T18:27:06+08:00",
+  "author": "dong",
+  "site": "",
+  "text": "@dong：我的天马行空想法：\r\na piconet channel = 指定的37个rf channel的其中一个\r\na piconet physical channel = 一堆piconet channel组成的伪随机序列\r\n\r\n对于一个piconet channel，也就是一个频段，比如2402M，在不同时刻可以被不同的Slave占用，所以master资源充足情况下，可以有无限个Slave共享这个piconet channel。\r\n\r\n对于piconet physical channel，由于这个piconet组合序列是根据跳频算法计算的，是独一无二的，跟每个slave一一对应，所以只能一个master和一个slave占用一个piconet physical channel。\r\n\r\n唉，看协议时概念理解不清晰，不知道跑哪里去讨论，只能在这里打扰wowo了，wowo有开一些学习交流群什么的吗？"
+ },
+ {
+  "id": "6016",
+  "parent": "6013",
+  "date": "2017-09-11T09:48:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dong：其实你贴出来的这几段话里面，没有提到“piconet physical channel”，而是“physical channel”，蓝牙spec的用词有的时候确实有些随意，导致读起来有些困惑。\r\n关于“piconet channel”和“piconet physical channel”，你的理解是对的，一个是指37个RF信道（可以为所有的LE设备共享），一个是跳频序列所定义的物理信道。\r\n不过对于物理信道来说，page74强调的是：\r\nmaster和slave并不共享物理信道（这个和BR/EDR不一样），也就是说，master有自己的跳频序列，每一个slave也有自己的跳频序列。只有这样做，才可以出现比较复杂的拓扑结构：“1个master对多个slave、1个slave对多个master、等等”。"
+ },
+ {
+  "id": "6020",
+  "parent": "6016",
+  "date": "2017-09-11T13:40:51+08:00",
+  "author": "dong",
+  "site": "",
+  "text": "@wowo：1、Physical channel  page46\r\nAll Bluetooth physical channels are characterized by a PHY frequency combined with temporal parameters and restricted by spatial considerations.\r\n我的理解就是说，它是由不同时间点所处频段组合而成的序列，是分时+跳频结合的产物。\r\n\r\n2、LE physical channel page52\r\nIn the core system,two Bluetooth devies use a shared physical channel for communication.To achieve this,their transceivers need to be tuned to the same PHY frequency at the same time,and they need to be within a nominal range of each other.\r\n我的理解和上面Physical channel一样。\r\n\r\n3、LE piconet channel page52-53\r\nTwo LE physical channels are defined.\r\n\r\nThe LE piconet channel is characterized by a pseudo-random sequence of PHY channels and by three additional parameters provided by the master.\r\n\r\nThere are 37 LE piconet channels.\r\n这里完全懵了，这个LE piconet channel是什么玩意？如果说是physical channel中的一类，那这个37又是什么？如果说是Rf channel，pseudo-random sequence这些又是什么？\r\n\r\n4、LE Piconet Physical Channel page74,Figure 4.2\r\nUnlike BR/EDR slaves,LE slaves do not share a common physical channel with the master.Each slave communicates on a separate physical channel with the master.\r\n按照wowo的说法，这里\"a common physical channel\"指的是master和slave各自的physical channel（跳频序列）共同决定而得出的一个所谓LE piconet Physical Channel ？\r\n\r\n第3点的一些说法，感觉推翻了我之前对piconet channel的理解。这协议说的我好醉呀，在说什么晕死。"
+ },
+ {
+  "id": "6029",
+  "parent": "6020",
+  "date": "2017-09-12T13:26:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dong：我觉得：\r\n不带piconet的channel，是静态的概念，无论有没有设备，都是实实在在的存在；\r\n带piconet的channel，是一个动态的概念，2个或多个设备组网后，会存在2个或多个channel的实例，就是piconet channel。\r\n\r\n反正协议栈这方面的表述，真的不好懂。不过呢，只要不去实现物理层的东西，我们理解意思应该是没问题。"
+ },
+ {
+  "id": "6034",
+  "parent": "6029",
+  "date": "2017-09-12T16:31:15+08:00",
+  "author": "dong",
+  "site": "",
+  "text": "@wowo：谢谢wowo耐心指导，获益匪浅。"
+ },
+ {
+  "id": "6438",
+  "parent": "0",
+  "date": "2017-12-30T16:33:25+08:00",
+  "author": "AAC_Decoder",
+  "site": "http://No",
+  "text": "4）BR/EDR Page Scan Physical Channel用于蓝牙设备的发现操作（discovery），即我们常用的搜索其它蓝牙设备（discover）以及被其它蓝牙设备搜索（discoverable）。 \r\n\r\n5）BR/EDR Inquiry Scan Physical Channel用于蓝牙设备的连接操作（connect），即我们常用的连接其它蓝牙设备（connect）以及被其它蓝牙设备连接（connectable）。 \r\n---------------------------------------------------------------------------------\r\n---------------------------------------------------------------------------------\r\n这段写反了\r\nPage scan是用于等待对方的page，是连接。搞过蓝牙开发的人对Page Timeout应该再熟悉不过了\r\nInquiry scan是用于等待对方的inquiry，是发现\r\n\r\n给你贴一下Core Spec里的原话\r\nConnectable： device A BR/EDR device in range that periodically listens on\r\nits page scan physical channel and will respond to a\r\npage on that channel. An LE device that is advertising\r\nusing a connectable advertising event.\r\n\r\nDiscoverable： device A BR/EDR device in range that periodically listens on\r\nan inquiry scan physical channel and will respond to an\r\ninquiry on that channel. An LE device in range that is\r\nadvertising with a connectable or scannable advertising\r\nevent with a discoverable flag set in the advertising\r\ndata. This device is in the discoverable mode.\r\n\r\n我觉着wowo写的文章很有条理，不过我感觉似乎里面的内容并不是来自Spec，或者说并没有在Spec进行确认"
+ },
+ {
+  "id": "6442",
+  "parent": "6438",
+  "date": "2018-01-01T22:09:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@AAC_Decoder：多谢指正啊！这确实是一个低级错误（已改正）。\r\n由于时间久远，实在想不出写反的原因了，估计是从spec上copy的时候脑子短路了吧。\r\n写的这些东西确实是照着spec翻译来的，只是spec有太多的英语术语，通常不会翻译，所以都是复制粘贴，笔误就是从这里出来的。\r\n再次感谢~~~"
+ },
+ {
+  "id": "6572",
+  "parent": "0",
+  "date": "2018-02-28T11:08:28+08:00",
+  "author": "荣耀",
+  "site": "http://N/A",
+  "text": "L2CAP讲得不够细，要深挖。"
+ },
+ {
+  "id": "6674",
+  "parent": "0",
+  "date": "2018-04-18T10:29:18+08:00",
+  "author": "上大陈奕迅",
+  "site": "",
+  "text": "wowo大虾  你好  我最近在破解一个小车的蓝牙程序   有些问题想请教下你   麻烦你加下我qq  2991826211"
+ },
+ {
+  "id": "6855",
+  "parent": "0",
+  "date": "2018-07-26T18:20:55+08:00",
+  "author": "chc871211",
+  "site": "",
+  "text": "小白问个问题：“同一时刻，BT 设备只能在其中一个物理信道上通信，为了支持多个并行的操作，蓝牙系统采用时分方式” 为何这么设计？为何不频分复用？既然已经划分了各自的物理信道，为何不复用呢？"
+ },
+ {
+  "id": "6856",
+  "parent": "6855",
+  "date": "2018-07-26T19:04:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chc871211：因为频率不够多啊。你一个我一个他一个……，然后就没有了。"
+ },
+ {
+  "id": "7194",
+  "parent": "0",
+  "date": "2019-02-20T16:46:39+08:00",
+  "author": "ffff",
+  "site": "",
+  "text": "不好理解，能不能以一个数据包的完整传输过程来分析？"
+ },
+ {
+  "id": "7197",
+  "parent": "7194",
+  "date": "2019-02-20T21:18:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ffff：蓝牙本来就很复杂，想通过一篇文章讲明白是不可能的，你可以耐心把蓝牙系列的都看看，说不一定可以帮到你一点点。"
+ },
+ {
+  "id": "7335",
+  "parent": "0",
+  "date": "2019-03-29T11:34:32+08:00",
+  "author": "BT入坑",
+  "site": "",
+  "text": "写的很详细。可黑线和白线连接的区别有何意义我没明白"
+ },
+ {
+  "id": "7337",
+  "parent": "7335",
+  "date": "2019-04-01T08:43:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@BT入坑：黑线是core，白线是profile or protocol"
+ },
+ {
+  "id": "7543",
+  "parent": "0",
+  "date": "2019-07-20T15:24:33+08:00",
+  "author": "伊斯科明",
+  "site": "",
+  "text": "wowo大侠，我是蓝牙方面的小白，最近在移植一款蓝牙芯片，想知道当前蓝牙工作的信道，但是实在是不知道有什么方法能查看到？望赐教，非常感谢"
+ },
+ {
+  "id": "7549",
+  "parent": "7543",
+  "date": "2019-07-25T15:35:48+08:00",
+  "author": "伊斯科明",
+  "site": "",
+  "text": "@伊斯科明：公司买了一套空口抓包仪器，已经知道怎么查蓝牙的物理信道了。最近在搞蓝牙相关的东西，wowo大侠的文章真的让我受益匪浅，非常感谢！！！"
+ },
+ {
+  "id": "7830",
+  "parent": "6856",
+  "date": "2020-01-11T11:41:39+08:00",
+  "author": "happyxiaotang",
+  "site": "",
+  "text": "@wowo：是不是应该理解成多址和双工的实现同时利用了频分和时分技术？"
+ },
+ {
+  "id": "7835",
+  "parent": "7830",
+  "date": "2020-01-14T08:30:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@happyxiaotang：是的。"
+ },
+ {
+  "id": "7950",
+  "parent": "7337",
+  "date": "2020-04-15T17:26:34+08:00",
+  "author": "jojo",
+  "site": "",
+  "text": "@wowo：灰，C-plane and control service\r\n黑，U-plane and data traffic"
+ },
+ {
+  "id": "8190",
+  "parent": "0",
+  "date": "2021-01-29T16:27:35+08:00",
+  "author": "同行",
+  "site": "http://wywiot.com",
+  "text": "谢谢博主！\r\n顺便说一句，如果希望博主按需求更新，最妥当的方式是给博主发工资，不然人家休息时间这么辛苦更新给你学习？\r\n开个玩笑， 哈哈哈哈~"
+ },
+ {
+  "id": "8191",
+  "parent": "8190",
+  "date": "2021-01-30T14:05:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@同行：多谢理解啊，不过发工资也只是说笑而已哈~~因为我们一直相信，最好的文章一定是出于热爱、发自内心写出来的，那些为钱写的，味道就变了。\r\n不过现实往往比较复杂，不得不为更重要的事情暂时搁置其它重要的事情，也没办法。希望以后能有时间继续更新~~~"
+ },
+ {
+  "id": "8278",
+  "parent": "0",
+  "date": "2021-08-25T16:47:45+08:00",
+  "author": "risc",
+  "site": "",
+  "text": "请教一个问题，一个BLE同一时间，能否既做master（发现并连接别人）又做slave（被发现且被连接）"
+ },
+ {
+  "id": "8862",
+  "parent": "0",
+  "date": "2024-01-17T16:29:25+08:00",
+  "author": "lw",
+  "site": "",
+  "text": "@wowo：逻辑层那些协议的具体使用场景，能帮忙列一下吗？"
+ }
+]

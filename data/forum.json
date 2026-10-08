@@ -1,0 +1,33 @@
+{
+ "topics": 163,
+ "posts": 792,
+ "users": 733,
+ "active_users": 169,
+ "forums": [
+  {
+   "name": "X Project",
+   "desc": "One Linux on any board",
+   "topics": 20
+  },
+  {
+   "name": "灌水区",
+   "desc": "灌水区欢迎各种言论，谈天说地、技术交流、问题求救、跳槽招聘、牢骚抱怨……",
+   "topics": 16
+  },
+  {
+   "name": "Linux kernel技术问答",
+   "desc": "这是一个具体问题咨询的板块，任何工作中的疑问，内核代码中的函数，解决不了的bug等等都可以在这里提问",
+   "topics": 117
+  },
+  {
+   "name": "内推区",
+   "desc": "QQ群中有很多大神，有很多工作岗位，可以内部推荐，因此成立该板块，希望为大家提供一些便利。",
+   "topics": 8
+  },
+  {
+   "name": "其它",
+   "desc": "",
+   "topics": 2
+  }
+ ]
+}

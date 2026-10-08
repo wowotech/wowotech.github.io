@@ -1,0 +1,386 @@
+[
+ {
+  "id": "580",
+  "parent": "0",
+  "date": "2014-10-28T23:10:31+08:00",
+  "author": "xxx",
+  "site": "",
+  "text": "注1：有关kmod和netlink，会在其它文章中描述，因此本文就不再详细说明了。 \r\n===>这两个在哪讲啊 啊？？？？？"
+ },
+ {
+  "id": "581",
+  "parent": "580",
+  "date": "2014-10-28T23:17:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xxx：不好意思，还没有来得及写…"
+ },
+ {
+  "id": "782",
+  "parent": "0",
+  "date": "2014-12-02T12:01:06+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "之前一直以为uevent_ops->uevent是完成具体的事件上报函数回调，误解为就是wowo开始所说的uevent机制。看了这篇文章和代码才知道这个callback的作用只是添加一个环境变量，名字比较迷惑人。\r\n另外整个kernel中鲜有利用uevent的场景，所以uevent其实用处不大，更有用的是uevent_ops->filter回调。\r\n\r\n说起环境变量上报，搞不清楚上报这些个环境变量的用处是什么，如果是上报Kobject在sysfs中路径信息倒是好理解，至于环境变量，用户空间处理程序（hotplug什么的）的执行需要上报的这些环境变量吗？"
+ },
+ {
+  "id": "783",
+  "parent": "782",
+  "date": "2014-12-02T13:27:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@puppypyb：其实环境变量是使用usermodehelper的方式处理uevent时才会需要，如果使用的netlink的话，确实不需要。\r\n环境变量存在的本质，是因为exec系列的“文件执行”函数需要（这也是Linux下文件执行的基础），这可以从do_execve（fs/exec.c）接口从看出：\r\nint do_execve(const char *filename,\r\n        const char __user *const __user *__argv,\r\n        const char __user *const __user *__envp)\r\n至于kernel中uevent用处，还真不好说。如果你需要一些例子的话，可以去看看Android的switch class（drivers/switch/）。\r\n我的观点是，如果软件设计的足够好，一定用不到uevent，poll机制足够了。如果poll解决不了，则说明设计者根本不知道event要上报给谁，才使用uevent的方式随便一扔，谁想收就收吧。\r\n另外，无论是usermodehelper还是netlink的方式，uevent对系统性能是有影响的。特别是netlink的方式，上报的event会通知到所有的用户进程，所以还是少用为妙。"
+ },
+ {
+  "id": "785",
+  "parent": "783",
+  "date": "2014-12-02T14:27:01+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "@wowo：understood, thanks~"
+ },
+ {
+  "id": "1852",
+  "parent": "0",
+  "date": "2015-05-22T17:11:18+08:00",
+  "author": "twenty",
+  "site": "",
+  "text": "上次看懂了1成，这次又看懂了3成，感觉进步挺大哒，哈哈！   感谢上次楼主对在下的回答，特别是“驱动学习螺旋上升的”！  以后还会再回来看，谢谢楼主分享~"
+ },
+ {
+  "id": "1855",
+  "parent": "1852",
+  "date": "2015-05-22T21:49:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@twenty：呵呵，加油~~~\r\nPS：任何的学习，都是螺旋上升的~~~"
+ },
+ {
+  "id": "2363",
+  "parent": "0",
+  "date": "2015-07-29T16:44:37+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "请教几个问题：\r\n1.device_add里面有devtmpfs_create_node与kobject_uevent两种接口。\r\n向问下有什么区别两者\r\n2.在处理的device的dev_t没有指定时，udev是根据什么不去创建设备节点的。？因为看起来kobject_uevent都是执行了的。"
+ },
+ {
+  "id": "2374",
+  "parent": "2363",
+  "date": "2015-07-30T09:08:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@gzz：针对第一个问题的回答：\r\n我们都知道，在引入linux device model之后，设备节点的创建是通过udev这个userspace的daemon进程捕获内核发送的各种uevent来进行的，这种方法虽然灵活，但是比较耗时，我们曾经进行过嵌入式系统启动过程速度的优化，纵观整个启动过程udev花费的时间不是一个小的数目，因此我们果断干掉udev，使用固定在rootfs中预先建立设备节点的方法\r\n\r\ndevtmpfs是为了提高启动速度而引入到kernel中，在内核中，各个设备的初始化过程中就已经建立了一个文件系统，在userspace只要进行mount的动作，所有的设备节点就ready了，不需要udev参与了\r\n\r\n针对第二个问题的回答：\r\ndevice在add的时候会发送userspace event，包括其在sys目录下的位置，叫做dev path，udev获得这样的信息可以通过那个dev path，那个目录下有关于主次设备节点号的信息（在dev属性文件中），uevent可以通过这样的信息创建，当然，如果支持devtmpfs，那么udev不需要执行这一步，mount devtmpfs之后，所有的设备节点就在那了"
+ },
+ {
+  "id": "2384",
+  "parent": "2374",
+  "date": "2015-07-31T13:04:46+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@linuxer：恩，我看到是Android的内核的uevent处理机制，他内部实现是会去看sysfs下面class/devices等是否含有uevent属性文件，暂时是不借助dev文件的。然后如果有找到就去触发一次底层block的uevent事件的上报，基于netlink这种网络机制。因为一般在init内核时，uevent是没起来的。\r\n不过，我暂时不知道普通linux的udev处理是什么机制。应该是你说的那种机制吧。\r\n至于你说的devtmpfs，我是不是可以让系统不支持呢，比如在Android下的linux内核，是不是有什么CONFIG之类可配置。"
+ },
+ {
+  "id": "2388",
+  "parent": "2374",
+  "date": "2015-07-31T15:21:31+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@linuxer：我理解你的意思了，应该是内核启动时，有的设备节点是可以创建了的，因为是编译在内核中的，这些设备节点就需要提前创建，也可以加快处理速度。而一边在启动脚本中add的设备节点，理论应该是udev来创建的吧。"
+ },
+ {
+  "id": "2391",
+  "parent": "2388",
+  "date": "2015-07-31T18:43:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@gzz：如果内核已经创建了设备节点，虽然udev通过netlink收到uevent，我相信它也不会重复创建设备节点，当然，如果需要udev可以修改\r\n如果对启动速度没有那么在意的话，可以不配置devtmpfs。"
+ },
+ {
+  "id": "2406",
+  "parent": "2391",
+  "date": "2015-08-03T14:56:49+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@linuxer：恩，赞同你的说话，vfs_mknod内核里都是会先look_up有没有创建该文件的。所以这两种方式，在内核启动完成后，如果再出现要创建设备节点时，我认为只是谁先来建立节点而已。\r\n而devtmpfs也许就是加快启动速度的吧。\r\nthanks。"
+ },
+ {
+  "id": "2417",
+  "parent": "0",
+  "date": "2015-08-04T12:40:03+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "遇到一个疑惑就是linux下建立framebuffer帧设备节点时是/dev/fb0,而Android下的linux内核启动后建立的是/dev/graphics/fb0.\r\n目前我看了devtmpfs里面假设使用了：貌似创建节点的nodename是根据dev的name来建立的，所以很奇怪这个为何不也是建立一个/dev/fb0.\r\n但有看到uevent是建立一个/dev/graphics/fb0的。\r\n所以疑问就是为何这两个设备节点最终只存在/dev/graphics/fb0啦。\r\n此外要说明的graphics_class类是不带其他命名方式的，不像input_class可以进行class->input_devnode后将设备节点相对路径变为input/xxx路径。\r\n很是疑惑，求解答。"
+ },
+ {
+  "id": "2418",
+  "parent": "2417",
+  "date": "2015-08-04T13:29:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@gzz：一般情况下，Android的kernel是没有使能devtmpfs的，因此，谁帮忙创建“/dev/fb0”呢？所以没有创建。\r\n至于\"/dev/graphics/fb0\"，是Android的init进程，根据uevent自行创建的，”graphics“取自framebuffer所在的class（subsystem） name。具体可参考代码：\r\nsystem/core/init/devices.c\r\n    ...\r\n     } else if (!strncmp(uevent->subsystem, \"graphics\", 8)) {\r\n         base = \"/dev/graphics/\";\r\n         make_dir(base, 0755);\r\n    ..."
+ },
+ {
+  "id": "2423",
+  "parent": "2418",
+  "date": "2015-08-05T08:55:28+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@wowo：恩，如果解释的话大概也只能按这个来接受了，我打算调试下看看。要是都用起来，按理是真得有2个节点了。tks"
+ },
+ {
+  "id": "2428",
+  "parent": "2418",
+  "date": "2015-08-05T13:32:43+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@wowo：我用板子调试了一下，发现devtmpfs还是执行了mount的，这很奇怪了。然后也有执行devtmpfs_create_node fb0；还有内核起来时也mount了，不知道为何就没有/dev/fb0？\r\n这就奇怪了，不知道Android里面是怎么在捣鼓的.还请再指教下"
+ },
+ {
+  "id": "2429",
+  "parent": "2428",
+  "date": "2015-08-05T15:44:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@gzz：Android会重新mount dev目录：\r\nsystem/core/init/init.c:    mount(\"tmpfs\", \"/dev\", \"tmpfs\", MS_NOSUID, \"mode=0755\");\r\n所以kernel自己mount的应该被覆盖了。"
+ },
+ {
+  "id": "4203",
+  "parent": "0",
+  "date": "2016-07-07T11:30:03+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "wowo您好，我有个疑问啊，Uevent上报用户空间的方法是netlink与kmod？\r\n为什么说是kmod？这里不太理解，kmod是指通过call_usermodehelper这个函数实现吗？\r\n谢谢您提供这个学习平台"
+ },
+ {
+  "id": "4205",
+  "parent": "0",
+  "date": "2016-07-07T14:48:42+08:00",
+  "author": "大头元",
+  "site": "",
+  "text": "博主您好！之前在板子上做usb驱动实验。1、如果usb驱动编译进内核，插入u盘可以正常识别。2、把之前的usb驱动编译成模块，然后安装到/lib/modules下，插入u盘不能识别。有以下疑问：\r\n1、把驱动编译成模块并安装后，系统启动后会主动加载驱动模块吗？还是必须自己主动的去modprobe或写一些脚本来加载驱动模块？\r\n2、系统热插拔只是起到帮助创建设备文件、挂载的作用。驱动模块的加载跟热插拔有关系吗？"
+ },
+ {
+  "id": "4208",
+  "parent": "4205",
+  "date": "2016-07-07T15:07:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@大头元：可以lsmod，看一下模块是否加载了。如果加载了，和编译到kernel的流程应该一样。"
+ },
+ {
+  "id": "4209",
+  "parent": "4203",
+  "date": "2016-07-07T15:12:41+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@maze：这里的kmod，是指kernel去加载module的意识（对比用户空间module的概念）。"
+ },
+ {
+  "id": "4212",
+  "parent": "4209",
+  "date": "2016-07-07T15:58:35+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "@wowo：那么kernel是通过什么方式加载的module？小白，很多都不懂。。。真是让您费心了。\r\n我的理解是不是通过match以及probe？"
+ },
+ {
+  "id": "4213",
+  "parent": "4212",
+  "date": "2016-07-07T16:07:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@maze：kernel加载module，和用户空间加载ELF文件的机制类似。不过已经不是一两句话能说清楚的，你懂的:-)"
+ },
+ {
+  "id": "4560",
+  "parent": "0",
+  "date": "2016-09-12T13:36:05+08:00",
+  "author": "慢慢想",
+  "site": "",
+  "text": "wowo您好，想请教一个问题。\r\n在android启动的时候init进程会进行coldboot操作，往所有uevent文件里写入add，如下：\r\n\r\nfd = openat(dfd, \"uevent\", O_WRONLY);\r\nwrite(fd, \"add\\n\", 4);\r\n\r\n但是在对某个uevent写入add的时候花费了很久的时间，导致系统起不来。（每次启动都是同一个uevent耗费时间）\r\n想请教一下write(fd, \"add\\n\", 4);操作之后相应的driver都做了啥？下面该如何加log分析，我在write前后加了log，可以确定时间全部耗费在write这个函数上了。\r\n\r\n非常感谢！"
+ },
+ {
+  "id": "4561",
+  "parent": "4560",
+  "date": "2016-09-12T20:02:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@慢慢想：对Android的uvent机制不是很熟悉，我猜测这里的write，是init进程通过uevent向另外一个进程传递了一个信息（add），另一个进程收到该信息后，做出相应的处理。\r\n你要查为什么这么耗时，就要查这个uevent最终是谁处理的。\r\nwrite uvent的过程大致如下：\r\ninit进程\r\nwrite uvent(ADD)\r\n\tdrivers/base/core.c\r\n\t\tstatic struct device_attribute uevent_attr\r\n\t\t\tstore_uevent\r\n\t\t\t\tkobject_action_type\r\n\t\t\t\t\tKOBJ_ADD\r\n\t\t\t\tkobject_uevent\r\n\t\t\t\t\tkobject_uevent_env\r\n\t\t\t\t\t...\r\n\r\n\t\t\t\t\t\t其它进程，收到ADD event，进行处理（find out it）"
+ },
+ {
+  "id": "4589",
+  "parent": "4561",
+  "date": "2016-09-22T10:20:31+08:00",
+  "author": "慢慢想",
+  "site": "",
+  "text": "@wowo：@wowo\r\n怎么回复会显示IP被限制？"
+ },
+ {
+  "id": "4591",
+  "parent": "4589",
+  "date": "2016-09-22T10:29:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@慢慢想：这一段时间反垃圾评论好像有点抽风，不知道怎么回事，昨天我已经把屏蔽的IP列表全部清空了，应该没有问题了，另外你这不是可以评论吗？"
+ },
+ {
+  "id": "4592",
+  "parent": "4561",
+  "date": "2016-09-22T10:30:01+08:00",
+  "author": "慢慢想",
+  "site": "",
+  "text": "@wowo：现在又能回复了。。。\r\n\r\n您好，“其他进程”应该还是本进程，处理函数为handle_device_fd();不过这个函数没有耗费时间，耗费时间的只是write(fd, \"add\\n\", 4);系统调用。我猜测问题还是出现在kernel space在上报netlink之前，请问这样理解对么？是不是注册这个uevent的driver有问题？\r\n\r\n940    fd = openat(dfd, \"uevent\", O_WRONLY);\r\n941    if(fd >= 0) {\r\n942        write(fd, \"add\\n\", 4);\r\n943        close(fd);\r\n944        handle_device_fd();\r\n945    }"
+ },
+ {
+  "id": "4593",
+  "parent": "4592",
+  "date": "2016-09-22T10:56:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@慢慢想：先确认是不是用的netlink，如果是的话，就看看时间到底耗在哪里了（write耗时？我持怀疑态度）"
+ },
+ {
+  "id": "4595",
+  "parent": "4593",
+  "date": "2016-09-22T14:34:58+08:00",
+  "author": "慢慢想",
+  "site": "",
+  "text": "@wowo：您好，多谢指点，我再查查看。"
+ },
+ {
+  "id": "5124",
+  "parent": "581",
+  "date": "2017-01-10T22:07:57+08:00",
+  "author": "hony",
+  "site": "",
+  "text": "@wowo：这个..."
+ },
+ {
+  "id": "6298",
+  "parent": "0",
+  "date": "2017-12-07T11:07:58+08:00",
+  "author": "Jackie",
+  "site": "",
+  "text": "@wowo @linuxer:\r\n请教一个问题，kernel发送uevent给用户空间，\r\n可这个时候用户空间处于freeze状态（suspend后还未resume回来），\r\n请问这时候发送的uevent是会丢掉，还是会存在某个buffer中？\r\n当用户空间resume回来的时候，还能收到这个uevent吗？\r\n谢谢!"
+ },
+ {
+  "id": "6313",
+  "parent": "6298",
+  "date": "2017-12-08T10:06:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Jackie：现在的uevent基本上都使用netlink传递msg，kernel上报的msg会保存在一个socket queue中，等待user醒来并读取。所以resume回来的时候，还是能收到的。\r\n当然，如果保存的数据太多了（超过netlink的限制），也是会失败的，不过这种情况可以忽略（因为netlink的数目很大）。"
+ },
+ {
+  "id": "6606",
+  "parent": "0",
+  "date": "2018-03-13T12:53:13+08:00",
+  "author": "const",
+  "site": "",
+  "text": "wowo 你好，有个问题请教一下， kset_uevent_ops 里面的函数指针都进行了 const 修饰，这样除了确保第一次初始化后不会被再次修改，还有其他作用嘛？"
+ },
+ {
+  "id": "6607",
+  "parent": "6606",
+  "date": "2018-03-13T16:13:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@const：你可以去kernel里面看看，基本上所有的函数指针都是const的。"
+ },
+ {
+  "id": "7220",
+  "parent": "4208",
+  "date": "2019-03-05T09:40:59+08:00",
+  "author": "tmmdh",
+  "site": "",
+  "text": "@wowo：如果是udev的话，应该要修改/etc/udev/rules.d/或/lib/udev/rules.d/目录下的规则文件吧，添加一条规则，使接收到消息后自动执行modprobe加载驱动\r\n如果是mdev的话，执行的用户空间的程序如果是脚本，则需要添加modprobe操作。如果是二进制文件，则需要该二进制文件能够正常捕获U盘插入的消息，并执行modprobe操作。（也就是说你可能需要修改二进制文件的功能）\r\n不知道我想的对不对啊"
+ },
+ {
+  "id": "7341",
+  "parent": "0",
+  "date": "2019-04-02T23:28:56+08:00",
+  "author": "Jet",
+  "site": "",
+  "text": "谢谢\r\n最近在看 ueventd，这篇文章对我帮助很大\r\n已进行转载https://www.jianshu.com/p/10653d83909d\r\n 不方便的话可撤下(*^__^*)"
+ },
+ {
+  "id": "7342",
+  "parent": "7341",
+  "date": "2019-04-03T10:38:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Jet：欢迎转载~~"
+ },
+ {
+  "id": "7704",
+  "parent": "0",
+  "date": "2019-10-18T15:25:23+08:00",
+  "author": "Edward",
+  "site": "",
+  "text": "感谢博主分享，请问有kmod和netlink相关的文章吗，最近在研究usb热插拔，请问uevent只能通过编写程序读netlink才能监听吗？有没有更简单直接的办法？感谢"
+ },
+ {
+  "id": "7705",
+  "parent": "7704",
+  "date": "2019-10-18T17:54:26+08:00",
+  "author": "Edward",
+  "site": "",
+  "text": "@Edward：已经找到了，用udevadm monitor命令即可观察uevent事件"
+ },
+ {
+  "id": "7789",
+  "parent": "0",
+  "date": "2019-12-19T17:36:00+08:00",
+  "author": "poolloop",
+  "site": "",
+  "text": "您好，请教一个问题\r\n文章中介绍了2种将uevent上报给user space的方式：①kmod ②netlink\r\n这两种方式中，任何其中一种方式就可以独立实现预期的‘上报’行为了吗？\r\n还是说两中上报方式缺一不可，均是通知用户空间必要条件？\r\n\r\n个人理解，\r\n对于kmod，文章中指出，所有与事件相关的信息似乎均已保存在，特别的环境变量中了。通过kmod机制启动的用户进程，似乎只需要读取自己的环境变量就可以了解，uevent的全部信息。\r\n\r\n对于netlink，如果将uevent转换成netlink message，message应该已经包含了事件完整的信息。此时，netlink可以独立完成通知的前提就是，userspace要有一个正在运行着的daemon监听着netlink就好。\r\n\r\n这么理解是对的吗？ 多谢！！！！"
+ },
+ {
+  "id": "7825",
+  "parent": "7789",
+  "date": "2020-01-08T17:33:15+08:00",
+  "author": "威点零",
+  "site": "",
+  "text": "@poolloop：我觉得你的理解是对的。你去看代码，netlink/kmod都有各自的宏包着。我的kernel里面是netlink/kmod都有开。不过我的代码在上层有监听netlink，kmod userspace的路径并未设置，一样可以工作。"
+ },
+ {
+  "id": "7909",
+  "parent": "0",
+  "date": "2020-03-08T21:19:30+08:00",
+  "author": "qq",
+  "site": "",
+  "text": "对于不同的操作方法是怎样响应的呢？\r\n比如kobject-action有多种操作方式，那是所有的动作都响应么？还是需要注册某一种呢？谢谢"
+ },
+ {
+  "id": "8072",
+  "parent": "0",
+  "date": "2020-07-28T23:00:05+08:00",
+  "author": "poipoi",
+  "site": "",
+  "text": "wowo您好，我有一个疑问，kset_uevent_ops里 const char *(* const name)(struct kset *kset, struct kobject *kobj); 这个name回调函数是用来获取对应kset的名称的。但是kset的结构体中包含有kobject，而kobject中有name变量储存名称。那么在kset_uevent_ops里的name的回调函数，作用只是获取名称，内核直接写一个简单的函数，从kset->kobject->name获取名称就好了，为什么还需要将回调函数的实现交给使用者？"
+ },
+ {
+  "id": "8587",
+  "parent": "4595",
+  "date": "2022-04-14T08:52:42+08:00",
+  "author": "shu",
+  "site": "",
+  "text": "@慢慢想：上述耗时的问题确定了吗？"
+ },
+ {
+  "id": "8823",
+  "parent": "0",
+  "date": "2023-09-15T21:28:29+08:00",
+  "author": "xiaotonga",
+  "site": "",
+  "text": "1.个人理解kset_uevent_ops的逻辑和vfs中struct file_operations {}结构很类似（linux/v2.6.39.4/source/include/linux/fs.h#L1537）；\r\n2.用户只需读写设备文件，不用关心底层设备驱动，通过文件系统vfs的标准接口调用设备文件对应device来调用具体的设备驱动程序实现。\r\n3.用户空间对读device的调用逻辑：\r\nusr->syscall(read)->file_operations.read()->driver.read_impl();\r\n4.对于kset_uevent_ops{}，文中说了filter、name、event便于内核同一管理。\r\n对于回调函数filter等接口，不同device需要在自己回调函数中实现具体功能，如（linux/v2.6.39.4/source/drivers/base/bus.c#L157）（linux/v2.6.39.4/source/fs/gfs2/sys.c#L630）\r\n（linux/v2.6.39.4/source/mm/slub.c#L4674）\r\n即内核提供像file_operations{}类似的标准接口，不同device或sys需要实现kset_uevent_ops{}中回调函数具体功能。"
+ },
+ {
+  "id": "8824",
+  "parent": "0",
+  "date": "2023-09-15T21:31:44+08:00",
+  "author": "xiaotonga",
+  "site": "",
+  "text": "@wowo 昵称被限制，要换个马甲，ip被限制咋办呢，总不能再换设备吧"
+ }
+]

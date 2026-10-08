@@ -1,0 +1,242 @@
+[
+ {
+  "id": "5429",
+  "parent": "0",
+  "date": "2017-04-06T11:54:51+08:00",
+  "author": "brave",
+  "site": "",
+  "text": "获益匪浅, 请问什么时候能写下SMP, 配对的过程?"
+ },
+ {
+  "id": "5439",
+  "parent": "5429",
+  "date": "2017-04-10T09:18:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@brave：有时间的话会写写的～～"
+ },
+ {
+  "id": "5473",
+  "parent": "0",
+  "date": "2017-04-17T23:05:43+08:00",
+  "author": "ronald",
+  "site": "",
+  "text": "看你对蓝牙协议好熟悉，请问怎么熟悉一套协议了，我看蓝牙协议的时候，有点摸不着重点"
+ },
+ {
+  "id": "5474",
+  "parent": "5473",
+  "date": "2017-04-19T08:58:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ronald：协议这种东西，用的多了自然熟了，如果不怎么用，看着会很枯燥无味的。"
+ },
+ {
+  "id": "5528",
+  "parent": "0",
+  "date": "2017-05-09T17:18:58+08:00",
+  "author": "zx",
+  "site": "",
+  "text": "看spec，我感觉encryption在BLE里是放到了host里，而BR/EDR则是由controller完成"
+ },
+ {
+  "id": "5529",
+  "parent": "5528",
+  "date": "2017-05-09T19:48:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zx：何以见得呢？你可以把你看到的东西贴出来，讨论讨论。"
+ },
+ {
+  "id": "5549",
+  "parent": "5529",
+  "date": "2017-05-15T15:48:35+08:00",
+  "author": "zx",
+  "site": "",
+  "text": "@wowo：sorry,是我看错了，应该是BLE把除了encryption和privacy的一部分放在controller，其它的flow放到了host"
+ },
+ {
+  "id": "5550",
+  "parent": "5549",
+  "date": "2017-05-15T16:16:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zx：是的。加密的事情，不能交给Host，不然安全性就得不到保证。"
+ },
+ {
+  "id": "5801",
+  "parent": "0",
+  "date": "2017-07-13T11:53:39+08:00",
+  "author": "Reashion",
+  "site": "",
+  "text": "好东西"
+ },
+ {
+  "id": "5840",
+  "parent": "0",
+  "date": "2017-07-24T10:36:03+08:00",
+  "author": "三九感冒灵",
+  "site": "",
+  "text": "希望可以抽时间继续更新，很期待"
+ },
+ {
+  "id": "5844",
+  "parent": "5840",
+  "date": "2017-07-25T08:46:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@三九感冒灵：有时间的话会的，谢谢关注。"
+ },
+ {
+  "id": "5984",
+  "parent": "0",
+  "date": "2017-09-04T14:47:25+08:00",
+  "author": "sukey",
+  "site": "",
+  "text": "你好，请问一下BLE协议下有没有类似于tcpdump和iptables的工具呢 谢谢"
+ },
+ {
+  "id": "5985",
+  "parent": "5984",
+  "date": "2017-09-04T17:13:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@sukey：首先呢，工具不是协议定义的，而是具体的平台为了方便协议的开发和调试做出来的。\r\n其次呢，回到这个问题本身，你列举的这两个工具分别属于TCP层和IP层，而这两个层和BLE没有关系（你可以把BLE看作ISO 7层协议里面的物理层和链路层）。\r\n最后呢，其实我们可以在BLE之上增加TCP和IP，例如传说中的6LoWPAN。这时，你想用什么工具，都是okay的，前提要在相应的平台下用平台所提供的工具。"
+ },
+ {
+  "id": "6250",
+  "parent": "0",
+  "date": "2017-11-28T15:11:33+08:00",
+  "author": "方言",
+  "site": "",
+  "text": "Wowo,\"6)LL A收到LL_ENC_ RSP PDU之后，可以向LL B发送LL_START_ENC_REQ PDU\"这段话，根据图，好像有误。是不是应该改为\"6)LL A收到LL_ENC_ RSP PDU之后，其实已经得到自己的SessionKey,而LL B这个时候也计算得到了LTK和最终的SessionKey, 所以LL B主动发送LL_START_ENC_REQ PDU\"。"
+ },
+ {
+  "id": "6255",
+  "parent": "6250",
+  "date": "2017-11-29T09:19:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@方言：多谢提醒，这一段描述确实有2个问题（稍后有空的话修改一下）：\r\n1. LL B回应LL_ENC_RSP，不需要等Host B的信息，因为这个PDU只包含salve的SDK和IV，LL完全可以搞定。\r\n2. LL_START_ENC_REQ请求是LL B主动发的。不过这一段可以存疑：LL A是不是也可以主动发？spec没有提（没说可以，也没说不可以）。\r\n\r\n谢谢～～～～"
+ },
+ {
+  "id": "6302",
+  "parent": "0",
+  "date": "2017-12-07T16:35:30+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "wowo请问，如果做了净荷数据加密，MIC就一定要加上吗？还有就是MIC而言，如果一个数据有四块组成，块1，2，3，4，第一次发了块1，2并带上了MIC，这个MIC是对数据块1，2的真实性进行验证，如果此时第二个传输的包数据块3，4被攻击者替换成A，B数据其它的算法和密钥和第一个数据包的一样从而计算得到的第二个包的MIC，此时接收方接到第二个包时会不会出错，第二个问题我其实想问的是，如果一个数据包较大需要几次才能传完，那么每一次传输的MIC只对本次包的数据真正性做校验，还是说，后面每一个未传完的包中的MI是否都都相临的上一个包中的未数据有关？如果后续某一个包的数据全部替换再来计算MIC接收方会不会报算?"
+ },
+ {
+  "id": "6303",
+  "parent": "6302",
+  "date": "2017-12-07T16:37:54+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@EE：wowo请问，如果做了净荷数据加密，MIC就一定要加上吗？还有就是MIC而言，如果一个数据有四块组成，块1，2，3，4，第一次发了块1，2并带上了MIC，这个MIC是对数据块1，2的真实性进行验证，如果此时第二个传输的包数据块3，4被攻击者替换成A，B数据其它的算法和密钥和第一个数据包的一样从而计算得到的第二个包的MIC，此时接收方接到第二个包时会不会出错，第二个问题我其实想问的是，如果一个数据包较大需要几次才能传完，那么每一次传输的MIC只对本次包的数据真正性做校验，还是说，后面每一个未传完的包中的MIC是否都都相临的上一个包中的未数据有关？如果后续某一个包的数据全部替换再来计算MIC接收方会不会报错?"
+ },
+ {
+  "id": "6318",
+  "parent": "6302",
+  "date": "2017-12-08T10:39:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：MIC（Message Authentication Code）其实是用来的鉴权的，和加密是两个维度的事情。MIC一般是根据PDU等信息使用对称加密得到的（“The MIC shall be calculated over the Data Channel PDU’s Payload field and the first octet of the header (Part B, Section 2.4) with the NESN, SN and MD bits masked to zero.”）。\r\n得到MIC之后，DATA PDU + MIC，然后去做后续的加密过程。\r\n所以每一包的MIC，只和这个包有关。"
+ },
+ {
+  "id": "6319",
+  "parent": "6302",
+  "date": "2017-12-08T10:39:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：MIC（Message Authentication Code）其实是用来的鉴权的，和加密是两个维度的事情。MIC一般是根据PDU等信息使用对称加密得到的（“The MIC shall be calculated over the Data Channel PDU’s Payload field and the first octet of the header (Part B, Section 2.4) with the NESN, SN and MD bits masked to zero.”）。\r\n得到MIC之后，DATA PDU + MIC，然后去做后续的加密过程。\r\n所以每一包的MIC，只和这个包有关。"
+ },
+ {
+  "id": "6321",
+  "parent": "6319",
+  "date": "2017-12-08T11:57:24+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：是我表达不详细，不是MIC（Message Authentication Code），而是MIC（Message Integrity Check (MIC)）消息完整性校验，用于验证数据包的发送者，会用到AES，将数据分块，一个块的输出将用于一个块的输入，各个块串联起来用来校验信息完整性的，如果“每一包的MIC，只和这个包有关”如果是这样那MIC和CRC功能上没有区别了，我现不明白：如果一个需要分包发送的数据，第二个包数据整体发现了改变（MIC和CRC都是根据这个改变的数据计算得到，所以接收方不会报错），如果是这样蓝牙有没有机制甄别区来？第一个包（数据A由多个包组成）的MIC计算是从length字段,到header字段,再到这个包（不是指数据A，是指数据A的第一个包也即本次包）中最后的净荷块最后得出MIC，第二个包发送时也会第一个包一样计算吗也从包的length字段,到header字段再到数据块，还是说第一个包中某此数据也参与第二个数据包的MIC计算？如果不参与怎么确保第二个数据与第一个数据包的相关性（安全角度上说）"
+ },
+ {
+  "id": "6322",
+  "parent": "6321",
+  "date": "2017-12-08T14:07:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：MAC和MIC是一个东西，只是叫法不同（为了不和网络里面那个MAC混淆）。维基上有一个图，可以很好的解释MIC的功能：\r\nhttps://en.wikipedia.org/wiki/File:MAC.svg\r\n其实就是：\r\n发送方：key+msg----MIC算法---->MIC\r\n接收方：key+msg----MIC算法---->MIC，然后对比packet里面的MIC和计算得到的MIC。\r\n和CRC的区别是，收发双方拥有同一个key（对称加密）。\r\n\r\n最后，怎么做到鉴权呢？其实很简单：\r\nMIC算法所使用的msg是加密前的msg，因此必须将其正确解密得到原始msg后，才能算出合法的MIC。\r\n数据伪造方随便伪造一个数据，由于不知道具体的加密信息，是无法做出来一个可以让接收方正确解密的MIC的。"
+ },
+ {
+  "id": "6327",
+  "parent": "6322",
+  "date": "2017-12-08T16:07:27+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：估计一时半会是弄不明白，看看spec后再来重温问答"
+ },
+ {
+  "id": "6341",
+  "parent": "6327",
+  "date": "2017-12-11T21:57:42+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@EE：wowo,请看BLUETOOTH SPECIFICATION Version 4.2 [Vol 6, Part B] // 2.4 DATA CHANNEL PDU：The Data Channel PDU has a 16 bit header, a variable size payload, and may include a Message Integrity Check (MIC) field.The MIC field shall not be included in an un-encrypted Link Layer connection, or in an encrypted Link Layer connection with a data channel PDU with a zero length Payload.The MIC field shall be included in an encrypted Link Layer connection, with a data channel PDU with a non-zero length Payload and shall be calculated as specified in [Vol. 6] Part E, Section 1.MIC只能在加密的链路中，这是不是说明了MIC与链路加密有关，或者说什么时候启动了MIC需要建立在链路加密之上？"
+ },
+ {
+  "id": "6344",
+  "parent": "6341",
+  "date": "2017-12-12T15:50:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：是的，你看看我上一条回复，其实就是这个意思。如果没有加密，MIC完全就是一个摆设，没啥用。"
+ },
+ {
+  "id": "6605",
+  "parent": "0",
+  "date": "2018-03-11T16:01:33+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "wowo,最近好哦，又来请教了！\r\n   1、如果两台设备间进行了绑定，当每次重连时如果链路设置了安全模式（数据要加密），那么加密是不是要进行加密规程，比如发LL_ENC_REQ，那么发第一条LL_ENC_REQ时是没有加密的但从机设置了安全模式（数据要加密）要求第一请求都要加密，这个时候从机是不是要拒绝呢？\r\n   2、加密、认证等安全方案对LL Control PDU有用吗？\r\n   3、一台从机能绑定多少个中央主机，主机能绑定多少个从机？"
+ },
+ {
+  "id": "6608",
+  "parent": "6605",
+  "date": "2018-03-13T16:17:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：1. 加密是以链路为单位的，所以如果断了之后，就不会拒绝非加密的LL_ENC_REQ请求。\r\n2. 看看spec吧，我记得不太清楚。\r\n3. 原则上可以很多，多的不用去考虑，但实际上会受到资源的限制。"
+ },
+ {
+  "id": "6611",
+  "parent": "6608",
+  "date": "2018-03-13T17:51:35+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：1、如果如你所说，那加密模式设置就没有意思了，因为没加密也可以向从机发数据？！\r\n2、spec上没找到\r\n3、谢谢\r\n加问一条：配对请求在链路层是用数据控制通道还是用数据通道了？？"
+ },
+ {
+  "id": "6877",
+  "parent": "0",
+  "date": "2018-08-09T17:33:51+08:00",
+  "author": "vellt",
+  "site": "",
+  "text": "请问什么时候能写些GAP层Security有关的定义的介绍"
+ },
+ {
+  "id": "7271",
+  "parent": "0",
+  "date": "2019-03-12T11:23:13+08:00",
+  "author": "bright",
+  "site": "",
+  "text": "Hi Wowo\r\n最近接觸BLE \r\n請教一下 https://blog.bluetooth.com/bluetooth-pairing-part-4\r\n所謂的LTK 是用DHKey再算出來的是嘛?  為什麼已經算出共享金鑰DHkey了還要再算出LTK? \r\nDHkey不能用來建立加密通道嗎?"
+ },
+ {
+  "id": "8764",
+  "parent": "6611",
+  "date": "2023-04-04T22:10:44+08:00",
+  "author": "cc",
+  "site": "",
+  "text": "@EE：控制"
+ }
+]

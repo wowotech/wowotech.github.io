@@ -1,0 +1,26 @@
+[
+ {
+  "id": "7358",
+  "parent": "0",
+  "date": "2019-04-17T20:20:35+08:00",
+  "author": "hahahah",
+  "site": "",
+  "text": "main.c: In function ‘main’:\r\nmain.c:23:23: error: storage size of ‘attr’ isn’t known\r\n     struct sched_attr attr;\r\n                       ^\r\nmain.c:37:11: warning: implicit declaration of function ‘sched_setattr’ [-Wimplicit-function-declaration]\r\n     ret = sched_setattr(0, &attr, flags);\r\n请问你有遇到这个报错吗"
+ },
+ {
+  "id": "7763",
+  "parent": "0",
+  "date": "2019-11-26T20:33:56+08:00",
+  "author": "JiangX",
+  "site": "http://sketch2sky.com",
+  "text": "多核deadline本质是一个装箱问题，但本文中的：\r\n\r\n或者使用下面的准入测试（是必要且充分的）：\r\nΣ(WCETi / Pi) <= M - (M - 1) x Umax\r\n\r\n我理解这个条件不是充要条件，而是个充分不必要条件，即通过了准入测试，可以满足deadline(period)需求，但满足deadline(period)需求的，不一定满足这个条件。不知博主验证了这个公式没，可以指点下"
+ },
+ {
+  "id": "8583",
+  "parent": "7763",
+  "date": "2022-04-06T14:02:15+08:00",
+  "author": "hmayer",
+  "site": "",
+  "text": "@JiangX：作者虽然描述的是DL，但是DL和RT两者有些许的关系，在有些概念的解释中，读者容易混淆。\r\n关于多核调度能力分析，请参考 A Survey of Hard Real-Time Scheduling for Multiprocessor Systems。可以完美解释你的问题。"
+ }
+]

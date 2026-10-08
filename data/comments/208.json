@@ -1,0 +1,266 @@
+[
+ {
+  "id": "2489",
+  "parent": "0",
+  "date": "2015-08-25T11:09:43+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "写的好，学习了，cpu hotplug 哈时候写一写？多谢！"
+ },
+ {
+  "id": "2490",
+  "parent": "2489",
+  "date": "2015-08-25T12:12:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@shoujixiaodao：过奖了，下一篇写hotplug吧，多谢关注~~~"
+ },
+ {
+  "id": "2491",
+  "parent": "0",
+  "date": "2015-08-25T14:17:17+08:00",
+  "author": "太古神王",
+  "site": "http://taigushenwang.org",
+  "text": "[给力]"
+ },
+ {
+  "id": "2498",
+  "parent": "0",
+  "date": "2015-08-27T22:33:15+08:00",
+  "author": "珠海影视制作",
+  "site": "http://www.rxmedia.cn/",
+  "text": "有一阵子没来了，博主的博客还坚持更新着，非常不错哈"
+ },
+ {
+  "id": "3131",
+  "parent": "0",
+  "date": "2015-11-25T16:37:05+08:00",
+  "author": "dabo",
+  "site": "",
+  "text": "wowo大神 对你说的调频流程里面有两种类型的cpu 不太理解。\r\n第一种 的cpufreq driver提供了setpolicy接口的话，就不在需要governor调频的策略？\r\n\r\n那这时候cpu如何调频的 ？由cpufreq driver驱动来实现一个调频的策略然后调用setpolicy接口？ 还是由用户上层调用setpolicy接口设置频率？"
+ },
+ {
+  "id": "3134",
+  "parent": "3131",
+  "date": "2015-11-25T17:05:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dabo：具体的策略，还是由governor决定的，只不过如果driver实现了setpolicy，则具体的频率调整，是CPU自己做的。driver只告诉它一个调频范围，CPU自己调整。"
+ },
+ {
+  "id": "3138",
+  "parent": "3134",
+  "date": "2015-11-26T09:43:04+08:00",
+  "author": "dabo",
+  "site": "",
+  "text": "@wowo：wowo大神 我还是不太理解。cpu 自己调整是什么意思 还不是根据负载来调整么？这样第一种和第二种 有什么区别？"
+ },
+ {
+  "id": "3139",
+  "parent": "3138",
+  "date": "2015-11-26T09:48:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dabo：是的，你告诉CPU一个调频的范围，它会在这个范围内，根据负载（或者其它什么），自行调整。\r\n不过，市面上这样的CPU很少，直接忽略就行了。"
+ },
+ {
+  "id": "3146",
+  "parent": "3139",
+  "date": "2015-11-26T14:41:45+08:00",
+  "author": "dabo",
+  "site": "",
+  "text": "@wowo：好了解了。再问大神2个问题。\r\n1.是不是只有在governor为Userspace的模式下，才允许用户空间修改频率。其他模式下用户空间是不能修改频率的？\r\n2.调频的话主要是在kernel里面进行，根据governor的策略来调整cpu频率。用户空间很少参与？"
+ },
+ {
+  "id": "3147",
+  "parent": "3146",
+  "date": "2015-11-26T15:02:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dabo：1. 是的。\r\n2. 基本生是的。但Performance、Powersave等，还是需要用户空间参与一点点的，例如提供一个范围，不能信马由缰啊~~"
+ },
+ {
+  "id": "4509",
+  "parent": "0",
+  "date": "2016-09-04T09:55:48+08:00",
+  "author": "pgalxx",
+  "site": "",
+  "text": "楼主您好！我现在查看cpufreq的interactive 源码，先有一处有疑问，请教下大神哈！\r\n在cpufreq-interactive.c的cpufreq_interactive_timer函数里面在pcpu->target_freq = new_freq;语句之前的pcpu->target_freq应该是上一次采样时获得的频率，那此时的pcpu->target_freq与pcpu->policy->cur值是否一样的呢？谢谢！"
+ },
+ {
+  "id": "4510",
+  "parent": "4509",
+  "date": "2016-09-04T13:22:14+08:00",
+  "author": "pgalxx",
+  "site": "",
+  "text": "@pgalxx：追加：我现在查看的是3.10.37的源码哈。谢谢！"
+ },
+ {
+  "id": "4511",
+  "parent": "4510",
+  "date": "2016-09-05T09:48:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@pgalxx：其实我对这些governor也不是很了解，个人的看法是（仅供参考）：\r\n在你所说的那个时间点，pcpu->target_freq表示之前的freq，new_freq表示当前所要调整为的freq，而pcpu->policy->cur则是用户（例如某一个调频策略）所期望的freq。\r\n按理说，new_freq是从pcpu->policy->cur得出的，理想情况下，二者相同，但是由于一些限制，可能会不同。\r\n这就是它们的关系。"
+ },
+ {
+  "id": "4512",
+  "parent": "4511",
+  "date": "2016-09-05T14:35:17+08:00",
+  "author": "pgalxx",
+  "site": "",
+  "text": "@wowo：@wowo 谢谢您的回复！不过我这里还有一点疑问，pcpu->policy->cur您说是用户(例如一个调频策略)所期望的freq,这个是怎么理解呢？我查看到cpufreq.c的__cpufreq_notify_transition（）函数里面在CPUFREQ_POSTCHANGE event中有对policy->cur = freqs->new;而freqs->news是这次调频的频率，所以我认为policy->cur 是系统每次调频成功后根据CPUFREQ_POSTCHANGE的事件将该次调频的频率值赋值给它，所以我认为他们应该他的值和pcpu->target_freq相同才合理，除非底层又有一层频率映射，不知我的理解是否有误呢？"
+ },
+ {
+  "id": "4513",
+  "parent": "4512",
+  "date": "2016-09-05T15:25:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@pgalxx：你是对的，我上面的表述不是很清楚，抱歉。仔细看了一下interactive的源码，我觉得它的逻辑是这样的：\r\n0）先明确一点，pcpu->target_freq属于interactive governor，policy->cur属于cpufreq，new_freq是一个计算的中间过程\r\n1）interactive会定时收集信息，并根据旧的freq（pcpu->target_freq），计算新的cpufreq（就是new_freq）。\r\n2）如果interactive觉得需要调频（新旧值不同），则用新值（new_freq）更新旧值（pcpu->target_freq）\r\n\t注：你的问题发生在赋值动作之前，因此pcpu->target_freq还是旧值。\r\n3）interactive会在自己的task中（cpufreq_interactive_speedchange_task），以新值（pcpu->target_freq）为参数，调用driver的调频接口（__cpufreq_driver_target），调整频率值\r\n\t注：你所提的问题，已经有答案了----\r\n\t\t此时pcpu->target_freq可能是无效值，因此实际传给driver的可能不一样，因此driver最终设定的实际值（policy->cur）可能与它不同；\r\n\t\t另外，这个值就算在interactive中通过验证了，在实际的driver中，也有可能被判定为无效值，因此，实际值（policy->cur）也可能与它不同。"
+ },
+ {
+  "id": "4516",
+  "parent": "4513",
+  "date": "2016-09-06T09:54:09+08:00",
+  "author": "pgalxx",
+  "site": "",
+  "text": "@wowo：@wowo 感谢wowo大神能如此内心的回答！我查看interactive的task中在调用调频接口__cpufreq_driver_target之前做了如下操作：首先在所有online 的cpu中找到最大的频率（由于现在我所用的cpu是同步多核并不是异步多核所有理论上应该是所有online的cpu核的频率应该是一样的），然后判断pcpu->target_freq是否和pcpu->policy->cur相同，也就是判断如果当前需要调频的频率和当前正使用的频率是否一样，如果一样就不调频了；接着进入调频接口，在调频接口里面判断需要调频的频点是否在policy->min和policy->max之间，及再一次判断需要调频的频率是否和正在使用的频率一样如果一样就不调频了。我对这里的流程理解如下：需要调频的频率是从cpufreq中获取得来，且policy->min和policy->max均是平台cpufreq驱动调用cpufreq_frequency_table_cpuinfo接口（Freq_table.c）填充的，其填充的数据就是平台cpufreq支持的freq-volt表格里面的最大最小值。我理解为这里面需要调频的频点应该都是有效的才合理亚，无效的值无非为不在min-max之间。但是需要调频的频点都是在cpufreq支持的freq-volt里面选择出来的。这里有点不理解哈，除非是支持cpu hotplug里面讲在小核向大核切换时可能就会出现这种情况，不知我的理解是否对呢？另外我现在想通过修改cpufreq的interactive 来优化功耗，目前想到的是cpu load计算方式应该可以优化，针对这个您能否给点建议呢？谢谢！"
+ },
+ {
+  "id": "4519",
+  "parent": "4516",
+  "date": "2016-09-06T17:02:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@pgalxx：我是觉得，有效性判断更多的是出于严谨的代码习惯：我（interactive governor）在调用driver之前，需要确保我的参数合法，同时“我”也无法保证policy->cur是否会突变（例如硬件自动调整了、大小核切换了、等等），这些不是我的管辖范围，我只是要做到自己是健壮的。\r\n根据功耗调频，可以有ondemand、conservative、interactive三种governor选择，你可以根据自己的应用场景，例如更care功耗还是更care性能、CPU调频生效时间的快慢、等等，选择一个。具体可以看一下这个文档：\r\nDocumentation/cpu-freq/governors.txt"
+ },
+ {
+  "id": "4522",
+  "parent": "4516",
+  "date": "2016-09-06T21:20:42+08:00",
+  "author": "pgalxx",
+  "site": "",
+  "text": "@pgalxx：非常感谢wowo的讲解！"
+ },
+ {
+  "id": "5376",
+  "parent": "0",
+  "date": "2017-03-24T20:53:09+08:00",
+  "author": "lgp802a",
+  "site": "",
+  "text": "感谢wowo这么详尽的分析。实际应用中，比如高通平台。频率调整需要user space参与吗？今天和同事讨论，他说高通平台需要user space的服务根据应用场景来控制。而我理解是只需要governor计算出load，根据策略调整，不需要user space参与。没搞过高通，不知道实际怎么一回事。"
+ },
+ {
+  "id": "5378",
+  "parent": "5376",
+  "date": "2017-03-24T21:33:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lgp802a：我也没有做过高通平台，不太了解。\r\n不过调频有时确实需要用户空间参与的，因为kernel虽然知道load，但不知道用户的关注点：性能还是功耗？"
+ },
+ {
+  "id": "5736",
+  "parent": "0",
+  "date": "2017-06-26T19:04:30+08:00",
+  "author": "yellow",
+  "site": "",
+  "text": "@wowo：\r\n  请教个问题，下面说的这句话：cpufreq policy 指定的频率范围->这个范围是从哪来的？\r\n是不是应该也有一套机制的？ 望指教下，谢谢。\r\n\r\n 3）对第二种cpu，cpufreq policy在指定频率范围的同时，会指明使用的governor。governor在启动后，会动态的（例如启动一个timer，监测系统运行情况，并根据负荷调整频率），或者静态的（直接设置为某一个合适的频率值），设定cpu运行频率。"
+ },
+ {
+  "id": "5740",
+  "parent": "5736",
+  "date": "2017-06-27T10:48:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yellow：是的，这两种情况，使用的是同一套机制（就是我们的cpufreq框架啊）。区别是，第一种情况比较简单，用户空间程序根据系统情况，写入一个期望的频率范围（policy）之后，由CPU根据负荷，自行在这个频率范围里面调整而已。\r\n本质上，是CPU的硬件代替了软件governor。"
+ },
+ {
+  "id": "5743",
+  "parent": "5740",
+  "date": "2017-06-27T14:03:57+08:00",
+  "author": "yellow",
+  "site": "",
+  "text": "@wowo：@wowo:  \r\n（1）用户空间程序（写入一个policy） -> （2）Governor 根据policy的范围，来选择一个具体的值 ->设置具体的频率（opp）\r\n\r\n我不理解的是用户空间程序怎么决定policy的，是要自己实现一套吗？ 如果用户空间不写入policy，那么Linux 这套gorverno机制就不起作用了？"
+ },
+ {
+  "id": "5745",
+  "parent": "5743",
+  "date": "2017-06-27T18:35:05+08:00",
+  "author": "linda",
+  "site": "",
+  "text": "@yellow：userspace只能设置policy->{min, max}范围，通过/sys/devices/system/cpu/scaling_max/min_freq实现"
+ },
+ {
+  "id": "5747",
+  "parent": "5745",
+  "date": "2017-06-27T21:26:59+08:00",
+  "author": "yellow",
+  "site": "",
+  "text": "@linda：我知道是userspace设的，但是userspace也是有一套机制去设吧，比如什么时候设sys/**节点，要设置的范围是多少。那么userspace的这套代码在哪，是开发者自己去实现的吗"
+ },
+ {
+  "id": "5749",
+  "parent": "5747",
+  "date": "2017-06-28T08:48:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yellow：这种情况下，CPU自己已经可以做很多事儿了（根据自己的负载调整频率），因此用户空间代码基本不需要实现什么东西。至于policy，顶多是告诉cpufreq，限制一下最大频率而已（避免不稳定）。其它的，你可以思考一下，还需要什么呢？？"
+ },
+ {
+  "id": "5751",
+  "parent": "5749",
+  "date": "2017-06-28T09:35:16+08:00",
+  "author": "linda",
+  "site": "",
+  "text": "@wowo：赞同，CPU自己根据负载在policy->{min,max}范围内调频就够了，userspace只需要根据CPU能够允许的调频范围设置policy->{min,max}"
+ },
+ {
+  "id": "5752",
+  "parent": "5749",
+  "date": "2017-06-28T11:39:52+08:00",
+  "author": "yellow",
+  "site": "",
+  "text": "@wowo：可以这么理解吗\r\n1.policy（我目前的理解是有某些应用或者userspace才会通过节点去设置）\r\n2.即使没有policy，kernel也是会根据自己的负载去调节频率。只是如果有policy了，那kernel就在这个policy限制的范围内再去调整频率。\r\n谢谢！"
+ },
+ {
+  "id": "5764",
+  "parent": "5749",
+  "date": "2017-06-30T13:17:36+08:00",
+  "author": "yellow",
+  "site": "",
+  "text": "@wowo：上面的理解对不对呀，不搞清楚总感觉又根刺不舒服，哎"
+ },
+ {
+  "id": "5765",
+  "parent": "0",
+  "date": "2017-06-30T16:38:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yellow, 没问题，就是这样意思。"
+ },
+ {
+  "id": "6688",
+  "parent": "0",
+  "date": "2018-04-21T11:49:46+08:00",
+  "author": "jiffy",
+  "site": "",
+  "text": "@wowo,请教大神：\r\n1）有两种类型的cpu：一种只需要给定调频范围，cpu会在该范围内自行确定运行频率；另一种需要软件指定具体的运行频率。\r\n---》对于第一种CPU自行确定运行频率，是指硬件会计算当前的loading来动态调节到某一个合适的频率吗？麻烦解惑一下，非常感谢！"
+ },
+ {
+  "id": "6701",
+  "parent": "6688",
+  "date": "2018-04-25T20:26:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jiffy：是的，不过这种硬件很少，市面上基本上看不到。"
+ },
+ {
+  "id": "7363",
+  "parent": "0",
+  "date": "2019-04-19T17:46:30+08:00",
+  "author": "wangzhe",
+  "site": "",
+  "text": "感谢分享！请问一下，governor控制调频的动作多长时间被唤醒一次呢？这个调度的操作是怎么实现的哈？感谢wowo"
+ }
+]

@@ -1,0 +1,298 @@
+[
+ {
+  "id": "3047",
+  "parent": "0",
+  "date": "2015-11-14T00:13:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "itrocker，看你写了不少内存管理的文档，有没有兴趣负责内存管理子系统这个类别的文档维护？"
+ },
+ {
+  "id": "3048",
+  "parent": "3047",
+  "date": "2015-11-16T09:23:09+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@linuxer：有兴趣，荣幸之至：）"
+ },
+ {
+  "id": "3051",
+  "parent": "3048",
+  "date": "2015-11-16T12:59:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@itrocker：wowo同学，要不再加一个内存管理的入口？让itroker来维护如何？我感觉凭借我们两个人不可能能把内核中的所有的东西搞清楚（业余时间哪里够用啊），有必要把某些模块分出去，发动群众的力量"
+ },
+ {
+  "id": "3054",
+  "parent": "3051",
+  "date": "2015-11-16T13:28:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：没问题，交给我处理。"
+ },
+ {
+  "id": "3055",
+  "parent": "3054",
+  "date": "2015-11-16T13:33:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wowo：已经创建，并把itrocker的两篇移到这个分类下面了。\r\n内存管理也是一个庞然大物啊，itrocker加油！"
+ },
+ {
+  "id": "3057",
+  "parent": "3055",
+  "date": "2015-11-16T14:25:21+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@wowo：感谢二位大神，我会努力！加油！ ^_^"
+ },
+ {
+  "id": "3106",
+  "parent": "0",
+  "date": "2015-11-24T15:27:10+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "恭喜蜗窝科技又有一员大将加入，期待后续的文章。顺便问一下，itrocker是要写Linux内存管理这个系列的哪些内容呢？不知道是否有目录放出？嘻嘻，迫不及待啊......"
+ },
+ {
+  "id": "3109",
+  "parent": "3106",
+  "date": "2015-11-24T16:08:31+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@Daniel Shieh：感谢关注：）\r\n目前还没有完整的规划，都是利用业余时间解决心中对kenrel的一些疑问，并分享给大家，共同讨论。正如wowo所说，内存管理非常庞大，千页的大部头书也讲不完，我只能以绵薄之力陆续将常用技术的点点滴滴整理一下"
+ },
+ {
+  "id": "3589",
+  "parent": "0",
+  "date": "2016-03-05T10:10:56+08:00",
+  "author": "ericzhou",
+  "site": "",
+  "text": "你好，请教一个问题。\r\n当回收一个页框时，怎么知道这个页框是否在被使用呢？\r\n如果用户程序映射到这个页框，并正在使用，是不是就不能回收？"
+ },
+ {
+  "id": "3595",
+  "parent": "3589",
+  "date": "2016-03-06T21:50:12+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@ericzhou：你好，请教一个问题。\r\n当回收一个页框时，怎么知道这个页框是否在被使用呢？\r\n-------------------------------------------\r\nstruct page中有reference counter，可以用来确定该page是否被引用。\r\n\r\n如果用户程序映射到这个页框，并正在使用，是不是就不能回收？\r\n-------------------------------------------\r\n如果用户程序的正文段mapping到了某个物理page上来，实际上，在内存比较紧俏的时候，仍然会回收该page，只不过，但该用户程序再次执行的时候，访问正文段产生异常，然后再次分配page并从backup的磁盘中加载该page的数据，返回异常的现场。"
+ },
+ {
+  "id": "3621",
+  "parent": "0",
+  "date": "2016-03-09T11:42:06+08:00",
+  "author": "andy01011501",
+  "site": "",
+  "text": "我想保持一个普通文件在内存中的cache不被置换，也就是永久保留在内存中，有没有什么好办法啊？"
+ },
+ {
+  "id": "3649",
+  "parent": "3621",
+  "date": "2016-03-11T14:06:56+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@andy01011501：可以使用mlock机制"
+ },
+ {
+  "id": "3666",
+  "parent": "3649",
+  "date": "2016-03-15T15:21:26+08:00",
+  "author": "andy01011501",
+  "site": "",
+  "text": "@itrocker：对，非常感谢"
+ },
+ {
+  "id": "3925",
+  "parent": "0",
+  "date": "2016-05-12T10:05:48+08:00",
+  "author": "keiviw",
+  "site": "",
+  "text": "您好 有个关于dentrycache和inodecache的内存回收问题请教您，在内存回收分配的dentry对象时，回收条件是什么？回收时针对的是memory_area还是page"
+ },
+ {
+  "id": "3926",
+  "parent": "3925",
+  "date": "2016-05-13T09:18:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@keiviw：文件系统有关的回收操作，是由vm触发的（可参考shrink_slab-->do_shrinker_shrink-->shrinker->shrink），但具体的回收动作，是由文件系统负责的（可参考fs/super.c中的prune_super接口）。\r\n也就是说，decache和inode回收时机，是文件系统自己的事情，和vm无关。而具体的回收行为，我也没有研究过，你可以试试自己看一下。"
+ },
+ {
+  "id": "3935",
+  "parent": "3926",
+  "date": "2016-05-14T11:17:34+08:00",
+  "author": "keiviw",
+  "site": "",
+  "text": "@wowo：您看的源码是什么版本？我的理解是shrink_dcache_memory回收dentry对象到slab分配池中，而您介绍的cache_reap是针对slab3链表的空链表回收页帧"
+ },
+ {
+  "id": "3939",
+  "parent": "3935",
+  "date": "2016-05-16T09:00:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@keiviw：我看的内核版本是linux-4.0.5，里面已经没有你说的shrink_dcache_memory接口了。"
+ },
+ {
+  "id": "5475",
+  "parent": "3595",
+  "date": "2017-04-19T19:55:51+08:00",
+  "author": "qkhhyga",
+  "site": "",
+  "text": "@郭健：Hi,linuxer\r\n但该用户程序再次执行的时候，访问正文段产生异常，然后再次分配page并从backup的磁盘中加载该page的数据，返回异常的现场。\r\n》》》我想问问，在回收page时，会把page 的内存backup到磁盘吗？"
+ },
+ {
+  "id": "5478",
+  "parent": "5475",
+  "date": "2017-04-21T10:41:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@qkhhyga：正文段是read only的，不会被修改，因此不需要讲page上的内容backup到磁盘。"
+ },
+ {
+  "id": "5491",
+  "parent": "5478",
+  "date": "2017-04-27T19:56:21+08:00",
+  "author": "qkhhyga",
+  "site": "",
+  "text": "@linuxer：Ｈi，linux,应用层的函数栈在该函数末退出时，这种情况的栈page 是否会被回收？又是如何来判断这种page 是否可以被回收呢？\r\n别外，我们都知道，应用程序在堆分配出来的内存属于匿名页面，这种页面又是如何设置page的count和mapcount参数的？"
+ },
+ {
+  "id": "5494",
+  "parent": "5491",
+  "date": "2017-04-28T08:43:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@qkhhyga：栈上的page属于匿名映射，只要内核配置了swap on，那么所有匿名page都会拥有了backup file或者backup device，只要有了backup file或者backup device，一般情况下（没有锁住）都可以被回收。\r\n\r\nmapcount参数是和地址映射相关的，在为该page创建新的地址映射关系的时候，会累加mapcount。\r\n\r\ncount是真正的，通用意义上的reference counter。"
+ },
+ {
+  "id": "5498",
+  "parent": "5494",
+  "date": "2017-04-28T14:11:09+08:00",
+  "author": "qkhhyga",
+  "site": "",
+  "text": "@linuxer：Hi,linuxer\r\n   非常感谢你的回复\r\n　　count 在什么时候加一，减一又是什么时候？初始时，count是多少？当上层应用在执行free 的时候是否会对count 进行减一操作？"
+ },
+ {
+  "id": "5499",
+  "parent": "5494",
+  "date": "2017-04-28T16:35:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：一个物理页面（page frame）是由struct page来抽象，其成员_count表示了该page frame被使用的次数。刚开始，一个物理页面不被任何进程使用，_count等于-1，一旦被分配给了某个进程（我们称之A进程），例如保存了data段的数据，那么该page frame的_count等于0。在进程fork的时候，新进程B产生了，由于COW的原因，两个进程的地址空间都指向了一个page frame，那么这时候，该page frame的_count就会加一。当B进程向data段写入的时候，会产生memory fault，然后会为B进程分配新的page frame，从而使得A和B不再共享一个page frame，那么旧的page的_count就会减一。\r\n\r\n应用调用memory和free的时候，分配的都是虚拟地址，和物理页帧没有任何的关系"
+ },
+ {
+  "id": "5502",
+  "parent": "5494",
+  "date": "2017-04-28T18:00:19+08:00",
+  "author": "qkhhyga",
+  "site": "",
+  "text": "@linuxer：我在看shrink_page_list 的时候，发现只有在page—>_count 等于０时才会被释放，这里有个疑问，既然还有进程引用这个page，那么为什么还会释放？\r\n当然shrink_page_list是在shrink_inactive_list 中调用的，是否在内存回收时并不在乎_count 的值，如果等于１或者２，只要try_to_unmap就可以了？"
+ },
+ {
+  "id": "5783",
+  "parent": "0",
+  "date": "2017-07-07T11:17:39+08:00",
+  "author": "linux小白",
+  "site": "",
+  "text": "休眠的时间是HZ/10，对于arm(HZ=100)来说，休眠的时间就是1ms。 \r\n应该是10ms吧"
+ },
+ {
+  "id": "5784",
+  "parent": "0",
+  "date": "2017-07-07T11:25:04+08:00",
+  "author": "linux小白",
+  "site": "",
+  "text": "@itrocker  之后休眠2*HZ，对于arm(HZ=100)来说，周期就是20ms。 休眠的时间是HZ/10，对于arm(HZ=100)来说，休眠的时间就是1ms。\r\n我理解HZ ARM中定义是100,  相当于1S内产生100个时钟中断，jiffies = 1S/100 = 10, 所以一个jiffes代表10ms， ＨＺ是100个jiffes 等于1s，所以2HZ=2Ｓ，  但看您的计算HZ=1Ｓ/100 = 10MS,  难道我之前理解都错了么。。。请帮忙再普及下HZ，JIFFIES概念，谢谢~"
+ },
+ {
+  "id": "6623",
+  "parent": "0",
+  "date": "2018-03-26T16:43:50+08:00",
+  "author": "tiger",
+  "site": "",
+  "text": "没太明白page_referenced是在什么时候调用的？是每次回收页面的时候遍历这些可回收的页面时候调用的么？"
+ },
+ {
+  "id": "6780",
+  "parent": "0",
+  "date": "2018-06-04T15:50:34+08:00",
+  "author": "zhenhua",
+  "site": "",
+  "text": "貌似现在page_referenced不会做ClearPageReferenced的动作，而是在page_check_references去做\r\n而且现在inactive -> active 的转移除了mark_page_accessed，在shrink_page_list也有体现。\r\n所以上面那张图貌似是老了，期待更新哈"
+ },
+ {
+  "id": "6781",
+  "parent": "5783",
+  "date": "2018-06-05T11:33:07+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@linux小白：休眠的时间是HZ/10，对于arm(HZ=100)来说，休眠的时间就是100ms。\r\n1HZ是1s，HZ/10当然是100ms。\r\n而且不管对于arm还是x86，HZ/10都是100ms。"
+ },
+ {
+  "id": "6782",
+  "parent": "6623",
+  "date": "2018-06-05T11:38:23+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@tiger：有一处是在shrink_active_list中调用的，也就是内存不够时 先尝试从inactive中回收，但是inactive也不够 再调用shrink_active_list去move_active_pages_to_lru。"
+ },
+ {
+  "id": "6850",
+  "parent": "0",
+  "date": "2018-07-19T19:38:21+08:00",
+  "author": "tigerbear",
+  "site": "",
+  "text": "请教个问题，\r\n1. 你提到kswapd会周期性的回收，并且正常情况下回收的周期是100ms。但是我代码中（kswapd_try_to_sleep）看到似乎是kswapd会先睡眠100ms，如果睡眠过程中没有被唤醒的话就永久进入睡眠，直到下一次被唤醒。这是否与你说的周期性回收相矛盾呢？\r\n2. 我这边碰到一个问题，就是有时候会有突发性的GFP_ATOMIC标志的大量分配内存的需求，虽然每次分配只要一个页面，但会一下子要求分配很多。这种情况下我经常看到即使kswapd在工作，似乎回收速度也赶不上分配的速度，因此会造成分配失败。这个有什么办法能改善么？谢谢！"
+ },
+ {
+  "id": "6944",
+  "parent": "0",
+  "date": "2018-09-10T23:32:58+08:00",
+  "author": "firo",
+  "site": "",
+  "text": "我查了4.19的代码, page_referenced逻辑没变, 依然适用."
+ },
+ {
+  "id": "7440",
+  "parent": "5783",
+  "date": "2019-05-26T10:21:47+08:00",
+  "author": "zhaoge.zhang",
+  "site": "",
+  "text": "@linux小白：休眠的时间是HZ/10，对于arm(HZ=100)来说，休眠的时间就是1ms。\r\n1.对于arm(HZ=100)，所以可以得出100 * HZ = 1 S，所以 HZ = 10 ms\r\n2.休眠的时间是HZ/10，所以休眠时间 = HZ / 10 = 10 ms / 10 = 1 ms"
+ },
+ {
+  "id": "7576",
+  "parent": "5784",
+  "date": "2019-08-08T10:29:42+08:00",
+  "author": "davidlamb",
+  "site": "",
+  "text": "@linux小白：我觉得你的理解是正确的。"
+ },
+ {
+  "id": "8212",
+  "parent": "0",
+  "date": "2021-03-30T17:40:54+08:00",
+  "author": "Second2None",
+  "site": "",
+  "text": "page_referenced通过PTE中一个硬件标志位来判断页面的访问频率。对于KVM虚拟机访问某个页面，如果此时对应的ept页表项已经存在，TLB脱靶，访问的是gpte和spte，并没有用到宿主机的pte。page_referenced有考虑这种情况吗？KVM虚拟机页面回收还有第二次机会吗？宿主机是如何得知虚拟机访问过这个物理页面被访问过的呢？"
+ },
+ {
+  "id": "8213",
+  "parent": "8212",
+  "date": "2021-03-31T09:41:46+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@Second2None：arm64的虚拟化中有stage2映射，mmu可以认为也有两级；\r\n虚拟机通过VA得到IPA（你说的gpte/spte/pte）后，宿主机中的stage2页表负责IPA到PA（同理有另外一套页表map机制），host可以感知到IPA的PA的访问，同理加个硬件标志位 即可。"
+ },
+ {
+  "id": "8217",
+  "parent": "8213",
+  "date": "2021-04-06T11:03:19+08:00",
+  "author": "Second2None",
+  "site": "",
+  "text": "@bsp：是的，host硬件可以感知到IPA到PA的访问过程。但是，对于一个虚拟机的页面，在宿主机上是存在两个对应的页表项的，s2pte：IPA到PA的映射，pte：HVA到PA的映射，我看源码好像并没有判断某个页面是虚拟机使用的还是普通应用在使用。如果是虚拟机在使用那么page_referenced应该去判断stage2页表，如果是普通应用在使用,那么应该去判断stage1页表。"
+ }
+]

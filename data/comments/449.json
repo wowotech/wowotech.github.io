@@ -1,0 +1,194 @@
+[
+ {
+  "id": "7027",
+  "parent": "0",
+  "date": "2018-11-13T16:51:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "group se的权重应该按照task group share值来计算吧，在“用户组时间限额分配”这一节中，怎么感觉group se的权重又是按照其所属group cfs挂入的所有se load weight之和来计算了呢？"
+ },
+ {
+  "id": "7028",
+  "parent": "7027",
+  "date": "2018-11-13T22:33:34+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@linuxer：“再谈调度实体”一节举例（还有个配图），以最简单的算法计算就是：group se的权重肯定和task group share值有关。由于是2个CPU，所以task_group会有2个group se，两个group se按照一定的比例瓜分task group share。但是，比例如何确定呢？谁应该分配多呢？我们倾向负载大的group se对应的权重大，负载大小简单看作是group se对应的group cfs_rq下挂入的所有task se的权重之和。\r\n所以，\r\ncpu0的group se的权重 = task_group_share * (cpu0的group se对应的group cfs_rq的权重 \r\n / 所有cpu的group cfs_rq的权重之和)\r\n\r\n“用户组时间限额分配”一节，我想表达的是在group se权重已经确定的情况下，为大家展示group cfs_rq下的task se在一个调度周期内的时间分配情况。\r\n\r\n如有表达有问题或者误导的地方，还麻烦郭大侠指点。"
+ },
+ {
+  "id": "7029",
+  "parent": "7028",
+  "date": "2018-11-14T09:10:38+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@smcdef：我是想说你在“用户组时间限额分配”这小节的第一张配图稍微有一点误导，容易引起读者的误会。\r\n在那张图中，tg se的权重是2048，恰好，该tg cfs下挂了两个进程，权重都是1024，这给读者的感觉是tg se的权重等于其所挂se的权重之和。"
+ },
+ {
+  "id": "7035",
+  "parent": "7029",
+  "date": "2018-11-14T15:04:15+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@linuxer：嗯，的确是的，有点误导。稍后改个图，哈哈"
+ },
+ {
+  "id": "7110",
+  "parent": "0",
+  "date": "2018-12-27T11:58:38+08:00",
+  "author": "unisch",
+  "site": "",
+  "text": "请问为什么公式２为什么会做这样的近似，grq的权重和负载为什么能近似呢\r\ngrq->load.weight -> grq->avg.load_avg"
+ },
+ {
+  "id": "7112",
+  "parent": "7110",
+  "date": "2018-12-27T22:32:55+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@unisch：先留着疑问，往后看这系列的文章。第四篇PELT看完，应该就能理解，差不多是可以近似的。\r\n/process_management/450.html"
+ },
+ {
+  "id": "7371",
+  "parent": "0",
+  "date": "2019-04-23T10:58:20+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "有个问题想不明白，请教下楼主:\r\n假如A group有两个子se B和C， 如果C被移出rq，那么A也会被移出rq，这样B岂不是也被动的被移出去了？"
+ },
+ {
+  "id": "7372",
+  "parent": "7371",
+  "date": "2019-04-23T22:42:23+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hzm：你应该是QQ群提问的同学吧！问题一样的！"
+ },
+ {
+  "id": "7373",
+  "parent": "7372",
+  "date": "2019-04-24T08:41:07+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "@smcdef：是的，多谢大神解答..."
+ },
+ {
+  "id": "7375",
+  "parent": "7372",
+  "date": "2019-04-25T10:57:00+08:00",
+  "author": "miaolong",
+  "site": "",
+  "text": "@smcdef：QQ群能加不? 求群号"
+ },
+ {
+  "id": "7536",
+  "parent": "0",
+  "date": "2019-07-17T20:58:17+08:00",
+  "author": "lollipop",
+  "site": "",
+  "text": "请教作者，实际场景下task_group会有哪些，可以给几个示例吗，谢谢"
+ },
+ {
+  "id": "7951",
+  "parent": "0",
+  "date": "2020-04-15T18:07:39+08:00",
+  "author": "1+1=2",
+  "site": "",
+  "text": "请教一下，sched_slice有点奇怪，__sched_period的参数是cfs_rq的nr_running\r\n如果有两个位于同一层的cfs_rq A和B, A下辖10个se，B只有一个se，那么A __sched_period的时间就比B多，不太公平\r\n是不是应该用顶层的h_nr_running?"
+ },
+ {
+  "id": "7954",
+  "parent": "7951",
+  "date": "2020-04-16T18:24:50+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@1+1=2：A会不会比B多，取决于A和B的权重，即share值。而不是取决于A和B下面有多少task。"
+ },
+ {
+  "id": "7955",
+  "parent": "7536",
+  "date": "2020-04-16T18:25:41+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@lollipop：docker就用的很多"
+ },
+ {
+  "id": "8024",
+  "parent": "0",
+  "date": "2020-06-15T19:44:22+08:00",
+  "author": "linux123",
+  "site": "",
+  "text": "请教下大神，\r\ntask_group中的struct sched_entity **se，在每个cpu上面的se list是一定不同的吗？\r\n还是可能不同，有没有什么标准，就是不考虑cpu affine的前提下，task group中的某个se在某个cpu上调度是随机的吗"
+ },
+ {
+  "id": "8033",
+  "parent": "0",
+  "date": "2020-06-23T09:58:56+08:00",
+  "author": "lulu10922",
+  "site": "",
+  "text": "大佬，能否告知下作图工具，谢谢"
+ },
+ {
+  "id": "8037",
+  "parent": "0",
+  "date": "2020-06-28T11:18:01+08:00",
+  "author": "lulu10922",
+  "site": "",
+  "text": "“但是因为grq->load.weight可以降到0，导致除数是0”\r\n这里应该是被除数为0哈，虽然除数也为0，但引起问题的显然是被除数为0，源码的注释里也是“a divide by zero”。因为UP scenario，tg->load_**g = grq->**g.load_**g，所以grq->load.weight如果也为0，被除数就为0了，所以grq->load.weight改为 max(...)，从这里改的是分母而不是分子也可以判断，引起问题的是被除数为0"
+ },
+ {
+  "id": "8068",
+  "parent": "0",
+  "date": "2020-07-27T19:00:29+08:00",
+  "author": "wangxingxing",
+  "site": "",
+  "text": "您好，有一个简单问题想请教一下：\r\n新创建的sched_entity group(tg->se[cpu] = se)是如何被插入其隶属于的rbtree的？"
+ },
+ {
+  "id": "8069",
+  "parent": "8068",
+  "date": "2020-07-27T19:18:31+08:00",
+  "author": "wangxingxing",
+  "site": "",
+  "text": "@wangxingxing：请问是在enqueue_task_fair添加进程组进程的时候循环添加的对吧？"
+ },
+ {
+  "id": "8337",
+  "parent": "7536",
+  "date": "2021-10-18T10:49:17+08:00",
+  "author": "wenjianhn",
+  "site": "",
+  "text": "@lollipop：桌面发行版应该默认都会启用autogroup:\r\n\r\n$ grep termi /proc/sched_debug  \r\n Sgnome-terminal-  3207       475.470142     17885   120         0.000000      5103.923704         0.000000 0 0 /autogroup-168\r\n$ grep -m1 chrome /proc/sched_debug\r\n S         chrome 24624     60331.977128       805   120         0.000000       380.673857         0.000000 0 0 /autogroup-129蓝\r\n\r\n这样配置,能降低在终端编译内核时,对浏览器影响."
+ },
+ {
+  "id": "8746",
+  "parent": "0",
+  "date": "2023-02-24T20:05:18+08:00",
+  "author": "550W",
+  "site": "",
+  "text": "好问题。\r\n这个是因为:\r\ngrq->avg.load_avg = \r\n(cfs_rq->load.weight * delta_time) / LOAD_AVG_MAX\r\n当这个CPU一直运行,idle时间很少的时间，可以近似认为delta_time = LOAD_AVG_MAX，也就是可以用load_avg来模拟load.weight"
+ },
+ {
+  "id": "8859",
+  "parent": "0",
+  "date": "2024-01-11T15:47:05+08:00",
+  "author": "slava_chen",
+  "site": "",
+  "text": "我认为struct task_group里边的成员**se，他的长度和该主机中的CPU数量没有关系，成员**cfs_rq的长度和CPU数量数目相等。\r\n**se的长度只取决于当前task_group有多少个任务实体，每一个cfs_rq队列都同时可以接受多个任务实体se，但是一个cfs_rq队列只能对应于一个CPU上的rq"
+ },
+ {
+  "id": "8860",
+  "parent": "8859",
+  "date": "2024-01-11T16:42:48+08:00",
+  "author": "slava_chen",
+  "site": "",
+  "text": "@slava_chen：抱歉，我又看了sched_create_group()->alloc_fair_sched_group()->init_tg_cfs_entry()的代码，发现task_group的cfs_rq和se长度的确是CPU数目"
+ },
+ {
+  "id": "8896",
+  "parent": "0",
+  "date": "2024-05-03T03:24:12+08:00",
+  "author": "abcde",
+  "site": "",
+  "text": "图中上半部，nr_runing和h_nr_running的值分别等于10和19，多出的9是group cfs_rq的h_nr_running。group cfs_rq由于没有group se，因此nr_runing和h_nr_running的值都等于9。\r\n==========================================\r\n“nr_runing和h_nr_running的值分别等于10和19”错了，应该是“分别等于10和18”。一个关键的问题是h_nr_running只包含task se（不包含group se），因此，h_nr_running应该是18（而不是文中的19）。\r\n\r\n可以通过以下方式来证明：\r\n\r\n1. 通过代码证明，http://elixir.bootlin.com/linux/v5.19.17/source/kernel/sched/fair.c#L5659：\r\n代码每次加入的se 必定是task se（不会无缘无故的只加入group se的），group se是在for_each中“被动”加入的相应的cfs_rq的，即：将task se加入之后，for_each一路向上，在这个过程中，如果task se的某个祖先group se尚未加入相应的cfs_rq，则会在for_each中会将其加入相应的cfs_rq。for_each为每一个层级的cfs_rq->h_nr_running都加了1。所以，cfs_rq->h_nr_running永远只包含task se的数量。\r\n\r\n2. 通过下面代码做实验，可以证明:\r\n   a. cfs_rq->h_nr_running永远只包含task se的数量；cfs_rq->nr_running\r\n   b. group se也会被放入 cfs_rq，且，cfs_rq->nr_running 是包含 group se的数量的\r\n\r\nsudo cgcreate -g cpu:/tg1/tg2/tg3/tg4\r\nsudo cgexec -g cpu:/tg1/tg2  taskset 2  nice -n 0  /home/marvin/yourvm/capture/h2 2  1000\r\nsudo cgexec -g cpu:/tg1/tg2/tg3  taskset 2  nice -n 0  /home/marvin/yourvm/capture/h3 3  1000\r\n（其中，h2, h3 是  cpu-bound的代码，比如计算sha或无限for循环等）\r\ncat /sys/kernel/debug/sched/debug > /home/marvin/sched_debug.txt\r\n查看sched_debug.txt中的 cfs_rq[1]:/tg1...... 可以看到 其中的 nr_running和h_nr_running满足猜想。"
+ }
+]

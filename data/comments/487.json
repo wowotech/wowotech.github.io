@@ -1,0 +1,66 @@
+[
+ {
+  "id": "8362",
+  "parent": "0",
+  "date": "2021-11-05T09:30:37+08:00",
+  "author": "zxq",
+  "site": "",
+  "text": "等后续"
+ },
+ {
+  "id": "8363",
+  "parent": "0",
+  "date": "2021-11-05T10:29:38+08:00",
+  "author": "owen",
+  "site": "",
+  "text": "「为了能和CPU capacity进行运行」這是打字錯誤嗎？"
+ },
+ {
+  "id": "8364",
+  "parent": "8363",
+  "date": "2021-11-05T17:11:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@owen：运行----》运算"
+ },
+ {
+  "id": "8400",
+  "parent": "0",
+  "date": "2021-12-09T15:57:19+08:00",
+  "author": "richarddai",
+  "site": "",
+  "text": "看的很过瘾"
+ },
+ {
+  "id": "8475",
+  "parent": "0",
+  "date": "2022-01-06T15:52:01+08:00",
+  "author": "liulangren",
+  "site": "",
+  "text": "rt线程的负载均衡可以讲讲"
+ },
+ {
+  "id": "8571",
+  "parent": "0",
+  "date": "2022-03-10T20:25:52+08:00",
+  "author": "yinxuan",
+  "site": "",
+  "text": "请指教：\r\n“不同CPU的DIE domain的环形链表首元素（即链表头）是不同的，对于cpu0的DIE domain，其groups环形链表的顺序是（0,1,2,3）--（4,5,6,7），对于cpu6的MC domain，其groups环形链表的顺序是（4,5,6,7）--（0,1,2,3），以此类推。”\r\ncpu6的groups不应该是(5,6,7,4)--(0,1,2,3)吗？"
+ },
+ {
+  "id": "8572",
+  "parent": "8571",
+  "date": "2022-03-11T10:03:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@yinxuan：在这个具体的例子中，Die domain的group链表有两个，大核cluster和小核cluster，不区分具体cpu core的顺序。"
+ },
+ {
+  "id": "8747",
+  "parent": "0",
+  "date": "2023-02-28T11:12:45+08:00",
+  "author": "小鱼儿",
+  "site": "",
+  "text": "看的很舒服啊"
+ }
+]

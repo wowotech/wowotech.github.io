@@ -1,0 +1,362 @@
+[
+ {
+  "id": "456",
+  "parent": "0",
+  "date": "2014-09-18T15:56:01+08:00",
+  "author": "海",
+  "site": "",
+  "text": "上篇文章的这些counter，很早在看内核文档时候，那时候还不了解，这次明白了。\r\n谢谢！"
+ },
+ {
+  "id": "459",
+  "parent": "456",
+  "date": "2014-09-18T23:47:43+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@海：不用客气，我的理解也不一定准确，可以多讨论。"
+ },
+ {
+  "id": "1134",
+  "parent": "0",
+  "date": "2015-01-26T20:11:18+08:00",
+  "author": "xxfxxf33",
+  "site": "",
+  "text": "蜗蜗 我有一点不太明白，希望你能帮助我理解一下 在本文的如下描述中\r\n\r\n“4.5 /sys/power/state\r\n\r\n再回忆一下“Linux电源管理(6)_Generic PM之Suspend功能”中suspend的流程，在suspend_enter接口中，suspend前的最后一刻，会调用pm_wakeup_pending接口，代码如下：”\r\n\r\n如果在执行 error = suspend_ops->enter(state);的时候系统产生wake_events  系统会终止sleep吗？为什么\r\n谢谢"
+ },
+ {
+  "id": "1137",
+  "parent": "1134",
+  "date": "2015-01-26T22:48:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xxfxxf33：这个问题的关键是：关中断。由于执行 error = suspend_ops->enter(state);之前，local irq已经被关闭，这个过程如果产生了wakeup event，CPU是无法处理的，也就是所谓的pending状态。\r\n如果有irq pending状态，我相信CPU suspend enter的指令，会不能正确执行（这是我的猜测，我们可以在实际系统验证一下），因此会直接返回err。"
+ },
+ {
+  "id": "1168",
+  "parent": "1137",
+  "date": "2015-02-04T18:46:58+08:00",
+  "author": "xxfxxf33",
+  "site": "",
+  "text": "@wowo：wowo  我验证了你的猜测  上述操作会导致CPU无法休眠  但是所有的中断都被disable了，不明白这里的Pending状态是什么意思。"
+ },
+ {
+  "id": "1169",
+  "parent": "1168",
+  "date": "2015-02-04T20:01:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xxfxxf33：这要先看一下Linuxer同学写的中断子系统的文章。\r\n简单的说，irq disable，是指“CPU响应中断的能力被disable了”，即在中断产生的情况下，CPU不能响应，所以不能调用我们的中断handler。\r\n但是irq disable了，不代表中断不能产生，中断控制器（如GIC），一样可以产生中断，并把中断的状态（称作pending状态）保存在一定的位置。CPU在suspend前，可以查询这些pending状态，如果有中断pending，CPU就可以退出suspend。"
+ },
+ {
+  "id": "1174",
+  "parent": "0",
+  "date": "2015-02-05T11:27:47+08:00",
+  "author": "xxfxxf33",
+  "site": "",
+  "text": "好的  我先去了解一下这方面的知识  谢谢"
+ },
+ {
+  "id": "1453",
+  "parent": "0",
+  "date": "2015-04-01T16:45:14+08:00",
+  "author": "Roy",
+  "site": "",
+  "text": "蜗蜗：\r\n    打扰了，我在android L上碰到一个问题，libsuspend.so读取wakeup_count时，hold了不能返回，已知在pm_get_wakeup_count一直有事件工作，请问有什么方法跟踪什么原因导致hold了？十分感谢。"
+ },
+ {
+  "id": "1456",
+  "parent": "1453",
+  "date": "2015-04-01T18:38:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Roy：可以这样：\r\n1. 先确认一下您的系统是否使能了trace功能（默认情况下都会使能）。\r\n2. 如果使能，会存在“/sys/kernel/debug/tracing/”目录。\r\n3. echo 1 > /sys/kernel/debug/tracing/events/power/wakeup_source_activate/enable，使能wakeup source activate的trace输出。\r\n4. cat /sys/kernel/debug/tracing/trace，查看哪些driver一直处于activate状态，输出信息如下：\r\n# entries-in-buffer/entries-written: 132/132   #P:1\r\n#\r\n#                              _-----=> irqs-off\r\n#                             / _----=> need-resched\r\n#                            | / _---=> hardirq/softirq\r\n#                            || / _--=> preempt-depth\r\n#                            ||| /     delay\r\n#           TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION\r\n#              | |       |   ||||       |         |\r\n    kworker/u8:0-28958 [000] d..2 11250.490538: wakeup_source_activate: delay_lock state=0x2f900004\r\n    kworker/u8:0-28958 [000] d..4 11250.491522: wakeup_source_activate: atc260x-wall state=0x2f910004\r\n    kworker/u8:0-28958 [000] d..4 11250.491553: wakeup_source_activate: atc260x-usb state=0x2f910005\r\n     kworker/0:0-25134 [000] d..4 11250.491645: wakeup_source_activate: NETLINK state=0x2f910006\r\n主要包括driver的名称，和当前的“combined_event_count”的值。\r\n\r\n希望能给您一些参考。"
+ },
+ {
+  "id": "1458",
+  "parent": "1456",
+  "date": "2015-04-01T18:46:19+08:00",
+  "author": "Roy",
+  "site": "",
+  "text": "@wowo：我会按照你的建议试试，感谢你的回复"
+ },
+ {
+  "id": "2080",
+  "parent": "0",
+  "date": "2015-06-29T15:39:14+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "hello wowo：\r\n请问伪代码的调用逻辑是在哪个地方？是在autosuspend_wakeup_count.c的suspend_thread_func()中吗？\r\n该函数是在autosuspend_wakeup_count_init定义的，但是MT6753平台(5.1)select earlysuspend，而MSM8916(4.4)select autosleep。两个平台均没有用wakeup count机制。"
+ },
+ {
+  "id": "2081",
+  "parent": "2080",
+  "date": "2015-06-29T20:09:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：这个我还真没有研究过。正如你所说，Android中是通过system/core/libsuspend/库调用的，调用的地方，我也不熟悉。"
+ },
+ {
+  "id": "2093",
+  "parent": "0",
+  "date": "2015-06-30T20:13:15+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "注意这个变量，events_check_enabled，如果它不为真，pm_wakeup_pending接口直接返回false，意味着如果不利用wakeup count功能，suspend过程中不会做任何wakeup events检查，也就不会进行任何的同步。\r\n------如果events_check_enabled不为真的话，应该不会跑到pm_wakeup_pending的吧。会发生wakeup_count_store回写错误，用户空间进程被终止。所以\"也就不会进行任何的同步\"不会存在这种情况的吧。"
+ },
+ {
+  "id": "2094",
+  "parent": "2093",
+  "date": "2015-06-30T20:17:51+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "@koala：所以，只要跑到pm_wakeup_pending时，events_check_enabled肯定会被置1的，不然pm_wakeup_pending返回0，suspend_ops->enter(state)一定会被执行。"
+ },
+ {
+  "id": "2095",
+  "parent": "2094",
+  "date": "2015-06-30T21:28:24+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@koala：可能您理解错我的意思了，/sys/power/state可以在不操作wakeup count的前提下使用的，在这种情况下，suspend过程会跑到pm_wakeup_pending，由于events_check_enabled为false，则不会进行任何的检查，继续suspend过程。\r\n其实这就是传统suspend的方法，即不依赖wakeup count时的方法，此时kernel不会做任何同步处理。"
+ },
+ {
+  "id": "2407",
+  "parent": "0",
+  "date": "2015-08-03T16:38:06+08:00",
+  "author": "锐",
+  "site": "",
+  "text": "打扰了，wowo请教一个问题,当进入enter之前中断已经被关闭了，CPU进入suspend后，这里的wakeup event是指什么呢?CPU是靠什么东西来捕获的自动恢复的？"
+ },
+ {
+  "id": "2409",
+  "parent": "2407",
+  "date": "2015-08-03T21:42:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@锐：这个问题可以参考“/pm_subsystem/suspend_and_resume.html”中linuxer同学的回答。"
+ },
+ {
+  "id": "2419",
+  "parent": "2409",
+  "date": "2015-08-04T14:46:32+08:00",
+  "author": "锐",
+  "site": "",
+  "text": "@wowo：谢谢wowo,看了解释，受益匪浅，但还有一点不太明白，linuxer说：\r\nGIC和各个CPU的接口包括两种硬件信号：\r\n（a）触发CPU中断的信号。nIRQCPU和nFIQCPU信号线，熟悉ARM CPU的工程师对这两个信号线应该不陌生，主要用来触发ARM cpu进入IRQ mode和FIQ mode。\r\n（b）Wake up信号。nFIQOUT和nIRQOUT信号线，去ARM CPU的电源管理模块，用来唤醒CPU的\r\n因此disable了CPU的中断仅仅是堵死了中断这一个分支而已，wakeup信号仍在正常工作中。\r\n\r\n当CPU休眠的时候，中断关闭的时候，wakeup信号怎么才能产生呢？比如：外部一个按键按钮按下或者点击触摸屏的时候，GIC捕获到wakeup信号了？\r\n在系统suspend之后，捕获这种特定信号来唤醒，在driver里注册中断是不是加入IRQF_NO_SUSPEND这个标识就可以做到了？"
+ },
+ {
+  "id": "2420",
+  "parent": "2419",
+  "date": "2015-08-04T15:19:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@锐：是的，GIC没有睡死，如果加入IRQF_NO_SUSPEND，就会保留这个设备和GIC之间的联系。"
+ },
+ {
+  "id": "2436",
+  "parent": "2420",
+  "date": "2015-08-06T17:45:16+08:00",
+  "author": "锐",
+  "site": "",
+  "text": "@wowo：wowo,你好，非常感谢你的分享。按照CPU进入休眠状态的说法，是不是也就说现在的安卓系统锁屏，基本上都不会进入suspend的状态，就像类似于推送服务一样，它需要捕获网络发送过来的消息，都获取了wakelock,阻止系统进入了休眠，程序一直在后台运行不是比较耗电吗？"
+ },
+ {
+  "id": "2437",
+  "parent": "2436",
+  "date": "2015-08-06T18:23:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@锐：网络消息不需要实时啊，定时去取就行了，所以还是会suspend的。"
+ },
+ {
+  "id": "3830",
+  "parent": "0",
+  "date": "2016-04-18T16:36:27+08:00",
+  "author": "aaron",
+  "site": "",
+  "text": "你好，请教一个问题。\r\n先介绍一下背景，android4.4+kernel3.10 \r\n我们设计要求是当用户按下电源按键（用户请求系统休眠）时，系统必须无条件进入休眠。但用户再次按下电源键时必须无条件唤醒系统。\r\n\r\n目前我们我们修改了powermanger中wakelock的机制保证满足我们的设计要求。\r\n现在测试发现一个问题：有时候用户按电源键试图唤醒系统时，并没有将系统唤醒。通过log分析发现当用户按下电源键时，内核已经被唤醒了，但是紧接着又进入了suspend过程。\r\n\r\n现在不清楚是什么原因。"
+ },
+ {
+  "id": "3831",
+  "parent": "3830",
+  "date": "2016-04-18T17:04:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@aaron：首先，我觉得，“无条件休眠”这种设计，有点粗暴，不妥。kernel的suspend过程，需要很多同步操作，这样做，可能会有一些问题。\r\n然后是你的问题，很明显，两次power key按下之间，没有同步好，每次power key按下被处理的时候，需要严格依赖当前的状态（以便执行toggle动作）。例如，当power key按下后：\r\n如果系统正在执行suspend，要怎么办？\r\n如果系统正在执行resume，要怎么办？"
+ },
+ {
+  "id": "3936",
+  "parent": "2080",
+  "date": "2016-05-14T14:59:54+08:00",
+  "author": "andy01011501",
+  "site": "",
+  "text": "@koala：应该是在suspend_thread_func()这里。是否使用wakeupcount这个机制，要看autosuspend_init这里面，它初始化了三种机制，分别是earlysuspend、autosleep和wakeup_count，只有前面两种不成功，才会使用wakeupcount。\r\n然后autosuspend_wakeup_count_init，创建了suspend_thread_func()。"
+ },
+ {
+  "id": "4007",
+  "parent": "3936",
+  "date": "2016-05-31T10:51:03+08:00",
+  "author": "sam",
+  "site": "",
+  "text": "@andy01011501：mtk Android M最终选择了wakeupcount"
+ },
+ {
+  "id": "4454",
+  "parent": "0",
+  "date": "2016-08-26T16:58:02+08:00",
+  "author": "汉纸月",
+  "site": "",
+  "text": "@wowo\r\n有一事不明，请教老师，主要就是内核都睡下去了，如何才醒得过来：\r\n假设是STR，在函数suspend_enter中，最终调用如下函数进入了睡眠中。\r\nerror = suspend_ops->enter(state);\r\n当函数返回的时候，睡眠就结束了，开始了resume的过程。\r\n\r\n这个suspend_ops->enter(state);中做了些什么事情呢？它怎么能突然就醒了呢？\r\nsyscore_suspend（）函数似乎是在irq禁止的情况下调用的。所以suspend_ops->enter(state)这个里面，中断是不是也禁止了？\r\n就算中断没有禁止，中断处理器和这个函数处于两个执行线程中，如何从中断处理器中通知suspend_ops->enter(state)有wakeup事件需要醒过来呢？\r\n\r\n能以ARM为例介绍一下吗？非常感谢老师了。"
+ },
+ {
+  "id": "4455",
+  "parent": "4454",
+  "date": "2016-08-26T17:26:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@汉纸月：你可以这样认为：\r\n当CPU执行完syscore_suspend中的某一个指令后，它就停止工作了。直到外设（例如GIC，它还活着）给它发送一个硬件的wakeup信号，它就醒了，继续执行，suspend_ops->enter返回。\r\n具体可以看看下面大家的评论和讨论。"
+ },
+ {
+  "id": "4756",
+  "parent": "1169",
+  "date": "2016-10-20T16:36:23+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "@wowo：这里我还是很疑惑，如下：\r\n1、error = syscore_suspend();是不是说代码执行到这里，cpu停止工作进入suspend？\r\n2、suspend如果GIC产生中断，会唤醒cpu并从代码syscore_suspend()退出并开始执行下面的代码\r\n*wakeup = pm_wakeup_pending();\r\n\t\tif (!(suspend_test(TEST_CORE) || *wakeup)) {\r\n\t\t\ttrace_suspend_resume(TPS(\"machine_suspend\"),\r\n\t\t\t\tstate, true);\r\n\t\t\terror = suspend_ops->enter(state);\r\n\t\t\ttrace_suspend_resume(TPS(\"machine_suspend\"),\r\n\t\t\t\tstate, false);\r\n\t\t\tevents_check_enabled = false;\r\n\t\t} else if (*wakeup) {\r\n\t\t\tpm_get_active_wakeup_sources(suspend_abort,\r\n\t\t\t\tMAX_SUSPEND_ABORT_LEN);\r\n\t\t\tlog_suspend_abort_reason(suspend_abort);\r\n\t\t\terror = -EBUSY;\r\n\t\t}\r\n\t\tsyscore_resume()\r\n因为wakeup_count给driver和用户空间使用，这里用户进程被suspend，pm_wakeup_pending返回true是dirver report event的吗？可是irq不是被disable了吗？"
+ },
+ {
+  "id": "4759",
+  "parent": "4756",
+  "date": "2016-10-20T17:11:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cracker：syscore_suspend被调用的时候，中断才刚刚禁止，这时调用pm_wakeup_pending检查wakeup event，检查的是在这之前（中断被禁止之前）产生的event，也是说是driver通过中断handler上报的event。"
+ },
+ {
+  "id": "4760",
+  "parent": "4759",
+  "date": "2016-10-20T18:18:55+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "@wowo：在_device_suspend如下代码 \r\n\tif (pm_runtime_barrier(dev) && device_may_wakeup(dev))\r\n\t\tpm_wakeup_event(dev, 0);（1）\r\n\r\n\tif (pm_wakeup_pending()) {       (2)\r\n\t\tpm_get_active_wakeup_sources(suspend_abort,\r\n\t\t\tMAX_SUSPEND_ABORT_LEN);\r\n\t\tlog_suspend_abort_reason(suspend_abort);\r\n\t\tasync_error = -EBUSY;\r\n\t\tgoto Complete;\r\n\t}\r\n这段代码（2）处不是在做设备睡眠前的最后检查吗？因为这里检查完就调用dirver->pm->suspend去关中断了。如果设备没有wakeup event,才会走到syscore_suspend\r\n\r\n另外，（1）处的作用是什么呢？"
+ },
+ {
+  "id": "4761",
+  "parent": "0",
+  "date": "2016-10-20T18:36:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "cracker \r\n12 分钟前\r\n@wowo：在_device_suspend如下代码 \r\n    if (pm_runtime_barrier(dev) && device_may_wakeup(dev)) \r\n        pm_wakeup_event(dev, 0);（1） \r\n\r\n    if (pm_wakeup_pending()) {       (2) \r\n        pm_get_active_wakeup_sources(suspend_abort, \r\n            MAX_SUSPEND_ABORT_LEN); \r\n        log_suspend_abort_reason(suspend_abort); \r\n        async_error = -EBUSY; \r\n        goto Complete; \r\n    } \r\n这段代码（2）处不是在做设备睡眠前的最后检查吗？因为这里检查完就调用dirver->pm->suspend去关中断了。如果设备没有wakeup event,才会走到syscore_suspend \r\n\r\n另外，（1）处的作用是什么呢？\r\n===============================================\r\n并不是所有设备都希望关中断，特别是那些有唤醒能力的设备。另外没有规定dirver->pm->suspend一定会关中断。\r\n（1）处的作用，正好是处理那些有唤醒能力的设备，怎么处理呢？参考代码的注释就行了（确保此时这个设备能醒来，以便为当前的事情做准备）：\r\n        /*                                                                      \r\n         * If a device configured to wake up the system from sleep states       \r\n         * has been suspended at run time and there's a resume request pending  \r\n         * for it, this is equivalent to the device signaling wakeup, so the    \r\n         * system suspend operation should be aborted.                          \r\n         */"
+ },
+ {
+  "id": "4762",
+  "parent": "4761",
+  "date": "2016-10-20T19:05:37+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "@wowo：1、是不是可以这么理解：suspend_ops->enter(state)这里是保持suspend最后的状态，如果有中断信号（这个状态已经不依赖wakeup count终止suspend），然后syscore_resume()？\r\n2、我有最简单的疑问，Android N上插着usb，然后执行echo mem >sys/power/state，可以看到屏幕背光灭了，但是cat proc/kmsg log：<6>[ 3769.251077][2016-01-03 20:36:55.759322763]PM: suspend entry 2016-01-03 20:36:55.745081096 UTC\r\n<6>[ 3769.259538][2016-01-03 20:36:55.839104013]PM: Syncing filesystems ... done.\r\n<7>[ 3769.339710][2016-01-03 20:36:55.839118492]PM: Preparing system for mem sleep\r\n<6>[ 3769.581798][2016-01-03 20:36:56.122554950]Restarting tasks ... done.\r\n<6>[ 3769.620337][2016-01-03 20:36:56.122567710]PM: suspend exit 2016-01-03 20:36:56.114344950 UTC\r\n不明白屏幕为什么会灭，手动写节点，在freeze task被终止suspend，没处理到device啊\r\n另外，终止suspend的原因是usb锁没释放吗，我看wake_lock节点下有PowerManagerService.Display和PowerManagerService.WakeLocks这两个锁"
+ },
+ {
+  "id": "4763",
+  "parent": "4762",
+  "date": "2016-10-20T19:51:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cracker：1. 是的。\r\n2. 为什么屏幕背光毁灭？我猜在freeze task的时候，有些task主动关的背光，不过具体是怎么回事，你可以再查查。至于suspend失败的原因，应该是电源管理服务的锁----PowerManagerService.WakeLocks（因为你现在在充电）。另外你可以看看这个文件，它有很多统计信息：\r\n/sys/kernel/debug/suspend_stats"
+ },
+ {
+  "id": "4876",
+  "parent": "0",
+  "date": "2016-11-16T11:44:50+08:00",
+  "author": "jiangxinyu",
+  "site": "",
+  "text": "@wowo:\r\n你好，有个问题请教下，我想建立一个驱动，里面实现suspend/resume接口，目的是在系统休眠和唤醒时分别被调用，用来实现一些功能控制外设的功能， 目前已经成功注册到Linux pm模块。当我手动执行echo mem > sys/power/state的时候，我写的suspend/resume能够成功执行。但是，现在的问题是，当我的Android设备自动进入休眠或者手按power键的时候，我的suspend/resume函数没有被调用，我追了一下，发现系统休眠的时候，貌似并没有执行sys/power/state这个节点，难道Android系统进入休眠的时候不走Linux的PM机制？\r\n期待您的答复！"
+ },
+ {
+  "id": "4877",
+  "parent": "4876",
+  "date": "2016-11-16T13:05:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jiangxinyu：旧版本的android，很多确实没有使用kernel标准的电源管理框架，转而使用自定义的early suspend机制，你可以检查一下你的代码。"
+ },
+ {
+  "id": "4879",
+  "parent": "4877",
+  "date": "2016-11-16T14:28:35+08:00",
+  "author": "jiangxinyu",
+  "site": "",
+  "text": "@wowo：@wowo:\r\n您好，我的suspend/resume能够被调用到了，原因是连着USB抓的实时log,汗。。\r\n还有两个个问题：\r\n1 APP获取的wake_lock最终会走到sys/power/wake_lock吗？也就是说APP申请的锁是不是最终也会进入kernel空间？\r\n2 假如后台有应用一直在跑（一直占用wake_lock），sys/power/state永远不会被写入mem,是这样吗？"
+ },
+ {
+  "id": "4882",
+  "parent": "4879",
+  "date": "2016-11-16T21:25:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jiangxinyu：如果android使用linux kernel标准的autosleep、wakelock机制，你提到的这两点是对的。"
+ },
+ {
+  "id": "5352",
+  "parent": "0",
+  "date": "2017-03-21T23:16:37+08:00",
+  "author": "mallocnew",
+  "site": "",
+  "text": "非常感谢就是还有个小疑问：\r\npm_save_wakeup_count中的\r\n3）如果写入的值和cnt不同（说明读、写的过程中产生events），或者inpr不为零（说明有events正在被处理），返回false（说明此时不宜suspend）。\r\n以及pm_wakeup_pending中的\r\nb）获得cnt和inpr，如果cnt不等于saved_count（说明这段时间内有events产生），或者inpr不为0（说明有events正在被处理），返回true（告诉调用者，放弃吧，时机不到）。同时清除events_check_enabled的状态。\r\ninpr不为0，停止suspend能理解，而对于“写入的值和cnt不同”和“cnt不等于saved_count”，cnt不是记录的已经处理完成的event的个数吗？如果event已经处理完成了，为什么要停止suspend而不是继续suspend呢？"
+ },
+ {
+  "id": "5353",
+  "parent": "5352",
+  "date": "2017-03-22T08:47:55+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@mallocnew：文中的表述是：\r\n“读取系统的wakeup counts（该值记录了当前的wakeup event总数）”\r\n\r\n所以这是总数，不是已处理数。"
+ },
+ {
+  "id": "6033",
+  "parent": "0",
+  "date": "2017-09-12T16:06:20+08:00",
+  "author": "Rafe",
+  "site": "",
+  "text": "@wowo\r\n请教一个问题：\r\n我在高通的power key driver中看到，当设备处于suspend mode的时候，按power key唤醒设备，中断处理仅仅通过input子系统上报键值。且上报前没有任何的延迟操作。\r\n所以我觉得这个时候，用户空间进程应该会存在还未resume回来或者没有被调度到的情况，而autosleep timeout，紧接着再次进入suspend mode。\r\n而我现在看到的现象是从没出现过这种情况，我现在就是不清楚是像我猜测的那样？\r\n还是每次用户空间都能准时收到？又或者Linux的电源管理部分有相关的地方保证了消息的发送处理？"
+ },
+ {
+  "id": "6035",
+  "parent": "6033",
+  "date": "2017-09-13T16:39:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Rafe：你这个问题很有意思，确实像你说的那样，有些powerkey的上报根本没有处理wakeup event有关的内容，之所以没有出问题，我的猜测是（只是猜测，没有仔细分析，有空的话你可以试试）：\r\n1）用户空间程序（例如android的EventHub，frameworks/native/services/inputflinger/EventHub.cpp）一直都poll（等待）在key event上。\r\n2）当power key事件上报的时候，kernel会wakeup等待队列，以便让用户空间程序执行并读取到键值。\r\n3）在等待的线程被执行之前，系统不能（或者没有机会）再次被休眠（autosleep也是在线程中？），直到等待的线程醒来。\r\n4）处理键值的线程醒来执行后，就好办了～～～"
+ },
+ {
+  "id": "6158",
+  "parent": "0",
+  "date": "2017-11-01T11:07:59+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "Hi wowo\r\n在N上遇到有很多的wakeup source：\r\n\tLine 571: 09-16 09:44:07.490     0     0 I         : [460489.904631,1] last active wakeup source: ipc000002b2_PowerManagerSer\r\n\tLine 657: 09-16 09:44:09.380     0     0 I         : [460491.346436,0] last active wakeup source: ipc000002b2_PowerManagerSer\r\n\tLine 717: 09-16 09:44:11.446     0     0 I         : [460492.174366,2] last active wakeup source: ipc000002b2_PowerManagerSer\r\n\tLine 895: 09-16 09:44:17.257     0     0 I         : [460494.912370,1] last active wakeup source: ipc000002b2_PowerManagerSer\r\n\tLine 987: 09-16 09:44:18.967     0     0 I         : [460496.271585,2] last active wakeup source: ipc000002b2_PowerManagerSer\r\n\tLine 1106: 09-16 09:44:24.730     0     0 I         : [460501.129454,2] last active wakeup source: ipc000002b2_PowerManagerSer\r\n请问下你知道这是怎么产生的吗？？"
+ },
+ {
+  "id": "7916",
+  "parent": "0",
+  "date": "2020-03-12T10:45:07+08:00",
+  "author": "catamout",
+  "site": "",
+  "text": "bool pm_wakeup_pending(void)\r\n首先会判断events_check_enabled是否有效，无效直接返回false。\r\n\r\n在kernel/power/suspend_test.c中test_suspend进入休眠的流程events_check_enabled == false，那休眠的整个过程中，pm_wakeup_pending的返回值都是false，没有去检测是否有event产生。\r\n\r\n是否存在其他events_check_enabled == false时，系统进入休眠的情况？"
+ },
+ {
+  "id": "8124",
+  "parent": "4879",
+  "date": "2020-10-13T10:57:49+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@jiangxinyu：是的，android某些版本，播放音乐时 即使按下power-key黑屏，系统也不会suspend，原因就是music app一直take wake_lock。"
+ },
+ {
+  "id": "8886",
+  "parent": "0",
+  "date": "2024-04-20T12:29:53+08:00",
+  "author": "small",
+  "site": "",
+  "text": "wowo，你好\r\n我遇见有一个唤醒锁一直无法关闭，我想强制关闭这个唤醒锁，我应该怎样去调用接口强制关闭这个唤醒锁呢"
+ }
+]

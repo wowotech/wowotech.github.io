@@ -1,0 +1,298 @@
+[
+ {
+  "id": "2166",
+  "parent": "0",
+  "date": "2015-07-07T22:52:44+08:00",
+  "author": "skd2278",
+  "site": "",
+  "text": "加油，辛苦了，期待更多关于ARMv8的文章。"
+ },
+ {
+  "id": "2169",
+  "parent": "2166",
+  "date": "2015-07-08T09:08:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@skd2278：多谢~~我是在写其它文章时，需要用到ARMv8架构相关的知识的时候，才在这里总结一下，所以可能会比较慢。"
+ },
+ {
+  "id": "2174",
+  "parent": "0",
+  "date": "2015-07-08T13:25:46+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "赞，最近公司用高通ARM64的。跟着学习"
+ },
+ {
+  "id": "2175",
+  "parent": "0",
+  "date": "2015-07-08T13:33:50+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "有个小问题，如果在EL0时要进行系统调用或者发生了中断。我在汇编的异常向量表里看到有el0_sync el0_iqr和el1_sync和el1_irq，那SOC到底是升级进入EL1处理还是在EL0处理呢？"
+ },
+ {
+  "id": "2176",
+  "parent": "2175",
+  "date": "2015-07-08T13:59:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：EL0是不能处理异常的，因此，高通的代码（el0_sync el0_iqr），要么是更改了ARM的架构，要么只是为了整齐，顺便加上的，不会使用。"
+ },
+ {
+  "id": "2177",
+  "parent": "2176",
+  "date": "2015-07-08T14:21:30+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：那系统调用的时候，也要发生异常处理吧？我在el0_sync中看到了el0_svc会对系统调用处理，但是在el1_sync中却没有看到。ARM64对系统调用是怎么进行处理的呢，是我没有看到，还是有其他的办法？"
+ },
+ {
+  "id": "2178",
+  "parent": "0",
+  "date": "2015-07-08T15:07:32+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "大神可以讲讲BL31路由这块"
+ },
+ {
+  "id": "2179",
+  "parent": "2177",
+  "date": "2015-07-08T15:26:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：抱歉，之前我没有看代码。这是Linux kernel起的名字有点迷惑人，不过仔细想想，也合理：\r\n这里的el0_sync，指的是EL0下产生的sync中断，当然，这个中断是在EL1中被处理的。你看它操作的寄存器，都是EL1的。所以我们看到的，是已经升级后的。"
+ },
+ {
+  "id": "2180",
+  "parent": "2179",
+  "date": "2015-07-08T17:50:48+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：哦，原来是这样。被名字误导了。。。"
+ },
+ {
+  "id": "2184",
+  "parent": "0",
+  "date": "2015-07-09T13:59:19+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "牛逼。"
+ },
+ {
+  "id": "2187",
+  "parent": "2178",
+  "date": "2015-07-09T16:40:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@SleepDeXiang：大家不要再大婶大婶的叫了，其实我们也是在学习，只是把学习的心得分享出来了而已。后续有时间会涉及到EL3上的Security的内容的，但不会很快，毕竟时间有限。"
+ },
+ {
+  "id": "2218",
+  "parent": "2187",
+  "date": "2015-07-15T14:34:28+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@wowo：很想静下来搞搞研究，平时天天除了交付就是交付，回家就想睡觉休息。真佩服你们这些还能坚持写博客的人"
+ },
+ {
+  "id": "2220",
+  "parent": "2218",
+  "date": "2015-07-15T15:14:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@schedule：理解的，这也是没办法的事情啊，为了生活啊。我们写的也很慢，确实挤不出多少时间的。"
+ },
+ {
+  "id": "2323",
+  "parent": "0",
+  "date": "2015-07-27T16:03:24+08:00",
+  "author": "daisy",
+  "site": "",
+  "text": "有没有V8（A53/A57)流水线技术的描述文档，找了infocenter，没找到，想看下pc值是当前执行值的原因\r\n\r\n只看到这些，实在是太晦涩了\r\nSimple sequential execution\r\nThe behavior of an implementation that fetches, decodes and completely executes each instruction before proceeding to the next instruction. Such an implementation performs no speculative accesses to memory, including to instruction memory. The implementation does not pipeline any phase of execution. In practice, this is the theoretical execution model that the architecture is based on, and ARM does not expect this model to correspond to a realistic implementation of the architecture."
+ },
+ {
+  "id": "2326",
+  "parent": "2323",
+  "date": "2015-07-27T19:57:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@daisy：抱歉，没有接触过这些:("
+ },
+ {
+  "id": "2444",
+  "parent": "0",
+  "date": "2015-08-11T00:03:29+08:00",
+  "author": "wenky",
+  "site": "",
+  "text": "版主，A64指令集可不是指ARMv8指令集是64位的，\"Each instruction in A64 is defined within a fixed length 32-bit instruction.\"。实际上指令集只是对指令的一种编码方式，32位的编码对目前来说已经够用了。64位主要是指寄存器的宽度是64位，另外内存寻址范围跟寄存器的宽度也没关系，取决于处理器内部的总线宽度，实际上ARMv8寻址也只用到了48位。Intel32位的处理器内部寻址总线也远远不止32位。阅读量越来越大、请及时修正~~"
+ },
+ {
+  "id": "2448",
+  "parent": "2444",
+  "date": "2015-08-11T09:15:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wenky：非常感谢wenky的建议，由于对ARM64的理解不是很深刻，有些表述不清或者错误的地方，还请多指正、讨论。\r\n关于A64指令集的定义，确实不太好表述，因此本文只是如实引用了ARM白皮书（ARMv8_white_paper_v5.pdf）中的说法：“Does ARMv8 need to be considering a full 64-bit instruction set architecture with its larger virtual address space architecture or not?”，也即64-bit指令集。至于这里的64-bit到底指的是什么，由于不想在这个介绍性的文档中带入太多信息，就没有提。是的，您的说法是正确的，指令编码是32位，通用寄存器等，是64位。\r\n关于内存寻址，您说的也很正确，和总线以及内存管理单元有关，和指令集无关，但这并不是A64关心的地方。对于物理内存，ARMv7+LPAE是可以解决4GB的限制，但虚拟内存怎么办？这才是A64关心的地方。\r\n正因为有MMU的存在，内存寻址才可以和指令集剥离开来，CPU访问虚拟地址，MMU将之转换为物理地址（理论上可以是任何范围）。但虚拟地址的范围由什么决定的呢？可以参考下面的表述（希望后续能以单独的文章和大家讨论AArch64的内存模型，这里就不再细述了）：  \r\nThe A64 instruction set supports 64-bit addresses. The valid address range is determined by the following factors:\r\n• The size of the implemented virtual address space.\r\n• Memory Management Unit (MMU) configuration settings."
+ },
+ {
+  "id": "2465",
+  "parent": "2448",
+  "date": "2015-08-15T23:28:57+08:00",
+  "author": "wenky",
+  "site": "",
+  "text": "@wowo：O(∩_∩)O我也是接触不久一知半解、多多指教~~在这儿收获很多、谢谢~~"
+ },
+ {
+  "id": "2522",
+  "parent": "0",
+  "date": "2015-09-02T10:23:28+08:00",
+  "author": "老蛮熊",
+  "site": "",
+  "text": "hi , 楼主，不错，很好，\r\n\r\n另外：正因为有MMU的存在，内存寻址才可以和指令集剥离开来。 这句的表达容易误解，没有MMU，数据访问和指令访问也是分开的。编译链接的时候就是不同的有效地址。\r\n\r\n有效地址：程序编译链接时候设定的地址。\r\n虚拟地址：ＣＰＵ　内部把有效地址映射成的一种中间地址。\r\n物理地址： MMU把有效地址转为虚拟地址后最后放到总线上的地址（理解为DDR的地址线）"
+ },
+ {
+  "id": "2525",
+  "parent": "2522",
+  "date": "2015-09-02T17:26:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@老蛮熊：多谢指正，确实，这个表达欠妥当。谢谢~~"
+ },
+ {
+  "id": "2580",
+  "parent": "0",
+  "date": "2015-09-15T15:45:08+08:00",
+  "author": "jserv",
+  "site": "http://https://about.me/jserv",
+  "text": "感謝一直以來熱心分享，我是台灣的一位大學教師，日前指導學生彙整 ARMv8-A 相關題材，請多多指教: http://wiki.csie.ncku.edu.tw/embedded/ARMv8"
+ },
+ {
+  "id": "2588",
+  "parent": "2580",
+  "date": "2015-09-15T22:46:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jserv：感謝分享，已經閱讀，寫的還是蠻細緻的。ARMv8的內容是非常多的，希望你們能多研究一下這方面的內容。謝謝。"
+ },
+ {
+  "id": "2994",
+  "parent": "0",
+  "date": "2015-11-04T08:47:17+08:00",
+  "author": "buhui",
+  "site": "",
+  "text": "多么好的文章，期待蜗蜗一直写下去，技术本来是美好的，我们要享受它。"
+ },
+ {
+  "id": "2996",
+  "parent": "2994",
+  "date": "2015-11-04T09:25:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@buhui：多谢鼓励！没错，享受技术，和享受一杯咖啡，从本质上是没区别的。"
+ },
+ {
+  "id": "3448",
+  "parent": "2176",
+  "date": "2016-01-26T20:41:44+08:00",
+  "author": "风痕",
+  "site": "",
+  "text": "@wowo：你说得有问题吧，高等级可以使用低等级的寄存器，但是低等级不能使用高等级的寄存器。可以看看DEN0024A_v8_architecture_PG.pdf的表4.5"
+ },
+ {
+  "id": "3449",
+  "parent": "3448",
+  "date": "2016-01-27T09:31:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@风痕：上面我和passerby的讨论，可能你理解错了。我没有这样的表述。"
+ },
+ {
+  "id": "4375",
+  "parent": "2178",
+  "date": "2016-08-05T16:07:22+08:00",
+  "author": "Lusson",
+  "site": "",
+  "text": "@SleepDeXiang：BL31路由可以给你做个简单说明：1、处理FIQ ，在BL31初始化结束optee后，配置normalword  psci_ctx的SCR.FW=1, secure world的optee_ctx的SCR.FW=0。使得在kernel运行时，有FIQ触发则立即进入monitor的异常向量表进行FIQ处理程序，通过注册的opteed_sel1_interrupt_handler，然后调用optee的fiq_entry，处理相应FIQ内容。如果当前正在optee执行内容，则直接进入thread_vect_table.thread_fiq_handler 向量中执行FIQ的处理。2、IRQ的处理，IRQ不需要设置通过monitor路由，当处于linux kernel时，直接由kernel处理，如果正在optee中执行，则执行thread_irq_handler向量，在该向量处理程序中将通过TEESMC_OPTEED_RETURN_CALL_DONE命令smc返回BL31，BL31再返回kerenl的optee_handle_rpc ->OPTEE_SMC_RETURN_RPC_IRQ 中，此时当cpsr的IRQ屏蔽位已经打开，则会被IRQ中断信号触发而进入kenerl的IRQ中断处理程序，处理完以后中断返回，再次由RPC接口返回optee。"
+ },
+ {
+  "id": "6099",
+  "parent": "0",
+  "date": "2017-10-10T21:31:57+08:00",
+  "author": "夏伟",
+  "site": "",
+  "text": "后来的Cortex-A15（ARMv7架构）通过Large Physical Address Extensions (LPAE) 技术，可以支持高达40bits的物理地址空间。但受限于32-bit的指令集，虚拟地址空间依旧只有32bits（4G）\r\n============================================================================\r\n@wowo  您好，最近刚好在研究LPAE，有个问题向您请教一下。\r\nLPAE能够扩大物理地址空间，但是在ARMv7架构（linux平台）中，虚拟地址空间只有4G，按照3:1的划分，内核空间只划分到了1G的虚拟地址空间。假如要在内核空间申请大片内存（>1G）,那内核虚拟地址空间肯定是不够用了。这样一来，扩大的物理地址空间如何能够得到有效合理利用？ 换句话说，在打开LPAE的情况下，如何扩大的物理地址空间进行充分利用呢？"
+ },
+ {
+  "id": "6100",
+  "parent": "6099",
+  "date": "2017-10-11T09:38:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@夏伟：简单来说：每个进程的VA都是32bit，物理内存是40bit，不同进程的32bit可以映射到物理内存40bit的不同位置啊，所以肯定可以利用的。"
+ },
+ {
+  "id": "6102",
+  "parent": "6100",
+  "date": "2017-10-11T23:04:01+08:00",
+  "author": "夏伟",
+  "site": "",
+  "text": "@wowo：感谢！您的回答令我茅塞顿开，是我自己把思维局限于内核态的1G虚拟地址空间了。"
+ },
+ {
+  "id": "6349",
+  "parent": "0",
+  "date": "2017-12-13T11:20:40+08:00",
+  "author": "霍宏鹏",
+  "site": "",
+  "text": "通过LINUX DTS搜索，结识了您的博客，发现网上的文章都是基于您的文章来描述。后来看了您的其他文章，您的文章每一篇都是高水平，高质量，像是在写作、创作，真的很用心。您向技术致敬，我们向您致敬。"
+ },
+ {
+  "id": "6355",
+  "parent": "6349",
+  "date": "2017-12-13T13:44:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@霍宏鹏：多谢鼓励，大家的认同就是我们最大的动力啊:-)"
+ },
+ {
+  "id": "7487",
+  "parent": "2323",
+  "date": "2019-06-24T22:08:59+08:00",
+  "author": "邵靖杰",
+  "site": "",
+  "text": "@daisy：看到这个为之一振，我也非常想找到这方面的资料，网络上现在都是关于老版本ARM8,9,11之类的流水线技术细节。今天在ARM官网上逛了很久仍然没有大收获。希望您如果找到相关资料可以通过邮件告知一声。感激不尽。"
+ },
+ {
+  "id": "7488",
+  "parent": "7487",
+  "date": "2019-06-24T22:19:20+08:00",
+  "author": "邵靖杰",
+  "site": "",
+  "text": "@邵靖杰：邮箱地址2248831103@qq.com"
+ },
+ {
+  "id": "7974",
+  "parent": "0",
+  "date": "2020-04-30T18:07:17+08:00",
+  "author": "lethe",
+  "site": "http://android develope",
+  "text": "工作已经快三年了，刚毕业做driver的时后经常会看大佬技术blog和留言讨论，说真的很佩服十年如一日对技术的热情研究和心得分享，非常喜欢蜗窝，希望可以做一个像wowo一样真在的追求实质的developer，特此激励自己。"
+ },
+ {
+  "id": "7995",
+  "parent": "2580",
+  "date": "2020-05-16T19:48:08+08:00",
+  "author": "游客1",
+  "site": "",
+  "text": "@jserv：感谢您，我是本科生，最近在做ARMv8相关研究，您这个wiki帮了我大忙，做的真好。"
+ },
+ {
+  "id": "8715",
+  "parent": "0",
+  "date": "2022-12-08T15:54:33+08:00",
+  "author": "Roy",
+  "site": "",
+  "text": "拜阅\r\n\r\nGuest OS（Linux kernel、window等）位于EL1\r\n是否大致逻辑如下：\r\n若实现Hypervisor（EL2），则EL1可运行若干GuestOS，否则EL1运行OS。\r\n\r\n只有在异常发生时（或者异常处理返回时），才能切换Exception level（...）\r\nSMC或HVC 是否可直接触发EL切换，或者这类超级调用是先触发异常，在切换EL？没有具体深入研究过。"
+ }
+]

@@ -1,0 +1,8 @@
+---
+title: "标签：奔跑吧"
+url: "/tag/奔跑吧"
+---
+
+带标签「奔跑吧」的文章共 1 篇。
+
+- [《奔跑吧，Linux内核》已经上架预售了](/tech_discuss/running_kernel.html) <span class="small">2017-08-05</span>

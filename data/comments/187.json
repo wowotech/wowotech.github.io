@@ -1,0 +1,298 @@
+[
+ {
+  "id": "1845",
+  "parent": "0",
+  "date": "2015-05-21T21:05:23+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "牛逼。 细细咀嚼一下"
+ },
+ {
+  "id": "1886",
+  "parent": "0",
+  "date": "2015-05-27T19:36:06+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "大神 ，问你一个问题哈～\r\n\r\n从uImage启动开始计算，怎么在程序中准确的保证100ms后将某个gpio拉高/拉低\r\n\r\n也就是怎么从kernel启动开始准确的记录100ms时间呢？\r\n\r\n我的想法是在最早的启动函数中设一个timer，然后100ms后触发，但是 不能确保当时kernel timer已经可以正常使用。\r\n\r\n以上这个问题请教以下您，希望得到解答^ - ^"
+ },
+ {
+  "id": "1889",
+  "parent": "0",
+  "date": "2015-05-27T23:09:11+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "好文，终于盼到了。"
+ },
+ {
+  "id": "1890",
+  "parent": "1886",
+  "date": "2015-05-27T23:46:28+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@printk：可以考虑使用HW timer，从uImage启动开始设置超期时间是100ms，在中断子系统完成初始化后立刻注册该HW timer驱动的中断handler，在该handler中将某个gpio拉高/拉低"
+ },
+ {
+  "id": "1891",
+  "parent": "1890",
+  "date": "2015-05-28T08:25:54+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "@linuxer：还是通过中断最保险呗。。\r\n\r\n我们单位的中断资源基本都占用了，不太敢这么做阿\r\n\r\n我这又想到一个办法就是通过与jiffies_64的值比较\r\nint time_after_eq(unsigned long a, unsigned b);\r\n当第一次返回true时拉引脚，这个可行吗。\r\n\r\n卡到了不知道是否可以通过timer polling来做这件事\r\n\r\n害怕会影响制品的启动时间。"
+ },
+ {
+  "id": "1892",
+  "parent": "1891",
+  "date": "2015-05-28T10:46:18+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@printk：使用jiffy的精度不高，很难达到“准确”\r\n\r\n使用对HW timer进行polling当然可以达到准确，如果害怕影响启动时间，那么需要设计特别的polling算法可以降低对启动时间的影响"
+ },
+ {
+  "id": "2006",
+  "parent": "0",
+  "date": "2015-06-18T10:54:13+08:00",
+  "author": "Roy",
+  "site": "",
+  "text": "蜗蜗：\r\n   tick和HZ相关，HZ代表每秒timer中断次数，若系统退出sleep后就立即进入，就意味着每秒就会经历HZ数的resume，但实际测量中发现，电流基本上保持不变，只有2ma。这种情形怎么理解？ 多谢。"
+ },
+ {
+  "id": "2007",
+  "parent": "2006",
+  "date": "2015-06-18T13:50:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Roy：1. 先确认真的醒来了？sleep的时候没有把timer关闭？\r\n2. 如果醒来了，根据sleep和醒来的功耗，以及个sleep的时间，计算一下1s的功耗平均值，看看是否合理。PS:普通电流表是测不出瞬间的电流变化的。\r\n\r\n希望对你能有帮助。"
+ },
+ {
+  "id": "2013",
+  "parent": "2007",
+  "date": "2015-06-19T15:47:19+08:00",
+  "author": "Roy",
+  "site": "",
+  "text": "@wowo：@蜗蜗：\r\n  1 应该是醒来了，boot cpu sleep时，停在了cpu的power collapse（这个不大清楚究竟有什么特别的）。resume时，可以获知reason，前后间隔时间有10s。\r\n  2 电流表50ms采样一次，精度应该是够的。"
+ },
+ {
+  "id": "2538",
+  "parent": "0",
+  "date": "2015-09-06T15:02:25+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "整个系统工作在 oneshot模式后， do_timer,update_wall_time,update_process_times 这些之前在tick_periodic 这个周期性执行的函数里调用的函数谁来更新？"
+ },
+ {
+  "id": "2544",
+  "parent": "2538",
+  "date": "2015-09-07T16:39:31+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：do_timer用来更新jiffies，update_wall_time用于更新墙上时间，这些不需要在每个cpu上执行，只需要在global tick的CPU上执行（cpu id是tick_do_timer_cpu）。\r\nupdate_process_times用来更新进程时间，处理各个cpu上的local timer，因此需要在每一个cpu上执行。\r\n\r\n对于one-shot类型的tick设备，在没有配置高精度timer的情况下，其clock event device的event handler是tick_nohz_handler。具体的调用过程是：\r\n（1）tick_nohz_handler--> tick_sched_do_timer-->tick_do_update_jiffies64-->do_timer  update_wall_time\r\n（2）tick_nohz_handler--> tick_sched_handle-->update_process_times\r\n\r\n如果配置了高精度timer的话，周期性执行的do_timer和update_wall_time以及update_process_times都是在一个普通的hr timer的call back中执行，具体可以参考tick_setup_sched_timer函数。"
+ },
+ {
+  "id": "3366",
+  "parent": "0",
+  "date": "2016-01-08T20:19:26+08:00",
+  "author": "legend04",
+  "site": "",
+  "text": "很赞的文章，既系统，又详细。\r\n但有个问题不太懂，麻烦帮忙解答下，先谢过了！\r\n\r\nclock event device既可以作为percpu tick，又可以作为broadcast tick。\r\n但我看代码，感觉没有可能。两者都是在tick_check_new_device函数中初始化，是互斥的，哪里有代码路径达到同个device初始化成两种tick设备"
+ },
+ {
+  "id": "3369",
+  "parent": "3366",
+  "date": "2016-01-09T00:19:45+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@legend04：“clock event device既可以作为percpu tick，又可以作为broadcast tick。”这段话是我的文档中说的吗？，是在那一段呢？"
+ },
+ {
+  "id": "3371",
+  "parent": "3369",
+  "date": "2016-01-09T09:09:01+08:00",
+  "author": "legend04",
+  "site": "",
+  "text": "@linuxer：如下一段话：\r\n（5）OK，我们已经准备使用新注册的clock event device来代替当前CPU上per cpu的tick device使用的clock event device，但是，也有可能旧的那个clock event device一人分饰两角，即是当前CPU上per cpu的tick device，又是boradcast tick device，那么保持其和boradcast tick device关系。这样也就是意味着该clock event device仍然挂在active的clocke event device队列中。后续的代码和本文无关，因此就不再描述了"
+ },
+ {
+  "id": "3374",
+  "parent": "0",
+  "date": "2016-01-10T10:29:19+08:00",
+  "author": "legend04",
+  "site": "",
+  "text": "还有一个问题：\r\n你说broadcast_on消息是安装broadcast timer，并不发送tick，到broadcast entry时才会发送tick，原话如下：\r\n\r\n因此，在cpuidle framework初始化的时候，会根据情况，在每个cpu core上执行发送CLOCK_EVT_NOTIFY_BROADCAST_ON message到时间子系统的clock event模块，通过这样的消息，告知broadcast tick模块，该cpu需要broadcast tick模块的服务。当然，这时候并不需要立刻启动向该cpu 发送tick的过程，毕竟这只是通知broadcast tick模块有客户需要它而已。在某CPU Core真正要进入一个标记有“CPUIDLE_FLAG_TIMER_STOP”的flag的cpuidle state的时候，会发送CLOCK_EVT_NOTIFY_BROADCAST_ENTER消息，告知broadcast tick模块：我的local timer要挂掉了，请求broadcast tick支援。\r\n\r\n我看broadcast on的安装函数tick_do_broadcast_on_off流程，如果当前tick设备有C3SOTP属性，并且不是dummy，正常地periodic tick，此时函数会将percpu tick设备关闭，设置mask，启动broadcast tick。但问题来了，不是说不产生tick吗？而且percpu tick运行好好地，又没进入idle状态，为何安装函数会使用broadcast产生tick？多谢回答！"
+ },
+ {
+  "id": "3376",
+  "parent": "3374",
+  "date": "2016-01-11T18:53:43+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@legend04：我的原文表述的那段话应该是有一定场景限制的，只是适应于下面的场景：\r\n1、完成了初始化\r\n2、整个系统已经切换到了one shot模式\r\n\r\n你说的也是对的，在tick_do_broadcast_on_off函数中会调用tick_broadcast_start_periodic函数或者tick_broadcast_setup_oneshot函数，这会使用broadcast产生tick。而这个场景主要是：\r\n\r\n1、由于各种原因，系统工作在周期性tick的模式下，并且per cpu tick device对应的clock event device有C3STOP问题，那么，各个per cpu tick device对应的clock event device处于不工作状态，必须调用tick_broadcast_start_periodic，以便驱动各个CPU上的timer。\r\n2、从周期性工作模式切换到one shot 模式的过程中。\r\n\r\n好久没有看时间子系统了，都有点忘记了，如果有错误，多担待，呵呵～～"
+ },
+ {
+  "id": "3378",
+  "parent": "3371",
+  "date": "2016-01-11T19:00:43+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@legend04：多谢你的问题，我得回忆一下，呵呵～～～"
+ },
+ {
+  "id": "3380",
+  "parent": "3376",
+  "date": "2016-01-11T22:30:41+08:00",
+  "author": "legend04",
+  "site": "",
+  "text": "@linuxer：多谢你的回复解答，主要在于交流，把问题搞清楚~\r\n\r\n我整理了下，大概的意思如下，你看对否：\r\n因为broadcast是由于深度睡眠引入的，而deep idle就需要oneshot模式，否则也deep idle不了。\r\n所以idle driver检查有deep idle，需要stop timer，则发出broadcast on消息建立periodic broadcast(会产生periodic tick)，过程中还会切换成oneshot，等待deep idle entry了，就处理oneshot tick。\r\n所以除了开始过渡到oneshot以及dummy设备，也就不会有broadcast periodic模式场景。\r\n\r\n因为idle系统不懂，请问下broadcast on消息只是在idle系统初始化时才产生，机器上电后只运行一次，而broadcast entry是只要进入deep idle就会产生，机器上电后会有无数次吧？"
+ },
+ {
+  "id": "3384",
+  "parent": "3380",
+  "date": "2016-01-12T22:26:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@legend04：tick的形态有两种：\r\n1、传统的周期性tick\r\n2、dynamic tick，或者称之为tickless\r\ndynamic tick当然对功耗是有好处的，但是要求clock event device能够支持one shot mode。如果不能支持，那么就没有办法支持dynamic tick了。\r\n\r\n当然，无论是哪种tick形态，进入idle都是必须的。只不过周期性tick即便是系统没有需要的时候仍然周期性的从idle状态中醒来，从而对功耗造成影响，而dynamic tick是根据系统的需要产生tick，在running状态的时候，会周期性的产生tick，而在进入idle的时候，关闭周期性tick。\r\n\r\nbroadcast on消息的确是在idle driver注册的时候调用一次，而请求broadcast的服务则是在每次进入idle的时候都会产生。"
+ },
+ {
+  "id": "3410",
+  "parent": "3384",
+  "date": "2016-01-16T08:24:30+08:00",
+  "author": "legend04",
+  "site": "",
+  "text": "@linuxer：多谢回复！\r\n\r\n但综合你所述，在tick_do_broadcast_on_off中启动tick，必须有下面两个场景：\r\n一是因为percpu tick不工作。但tick_do_broadcast_on_off没有判断这个条件，只判断了percpu有C3STOP，并且不是dummy，如果是broadcast on消息，并且没有开启broadcast则开启broadcast tick，那idle初始化则一定会产生broadcast tick，不管percpu tick是否工作。\r\n二是需要切换成oneshot。但idle驱动注册时并不知道是否能切换成oneshot，如果不能切换，则一直是周期性broadcast tick了？应该是percpu tick工作才是呀。"
+ },
+ {
+  "id": "3413",
+  "parent": "3410",
+  "date": "2016-01-18T23:02:43+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@legend04：我的想法是这样的：\r\n1、如果per cpu的clockevent是dummy的，那么broadcast tick早就被开启了，不会等到在tick_do_broadcast_on_off函数中开启\r\n2、per cpu tick切换到one shot mode和tick_do_broadcast_on_off这个函数没有什么关系吧"
+ },
+ {
+  "id": "4106",
+  "parent": "0",
+  "date": "2016-06-17T11:31:11+08:00",
+  "author": "zcjfish",
+  "site": "",
+  "text": "你好， 请教个问题： 假设有SOC timer & 4个ARM core, 在linux kernel 配置HZ=100的情况下，  1， 如果在非idle情况下，  那么是不是意味着soc timer & 4个arm core的timer都在以100HZ的频率产生中断吗？   2， 如果4个ARM core都进入idle，并且CPU timer 也disable了， 那么只留下soc timer仍然以100HZ的频率产生中断吗 ？"
+ },
+ {
+  "id": "4843",
+  "parent": "2544",
+  "date": "2016-11-04T16:47:10+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "@linuxer：能否讲下update_wall_time do_timer 具体怎么在global tick的CPU上执行啊， 还有update_process_time在 每cpu上执行，也比较疑惑。\r\n\r\n我这边看Linux 3.0.35应该实现了 global tick和 per cpu tick，怎么看感觉如果上述三个函数都在hr timer的call back中执行的话，这个hr timer 应该在per cpu里面，那么就是说 三个函数都在 percpu tick里面执行了。\r\n\r\n能否给出一些大致的函数调用链或者说说内核做了哪些设计可以global tick和percpu tick都有自己的执行任务？\r\n\r\n谢谢。"
+ },
+ {
+  "id": "4844",
+  "parent": "4843",
+  "date": "2016-11-04T18:24:56+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "@温柔海洋：我又看了一遍代码，这部分已经明白了。谢谢，不用指点了。\r\n\r\n感觉broadcast tick 仅在 cpu idle的时候有用吧，换句话说只有在cpu idle时，broadcast tick才能发挥用武之地，因为此时percpu tick 已经被停了，只能靠broadcast tick去计时，然后有需求时唤醒睡眠时的CPU。cpu 非idle时，broadcast tick就没有用了。\r\n\r\n@linuxer 通俗大概地这样总结下，我说的应该对吧。"
+ },
+ {
+  "id": "4850",
+  "parent": "4844",
+  "date": "2016-11-08T09:17:59+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@温柔海洋：是的，大概就是这样的"
+ },
+ {
+  "id": "5610",
+  "parent": "0",
+  "date": "2017-05-27T11:08:48+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "Dear linuxer\r\ntick_broadcast_on的作用是什么？\r\ntick_broadcast_mask的作用是什么？\r\n这两个的区别是什么？为什么要同时并存？\r\n看了很久，看的一知半解，您有空帮我解释一下吗？"
+ },
+ {
+  "id": "5613",
+  "parent": "4106",
+  "date": "2017-05-31T10:06:23+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zcjfish：之前遗漏了这个问题，呵呵～～补上吧。\r\n第一个问题：不是，只有4个local timer产生周期的tick信号，soc timer没有什么作用（指tick方面的功能）。\r\n第二个问题：如果local timer存在C3STOP问题，那么当进入idle状态的时候，需要soc timer这个设备broadcast  tick event到对应的cpu上去，以便将其从idle中唤醒。"
+ },
+ {
+  "id": "5614",
+  "parent": "5610",
+  "date": "2017-05-31T10:15:06+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@felix：这个问题太细了，我估计需要重新看看代码才能回答你。不过，我还是倾向先别钻入这些细枝末节的东西，先把框架理顺了在说。技术的细节即便是当下明白了，半年之后，你一定会忘光的，哈哈，就是想我现在这样。"
+ },
+ {
+  "id": "5615",
+  "parent": "5614",
+  "date": "2017-05-31T11:16:50+08:00",
+  "author": "felix",
+  "site": "",
+  "text": "@linuxer：3ks\r\n谢谢前辈的指点啊，哈哈哈"
+ },
+ {
+  "id": "6599",
+  "parent": "0",
+  "date": "2018-03-07T19:27:11+08:00",
+  "author": "冬瓜哥",
+  "site": "",
+  "text": "大侠，当hpet被lapic timer替换下来之后，成为广播设备。但是为何没有看到在让它广播之前，根据cpu mask将其set_affinity呢，如果不设置affinity，irq0的默认affinity好像是利用了io apic的lowest priority方式，意味着只有一个cpu（随机的）响应中断，这很矛盾啊。望赐教一二。多谢！"
+ },
+ {
+  "id": "6600",
+  "parent": "6599",
+  "date": "2018-03-07T19:35:37+08:00",
+  "author": "冬瓜哥",
+  "site": "",
+  "text": "@冬瓜哥：搞清楚了，原来是通过mask中的第一个cpu上的dummy local timer的broadcast回调来中转，后者再用ipi，执行ipi的时候会根据mask来单个发送。多谢。"
+ },
+ {
+  "id": "6601",
+  "parent": "0",
+  "date": "2018-03-07T19:37:38+08:00",
+  "author": "冬瓜哥",
+  "site": "",
+  "text": "大侠，能否请教一下，我在一些x86系统上看到过interrupts情况，显示irq0的中断次数，与每个核心的local timer中断次数基本相同。没想通，此时hpet/pit还是作为广播设备了么，如果这样，每有一次irq0，就起码产生一次ipi，但是ipi统计那一栏又是空的，有点矛盾，想不通，望赐教。多谢。"
+ },
+ {
+  "id": "6843",
+  "parent": "0",
+  "date": "2018-07-11T17:13:41+08:00",
+  "author": "lamaboy",
+  "site": "",
+  "text": "你好，关于cpu idel ，Dynamic Tick 、以及Tick Broadcast ，我有个想法如下：\r\n\r\ncpu 没事的时候 进入 idel 也需要大量的操作确认是否合适进入idel，如果在该cpu 上有很多定时器（假设），就算 Tick Broadcast 接管了 local timer 有不停的被唤醒 ，进入和唤醒都是需要很高的代价的，为啥内核开发者没有开发出，当cpu 进入idel 模式后，接管 该cpu 上的定时器，直接在醒来的cpu上执行，当然这样会有 缓存的开销，但是这样就可以让打盹的cpu美美的睡了。"
+ },
+ {
+  "id": "8119",
+  "parent": "0",
+  "date": "2020-09-29T09:01:25+08:00",
+  "author": "前进",
+  "site": "",
+  "text": "这里的意思是非dummy 非idle状态cpu也停掉local tick而改用broadcast tick吗？不合理啊\r\n————————————————\r\n（3）设定tick_broadcast_on，同时也设定tick_broadcast_mask，由于后续会启动broadcast tick device产生周期性tick服务每一个cpu，因此会shutdown per cpu的clock event device。\r\n（4）如果是首次初始化cpuidle framework（每个cpu都会执行一次），那么需要初始化broadcast tick\r\n（5）根据broadcast tick device的mode进行相应的初始化。\r\n如果系统处于周期性tick模式下，则各个percpu 的tick device对应的clock event device要么是dummy的，要么被停掉，这时候，broadcast tick device为各个cpu提供周期性tick。这时候，虽然各个cpu在进入/退出idle状态的时候会发送BROADCAST_ENTER/BROADCAST_EXIT或者BROADCAST_ON/BROADCAST_OFF的消息，不过实际上并不参与实际的控制（tick_broadcast_oneshot_control函数一开始检查就退出了）。"
+ },
+ {
+  "id": "8188",
+  "parent": "0",
+  "date": "2021-01-26T18:13:51+08:00",
+  "author": "哈默",
+  "site": "",
+  "text": "这个系列的文章读到现在就一个感觉——乱，非常混乱，行文完全没有逻辑，还有很多句子不通顺。文章读起来很不顺畅。"
+ },
+ {
+  "id": "8479",
+  "parent": "8188",
+  "date": "2022-01-08T21:48:03+08:00",
+  "author": "qwews",
+  "site": "",
+  "text": "@哈默：感觉还是要静下心来好好读一下, 我个人一直在做应用开发, 第一次看这个系列也是一头雾水, 第二遍看才找点感觉. 另外建议先读 \"2 软件架构\"理清整体模块, 之后按照文章发表顺序来看."
+ },
+ {
+  "id": "8596",
+  "parent": "8188",
+  "date": "2022-04-26T12:56:47+08:00",
+  "author": "orangeboyye",
+  "site": "",
+  "text": "@哈默：这个系列的文章逻辑还是非常清晰的，只不过不适合新人，要有很深厚的内核基础才行，对内核只有一般性了解的来说读起来都非常吃力，有很多概念都没有解释都是直接假设你已经懂了的，比如调度、PM相关的知识。"
+ }
+]

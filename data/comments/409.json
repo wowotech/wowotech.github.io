@@ -1,0 +1,154 @@
+[
+ {
+  "id": "6003",
+  "parent": "0",
+  "date": "2017-09-07T23:06:08+08:00",
+  "author": "dong",
+  "site": "",
+  "text": "顶一下wowo，看了一个月BLE,终于入门了，wowo帖子帮助很大。"
+ },
+ {
+  "id": "6004",
+  "parent": "0",
+  "date": "2017-09-07T23:30:17+08:00",
+  "author": "dong",
+  "site": "",
+  "text": "“master和slave都要生成各自的LTK/EDIV/Rand组合，并共享给对方。因为加密链路的发起者需要知道对方的LTK/EDIV/Rand组合，而Master或者Slave都有可能重新发起连接。”\r\n\r\n我在用BLE4.0的时候，好像作为Slave时候并不能主动发起START ENCRYPTION啊，Slave调用加密函数时候，用抓包软件发现Slave发出的是一个Security request，然后之前已经与之绑定过的Master收到这个Security request之后，主动发起START ENCRYPTION开始加密，所以我还是不太明白这个角色反转发起连接是怎么一回事，就是Slave如何发起START ENCRYPTION，求wowo指导指导。"
+ },
+ {
+  "id": "6005",
+  "parent": "6004",
+  "date": "2017-09-08T09:12:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dong：所谓的角色反转就是：前一次A是master，B是slave，下一次重连的时候，可以B是master A是slave啊。谁发起这次连接谁就是master啊（不要把连接和加密连接混在一起了，二者没啥关系）。"
+ },
+ {
+  "id": "6009",
+  "parent": "6005",
+  "date": "2017-09-08T23:45:03+08:00",
+  "author": "dong",
+  "site": "",
+  "text": "@wowo：wowo有道理，后来我想了想，这里角色调转，是指结束之前的piconet，换角色重新建立新piconet，形成“首次建立piconet就拥有slave的ltk信息”现象，直接发起加密，跳过配对过程。"
+ },
+ {
+  "id": "6010",
+  "parent": "6009",
+  "date": "2017-09-09T10:08:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dong：是的，就是这个意思～～"
+ },
+ {
+  "id": "6135",
+  "parent": "0",
+  "date": "2017-10-23T14:15:00+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "wowo大神，何时讲讲mesh相关的知识点，不知道实际上一个蓝牙能组网多少个低功耗节点"
+ },
+ {
+  "id": "6139",
+  "parent": "6135",
+  "date": "2017-10-24T09:18:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chen_chuang：mesh的标准刚出来，只是看过几遍spec，还没有用过呢，所以不知道什么时候会写啊。 至于组网的节点个数，简单的讲：无数多个，因为mesh的组网简单的说就是“接收+转发”。 不过呢，最终多少个，受限于实际应用场景的需求：比如你能容忍的延迟；比如你需要的传输速率；等等。"
+ },
+ {
+  "id": "6251",
+  "parent": "0",
+  "date": "2017-11-28T16:10:13+08:00",
+  "author": "方言",
+  "site": "",
+  "text": "Wowo,文中提到“另外我们可以思考一个问题（在[1]中就应该有这个疑问）：为什么LE legacy pairing的LTK需要EDIV/Rand信息呢？因为LTK是各自生成的，不一样，因而需要一个索引去查找某一个LTK（对比后面介绍的LE Secure Connections，LTK是直接在配对是生成的，因而就不需要这两个东西）。”，说到LTK不一样。但最终数据加解密的时候，使用的应该是对称的方式，所以LTK是相等才对吧？而且整个过程中，应该是各自计算出来的，并没有空中交换，不知道我说的是否正确~"
+ },
+ {
+  "id": "6256",
+  "parent": "6251",
+  "date": "2017-11-29T09:25:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@方言：具体某一次加密和解密，使用的LTK是一样的，但到底用的是哪一个LTK，LE legacy pairing有关的过程是不固定的。因为LTK是配对后通过STK自行生成的，所以肯定需要告诉对方，并且可能不止有一个，所以大家都需要一个表，存储不同的STK组合（EDIV/Rand就是这个表的index）。"
+ },
+ {
+  "id": "6627",
+  "parent": "6010",
+  "date": "2018-03-29T10:48:03+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：wowo，来来来，帮个忙：）关于密钥分发中的the roles are reversed一段：\r\nThe master may also provide keys to the slave device so a reconnection can be encrypted if the roles are reversed, the master’s random addresses can be resolved, or the slave can verify signed data from the master.\r\n1、其中the roles are reversed是不是只针对LTK，没有反转前用的是从机的LTK，反转后用的主机的LTK（此时其实已是从机角色）？\r\n2、其中the roles are reversed是不是只针对LTK，对CSRK，IRK都没有意义，这两个密钥只关注是谁生成的和是谁接收的跟角色没有关系，发送时对自己的数据或地址用自己生成的密钥，接收时验证或解析用分发者给的密钥，请问是不是这样的？\r\n3、但对于LTK如你上文所说，具体的一次加密和解密双方都用到相同LTK，而对于CSRK，IRK，如果一方没有发给对方，那么验证和解析都是单向的？\r\n谢谢啦：）"
+ },
+ {
+  "id": "6641",
+  "parent": "6627",
+  "date": "2018-04-03T16:44:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：抱歉回复晚了~\r\n首先来说，双方使用的LTK是相同的，这是加密的基础，否则就是对牛弹琴了；\r\nthe roles are reversed的场景里面，master需要通过加密链路（基于LTK）把一些必要的信息告诉slave（例如怎么解析master的Random address），只有这样，下次角色反转的时候，slave（此时是slave，翻转后是master）才能正确解析master（此时是master，下次是slave）的地址。"
+ },
+ {
+  "id": "6645",
+  "parent": "6641",
+  "date": "2018-04-04T12:55:06+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：通读了协议栈，这方面写的不是太直接，感觉LTK与CSRKT和IRK用法上有些不同：LTK有角色转换的概念，而CSRKT和IRK没有，对于后者不管链路角色怎么变密钥总是密钥接收者验证或解析密钥发送者，如果主机和从机都要分配那么会在链路中同时用到，而前者角色变化了链路的LTK也会换悼，因为链路在加密时只使用一个LIK有别于CSRKT和IRK可以同时使用它们双方的，wowo麻烦再帮确认下我刚这些话是否与你的看法一制，如下是协议中规定的密钥分发的顺序供参考：\r\n\r\nWhen using LE legacy pairing, the keys shall be distributed in the following\r\norder:\r\n1. LTK by the slave\r\n2. EDIV and Rand by the slave\r\n3. IRK by the slave\r\n4. BD ADDR by the slave\r\n5. CSRK by the slave\r\n6. LTK by the master\r\n7. EDIV and Rand by the master\r\n8. IRK by the master\r\n9. BD_ADDR by the master\r\n10. CSRK by the master"
+ },
+ {
+  "id": "6647",
+  "parent": "0",
+  "date": "2018-04-04T15:27:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE，其实我觉得没必要把配对和角色转换这两个过程纠结在一起，这是两个很独立的过程。\r\n重新配对了，肯定会更新LTK；\r\n角色转换了，如果要重新配对，也会更新LTK；\r\n至于IRK，是用于地址解析的，需要在重新配对前，广播的地址需要解析，就需要提前把IRK告诉对方；\r\n把这几个信息揉在一起，好好想想，就是你所要的答案了~"
+ },
+ {
+  "id": "6653",
+  "parent": "6647",
+  "date": "2018-04-06T11:08:52+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：我感觉没有纠结在一起呀，重新配对肯定是会更新LTK，问题是在一次配对中密钥交换主从可以互相发送，两个LTK如何使用是这个问题，因为LTK在当前总是只使用一个不会同时使用两个，协议中既然提到了角色转换那肯定是有它的意义！！！"
+ },
+ {
+  "id": "6941",
+  "parent": "0",
+  "date": "2018-09-10T17:11:19+08:00",
+  "author": "xiaoxie",
+  "site": "",
+  "text": "请教下wowo，OOB data能举个例子吗？比如需要app从云端获取一个secret key，这个key就是OOB data吗？"
+ },
+ {
+  "id": "8011",
+  "parent": "6941",
+  "date": "2020-06-03T17:53:57+08:00",
+  "author": "w0w0",
+  "site": "http://https://evilpan.com",
+  "text": "@xiaoxie：OOB一般是指蓝牙之外的其他物理信道来交换配对所需要的信息，这个信道同时也用来发现设备，比如NFC。从云端来交换信息广义来说也算OOB，信道是802.11的WiFi，不过似乎没有这样用的。"
+ },
+ {
+  "id": "8399",
+  "parent": "0",
+  "date": "2021-12-09T10:14:00+08:00",
+  "author": "strong",
+  "site": "",
+  "text": "上边的配对图 明明用的passkey entry，为什么又说OOB方式， 此图有错误"
+ },
+ {
+  "id": "8944",
+  "parent": "0",
+  "date": "2024-12-05T15:39:22+08:00",
+  "author": "毋庸置疑",
+  "site": "",
+  "text": "看完了，感谢，，催更来了"
+ },
+ {
+  "id": "9169",
+  "parent": "0",
+  "date": "2025-08-26T16:38:23+08:00",
+  "author": "ppzzDD",
+  "site": "",
+  "text": "wowo大佬，能否讲一讲关于蓝牙OTA那部。感谢感谢。"
+ }
+]

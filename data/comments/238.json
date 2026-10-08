@@ -1,0 +1,154 @@
+[
+ {
+  "id": "3142",
+  "parent": "0",
+  "date": "2015-11-26T11:18:36+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "上面那张讲exception level的图，secure firmware 不应该在 secure EL0 吧，应该在EL3, secure EL0 应该放的是secure的APP"
+ },
+ {
+  "id": "3143",
+  "parent": "3142",
+  "date": "2015-11-26T12:14:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：我是借用wowo同学的图片，如果是我画的话我会写 trusted application。\r\n不过没有关系，领会精神就OK了（^_^，主要是我不想修改图片了）"
+ },
+ {
+  "id": "3145",
+  "parent": "0",
+  "date": "2015-11-26T14:04:33+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "soga 哈哈"
+ },
+ {
+  "id": "3148",
+  "parent": "3143",
+  "date": "2015-11-26T15:29:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：哈哈，话说Tiger同学的眼神是相当的好啊。其实这个图片也不只我自己画的，主流的说法（包括ARM的Spec），都是trusted application。我之所以copy了一个非主流的，主要是里面隐藏的一个含义：trusted application的地位和用户application并不对等，虽然从软件层次上在一个level，但在功能上，trusted application更像一个firmware。PS：在嵌入式的语意里，firmware和application的概念类似，只是不能随意改动而已。"
+ },
+ {
+  "id": "3149",
+  "parent": "3148",
+  "date": "2015-11-26T17:13:49+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：最近在研究这个，所以比较关注这里。作为工程师就是要不断吸收新的东西，永不停歇啊"
+ },
+ {
+  "id": "3308",
+  "parent": "0",
+  "date": "2015-12-30T11:53:35+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "这一组异常对应异常状态的迁移是EL1到EL1的迁移，并且选择使用了SP_EL0。对于linux kernel而言，这类exception vector实际上就是Invalid mode handlers\r\n//------------------------------\r\n请教一下：\r\n这是什么场景下要用的异常向量表？没看明白。\r\n同时Synchronous EL1t ，Synchronous EL1h 分表代表什么意思？"
+ },
+ {
+  "id": "3309",
+  "parent": "3308",
+  "date": "2015-12-30T12:35:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madang：不同的exception level可以选择其使用的栈指针：\r\n1、对于EL0，不能选择只能使用EL0_SP，我们简称为EL0t\r\n2、对于EL1，可以选择使用EL0_SP，我们简称为EL1t，或者选择EL1_SP，我们简称EL1h\r\n3、对于EL2，可以选择使用EL0_SP，我们简称为EL2t，或者选择EL2_SP，我们简称EL1h\r\n4、对于EL3，可以选择使用EL0_SP，我们简称为EL3t，或者选择EL3_SP，我们简称EL1h\r\n\r\nt表示thread，h表示handler\r\n\r\n当发生一次异常之后，系统可以迁移到某个exception level（可能是t，也可能是h）。\r\n\r\n因此这一组异常向量对应系统迁移到EL1t这个状态。"
+ },
+ {
+  "id": "4617",
+  "parent": "0",
+  "date": "2016-09-27T16:45:53+08:00",
+  "author": "CHENYAN",
+  "site": "",
+  "text": "看了你的文章深受启发,最近一直在研究ARM64 Linux的系统调用的HOOK方法.记得以前X86平台下可以通过IDT寄存器获取系统调用表的基地址.我看了ARM64的内核代码,貌似没有类似的寄存器.想问一下ARM64由办法获取系统调用表的基地址吗?感谢楼主"
+ },
+ {
+  "id": "4619",
+  "parent": "4617",
+  "date": "2016-09-27T19:12:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@CHENYAN：对于ARM64，VBAR_ELx寄存器保存中各个exception level的异常向量表的基地址，应该类似与X86的IDT寄存器。\r\n\r\n你问题中的系统调用表是指什么？是指保存各个系统调用跳转函数的入口表格（sys_call_table）吗？这个表是软件定义，和硬件无关啊。"
+ },
+ {
+  "id": "4622",
+  "parent": "4619",
+  "date": "2016-09-28T10:14:21+08:00",
+  "author": "CHENYAN",
+  "site": "",
+  "text": "@linuxer：@linuxer 多谢你的回复! \r\n\r\n 我的需求是要能够在自己编写的内核模块获取sys_call_table,然后通过sys_call_table获取和修改系统调用表中的跳转地址. 比如 :\r\n  read函数指针类型 old_read = sys_call_table[_NR_read]; \r\n  sys_call_table[__NR_read] = xxxx; \r\n\r\n 我看ARM64平台的sys_call_table是在sys.c文件中定义的,\r\n       void *sys_call_table[__NR_syscalls] __aligned(4096) = {\r\n\t       [0 ... __NR_syscalls - 1] = sys_ni_syscall,\r\n               #include <asm/unistd.h>\r\n       };\r\n  在entry.S文件中直接访问 : adrp  stbl, sys_call_table. \r\n  这样我的理解是, 自己编写的内核模块代码根本没办法访问sys_call_table, 因为sys_call_table入口既和寄存器没有半毛钱关系, 又没有哪个头文件有extern const unsigned long sys_call_table[] 这样的语句. \r\n\r\n  请问我的理解正确吗? 还有其他的思路能获取sys_call_table吗?"
+ },
+ {
+  "id": "4624",
+  "parent": "4622",
+  "date": "2016-09-28T11:16:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@CHENYAN：sys_call_table本身是一个内核符号，如果你的内核模块编译进入kernel image，那么其实你可以直接访问这个符号。如果你的内核模块是以模块的形式插入内核，那么就有点麻烦了，因为sys_call_table不是导出符号（EXPORT_SYMBOL），你的模块应该是无法访问的。"
+ },
+ {
+  "id": "4626",
+  "parent": "4624",
+  "date": "2016-09-28T13:51:53+08:00",
+  "author": "CHENYAN",
+  "site": "",
+  "text": "@linuxer：感谢你的回复! 这样说来我基本都明白了!"
+ },
+ {
+  "id": "4966",
+  "parent": "4622",
+  "date": "2016-12-05T11:29:26+08:00",
+  "author": "tchvsps",
+  "site": "",
+  "text": "@CHENYAN：请问你看懂\r\n[0 ... __NR_syscalls - 1] = sys_ni_syscall\r\n这行代码了吗？"
+ },
+ {
+  "id": "4967",
+  "parent": "4966",
+  "date": "2016-12-05T16:36:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tchvsps：定义一个指针数组，并将其中的每个元素都初始化为sys_ni_syscall，效果和下面的类似：\r\nchar sa[8] = {                                                                  \r\n        [0 ... 7] = 0xaa,                                                       \r\n};"
+ },
+ {
+  "id": "6836",
+  "parent": "0",
+  "date": "2018-07-04T13:50:53+08:00",
+  "author": "badao",
+  "site": "http://cole.sciecne",
+  "text": "十分感谢，最近在看arm的异常分发流程，看到您的博客真的是省了很多时间"
+ },
+ {
+  "id": "7059",
+  "parent": "0",
+  "date": "2018-11-28T11:31:56+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "arm32的中断向量表地址一般是0xffff0000，然后中断或异常发生时 由硬件跳转到对应的地址，比如\r\nffff1004 t vector_rst\r\nffff1020 t vector_irq\r\nffff10a0 t vector_dabt\r\nffff1120 t vector_pabt\r\nffff11a0 t vector_und\r\nffff1220 t vector_addrexcptn\r\nffff1240 T vector_fiq\r\n那么，Arm-v8a在硬件层是怎么跳转的呢？"
+ },
+ {
+  "id": "7060",
+  "parent": "7059",
+  "date": "2018-11-28T11:39:13+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@bsp：sorry，看玩了文章，已经有所了解，多谢楼主！"
+ },
+ {
+  "id": "8071",
+  "parent": "0",
+  "date": "2020-07-28T16:49:28+08:00",
+  "author": "renameit",
+  "site": "",
+  "text": "我很想知道，对于System error，这个V8独有的中断向量定义，对应的v7里面是怎么处理的"
+ },
+ {
+  "id": "8075",
+  "parent": "0",
+  "date": "2020-07-30T17:16:42+08:00",
+  "author": "伊斯科明",
+  "site": "",
+  "text": "大佬，你这昵称很危险啊"
+ }
+]

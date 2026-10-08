@@ -1,0 +1,90 @@
+[
+ {
+  "id": "7797",
+  "parent": "0",
+  "date": "2019-12-25T09:35:36+08:00",
+  "author": "carolyn",
+  "site": "",
+  "text": "赞"
+ },
+ {
+  "id": "7798",
+  "parent": "0",
+  "date": "2019-12-25T11:56:16+08:00",
+  "author": "沙漠之狐",
+  "site": "",
+  "text": "要写文章摘要。"
+ },
+ {
+  "id": "7801",
+  "parent": "0",
+  "date": "2019-12-27T14:19:48+08:00",
+  "author": "Archer",
+  "site": "",
+  "text": "后面的代码分析很NICE。 也可以在uboot层做自定义的reset handle一劳永逸"
+ },
+ {
+  "id": "7802",
+  "parent": "7801",
+  "date": "2019-12-27T16:16:09+08:00",
+  "author": "heaven",
+  "site": "",
+  "text": "@Archer：嗯嗯，你说的也是一种办法，这就看哪段做适配了，不同的phy很可能时序不一样，个人感觉让uboot去做mac或者phy的适配的代码感觉有点冗余，drvier层面做不同的phy的时序控制会更灵活一些，drvier提供时序的控制方法，dts去根据不同的板子情况来做不同的时序调整，一个os，一个drvier即可，这是我个人的想法"
+ },
+ {
+  "id": "7803",
+  "parent": "7798",
+  "date": "2019-12-27T17:23:32+08:00",
+  "author": "heaven",
+  "site": "",
+  "text": "@沙漠之狐：原来写了文章摘要才会出现阅读全文的这个按钮，感谢提醒"
+ },
+ {
+  "id": "7808",
+  "parent": "0",
+  "date": "2019-12-31T10:56:04+08:00",
+  "author": "marsqian",
+  "site": "",
+  "text": "请问下配置MAC地址直接用ifconfig eth0 hw ether xx:xx:xx:xx:xx:xx命令可以的吗?还是说Imx6ul必须要usb方式下载了mac呢"
+ },
+ {
+  "id": "7821",
+  "parent": "7808",
+  "date": "2020-01-06T13:59:02+08:00",
+  "author": "heaven",
+  "site": "",
+  "text": "@marsqian：对于imx6ul来讲，ifconfig的方式只适用于不掉电的情况，重启后，mac地址会恢复成默认的，如果想永久改写，必须使用他们的工具选择usb下载方式"
+ },
+ {
+  "id": "7822",
+  "parent": "7808",
+  "date": "2020-01-06T14:02:17+08:00",
+  "author": "heaven",
+  "site": "",
+  "text": "@marsqian：刚表述有些不精准，准确的说不是恢复成默认的，而是看你们的driver code的那几个步骤：\r\n1）模块化参数设置，如果没有跳到步骤2；\r\n\r\n2）device tree中设置，如果没有跳到步骤3；\r\n\r\n3）from flash / fuse / via platform data，如果没有跳到步骤4；\r\n\r\n4）FEC mac registers set by bootloader===》即靠usb方式下载mac address ，如果没有跳到步骤5；\r\n\r\n5）靠kernel算一个随机数mac address出来，然后写入mac\r\n\r\n所以你们可以选择123步骤中设置好mac地址即可，就可以永久改写mac地址，就不需要usb的方式了，或者你们非想要实现ifconfig的方式来设置，可以修改你们自身的driver来实现这个功能"
+ },
+ {
+  "id": "7907",
+  "parent": "0",
+  "date": "2020-03-07T10:48:59+08:00",
+  "author": "gavin",
+  "site": "",
+  "text": "这个问题原因很难找啊，楼主是怎么想到时间问题的啊，最终是通过延时时间来解决吗？"
+ },
+ {
+  "id": "7925",
+  "parent": "7907",
+  "date": "2020-03-22T21:23:04+08:00",
+  "author": "heaven",
+  "site": "",
+  "text": "@gavin：解决方案就是按照芯片时序，满足reset的时间要求，也就是需延时处理即可。\r\n解决思路我有写下来，1~5就是我分析的过程，我一开始也是不知道为什么是这里，因为是第一次做以太网这块的问题，所以就趁此机会把ifconfig的整个流程通读了一遍，清楚了来龙去脉其实就比较好分析了"
+ },
+ {
+  "id": "8184",
+  "parent": "7907",
+  "date": "2021-01-18T14:03:10+08:00",
+  "author": "juno",
+  "site": "",
+  "text": "@gavin：我在写以太网驱动的时候，在reset的时候都会加载延迟，比如用sleep_range这样的函来等待一段时间再执行后边的流程，这样可以防止有些phy启动慢的问题。\r\n这个等待不只是以太网需要注意，pcie驱动也要注意，pcie host在启动的时候，也会发reset信号， 如果硬件有接reset，也会硬件复位外设，如果reset之后立马读config寄存器，也会有概率读不到设备，导致pcie设备无法正常识别。（pcie需要host先起来，然后探测到设备，加入到pcie总线，开启相应的时钟，如果没有探测到设备，就会关闭时钟，pcie总线上也不会有设备，后期pcie device驱动加载的时候就发现不了设备）"
+ }
+]

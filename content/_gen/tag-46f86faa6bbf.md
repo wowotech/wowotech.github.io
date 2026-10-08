@@ -1,0 +1,10 @@
+---
+title: "标签：project"
+url: "/tag/project"
+---
+
+带标签「project」的文章共 3 篇。
+
+- [X-009-KERNEL-Linux kernel的移植(Bubblegum-96平台)](/x_project/bubblegum_kernel_porting.html) <span class="small">2016-08-19</span>
+- [X-004-UBOOT-串口驱动移植(Bubblegum-96平台)](/x_project/bubblegum_uboot_serial.html) <span class="small">2016-06-18</span>
+- [X-000-PRE-开发环境搭建](/x_project/develop_env.html) <span class="small">2016-04-23</span>

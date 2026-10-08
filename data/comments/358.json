@@ -1,0 +1,306 @@
+[
+ {
+  "id": "4951",
+  "parent": "0",
+  "date": "2016-12-02T14:49:58+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "wowo大神，有没有讲解蓝牙室内定位的计划"
+ },
+ {
+  "id": "4955",
+  "parent": "4951",
+  "date": "2016-12-03T11:10:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chen_chuang：帅锅，不要叫大神啊，不敢当啊！！\r\n暂时没有涉及到室内定位的打算啊，因为觉得和蓝牙的关系不大啊，室内定位的关键点在于拿到TX Power和RSSI之后的算法吧？"
+ },
+ {
+  "id": "4973",
+  "parent": "0",
+  "date": "2016-12-06T14:15:56+08:00",
+  "author": "AndyPeng",
+  "site": "",
+  "text": "hi,wowo同志，请问蓝牙的安全机制怎么实现，即便监听者在配对开始时就监听也是无法解密加密数据？因为用蓝牙分析仪也是必须填写link key才能破解；谢谢！"
+ },
+ {
+  "id": "4974",
+  "parent": "4973",
+  "date": "2016-12-06T14:17:38+08:00",
+  "author": "AndyPeng",
+  "site": "",
+  "text": "@AndyPeng：我的理解是既然监听是全程的窥视，双方没有‘秘密’，怎么实现加密，想不明白；"
+ },
+ {
+  "id": "4975",
+  "parent": "4974",
+  "date": "2016-12-06T14:51:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@AndyPeng：虽然监听是全程的窥视，但也只能窥视到空中传输的信息，但蓝牙的安全机制里面，有一个东西（pincode，或者说link key），不会在空中传输。这就保证了窥视者无法解密。"
+ },
+ {
+  "id": "4976",
+  "parent": "4975",
+  "date": "2016-12-06T14:52:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wowo：顺便多说一句，空中传输的是加密后的密文，如果有人能从密文里解出key，就可以破解了（这是有可能的）。"
+ },
+ {
+  "id": "4978",
+  "parent": "4976",
+  "date": "2016-12-06T15:09:30+08:00",
+  "author": "AndyPeng",
+  "site": "",
+  "text": "@wowo：感谢这么及时的回复，刚才也度娘了一下，也基本了解了，justwork方式在配对过程中是不提供MITM保护的；我起初误解以为justwork是受到MITM保护，因为这是无法理解的事情；谢谢！"
+ },
+ {
+  "id": "5178",
+  "parent": "0",
+  "date": "2017-01-20T15:20:23+08:00",
+  "author": "miranda",
+  "site": "",
+  "text": "wowo好棒\r\n把死板的spec讲解的这么细致又通俗易懂,期待讲解ble的pairing和bonding~"
+ },
+ {
+  "id": "5320",
+  "parent": "0",
+  "date": "2017-03-15T17:06:33+08:00",
+  "author": "chong",
+  "site": "",
+  "text": "写的真好，看英文版的spec很是烧脑，看了您写的这些关于蓝牙的知识，感觉学到了很多呢，真心感谢"
+ },
+ {
+  "id": "5431",
+  "parent": "0",
+  "date": "2017-04-07T15:13:51+08:00",
+  "author": "panda",
+  "site": "",
+  "text": "Hi wowo,\r\nLL Privacy机制是白名单（white list）机制的进阶和加强。LL Privacy机制可以脱离白名单机制单独使用，不过这样的话好像没什么威力。\r\n---------------------------------------------------------------------------------\r\n这有点矛盾。LL Privacy机制是白名单的升级版本，完全覆盖了白名单的功能。所以单独使用LL Privacy机制是很自然的选择。是这样理解吗？"
+ },
+ {
+  "id": "5437",
+  "parent": "5431",
+  "date": "2017-04-10T09:13:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@panda：这里的意思是：\r\nLL Privacy是通过加密蓝牙地址的手段保证通信安全；\r\n而白名单功能是通过过滤不信任的地址，保证通信安全；\r\n从本质上讲，它们两个没有关系；\r\n但是，如果不过滤非法地址，加密自己的地址又有什么意义呢？"
+ },
+ {
+  "id": "5440",
+  "parent": "5437",
+  "date": "2017-04-10T09:27:59+08:00",
+  "author": "panda",
+  "site": "",
+  "text": "@wowo：如果蓝牙地址解析不成功，则无法建立连接；这就起到了过滤的作用了。 \r\n如果再增加白名单，相当于double check。"
+ },
+ {
+  "id": "5444",
+  "parent": "5440",
+  "date": "2017-04-10T16:15:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@panda：如果“地址解析不成功“，就“……（无法建立连接）”，后面这一段省略号，正是白名单的策略。\r\n也就是说，当地址解析不成功的时候，要怎么处理，正是白名单的一部分。所以无论如何，白名单都在的，呵呵～～"
+ },
+ {
+  "id": "5448",
+  "parent": "5444",
+  "date": "2017-04-10T19:24:53+08:00",
+  "author": "panda",
+  "site": "",
+  "text": "@wowo：我再查看了spec（BLUETOOTH SPECIFICATION Version 4.2 [Vol 6, Part B] 4.7 RESOLVING LIST）\r\nThe Identity Address may be in the White List. \r\n\r\n我的理解是：resolving List中的Peer_Identity_Address_Type/\r\nPeer_Identity_Address可以占用一条White List，也可以不占用White List，而在resolving List中单独实现类似的WhiteList。\r\n这可能和linklayer的具体实现相关了。\r\n\r\n我现在用的ble芯片，一条White List占用8个bytes，一条resolving List占用68Bytes。WhiteList和Resolving List应该就是独立实现的。\r\n\r\n两种说法都能成立，呵呵"
+ },
+ {
+  "id": "5452",
+  "parent": "5448",
+  "date": "2017-04-11T13:56:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@panda：抱歉，我上面的回复有些问题，我们慢慢的再梳理一下：\r\n1. 本设备的resolve list中，保存了一些这样的条目，Local IRK | Peer IRK | Peer Device Identity Address | Address Type\r\n2. 本设备收到其它设备的广播信息时，如果发现peer地址为resolvable address，则尝试遍历自己的resolve list，使用IRK解析resolvable address并和Peer Device Identity Address比较。\r\n3. 如果resolvable address解析成功：\r\n\ta）如果没有使能白名单机制，则进行后续的操作。\r\n\tb）如果使能了白名单机制，则根据具体的白名单策略（此时对比的是解析后的Peer Device Identity Address），决定后续的动作。\r\n4. 如果resolvable address解析不成功：\r\n\ta）拒绝后续的操作（此时不依赖白名单机制）。\r\n\r\n回到我们这个话题上：\r\nLL Privacy确实可以单独存在，但二者的功能不完全相同。\r\n白名单的思路是：只有我认识的（放在了白名单中）才是好人，我才愿意和你玩。\r\nLL Privacy的思路是：只有能和我对上暗号的才是好人，我才愿意和你玩。\r\n二者加在一起的思路是：只有我认识的并且能和我对上暗号的，我才愿意和你玩。潜在的思路是什么，可以在实际的应用场景中挖掘。"
+ },
+ {
+  "id": "5455",
+  "parent": "5452",
+  "date": "2017-04-11T15:33:41+08:00",
+  "author": "panda",
+  "site": "",
+  "text": "@wowo：梳理的很清楚，赞~\r\n\r\n使用IRK解析resolvable address并和Peer Device Identity Address比较。\r\n~~~~·这里已经是白名单的思路，所以privacy的思路包含了白名单的思路。LL Privacy的思路已经是“能和我对上暗号并且是我认识的，我才愿意和你玩。\r\n”"
+ },
+ {
+  "id": "5634",
+  "parent": "0",
+  "date": "2017-06-07T16:17:09+08:00",
+  "author": "zhay",
+  "site": "",
+  "text": "Hi wowo:\r\n\r\n我对你文中“接收数据时，我们用Peer IRK解析出Identity Address后和Peer Device Identity Address做比对，如果匹配，则解析成功”这段话的理解有异议，请问如何用Peer IRK 解析出Identity Address?\r\n因为你在《蓝牙协议分析(6)_BLE地址类型》一文中写到：Resolvable private address 是由IRK和Identity address进行hash运算得到的，而hash运算是不可逆的，见百度。即接收数据时，我们知道peer Resolvable private address, 是无法使用Peer IRK解析出Identity Address的。办法是用Resolving List中的peer IRK和prand也进行hash运算，再将hash运算结果和Resolvable private address中的hash段进行比较，如果匹配，则解析成功。你在《蓝牙协议分析(6)_BLE地址类型》中也是这么说的。\r\n所以我认为用Peer IRK解析出Identity Address是错误的说法，无法解析。且接收数据时，我们只用Peer IDK进行hash运算即可，跟peer device identity address没什么关系。而peer device identity address的应用场景只有发送数据包时，有InitA需要填充的情况下，即发送ADV_DIRECT_IND广播时加密对端设备地址时用。\r\n以上是我的理解，如有不对之处还请校正，THX！"
+ },
+ {
+  "id": "5637",
+  "parent": "5634",
+  "date": "2017-06-08T08:57:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zhay：Hi zhay，\r\n多谢指正，你是对的，原谅我的不细致以及想当然吧！～～\r\n确实，Private Device Address Resolution的过程，是不需要“Peer Device Identity Address”参与的，只需要对比hash即可。\r\nResolving List中之所以要保存“Peer Device Identity Address”，是为了和White List中做比对：在Resolution的过程中确定一个Resolving List中的条目，得到“Peer Device Identity Address”，并和White List中的条目比较。\r\n再次感谢指正，有空我修改一下文章。\r\n谢谢！！"
+ },
+ {
+  "id": "5644",
+  "parent": "5637",
+  "date": "2017-06-08T17:50:46+08:00",
+  "author": "zhay",
+  "site": "",
+  "text": "@wowo：@wowo,多谢回复。感觉这句话也有点问题：“使用Local IRK将Identity Address加密为Resolvable Private Address”，据spec,Resolvable Private Address是由IRK和随机数prand生成的，所以我的理解是Resolvable Private Address的生成和解析只于IRK有关.\r\n我上段话中peer device identity address的应用场景有误，如你所说，是为了和白名单作对比。BLE设备在发起Advertising、Scanning或者Connecting操作的时候，都可以设置白名单策略。"
+ },
+ {
+  "id": "5645",
+  "parent": "5644",
+  "date": "2017-06-09T08:34:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zhay：是的，Identity Address和Resolvable Private Address没有任何关系。"
+ },
+ {
+  "id": "5711",
+  "parent": "0",
+  "date": "2017-06-20T12:49:50+08:00",
+  "author": "pang",
+  "site": "",
+  "text": "你好，\r\n假设一个device A作为从设备， IOS手机作为主设备，IOS手机用的是resolvable address，在他们绑定之前，那么device A 怎么知道或者获取手机的IRK呢"
+ },
+ {
+  "id": "5977",
+  "parent": "5645",
+  "date": "2017-09-03T19:59:17+08:00",
+  "author": "dong",
+  "site": "",
+  "text": "@wowo：identity address应该是peer device的static address或者public address吧，每个device必须要有其中1个。假如两个device都使用privacy功能，就算双方在广播、连接之前都已将对方的IRK固化在程序里，可是整个广播连接过程也无法知道对方的identity address吧（只能知道双方的resolvable/non-resolvable address)，在我看来只有在pairing的phase 3阶段时候交换双方的identity address information时候才能让双方都拥有对方的identity address，求wowo指导啊。"
+ },
+ {
+  "id": "5978",
+  "parent": "5977",
+  "date": "2017-09-04T10:17:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dong：你总结的很对啊，呵呵～～\r\nLL privacy是比较简单的安全机制，如果两个设备打算“更深一步的交流”，使用配对、绑定等更强大的安全机制，则本文所涉及的内容就out了。这时双方就应该坦诚相见，把自己的identity address告知对方。"
+ },
+ {
+  "id": "6431",
+  "parent": "5452",
+  "date": "2017-12-29T12:13:05+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：WOWO,我觉得上中2部分有些问题：“使用IRK解析resolvable address并和Peer Device Identity Address比较。”这句是有些问题，其中“使用IRK解析resolvable address”没有错，但“并和Peer Device Identity Address比较。”这个好似不对！用IRK解析resolvable address得到的是localHash，再与hash value extracted from RPA 比较，相同则表示解析成功，此时是根据这个IRK对应的条目（Local IRK | Peer IRK | Peer Device Identity Address | Address Type）来确认Peer Device Identity Address | Address Type，再根据这个地址进入白名单过滤的,spec原话：“The localHash value is then compared with the  hash value extracted from RPA .If the  localHash value matches the extracted  hash value, then the identity of the peer device has been resolved.”"
+ },
+ {
+  "id": "6440",
+  "parent": "0",
+  "date": "2018-01-01T21:58:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE，多谢指正，其实这个话题已经在上面和zhay兄讨论过了，我一直打算重新整理、改正这篇文章呢，不过一直拖着没做:-("
+ },
+ {
+  "id": "6447",
+  "parent": "5634",
+  "date": "2018-01-02T21:44:58+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@zhay：“而peer device identity address的应用场景只有发送数据包时，有InitA需要填充的情况下，即发送ADV_DIRECT_IND广播时加密对端设备地址时用。”这句也是有错误的，InitA是否填充为peer device identity address，还要看Peer IRK 是否非0"
+ },
+ {
+  "id": "6448",
+  "parent": "6440",
+  "date": "2018-01-02T21:51:05+08:00",
+  "author": "EE",
+  "site": "",
+  "text": "@wowo：不好意思，我没有认真看留言日期，以为是zhay兄讨论之后才发出你的总结，实则你是在那之前发出的，我只顾看文字顺序没顾及时间顺序了，不好意思啊：-）"
+ },
+ {
+  "id": "6450",
+  "parent": "6447",
+  "date": "2018-01-04T08:48:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@EE：zhay同学只是说initA需要填充peer device identity的时候，才会用到peer device identity（意思是peer device identity只在这个场景使用），所以也不是错的。关注的点不一样。"
+ },
+ {
+  "id": "6640",
+  "parent": "0",
+  "date": "2018-04-03T14:11:01+08:00",
+  "author": "chcharles",
+  "site": "",
+  "text": "你好，涉及到利用IRK和rand生成hash比对这块，如何找到对端的IRK（比如利用index找到对应的key？），我有些疑问：\r\n文中提到：\r\n检查Resolving List，查看是否存在非0、和InitA的Identity Address匹配的Peer IRK条目。\r\n\r\n这个里的identity address是list里保存的那个peer Device Identity Address吗，这个address到底是哪种地址，BLE那几种中的哪类？\r\n另外，如果是Resolvable Private Address，它应该是由hash，random，和type组成，并没有peer device identity address信息，所以如何确定这个Resolvable Private Address对应的IRK呢？\r\n\r\n比较疑惑，请指教，谢谢！"
+ },
+ {
+  "id": "6642",
+  "parent": "6640",
+  "date": "2018-04-03T16:53:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chcharles：可参考这篇文章理解地址类型：/bluetooth/ble_address_type.html"
+ },
+ {
+  "id": "6644",
+  "parent": "6642",
+  "date": "2018-04-04T09:56:05+08:00",
+  "author": "chcharles",
+  "site": "",
+  "text": "@wowo：感谢回复。\r\n\r\n我仔细看过才请教，蓝牙地址这块我又看了一遍：\r\n当对端BLE设备扫描到该类型的蓝牙地址后，会使用保存在本机的IRK，和该地址中的prand，进行同样的hash运算，并将运算结果和地址中的hash字段比较，相同的时候，才进行后续的操作。这个过程称作resolve（解析），这也是Non-resolvable private address/Resolvable private address命名的由来。\r\n\r\n我的问题不是如何验证hash，我的问题是如何找到这个地址对应的IRK，因为现在我感觉没有类似Index的参数可以找到对应的IRK啊？"
+ },
+ {
+  "id": "6646",
+  "parent": "6644",
+  "date": "2018-04-04T15:20:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chcharles：这个不是存在Resolving List中吗？：\r\nResolving List的每一个条目，都保存了一对BLE设备的key/address信息，其格式为：Local IRK | Peer IRK | Peer Device Identity Address | Address Type。"
+ },
+ {
+  "id": "6648",
+  "parent": "6646",
+  "date": "2018-04-04T17:42:51+08:00",
+  "author": "chcharles",
+  "site": "",
+  "text": "@wowo：是存在list，我理解这个resolving list会存多个设备的key/address信息吧……\r\n怎么找到对方的IRK啊？？？\r\n哪什么做索引？\r\n\r\n这个问题的关键在于Resolvable private address发过来，这个是个可变量，对吧，hash，random都是可变的，我接收到，怎么识别这个Resolvable private address在resolving list里对应的是哪个IRK啊？\r\n\r\n就是这个搞不懂"
+ },
+ {
+  "id": "6649",
+  "parent": "6648",
+  "date": "2018-04-04T18:20:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chcharles：不需要知道啊。解析者只需要用自己保存的所有的remote IRK一一进行hash运算及比较，如果匹配，就是解析成功了。"
+ },
+ {
+  "id": "6651",
+  "parent": "6649",
+  "date": "2018-04-05T16:33:38+08:00",
+  "author": "chcharles",
+  "site": "",
+  "text": "@wowo：哦 你的意思是穷举了……就是都遍历一遍，看哪个一样？\r\n这样计算效率太低了吧"
+ },
+ {
+  "id": "6652",
+  "parent": "6649",
+  "date": "2018-04-05T16:35:12+08:00",
+  "author": "chcharles",
+  "site": "",
+  "text": "@wowo：另外，我想问一下这个Peer Device Identity Address是什么地址，不属于地址类型中的那几个分类啊……\r\n这里保存它是干什么用呢？谢谢！\r\n问题比较多，不好意思"
+ },
+ {
+  "id": "7929",
+  "parent": "0",
+  "date": "2020-03-26T09:16:12+08:00",
+  "author": "k_th111",
+  "site": "",
+  "text": "Hi wowo,\r\n    请问在设备用IRK解析RPA得到localHash后，再与hash value extracted from RPA 比较时，这里使用的提取RPA是对等设备传给它的广播包里的RPA吗？那么解析表条目中的“Peer Device Identity Address | Address Type”发挥什么作用呢？这里不理解，想请教大神们。"
+ },
+ {
+  "id": "8253",
+  "parent": "5634",
+  "date": "2021-07-17T12:01:22+08:00",
+  "author": "xiongbiao.wu",
+  "site": "",
+  "text": "@zhay：是的，你的理解非常正确。client扫描到RPA之后的具体的计算方法过程如下：\r\n\r\n1.client扫描到RPA恰好与IPR链表中的某一项之前保存的RPA相同(则表示server的RPA地址没有变化)，直接将使用IRK结构体中的Identity Address进行白名单/黑名单比较，上报扫描结果等。\r\n\r\nclient接收到RPA(address1)与保存的IRK链表中的每一个旧的RPA都不相同，此时遍历IRK链表，使用ah(irk-val， address1[3])算法，irk-val表示保存在IRK结构体中的经过第一次SMP之后拿到的对面irk值，address1[3]表示RPA地址的低三字节，进行ah运算得到一个hash值，用这个hash值和address1[0-2](RPA地址的高三字节)做比较，如果相同，则表示新扫描到的这个RPA地址设备就是首次经过SMP过程已绑定的设备。之后使用IRK结构体中的Identity Address进行白名单/黑名单比较，上报扫描结果等操作。\r\n\r\n还有，通过BlueZ代码发现，地址解析比对这些操作我认为是在host(SMP)端中完成的，并不是在controller中。"
+ }
+]

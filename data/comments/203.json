@@ -1,0 +1,154 @@
+[
+ {
+  "id": "2387",
+  "parent": "0",
+  "date": "2015-07-31T15:20:16+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "前排占座，有个2个问题。\r\n1、现在create_workqueue还在驱动中被使用(kernel 3.10)，这个函数是不是被用alloc_workqueue重新实现过得？\r\n\r\n2、按照你上面A  B  C  D 四个work的说法，感觉只有worker pool只会有一个线程会处理work，但是我在work_threader里看到，如果woker_pool->nr_idle = 0 并且 pool-nr_running != 0就会在manage_workers中创建线程，任务会并发处理。能够详细的解释下吗？"
+ },
+ {
+  "id": "2392",
+  "parent": "0",
+  "date": "2015-07-31T18:53:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "对于第一个问题：\r\nCMWQ兼容旧的接口，因此也支持create_workqueue，定义如下：\r\n#define create_workqueue(name)\t\talloc_workqueue(\"%s\", WQ_MEM_RECLAIM, 1, (name))\r\n在旧的workqueue机制中，create_workqueue意味着要创建per cpu的worker thread，对应到CMWQ中就是创建一个最大并发是1的bound workqueue。\r\n\r\n对于第二个问题：\r\n后续的CMWQ的文档会描述，敬请期待。"
+ },
+ {
+  "id": "2576",
+  "parent": "0",
+  "date": "2015-09-15T14:13:48+08:00",
+  "author": "Jacky",
+  "site": "http://None",
+  "text": "文中Work thread 和worker thread 是一个东西吗？"
+ },
+ {
+  "id": "2577",
+  "parent": "2576",
+  "date": "2015-09-15T14:30:23+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Jacky：Work thread是笔误，应该是worker thread"
+ },
+ {
+  "id": "3356",
+  "parent": "0",
+  "date": "2016-01-06T16:38:49+08:00",
+  "author": "南山南",
+  "site": "",
+  "text": "4.4.0中的worker_thread好像差异很大。逻辑变化很大。"
+ },
+ {
+  "id": "3359",
+  "parent": "3356",
+  "date": "2016-01-07T00:05:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@南山南：好的，有机会仔细琢磨一下，看看有什么改动，为何改动。"
+ },
+ {
+  "id": "4953",
+  "parent": "3359",
+  "date": "2016-12-02T15:38:44+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "@linuxer：确实4.4.11版本添加了pool_workqueue 和 好多枚举。希望大神在这一章加个补充~"
+ },
+ {
+  "id": "6056",
+  "parent": "0",
+  "date": "2017-09-21T21:32:21+08:00",
+  "author": "deven",
+  "site": "",
+  "text": "WQ_MEM_RECLAIM对这个标记的理解有问题~"
+ },
+ {
+  "id": "6557",
+  "parent": "0",
+  "date": "2018-02-12T19:55:46+08:00",
+  "author": "sgy1993",
+  "site": "",
+  "text": "我感觉这里有点矛盾啊!!望解答....\r\n1. 原文:\r\n   \"例如cpu0上的worker thread由于处理work而进入阻塞状态，那么该worker thread处理的work queue中的其他work都阻塞住\"--->这里是说一个 worker thread 如果存在没有处理完的work, 后续的work就没有机会得到处理???\r\n\r\n2. 后来原文中又提到一句:\r\n    \"假设某个驱动模块比较复杂，使用了两个work struct，分别是A和B，如果work A依赖 work B的执行结果，毕竟work A和work B还是有机会调度到一个cpu上执行\"------>cpu0, work A阻塞了, cpu0还有机会处理B吗? 如果有的话, 1 里面说的为什么会阻塞,  如果没有的话,必须等到处理完A, 怎么会死锁..."
+ },
+ {
+  "id": "6558",
+  "parent": "6557",
+  "date": "2018-02-12T20:17:51+08:00",
+  "author": "sgy1993",
+  "site": "",
+  "text": "@sgy1993：3. 另外请教一个问题, 原文:\r\n\"Multi threaded workqueue能减轻这个问题，但是无法解决该问题，毕竟work A和work B还是有机会调度到一个cpu上执行\"-->Multi threaded workqueue为什么能减轻呢?\r\n  假设cpu0 worker thread上执行A的时候,阻塞了... B在cpu1的worker thread执行.这时候获取的 是同一把 锁吗? 如果是的话,不是才会死锁吗?  怎么减轻呢?"
+ },
+ {
+  "id": "6952",
+  "parent": "0",
+  "date": "2018-09-14T10:20:54+08:00",
+  "author": "ert",
+  "site": "",
+  "text": "内核中的create*_workqueue中都携带了WQ_MEM_RECLAIM这个flag，这是为什么？看内核代码注释说这个flag和内核回收有关，谁能帮忙具体解释一下？多谢啦！"
+ },
+ {
+  "id": "7561",
+  "parent": "0",
+  "date": "2019-07-31T18:26:31+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "个人感觉cmwq还解决了频繁调度的问题\r\n干同样的活，一个线程或者N个线程 都可以干，N个线程徒增调度的开销。"
+ },
+ {
+  "id": "8017",
+  "parent": "0",
+  "date": "2020-06-10T15:34:37+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "大神，碰到一个问题，麻烦有空帮忙分析下。\r\n在跑camera和ufs测试的时候：\r\n1，处理camera_work的worker（UNBOuND | HIGHPRI）有时候会运行在cpu0上；\r\n2，ufs突然频繁操作时，ufs_irq在cpu0（linux的默认conf）上频繁触发，导致中断不断抢占 处理camera_work的worker，持续10ms以上；\r\n3，由于camera 运行在120fps，需要8ms左右处理一帧数据，而ufs_irq抢占其worker，导致丢帧。\r\n\r\n想过一些办法：\r\n1，迁移irq（利用irqbalance），但是这只会减小概率，如果worker和ufs_irq又都在某个cpu会合了，就又触发了；\r\n2，不迁移irq，但迁移cpu-loading高的worker到big cpu上，但是此work只要求实时性，所占cpu-loading只有不到10%；\r\n3，设thread affinity，可是worker-thread是动态create和distroy的；\r\n4，replace workqueue with irq_thread, 这个工作量太大。\r\n\r\n有没有其它办法，让某个worker绑定在非CPU0上？\r\n或者怎么解决这个丢帧的问题？"
+ },
+ {
+  "id": "8019",
+  "parent": "8017",
+  "date": "2020-06-10T16:08:17+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@bsp：/sys/devices/virtual/workqueue# echo fe >cpumask\r\n找到一个方法，可以fix。但总觉的是workaround"
+ },
+ {
+  "id": "8603",
+  "parent": "6557",
+  "date": "2022-04-28T19:03:32+08:00",
+  "author": "orangeboyye",
+  "site": "",
+  "text": "@sgy1993：文中的意思是说在work A中要等待work B的执行结果，但是不碰巧，work A 和B被放到了同一个CPU上，而且A在前，那么A就会阻塞等待B，可是B要等A执行完之后才能执行，因此产生了A等B，B等A，相互等待，就是死锁啊。"
+ },
+ {
+  "id": "8604",
+  "parent": "6558",
+  "date": "2022-04-28T19:08:15+08:00",
+  "author": "orangeboyye",
+  "site": "",
+  "text": "@sgy1993：死锁的意思是A等B，同时B也在等A，等的不一定是锁啊，只要是在等待就行。main先调用func1，再调用func2，func2就是在等func1执行完才能执行啊，这个在逻辑上也是等啊，因为如果func1一直卡在那执行不完，func2就不可能执行。"
+ },
+ {
+  "id": "8936",
+  "parent": "0",
+  "date": "2024-10-12T17:48:51+08:00",
+  "author": "hdzhang",
+  "site": "",
+  "text": "CMWQ机制引入后我发现会有个问题，创建UNBOUND类型的workqueue指定的max_active是针对单个CPU的而不是系统全局的。\r\n假如系统有8个CPU core，我想限制workqueue总并发为64，那我就只能把max_active设置成8，但如果这样设置，我起一个进程把所有work入队，发现只有8个并发执行的worker，想要达到64个并发执行的worker，就只能起8个在不同CPU上执行的进程，每个进程负责8个work的入队。\r\n不知道你怎么看这个问题？"
+ },
+ {
+  "id": "9187",
+  "parent": "8936",
+  "date": "2026-04-27T08:52:31+08:00",
+  "author": "玖伍贰柒",
+  "site": "",
+  "text": "@hdzhang：你好，关于max_active，我的理解是这样的：\r\n1. max_active是pool_workqueue的成员变量，表示当前pwq允许的最大acitve work数；\r\n2. 对于UNBOUND类型的workqueue，其对应的pool_workqueue不是per CPU的，而是per NUMA node。假设系统有两个node，每个node有8个cpu，虽然一共有16个cpu，但UNBOUND的workqueue最多只会为每个node新建一个专属的pool_workqueue，甚至干脆就使用默认的pwq。"
+ },
+ {
+  "id": "9188",
+  "parent": "8019",
+  "date": "2026-04-27T08:55:35+08:00",
+  "author": "玖伍贰柒",
+  "site": "",
+  "text": "@bsp：你好。如果你的camera work是每次在irq handler里enqueue的话，我觉得可以固定让某个非cpu0来处理该irq，然后将workqueue改为BOUND类型，这样camera work每次都会由这个固定的非cpu0处理。\r\n/sys/devices/virtual/workqueue# echo fe > cpumask 本质上是新建了一个unbound pool，并将原本和旧的unbound pool(cpumask是ff)映射好的workqueue迁移到了这个新的unbound pool，这个新的映射关系是通过pwq而建的。\r\n执行前：workqueue -> old pwq -> old unbound pool (cpumask = 0xff)\r\n执行后：workqueue -> new pwq -> new unbound pool (cpumask = 0xfe)\r\nold pwq 和 old unbound pool会在各自的引用计数为0时被异步销毁。综上，我觉得这个方法是可行的，不过应该把该workqueue export到sysfs，然后只修改这个目标workqueue。"
+ }
+]

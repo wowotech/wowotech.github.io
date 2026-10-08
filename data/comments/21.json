@@ -1,0 +1,74 @@
+[
+ {
+  "id": "41",
+  "parent": "0",
+  "date": "2014-03-26T15:09:34+08:00",
+  "author": "动漫那点事",
+  "site": "http://cc.yikehome.com/",
+  "text": "来看看，虽然没看懂"
+ },
+ {
+  "id": "42",
+  "parent": "0",
+  "date": "2014-03-31T16:24:46+08:00",
+  "author": "活动板房",
+  "site": "http://www.fsguozhan.com/",
+  "text": "是完全没看懂"
+ },
+ {
+  "id": "44",
+  "parent": "0",
+  "date": "2014-03-31T21:08:58+08:00",
+  "author": "无名客",
+  "site": "http://wmk.cc",
+  "text": "好博客，好博文！"
+ },
+ {
+  "id": "2813",
+  "parent": "0",
+  "date": "2015-10-21T16:53:27+08:00",
+  "author": "justin",
+  "site": "",
+  "text": "一直有疑惑，linux中是不是没有进程、线程的概念，只有task的说法？"
+ },
+ {
+  "id": "2814",
+  "parent": "2813",
+  "date": "2015-10-21T19:37:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@justin：都有的，struct task_struct就是用来描述一个线程的，可能是内核线程，也可能是用户空间的线程，linux中的进程指的是一组task_struct，而这些task_struct共享某些资源。\r\n\r\n以上是我的理解"
+ },
+ {
+  "id": "2817",
+  "parent": "2814",
+  "date": "2015-10-22T11:51:38+08:00",
+  "author": "justin",
+  "site": "",
+  "text": "@linuxer：没有想到linuxer回复的这么快，十分感谢！\r\n最近我也在做一些linux驱动相关的工作，但是总感觉理解不够深入，后续还希望不吝指教。"
+ },
+ {
+  "id": "4744",
+  "parent": "0",
+  "date": "2016-10-19T16:20:57+08:00",
+  "author": "REGA",
+  "site": "",
+  "text": "能否请linuxer简单的总结一下在linux中process、thread、task之间的关系和区别呢？"
+ },
+ {
+  "id": "4748",
+  "parent": "4744",
+  "date": "2016-10-19T19:22:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@REGA：在linux中，thread<----->struct task_struct，process<----->共享某些资源的若干struct task_struct，这些thread属于一个线程组。\r\n\r\ntask是一个不太规范的用语，在很多rtos中使用，类似与线程。"
+ },
+ {
+  "id": "7332",
+  "parent": "0",
+  "date": "2019-03-21T15:41:33+08:00",
+  "author": "王举",
+  "site": "",
+  "text": "session和进程组是不是一一对应的？"
+ }
+]

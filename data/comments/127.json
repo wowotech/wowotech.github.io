@@ -1,0 +1,186 @@
+[
+ {
+  "id": "914",
+  "parent": "0",
+  "date": "2014-12-22T18:22:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "文章写的非常不错，特别是附件的流程图，把整个Hibernate的过程，讲的很清楚。谢谢分享。\r\n有两个小建议：\r\n1. 编辑文章时，在下面部分可以添加摘要信息，那样首页就不会出现整篇文章。\r\n2. 我之前写过一些电源管理子系统的文章（/sort/pm_subsystem），其中STR、autosleep、wakelocks等都有介绍，但hibernate功能一直没写，不知您能否把这篇文章补充进去？例如Linux电源管理(12)_Hibernate功能。\r\n非常感谢！！"
+ },
+ {
+  "id": "916",
+  "parent": "914",
+  "date": "2014-12-22T18:28:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wowo：另外后台有有一个“文章链接别名”的功能，可以给文章链接起个别名，例如现在的链接是：/forum/127.html，通过别名（如”hibernate“），可以修改为：/linux_kenrel/hibernate.html。\r\n这样的会丰富一点。"
+ },
+ {
+  "id": "953",
+  "parent": "914",
+  "date": "2014-12-25T10:58:31+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "@wowo：嗯，谢谢肯定，我加进去"
+ },
+ {
+  "id": "954",
+  "parent": "916",
+  "date": "2014-12-25T11:06:27+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "@wowo：我好像没有启用连接别名的权限哦，是否需要蜗蜗开启权限呢？"
+ },
+ {
+  "id": "955",
+  "parent": "954",
+  "date": "2014-12-25T12:22:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Physh：不用的，你看到的那个提示，只是一个提示。只要是作者都有权限。"
+ },
+ {
+  "id": "1062",
+  "parent": "0",
+  "date": "2015-01-12T23:04:08+08:00",
+  "author": "zr",
+  "site": "",
+  "text": "请问Hibernation.pdf和Resume Flowchart.pdf 是用什么工具画出来的？很好看"
+ },
+ {
+  "id": "1101",
+  "parent": "1062",
+  "date": "2015-01-16T10:04:53+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "@zr：就是流程图软件啊"
+ },
+ {
+  "id": "1796",
+  "parent": "0",
+  "date": "2015-05-14T21:19:26+08:00",
+  "author": "komex",
+  "site": "",
+  "text": "LZ写的太好了  受益匪浅，尤其是画的图"
+ },
+ {
+  "id": "3305",
+  "parent": "0",
+  "date": "2015-12-30T09:57:59+08:00",
+  "author": "HelloYBSZ",
+  "site": "",
+  "text": "你好，我想问下如何实现热启动，特别是内存数据，CPU数据，寄存器数据的保存和恢复这一块"
+ },
+ {
+  "id": "3315",
+  "parent": "0",
+  "date": "2015-12-30T21:00:32+08:00",
+  "author": "HelloYBSZ",
+  "site": "",
+  "text": "还有一个问题，Linux休眠时候，系统休眠的数据是保存到swap分区的。能否保存到其他地方的，比如对于持久化内存，这些数据能否保存到持久化内存里面？"
+ },
+ {
+  "id": "3316",
+  "parent": "3315",
+  "date": "2015-12-30T21:27:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@HelloYBSZ：是不是可以在保存到swap分区之后，dd到其它分区中？"
+ },
+ {
+  "id": "3318",
+  "parent": "3316",
+  "date": "2015-12-30T21:54:11+08:00",
+  "author": "HelloYBSZ",
+  "site": "",
+  "text": "@wowo：恩，我想问下，不能跨过swap分区，直接保存到其他分区？"
+ },
+ {
+  "id": "3319",
+  "parent": "3318",
+  "date": "2015-12-30T22:14:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@HelloYBSZ：应该可以，你可以看看写swap的代码，变成写分区的就可以了。"
+ },
+ {
+  "id": "3322",
+  "parent": "3319",
+  "date": "2015-12-31T11:54:52+08:00",
+  "author": "HelloYBSZ",
+  "site": "",
+  "text": "@wowo：请问博主了解做全系统状态保存的开源项目吗，目前一头雾水，我想看下别人怎么做的，学习下。"
+ },
+ {
+  "id": "3323",
+  "parent": "3318",
+  "date": "2015-12-31T11:55:51+08:00",
+  "author": "HelloYBSZ",
+  "site": "",
+  "text": "@HelloYBSZ：或者热启动的实现，特别是保存数据和恢复状态这一块"
+ },
+ {
+  "id": "3526",
+  "parent": "0",
+  "date": "2016-02-25T17:47:12+08:00",
+  "author": "HelloYBSZ",
+  "site": "",
+  "text": "你好，请问下在TuxOnice中 为什么要设置两个PageSet 。官方说是如不用两个PageSet  就只能保存一半内存的镜像大小。这是为什么呢？"
+ },
+ {
+  "id": "3528",
+  "parent": "3526",
+  "date": "2016-02-25T19:01:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@HelloYBSZ：帮你找了一个链接（d. Write the first part of the image.）：\r\nPageset 2 contains pages on the active and inactive lists; essentially the page cache. Pageset 1 contains all other pages, including the kernel. \r\n\r\nhttp://tuxonice.nigelcunningham.com.au/node/50，按理说TuxOnice就是这样设计的，应该不需要纠结吧。"
+ },
+ {
+  "id": "3667",
+  "parent": "0",
+  "date": "2016-03-15T15:26:06+08:00",
+  "author": "HelloYBSZ",
+  "site": "",
+  "text": "你好，我想问下， 您在 内容B. Swap 接口 里面画的图 里面的1,2,3 bitmap metadata 是指之前提到的copy_bm和orig_bm 吗，还是copy_bm和orig_bm这两个bitmap 会在snapshot image 里面"
+ },
+ {
+  "id": "6143",
+  "parent": "3667",
+  "date": "2017-10-25T17:15:05+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "@HelloYBSZ：如果没记错的话，bitmap metadata存放就是orig_bm, 具体有些不记得了~copy_bm和orig_bm不会放到snapshot image里边去。"
+ },
+ {
+  "id": "6144",
+  "parent": "3315",
+  "date": "2017-10-25T17:16:06+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "@HelloYBSZ：可以把持久化内存直接挂成swap分区呀"
+ },
+ {
+  "id": "6626",
+  "parent": "0",
+  "date": "2018-03-27T14:17:51+08:00",
+  "author": "Rafe",
+  "site": "",
+  "text": "Hi Physh, Wowo,\r\n\r\n请教个问题：我现在用的高通的平台，想要实现suspend to disk的功能，可是在内核中没有发现save_processor_state(),swsusp_arch_suspend()的实现，感觉是被裁剪了......或者我没找到.....\r\n请问Physh分析Hibernate流程中的实现路径在哪里？另外，如何确定内核本身是否有实现这个功能？\r\nThanks~~"
+ },
+ {
+  "id": "7737",
+  "parent": "0",
+  "date": "2019-11-01T21:08:41+08:00",
+  "author": "吴兵",
+  "site": "http://https://blog.csdn.net/u014134180",
+  "text": "是否可以分析一下STDisk的性能如何，在移动设备实现STD是否有必要"
+ },
+ {
+  "id": "7948",
+  "parent": "0",
+  "date": "2020-04-15T10:16:16+08:00",
+  "author": "大衍真君",
+  "site": "",
+  "text": "@wowo\r\n 1、对于hibernate功能的实现像是纯软件实现的，不依赖特定的硬件平台，但是为何默认都不支持此功能（移动设备，比如手机）？\r\n 2、hibernate中模式：reboot，platform和shutdown，对于platform跟shutdown有什么区别呢"
+ }
+]

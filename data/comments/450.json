@@ -1,0 +1,122 @@
+[
+ {
+  "id": "7091",
+  "parent": "0",
+  "date": "2018-12-19T14:42:01+08:00",
+  "author": "hello",
+  "site": "",
+  "text": "=====================================================\r\nL = L0 + L1 * y + L2 * y2 + L3 * y3 + ... + Ln * yn\r\n\r\nL0 = L1 = L2 = ... = Ln = 1024us\r\ny32 = 0.5, y = 0.97857206\r\n=====================================================\r\n文章中的这段话有一点点问题，L0，L1、L2、......是表示T0、T1、T2......周期内的负载（Load），怎么会都等于1024us？"
+ },
+ {
+  "id": "7096",
+  "parent": "7091",
+  "date": "2018-12-21T13:47:04+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@hello：是的。表达有点问题。如果进程一直是可运行状态才是1024。从下面文章的举例应该可以看出。感谢指正。"
+ },
+ {
+  "id": "7100",
+  "parent": "0",
+  "date": "2018-12-22T13:09:20+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "CFS，PELT 是个好东西，但是对于移动端来讲，太复杂且没必要。"
+ },
+ {
+  "id": "7101",
+  "parent": "7100",
+  "date": "2018-12-22T13:59:26+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@schedule：但是Linux 也不是只针对移动端。"
+ },
+ {
+  "id": "7102",
+  "parent": "7101",
+  "date": "2018-12-22T14:35:57+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@smcdef：嗯，google正在去去linux化"
+ },
+ {
+  "id": "7214",
+  "parent": "0",
+  "date": "2019-03-01T17:56:52+08:00",
+  "author": "zoro",
+  "site": "",
+  "text": "___update_load_avg(struct sched_avg *sa, unsigned long load, unsigned long runnable)\r\n{\r\n\tu32 divider = LOAD_AVG_MAX - 1024 + sa->period_contrib;\r\n }\r\n\r\nhi, 这边的divider是怎么算的，为什么不直接用LOAD_AVG_MAX？"
+ },
+ {
+  "id": "7217",
+  "parent": "7214",
+  "date": "2019-03-04T15:09:42+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@zoro：sa->period_contrib == 1024 的时候不就是你想要的 LOAD_AVG_MAX 吗？"
+ },
+ {
+  "id": "7636",
+  "parent": "0",
+  "date": "2019-08-31T00:10:25+08:00",
+  "author": "test",
+  "site": "",
+  "text": "好好"
+ },
+ {
+  "id": "7764",
+  "parent": "0",
+  "date": "2019-11-27T00:53:33+08:00",
+  "author": "Y",
+  "site": "",
+  "text": "原文中：\r\n“period_contrib记录的是上次更新负载不足1024us周期的时间” 有歧义，\r\n改成这样好理解点：\r\n“上次更新负载时，超过最后一个1024us周期的部分\""
+ },
+ {
+  "id": "8038",
+  "parent": "0",
+  "date": "2020-06-29T14:37:23+08:00",
+  "author": "lulu",
+  "site": "",
+  "text": "针对task se，runnable_load_**g和load_**g的值是没有差别的。但是对于就绪队列负载来说，二者就有不一样的意义。\r\n\r\n请问针对group se，情况又是怎样的呢？"
+ },
+ {
+  "id": "8039",
+  "parent": "0",
+  "date": "2020-06-29T17:29:58+08:00",
+  "author": "lulu",
+  "site": "",
+  "text": "enqueue_load_**g()将调度实体负载信息累加到就绪队列的load_**g成员\r\n但是除了attach_entity_load_**g会调用它，在task se的负载信息发生变化的时候不是也应该调用它来更新就绪队列的load_**g成员吗？代码中只发现update_cfs_group调用reweight_entity进而调用enqueue_load_**g，但update_cfs_group仅针对group se"
+ },
+ {
+  "id": "8247",
+  "parent": "7214",
+  "date": "2021-06-20T12:59:08+08:00",
+  "author": "linux",
+  "site": "",
+  "text": "@zoro：极限值，就是一直是一个进程运行，它的负载就是drivider"
+ },
+ {
+  "id": "8347",
+  "parent": "0",
+  "date": "2021-10-27T16:01:24+08:00",
+  "author": "esc",
+  "site": "",
+  "text": "task se的runnable_load_avg和load_avg的值是和se的权重（se->load.weight）相等，一般不会发生变化，如果更改了nice值等造成的改变，那么会通过set_load_weight()->reweight_task()->reweight_entity()这个路径来进行更新"
+ },
+ {
+  "id": "8348",
+  "parent": "8039",
+  "date": "2021-10-27T16:14:51+08:00",
+  "author": "esc",
+  "site": "",
+  "text": "@lulu：时钟中断的时候entity_tick会调用update_load_avg和update_cfs_group"
+ },
+ {
+  "id": "8645",
+  "parent": "0",
+  "date": "2022-07-20T10:15:17+08:00",
+  "author": "wenxl",
+  "site": "",
+  "text": "\"一个entity对系统负载的贡献可以根据该实体处于runnable状态（正在CPU上运行或者等待cpu调度运行）的时间进行计算\"\r\n---------------------------------------------------------------------------------------------\r\n这里是否存在问题，正在cpu上运行不是runnable状态吧？"
+ }
+]

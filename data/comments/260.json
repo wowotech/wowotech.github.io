@@ -1,0 +1,26 @@
+[
+ {
+  "id": "7203",
+  "parent": "0",
+  "date": "2019-02-25T10:35:11+08:00",
+  "author": "goku",
+  "site": "",
+  "text": "我看了这个版本的代码，有个疑问想问一下，为什么rcu_ctrlblk的cur要初始化为-300？这点真想不明白。\r\nstruct rcu_ctrlblk rcu_ctrlblk =  { .cur = -300, .completed = -300 };代码是这样写的。。"
+ },
+ {
+  "id": "7344",
+  "parent": "0",
+  "date": "2019-04-04T19:11:28+08:00",
+  "author": "fear",
+  "site": "",
+  "text": "static void __rcu_process_callbacks(struct rcu_ctrlblk *rcp,\r\n\t\t\tstruct rcu_state *rsp, struct rcu_data *rdp)\r\n{\r\n\t....\r\n                // 如果两个cpu同时进入了下面的if块，后执行rcu_start_batch的cpu会再次设置\r\n                // next_pending，但是其实这两个cpu的curlist上的callback应该属于同一个batch\r\n                // 这样不会start一次无用的batch吗\r\n\t\tif (!rcp->next_pending) {\r\n\t\t\t/* and start it/schedule start if it's a new batch */\r\n\t\t\tspin_lock(&rsp->lock);\r\n\t\t\trcu_start_batch(rcp, rsp, 1);\r\n\t\t\tspin_unlock(&rsp->lock);\r\n\t\t}"
+ },
+ {
+  "id": "7345",
+  "parent": "0",
+  "date": "2019-04-04T19:22:27+08:00",
+  "author": "fear",
+  "site": "",
+  "text": "static void __rcu_offline_cpu(struct rcu_data *this_rdp,\r\n\tstruct rcu_ctrlblk *rcp, struct rcu_state *rsp, struct rcu_data *rdp)\r\n{\r\n\t\r\n\tspin_lock_bh(&rsp->lock);\r\n\tif (rcp->cur != rcp->completed)\r\n\t\tcpu_quiet(rdp->cpu, rcp, rsp);\r\n\tspin_unlock_bh(&rsp->lock);\r\n        // 还有就是这里有个疑问：如果offline的cpu的curlist上的callback属于下一个batch\r\n        // 而当前cpu上的curlist属于当前正在被检测的batch\r\n        // 这样不会导致没有经过GP的callback被移动到donelist吗？\r\n        // 因为一旦当前batch结束，offline上的callback就会被一起放入donelist了。\r\n\trcu_move_batch(this_rdp, rdp->curlist, rdp->curtail);\r\n\trcu_move_batch(this_rdp, rdp->nxtlist, rdp->nxttail);\r\n\r\n}"
+ }
+]

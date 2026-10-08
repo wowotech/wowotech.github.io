@@ -1,0 +1,26 @@
+[
+ {
+  "id": "4057",
+  "parent": "0",
+  "date": "2016-06-08T14:36:04+08:00",
+  "author": "lypingsh",
+  "site": "",
+  "text": "windows ( source insight) + virtualbox ( Ubuntu),  Ubuntu server\r\nwindows 10上的bash支持不是很好。\r\n\r\nMacBook （office, gcc toolchain, VI)"
+ },
+ {
+  "id": "5713",
+  "parent": "0",
+  "date": "2017-06-20T20:55:09+08:00",
+  "author": "happyyizhou",
+  "site": "http://www.yizhouj.com",
+  "text": "用macbook开发的体验蛮好的，在macbook上装个虚拟机，在虚拟机上编代码，第一次编译慢，之后也很快了。macbook上可以直接使用vim, git"
+ },
+ {
+  "id": "5714",
+  "parent": "5713",
+  "date": "2017-06-21T08:38:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@happyyizhou：mac也需要装虚拟机吗？它不是天生的unix系统吗？在bash下面什么事情都可以搞啊？"
+ }
+]

@@ -1,0 +1,166 @@
+{
+ "title": "蜗窝科技",
+ "description": "",
+ "url": "http://www.wowotech.net",
+ "nav": [
+  {
+   "name": "博客",
+   "url": "/"
+  },
+  {
+   "name": "关于蜗窝",
+   "url": "/about.html"
+  },
+  {
+   "name": "项目",
+   "url": "/sort/project"
+  },
+  {
+   "name": "讨论区存档",
+   "url": "/forum/"
+  },
+  {
+   "name": "联系我们",
+   "url": "/contact_us.html"
+  },
+  {
+   "name": "支持与合作",
+   "url": "/support_us.html"
+  },
+  {
+   "name": "留言板",
+   "url": "/message_board.html"
+  },
+  {
+   "name": "数据存档",
+   "url": "/archive/"
+  }
+ ],
+ "categories": [
+  {
+   "name": "Linux内核分析",
+   "alias": "linux_kenrel",
+   "posts": 25
+  },
+  {
+   "name": "蓝牙",
+   "alias": "bluetooth",
+   "posts": 16
+  },
+  {
+   "name": "统一设备模型",
+   "alias": "device_model",
+   "posts": 15
+  },
+  {
+   "name": "电源管理子系统",
+   "alias": "pm_subsystem",
+   "posts": 48
+  },
+  {
+   "name": "中断子系统",
+   "alias": "irq_subsystem",
+   "posts": 15
+  },
+  {
+   "name": "进程管理",
+   "alias": "process_management",
+   "posts": 31
+  },
+  {
+   "name": "内核同步机制",
+   "alias": "kernel_synchronization",
+   "posts": 26
+  },
+  {
+   "name": "GPIO子系统",
+   "alias": "gpio_subsystem",
+   "posts": 5
+  },
+  {
+   "name": "时间子系统",
+   "alias": "timer_subsystem",
+   "posts": 14
+  },
+  {
+   "name": "ARMv8A Arch",
+   "alias": "armv8a_arch",
+   "posts": 15
+  },
+  {
+   "name": "通信类协议",
+   "alias": "comm",
+   "posts": 7
+  },
+  {
+   "name": "内存管理",
+   "alias": "memory_management",
+   "posts": 31
+  },
+  {
+   "name": "显示",
+   "alias": "display",
+   "posts": 3
+  },
+  {
+   "name": "图形子系统",
+   "alias": "graphic_subsystem",
+   "posts": 2
+  },
+  {
+   "name": "u-boot分析",
+   "alias": "u-boot",
+   "posts": 3
+  },
+  {
+   "name": "文件系统",
+   "alias": "filesystem",
+   "posts": 5
+  },
+  {
+   "name": "TTY子系统",
+   "alias": "tty_framework",
+   "posts": 6
+  },
+  {
+   "name": "USB",
+   "alias": "usb",
+   "posts": 1
+  },
+  {
+   "name": "Linux应用技巧",
+   "alias": "linux_application",
+   "posts": 13
+  },
+  {
+   "name": "软件开发",
+   "alias": "soft",
+   "posts": 6
+  },
+  {
+   "name": "基础技术",
+   "alias": "basic_tech",
+   "posts": 13
+  },
+  {
+   "name": "基础学科",
+   "alias": "basic_subject",
+   "posts": 10
+  },
+  {
+   "name": "技术漫谈",
+   "alias": "tech_discuss",
+   "posts": 12
+  },
+  {
+   "name": "项目专区",
+   "alias": "project",
+   "posts": 0
+  },
+  {
+   "name": "X Project",
+   "alias": "x_project",
+   "posts": 28
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+[
+ {
+  "id": "8382",
+  "parent": "0",
+  "date": "2021-11-26T09:57:25+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "\"在Marc Zyngier的回复中，已经提到3种case\r\n\r\n2.GIC会被掉电，这种情况下，需要额外的硬件来将系统唤醒（意味着各个SOC厂商都有各不相同的实现），这种情况下，gic的驱动也无法去处理，这就需要通过stacked irqchip来实现，平台的irqchip通过作为顶级的irqchip，gic作为下级irqchip就可以由SOC厂商去具体定制唤醒功能的设置。\r\n\r\n所以当soc据有唤醒能力时，需要通过平台的gic驱动来实现，arm gic驱动作为平台gic的父设备。\"\r\n\r\n这两段描述有冲突吧！vendor的irqchip 和arm的gic，到底谁是在最顶级？谁做父设备？"
+ },
+ {
+  "id": "8383",
+  "parent": "8382",
+  "date": "2021-11-26T12:40:13+08:00",
+  "author": "schspa",
+  "site": "",
+  "text": "@bsp：谢谢指正，这里写反了。\r\narm gic驱动作为平台gic的父设备。\r\n\r\n从下方示例中可以看到：gic是sysirq的parent\r\n\r\nsysirq: sysirq@system {\r\n    compatible = \"xxx,XX-sysirq\", \"syscon\";\r\n    #interrupt-cells = <3>;\r\n    interrupt-parent = <&gic>;\r\n    interrupt-controller;\r\n    ranges;\r\n    services = <&tee_regmap>;\r\n    irq-map = <48 2 0>, // GPIO\r\n    <29 4 1>, // AON RTC\r\n    <31 6 0>, // aon timer1\r\n    <30 8 0>, // aon time0\r\n    <9 10 0>, // eth0\r\n    <33 18 0>, // canfd0\r\n    <36 14 0>; // canfd1\r\n    reg = <0x0 0x43060000 0x0 0x634>;\r\n};"
+ }
+]

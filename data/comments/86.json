@@ -1,0 +1,754 @@
+[
+ {
+  "id": "455",
+  "parent": "0",
+  "date": "2014-09-18T15:53:24+08:00",
+  "author": "海",
+  "site": "",
+  "text": "看了很长时间，接口分析的很透彻。\r\nwakeup source实际中我还没有使用过，之后做8974的话，有问题再和你探讨。"
+ },
+ {
+  "id": "458",
+  "parent": "455",
+  "date": "2014-09-18T23:46:30+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@海：好的，欢迎多讨论。"
+ },
+ {
+  "id": "957",
+  "parent": "0",
+  "date": "2014-12-25T15:40:06+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "结合手头的代码再看电源管理，关于唤醒源和唤醒事件有点乱了，请教几个问题：\r\nA. 将设备声明为可唤醒源的API：device_init_wakeup(), 对wake_souce初始化，绑定device和wakewource，这个函数是driver主动调用的，所以driver应该知道自己是否具备唤醒系统的能力，也即设备是否拥有一个唤醒中断源。不过，涉及中断的话，就跟平台相关了，可能需要把一个普通中断设置为唤醒中断（有些SoC可能电气特性就决定某些中断线是唤醒源），那这样的话，仅仅调用device_init_wakeup()来声明一个唤醒源应该是不够的，应该还需要调用irq_enable_wake(), 不知道这样理解对不对？看到好些驱动只是调用device_init_wakeup()，还是说我忽略什么地方？\r\n\r\nB. Wake Event 需要驱动在唤醒中断源ISR里主动调用pm_wakeup_event()上报事件，对吧？"
+ },
+ {
+  "id": "958",
+  "parent": "957",
+  "date": "2014-12-25T18:48:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Physh：“Linux电源管理…”这些文档，都是描述kernel提供的机制，其实还差还差一些文章，描述怎么使用这些机制，特别是唤醒源和唤醒动作这块儿。所以你问到要点了。\r\n关于你的问题：\r\nA. 我理解的也不是很全面，只能提一些大概的思路。现在kernel关于设备的wakeup能力，有两种方法：一是和wakeup events framework相关的机制，不过现在确实用的不多；另外一种，是比较传统的方法，你可以参考IRQF_NO_SUSPEND（request IRQ是提供的），以及下面的过程--suspend_enter-->dpm_suspend_end-->dpm_suspend_noirq-->suspend_device_irqs-->__disable_irq。\r\nB. 上报事件，一定是driver主动上报，至于是否需要上报，在哪里上报，则由具体的driver逻辑决定。"
+ },
+ {
+  "id": "959",
+  "parent": "958",
+  "date": "2014-12-25T19:50:47+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "@wowo：谢谢，目前遇到的设置唤醒源的方式大多是直接对中断操作，而碰到过使用wakeup events framework相关机制的Driver好像只有USB和Key。"
+ },
+ {
+  "id": "960",
+  "parent": "959",
+  "date": "2014-12-25T20:18:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Physh：不用客气，大家讨论嘛。你没有有兴趣把这一块也整理一下？呵呵~~~~"
+ },
+ {
+  "id": "961",
+  "parent": "960",
+  "date": "2014-12-25T20:24:04+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "@wowo：嗯，唤醒源和唤醒动作这块儿？我看看有时间就整理一篇加到后边去"
+ },
+ {
+  "id": "962",
+  "parent": "961",
+  "date": "2014-12-25T20:31:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Physh：嗯嗯，多谢了啊。"
+ },
+ {
+  "id": "1162",
+  "parent": "0",
+  "date": "2015-02-03T17:15:18+08:00",
+  "author": "xingzhe",
+  "site": "",
+  "text": "如果有个对应的qq群就好了"
+ },
+ {
+  "id": "1165",
+  "parent": "1162",
+  "date": "2015-02-03T21:56:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xingzhe：其实有关QQ群的事儿，之前讨论过，主要觉得QQ讨论技术，节奏有点快。有什么问题，大家在博客上留言，也挺好，这些讨论会被记录下来，其他人也可以看到。"
+ },
+ {
+  "id": "1166",
+  "parent": "1165",
+  "date": "2015-02-04T14:00:16+08:00",
+  "author": "xingzhe",
+  "site": "",
+  "text": "@wowo：没有想到回复这么快，赞一个，这里面的文章，老实说，真写的不错，而且是一个系列一个系列的，像攻堡垒一样块一块的拿下，目前这样的表述还没有看到类似的书籍，楼主赶紧整理成册吧。支持"
+ },
+ {
+  "id": "1167",
+  "parent": "1166",
+  "date": "2015-02-04T14:14:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xingzhe：谢谢您的鼓励。由于业余时间不多，写的东西远远达不到整理成册的要求。不过如果真的有那一天的话，一定会送您一本。谢谢~~"
+ },
+ {
+  "id": "1268",
+  "parent": "0",
+  "date": "2015-03-04T09:16:46+08:00",
+  "author": "wzw200",
+  "site": "",
+  "text": "前面的BLOG，我都看的明白，从这个BLOG之后，就头痛了，不知道从那入手"
+ },
+ {
+  "id": "1273",
+  "parent": "1268",
+  "date": "2015-03-04T12:21:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wzw200：不明白的地方可以写出来，大家多讨论讨论就明白了。"
+ },
+ {
+  "id": "1669",
+  "parent": "0",
+  "date": "2015-05-02T15:59:49+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "在Linux kernel看来，power是系统的核心资源，不应开放给用户程序随意访问（wake lock机制违背了这个原则）\r\n  --赞同，这也是android做的比较不合理的地方。第三方apk可以随意操作wake lock。加之写apk的人水平良莠不齐。andorid对apk又没有像苹果那样的审核机制。就容易出现下载一些apk后（遇到过中国顶级互联网的apk出现过这种低级错误，名字不透漏了）导致系统无法进入 deep sleep的问题。总之这块android做的不好。"
+ },
+ {
+  "id": "1673",
+  "parent": "1669",
+  "date": "2015-05-02T21:10:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@shoujixiaodao：是的，所以我一直不喜欢android，觉得它不优雅……"
+ },
+ {
+  "id": "1684",
+  "parent": "958",
+  "date": "2015-05-03T22:42:08+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@wowo：说说我的理解。\r\nwakeup source，wakeup event 感觉名字起的不好。\r\n1，这里就涉及到wakeup的意思了，何为wakeup？我的理解只有系统进入深度睡眠后（一般主晶振停止震动，程序也不跑了），把系统唤醒才叫wakeup。\r\n2，调用device_init_wakeup()，以及产生wakeup event，根本无法把系统从深度睡眠唤醒，把系统从深度睡眠唤醒一般需要中断产生。 而wakeup souce 产生wakeup event的目的不是把系统从深度睡眠唤醒，而是防止系统进入深度睡眠。\r\n\r\n基于以上两点。我感觉wakupe souce以及wakeup event名字修改blocksuspend source，blocksuspend event更好。\r\n\r\n不知我理解是否正确。\r\n\r\n另外\r\n看到好些驱动只是调用device_init_wakeup() -- ，调用这个的一一般会调用pm_stay_awake产生wakup event事件。或者在配合device_can_wakup使用。"
+ },
+ {
+  "id": "1689",
+  "parent": "1684",
+  "date": "2015-05-04T11:44:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@shoujixiaodao：个人观点，wakeup source和wakeup event的命名还是合理的（虽然一开始我理解也很困难，其中的困惑和你所描述类似），它们描述的是一种能力或者事实，而不是一个结果，也就是说：\r\n我具备wakeup的能力，我就是wakeup source；我产生了一个event，这个event可能会wakeup系统，它就是wakeup event。无论它最终是否wakeup了系统（因为很有可能此时系统没有sleep）。\r\n\r\n至于wakeup的定义，也不一定非得要sleep加中断，这只是其中的一种形式，或者说狭义的形式。"
+ },
+ {
+  "id": "1698",
+  "parent": "0",
+  "date": "2015-05-04T20:45:46+08:00",
+  "author": "小史在coding",
+  "site": "",
+  "text": "蜗蜗您好，\r\n\r\n恰好看到了您的blog，受益匪浅。不过其中也有很多地方有些深，看不太懂。\r\n最近在调Android,若用户层　echo 1 > /sys/power/wake_lock　可以防止系统深度睡眠STR，然而系统还是会灭屏，请教这是为什么呢？百思不得其解。Android 5.0中貌似没有early suspend呀。"
+ },
+ {
+  "id": "1702",
+  "parent": "1698",
+  "date": "2015-05-04T21:49:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@小史在coding：系统锁和屏幕锁，不是一回事，所以这个现象正常。\r\n5.0已经不用early suspend了，改用runtime PM了。\r\n我一时记不得屏幕锁怎么控制了，明天回公司帮你查一下。"
+ },
+ {
+  "id": "1716",
+  "parent": "1702",
+  "date": "2015-05-05T16:25:06+08:00",
+  "author": "小史在coding",
+  "site": "",
+  "text": "@wowo：不胜感谢！"
+ },
+ {
+  "id": "1717",
+  "parent": "1689",
+  "date": "2015-05-05T20:59:58+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@wowo：多谢解答，不过还是有些转不过弯来。就是仅仅产生wake event 如果不产生中断是无法把系统从深度睡眠唤醒的。为何还叫wake up."
+ },
+ {
+  "id": "1718",
+  "parent": "1717",
+  "date": "2015-05-05T21:44:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@shoujixiaodao：抱歉我之前的回复不是很准确，一般来说，wakeup几乎都是由中断产生的（极个别的除外，例如用户空间写下来的那个）。\r\n我们换个角度想一下，哪些事件背后的根源不是中断呢？在嵌入式系统里，中断是所有动作的驱动力。我们之所以觉得有些event不是中断产生的，那是因为它离中断处理比较远而已。"
+ },
+ {
+  "id": "1721",
+  "parent": "1718",
+  "date": "2015-05-06T09:20:56+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@wowo：说的好，非常感谢，event离中断比较远 是点睛之笔。我在理解下。"
+ },
+ {
+  "id": "1755",
+  "parent": "0",
+  "date": "2015-05-11T19:34:26+08:00",
+  "author": "wlsqinghu",
+  "site": "",
+  "text": "你好，我也在看android 4.4 内核3.18的电源管理，感觉是用的autosleep 而不是用之前的early suspend操作的．\r\n当我按电源键的时候进入suspend过程，在这个过程中会申请ｗakelock和释放wakelock最终suspend下去的过程．\r\n但是还是不明白ｓｕｓｐｅｎｄ的过程中如何检测wakeup event 和wakeup count 的数量之后进入suspend  的．\r\n给提示一下关键点吗？谢谢！"
+ },
+ {
+  "id": "1757",
+  "parent": "1755",
+  "date": "2015-05-11T20:26:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wlsqinghu：请参考“/pm_subsystem/wakeup_count.html”。"
+ },
+ {
+  "id": "1838",
+  "parent": "0",
+  "date": "2015-05-20T10:11:37+08:00",
+  "author": "aGan",
+  "site": "",
+  "text": "@wowo\r\n\r\n我在项目中，遇到了如下问题，请问下如何分析定位解决呢？\r\n\r\nAndroid 4.4系统唤醒后在亮屏前会Write系统调用驱动设备节点/sys/power/ autosleep，写\"off\"直接耗时5.1s，导致唤醒亮屏慢.\r\n\r\n对应log：\r\n\r\n05-14 14:57:34.443 V/libsuspend(  852): autosuspend_autosleep_disable\r\n// 耗时5.1S\r\n05-14 14:57:39.573 V/libsuspend(  852): autosuspend_autosleep_disable done\r\n05-14 14:57:39.573 D/PowerManagerService-JNI(  852): Excessive delay in autosuspend_disable() while turning screen on: 5132ms\r\n\r\n\r\n对应日志的系统代码（system/core/libsuspend/Autosuspend_autosleep.c）：\r\n\r\n    ALOGV(\"autosuspend_autosleep_disable\\n\");\r\n\r\n    ret = write(autosleep_fd, on_state, strlen(on_state));\r\n    if (ret < 0) {\r\n        strerror_r(errno, buf, sizeof(buf));\r\n        ALOGE(\"Error writing to %s: %s\\n\", SYS_POWER_AUTOSLEEP, buf);\r\n        goto err;\r\n    }\r\n\r\n    ALOGV(\"autosuspend_autosleep_disable done\\n\");"
+ },
+ {
+  "id": "1839",
+  "parent": "1838",
+  "date": "2015-05-20T14:22:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@aGan：你可以去kernel里面跟一下pm_autosleep_set_state、pm_wakep_autosleep_enabled，看看时间耗在哪里了。不过觉得有点奇怪，不应该会在这里花费这么多时间。"
+ },
+ {
+  "id": "1931",
+  "parent": "0",
+  "date": "2015-06-03T18:48:02+08:00",
+  "author": "Jeff",
+  "site": "",
+  "text": "先謝謝一下wowo, 很詳盡的解說！\r\n\r\n想請教一下文中以下的freeze_wake()是否就是可以將系統從deep sleep(於suspend.c中error = suspend_ops->enter(state);)狀態下wakeup回來的functions.？？\r\nstatic void wakeup_source_activate(struct wakeup_source *ws)\r\n{\r\n...\r\n         /*\r\n          * active wakeup source should bring the system\r\n          * out of PM_SUSPEND_FREEZE state\r\n          */\r\n         freeze_wake();\r\n...\r\n}"
+ },
+ {
+  "id": "1932",
+  "parent": "1931",
+  "date": "2015-06-03T19:01:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Jeff：不可以的。freeze_wake對應的是PM_SUSPEND_FREEZE，既FREEZE狀態。而大多數deep sleep，對應的是SUSPEND狀態，需要由系統中斷wakeup。"
+ },
+ {
+  "id": "1940",
+  "parent": "1932",
+  "date": "2015-06-04T10:59:34+08:00",
+  "author": "Jeff",
+  "site": "",
+  "text": "@wowo：@wowo: \r\n謝謝你的回覆，我找到了一篇文，這應該是你所指的系統中斷吧\r\nhttps://www.kernel.org/doc/Documentation/power/suspend-and-interrupts.txt"
+ },
+ {
+  "id": "1942",
+  "parent": "1940",
+  "date": "2015-06-04T17:08:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Jeff：是的。"
+ },
+ {
+  "id": "2222",
+  "parent": "0",
+  "date": "2015-07-15T16:54:24+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "4）wakeup count，基于wakeup events framework，解决用户空间同步的问题。\r\n\r\n===================================================\r\nPM core中的关于wakeup_count的两个sysfs，实际上没有多大的意义。尤其是wakeup_count_store，用户空间不会去写wake event的数目的。\r\n\r\n其实我的理解，解决用空空间同步的问题，主要是给driver层提供了pm_wakeup_event，pm_stay_awake，以及pm_wake_lock等接口，让driver向PM core上报一个虚拟/抽象的wakeup event。\r\n而系统是否被阻止suspend，是基于wakeup count的cnt和inpr的检查。"
+ },
+ {
+  "id": "2224",
+  "parent": "2222",
+  "date": "2015-07-15T19:31:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：PM core中的关于wakeup_count的两个sysfs，实际上没有多大的意义。\r\n====================================================\r\n不能这么武断的，用户空间的suspend同步，还是需要它的。"
+ },
+ {
+  "id": "2226",
+  "parent": "2224",
+  "date": "2015-07-15T19:44:30+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "@wowo：suspend同步问题确实是基于wakeup count。\r\n我指的是wakeup_count的两个sysfs，用户空间suspend同步的时候会读取/sys/power/wakeup_count吗？"
+ },
+ {
+  "id": "2227",
+  "parent": "2226",
+  "date": "2015-07-15T20:02:28+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：会的，请参考“/pm_subsystem/wakeup_count.html”。\r\n主要是为了解决用户空间PM进程写state，和其它进程之间的同步问题。\r\n例如：\r\nA进程判断suspend条件成立，准备write state；\r\n产生一个event，发生调度，执行B进程；\r\nB进程处理这个event；\r\nB进程处理event时，发生调度，执行A进程；\r\nA进程误以为条件仍然成立，继续write state（这就不合理了）。"
+ },
+ {
+  "id": "2228",
+  "parent": "2227",
+  "date": "2015-07-15T20:43:37+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "@wowo：呃。。。您说的是基于wakeup_count的autosuspend休眠机制？\r\n\r\n目前我看到的是，mtk是基于earlysuspend的，qualcomm是基于autosleep的。"
+ },
+ {
+  "id": "2232",
+  "parent": "2228",
+  "date": "2015-07-16T08:46:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：wakeup count是一个独立机制，碰巧Autosleep功能用到它而已。如果抛开autosleep不说，我们在用户空间自己做suspend处理，也是要利用wakeup count的。"
+ },
+ {
+  "id": "2523",
+  "parent": "0",
+  "date": "2015-09-02T16:54:08+08:00",
+  "author": "民",
+  "site": "",
+  "text": "trace_wakeup_source_activate(ws->name, cec);\r\ntrace_wakeup_source_deactivate(ws->name, cec);\r\n=>这两句话的作用可以解释下吗，不大懂意思"
+ },
+ {
+  "id": "2524",
+  "parent": "2523",
+  "date": "2015-09-02T17:21:07+08:00",
+  "author": "民",
+  "site": "",
+  "text": "@民：还有个问题请教下；\r\nWake up event 的本质是控制“wakeup events in progress”不为0，达到 suspend->enter（）无法进入，这样理解对么"
+ },
+ {
+  "id": "2526",
+  "parent": "2523",
+  "date": "2015-09-02T17:30:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@民：这个是kernel trace的代码（一种debug手段，可以用来跟踪、调试wakeup framework），具体可以参考“/sys/kernel/debug/tracing/***”，需要先mount debugfs（mount -t debugfs none /sys/kernel/debug）。"
+ },
+ {
+  "id": "2527",
+  "parent": "2524",
+  "date": "2015-09-02T17:31:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@民：可以这么理解。"
+ },
+ {
+  "id": "2549",
+  "parent": "0",
+  "date": "2015-09-08T15:38:09+08:00",
+  "author": "明",
+  "site": "",
+  "text": "@wowo: 有点疑惑，按照wake_count的进制，在休眠过程中，一旦设备产生了唤醒事件，suspend流程将会被阻止，也就是重新被唤醒。但是有些设备的事件，有些事件是能够唤醒的，有些事件是不能够唤醒的，如果采用wake_count机制，目前在Android系统 EventHub，任何事件都是被认为是唤醒事件的。如休眠过程中，键盘的num lock事件，在关闭num lock的时候，linux原生设备驱动会自动的上报一个led的事件，而这个时候Android EventHub会首先的上锁，然后才去读取事件，最后释放锁，最终的结果就导致无法睡眠。这个应该怎么处理？在内核驱动层屏蔽该类事件，还是说其他？"
+ },
+ {
+  "id": "2550",
+  "parent": "2549",
+  "date": "2015-09-08T16:47:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@明：android要处理这个事件，上锁是合理的，终止休眠也是合理的。问题在于：Android需要关心这个事件吗？如果不关心，有两种处理方案：\r\n1. 保持原生状态，醒来再睡去，主要不反映到UI上即可。\r\n2. 屏蔽掉这个事件。"
+ },
+ {
+  "id": "2992",
+  "parent": "2550",
+  "date": "2015-11-03T20:49:36+08:00",
+  "author": "卜小德",
+  "site": "",
+  "text": "@wowo：这个led事件在哪里屏蔽"
+ },
+ {
+  "id": "2995",
+  "parent": "2992",
+  "date": "2015-11-04T09:24:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@卜小德：抱歉，我没有深究过input子系统，也不是很清楚。\r\n但从流程上看，发送LED事件是合理的，要求Android在suspend前把numlock的LED关掉。把整个处理过程理解之后，再解决这种case才比较有效。"
+ },
+ {
+  "id": "3370",
+  "parent": "0",
+  "date": "2016-01-09T01:27:19+08:00",
+  "author": "Norz",
+  "site": "",
+  "text": "博主，你好，目前遇到一个问题，预想的是设备中断通过kill_async产生SIGIO给JNI层的进程，但是在系统suspend后，JNI层的进程被Freeze了，竟然无法即时响应（通常是不响应），之后系统就又睡过去了，不知道这种情况，有没有好的解决方法呢？"
+ },
+ {
+  "id": "3373",
+  "parent": "3370",
+  "date": "2016-01-09T21:08:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Norz：设备中断中应该发送一个有超时时间的wakeup event，给JNI进程一定的处理时间。如果这一段时间还不处理，再睡下去。"
+ },
+ {
+  "id": "3416",
+  "parent": "0",
+  "date": "2016-01-19T11:56:07+08:00",
+  "author": "南山南",
+  "site": "",
+  "text": "registered wakeup events和saved_count和event_count,\r\n\r\n这几个之间是什么关系？设计这几个变量的目的？\r\n有点混乱。望能够解释一下。感谢"
+ },
+ {
+  "id": "3418",
+  "parent": "3416",
+  "date": "2016-01-19T13:06:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@南山南：5.2小节已经有解释，你可以先看一下，如果还不明白，可以有针对性的问。"
+ },
+ {
+  "id": "3423",
+  "parent": "3418",
+  "date": "2016-01-20T14:21:38+08:00",
+  "author": "南山南",
+  "site": "",
+  "text": "@wowo：非常感谢。根据定义，我理解\r\nregistered wakeup events是指总的可以处理的event个数吧；\r\n#define MAX_IN_PROGRESS ((1<<IN_PROGRESS_BITS) -1).\r\n\r\n不知是否是这个意思？\r\n之前一直理解为registered wakeup event和save_count是一个变量。"
+ },
+ {
+  "id": "3424",
+  "parent": "3423",
+  "date": "2016-01-20T14:43:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@南山南：registered wakeup events是总的event的个数。我不太理解你这里“可处理的”是什么意思。只要是报上去的event，都会记录在这个变量中。\r\n而save_count是registered wakeup events的一个快照，用于实现wakeup count功能。\r\n当程序要休眠的时候，会写wakeup count，这时会记录一个快照（保存在saved_count中）。\r\n程序写完wakeup count之后，会接着读这个值，此时如果快照和registered wakeup events一致，则允许suspend。\r\n以上具体可参考/pm_subsystem/wakeup_count.html"
+ },
+ {
+  "id": "4630",
+  "parent": "0",
+  "date": "2016-09-29T17:28:34+08:00",
+  "author": "默默地牛逼",
+  "site": "",
+  "text": "@wowo：wowo你好，有一个类型windows的需求，usb鼠标滑动把android系统从深度睡眠中唤醒的需求；根据我的了解从suspend中唤醒系统都是通过将一个中断设置为 enable_irq_wake，通过这种形式唤醒；而usb是典型的主从设备，只能主机端主动读取从机数据。不知道博主有何思路或方向"
+ },
+ {
+  "id": "4632",
+  "parent": "4630",
+  "date": "2016-09-29T21:08:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@默默地牛逼：这种情况下，一般都是USB controller还在活着（或者处于可以感知USB鼠标动作的状态）。"
+ },
+ {
+  "id": "4641",
+  "parent": "4632",
+  "date": "2016-10-02T18:51:00+08:00",
+  "author": "默默地牛逼",
+  "site": "",
+  "text": "@wowo：非常感谢"
+ },
+ {
+  "id": "4675",
+  "parent": "0",
+  "date": "2016-10-09T18:55:44+08:00",
+  "author": "西人",
+  "site": "",
+  "text": "注6：阅读上述代码时，我们可以看到很多类似“!!dev->power.can_wakeup == !!capable”的、带有两个“！”操作符的语句，是为了保证最后的操作对象非0即1。这从侧面反映了内核开发者的严谨程度，值得我们学习。\r\n------------------------------------------------------------------------\r\n这句话不是很理解，我觉得“!dev->power.can_wakeup == !capable”效果也是一样的啊，为什么要两个!!"
+ },
+ {
+  "id": "4679",
+  "parent": "4675",
+  "date": "2016-10-09T20:10:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@西人：之所以两个!，我的理解，他是要保持“形式上”的正确性，因为判断的是dev->power.can_wakeup == capable，而不是!dev->power.can_wakeup == !capable。当然，实际的效果是一样的。"
+ },
+ {
+  "id": "4790",
+  "parent": "0",
+  "date": "2016-10-27T19:47:26+08:00",
+  "author": "faker",
+  "site": "",
+  "text": "调用atomic_add_return(MAX_IN_PROGRESS, &combined_event_count);之后wakeup events in progress减1，registered wakeup events加1。\r\n\r\n这样的话registered wakeup events一直在高16位增加，会不会出现越界问题？"
+ },
+ {
+  "id": "4792",
+  "parent": "4790",
+  "date": "2016-10-28T09:17:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@faker：这是个好问题啊，我以前确实没有想过。从代码逻辑看，答案是肯定的：会越界。但这又有什么关系？\r\n我们再问一个问题：越界的后果是什么？\r\n答案是没什么。\r\nwakeup count是为了解决suspend时的用户空间同步问题，即使越界了，也是没有问题的。\r\n可参考这篇文章：/pm_subsystem/wakeup_count.html"
+ },
+ {
+  "id": "4817",
+  "parent": "0",
+  "date": "2016-11-01T11:08:56+08:00",
+  "author": "timor",
+  "site": "",
+  "text": "void __pm_wakeup_event(struct wakeup_source *ws, unsigned int msec)\r\n1.  首先上报wakupsource事件\r\n2.  msec=0, 则立马disable wakeup source\r\n3.  msec ！=0, 则在timeout之后disable wakeup source的。\r\n\r\n对于第三步没有找到是如何走进定时器的超时函数pm_wakeup_timer_fn， 还请指点， :)"
+ },
+ {
+  "id": "4819",
+  "parent": "4817",
+  "date": "2016-11-01T11:28:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@timor：wakeup_source_add\r\n\tsetup_timer(&ws->timer, pm_wakeup_timer_fn, (unsigned long)ws);\r\n\t\r\n__pm_wakeup_event\r\n\tmod_timer(&ws->timer, expires);"
+ },
+ {
+  "id": "4821",
+  "parent": "4817",
+  "date": "2016-11-01T11:43:03+08:00",
+  "author": "timor",
+  "site": "",
+  "text": "@timor：刚能看错了，有的驱动没有调用device_init_wakeup函数，也就是没有建立wakeup source到device的关系。\r\n\r\n而有的驱动是在probe函数中调用device_init_wakeup函数，然后在中断处理函数中调用pm_wakeup_event函数。\r\n\r\n真不知道，为啥有的驱动这样做。"
+ },
+ {
+  "id": "4885",
+  "parent": "0",
+  "date": "2016-11-17T18:36:59+08:00",
+  "author": "jiangxinyu",
+  "site": "",
+  "text": "Hi wowo：\r\n看了你的系列文章，受益匪浅。有个疑惑想请教您下。\r\n背景是，当系统处在深度睡眠状态下，通过外部的IO中断来唤醒系统(android5.1)，在中断的处理函数内加pm_wakeup_event，理论上是可以实现唤醒目的的（前提是需要将这个IO注册为wakeup source）.我的疑惑是这个wakeup event是如何将唤醒事件传到user space?Android的power manager service怎么获知这一事件从而完全active系统，比如亮屏。我看了一下，pm_wakeup_event到最后无非是控制“wakeup events in progress”不为0，达到不让进休眠的目的，没有找到上报事件到用户空间的地方，望指教。"
+ },
+ {
+  "id": "4886",
+  "parent": "4885",
+  "date": "2016-11-17T18:45:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jiangxinyu：kernel event要做的事情很单纯：唤醒系统（包括kernel以及用户进程）。因此，从这个角度看，android醒来了，目的达到了。至于android醒来之后，是否会重新睡下去（就是你这里的疑问），取决于这个“事件”的性质，值不值得android保持清醒，甚至打开屏幕。因此android的某个service需要在系统醒来后，检查这个事件，以便进行后续的动作（例如亮屏，例如继续睡）。"
+ },
+ {
+  "id": "4887",
+  "parent": "4886",
+  "date": "2016-11-17T18:50:33+08:00",
+  "author": "jiangxinyu",
+  "site": "",
+  "text": "@wowo：@wowo:感谢回复。您回答的后半部分懂了，想确认一下，您的这一句话“唤醒系统（包括kernel以及用户进程）”是哪个地方实现的，我看了kernel代码，看起来是这里，对吗？\r\nvoid freeze_wake(void)\r\n{\r\n\tsuspend_freeze_wake = true;\r\n\twake_up(&suspend_freeze_wait_head);\r\n}"
+ },
+ {
+  "id": "4888",
+  "parent": "4887",
+  "date": "2016-11-17T18:57:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jiangxinyu：其实就是suspend_finish中的那些东西。\r\nPS:系统是怎么睡下去的，就要怎么醒过来。"
+ },
+ {
+  "id": "4889",
+  "parent": "4888",
+  "date": "2016-11-17T19:02:18+08:00",
+  "author": "jiangxinyu",
+  "site": "",
+  "text": "@wowo：非常感谢，明白了"
+ },
+ {
+  "id": "4892",
+  "parent": "4886",
+  "date": "2016-11-18T11:57:17+08:00",
+  "author": "qilin",
+  "site": "",
+  "text": "@wowo：@wowo android醒来了，目的达到了。--- 那么在libsuspend想要再次进入休眠流程时，android上层还没有来得及处理kernel传上来的数据（比如powerkey事件），而且上层也没有持wakelock的话，那是否会错过，又进入suspend流程里面休眠下去了。 如果有的话，对这种情况又如何避免呢，谢谢～"
+ },
+ {
+  "id": "4893",
+  "parent": "4892",
+  "date": "2016-11-18T13:16:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@qilin：如果kernel在上报event的时候，携带了timeout参数，那么这个event会在一定的时间之后自动被relax，就有可能出现你这里提到的错过的情况。\r\n如果想避免这种风险，一般是这样做：\r\nkernel产生事件时，产生一个永久的event；\r\n应用处理完这个事件之后（例如read），再relax它。"
+ },
+ {
+  "id": "4894",
+  "parent": "4893",
+  "date": "2016-11-18T15:10:02+08:00",
+  "author": "qilin",
+  "site": "",
+  "text": "@wowo：应用处理完这个事件之后（例如read）-----假如应用在处理这个事的时候没有加wakelock锁呢？这时候autosuspend_wakeup_count.c走过了100ms，然后告诉kernel说：你可以再睡了。\r\n其实还是一个同步问题：按键来了，kernel醒了，等待android上层处理，上层处理时获取wakelock锁，就怕上层还没醒或者没有及时获取锁，就有自动机制再次触发kernel又睡了。这里同步又如何保证。（即如何保证fw上层获取wakelock锁在libsuspend下一次触发kernel suspend之前呢）"
+ },
+ {
+  "id": "4895",
+  "parent": "4894",
+  "date": "2016-11-18T15:43:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@qilin：应用都在处理事情了，还不加锁，这就是应用的问题了。"
+ },
+ {
+  "id": "4896",
+  "parent": "4895",
+  "date": "2016-11-18T16:03:30+08:00",
+  "author": "qilin",
+  "site": "",
+  "text": "@wowo：也是哦，:-) 感谢，一直关注wowotech，学到很多。。"
+ },
+ {
+  "id": "5606",
+  "parent": "0",
+  "date": "2017-05-26T10:55:37+08:00",
+  "author": "keke",
+  "site": "",
+  "text": "@wowo\r\n您好，感谢您的分享，看了收获很大。想请教您个问题：您说到\"wakeup events产生后，通常是以中断的形式通知device driver\"。我现在有一个问题，当系统suspend后，所有的device应该也是suspend的。\r\n当有wake event（比如按键）时，系统resume，这时各个device也会resume,但是我不想让某个device（例如usb）resume。能不能通过不触发usb中断的方式，让usb继续suspend？怎么操作呢？谢谢"
+ },
+ {
+  "id": "5607",
+  "parent": "5606",
+  "date": "2017-05-26T11:03:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@keke：你这个其实是runtime pm的需求：只要usb没有工作，就可以处于某一种低功耗状态。唤醒的时机有二：\r\n1. 软件主动唤醒（主动发送数据等）。\r\n2. 被动事件唤醒（例如phy收到数据，产生中断）。这种情况，一般需要usb controller支持（大部分的controller都支持）。"
+ },
+ {
+  "id": "5608",
+  "parent": "5607",
+  "date": "2017-05-26T11:49:11+08:00",
+  "author": "keke",
+  "site": "",
+  "text": "@wowo：@wowo\r\n谢谢wowo的回复。\r\n1)您的意思说虽然是系统从suspend->resume,但对usb来说，它的suspend->resume其实是和runtime时是一样的？但是我调试时，usb有两种情况的resume：系统suspend时的和runtime时的，而且当系统resume时，确实是走的usb中非runtime时resume的代码。\r\n2）我现在usb接口上一直插着u盘（或者其他usb设备），当系统suspend->resume时，应该会有数据的收发吧？所以会唤醒usb controller?\r\n谢谢"
+ },
+ {
+  "id": "5609",
+  "parent": "5608",
+  "date": "2017-05-26T11:55:29+08:00",
+  "author": "keke",
+  "site": "",
+  "text": "@keke：@wowo\r\n我现在想法是即使usb口上插着设备，也让usb一直睡着，直到我人为从用户层唤醒它。能这样做吗？"
+ },
+ {
+  "id": "5617",
+  "parent": "5609",
+  "date": "2017-05-31T17:26:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@keke：这样没有问题啊，如果都是从用户层控制，想怎么做都可以啊，例如自定义几个ioctl，让USB睡或者醒。"
+ },
+ {
+  "id": "5624",
+  "parent": "5617",
+  "date": "2017-06-05T10:06:29+08:00",
+  "author": "keke",
+  "site": "",
+  "text": "@wowo：明白了，感谢感谢。"
+ },
+ {
+  "id": "5989",
+  "parent": "0",
+  "date": "2017-09-05T17:55:47+08:00",
+  "author": "kernel_123",
+  "site": "",
+  "text": "Hi wowo\r\n咨询个问题．\r\n\r\n当系统进入到suspend流程后，如果有wakeup event产生，是通过pm_wakeup_pending函数去判断的．\r\n当系统插入usb后，这时候会激活唤醒源，增加events in progress个数，在插入usb的情况下按下power按键，系统是如何阻止不进suspend流程的？从代码上看只是激活唤醒源，增加events in progress的个数，确实没有找到阻止系统不进suspend的流程的代码块？　还系统解答．谢谢"
+ },
+ {
+  "id": "5990",
+  "parent": "5989",
+  "date": "2017-09-05T19:49:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@kernel_123：插入usb之后，usb会产生一个wakeup event，然后用户空间的某些程序起来（一般是power manager service），加一把锁，这样系统就没有机会suspend了。你可以去/sys/power下面确认一下，看看是哪把锁。"
+ },
+ {
+  "id": "7126",
+  "parent": "0",
+  "date": "2019-01-08T17:41:27+08:00",
+  "author": "Edward",
+  "site": "",
+  "text": "Dear wowo:\r\n我cat wakeup source发现某个wakeup source，event_count在持续增长，如何得知是哪个进程在不断触发这个wakeup source？"
+ },
+ {
+  "id": "7130",
+  "parent": "7126",
+  "date": "2019-01-10T19:25:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Edward：kernel的wakeup event面向的对象是设备，而非进程。\r\n当然，用户程序所使用的wake_lock除外。"
+ },
+ {
+  "id": "7154",
+  "parent": "0",
+  "date": "2019-01-24T17:50:09+08:00",
+  "author": "Liwei",
+  "site": "",
+  "text": "Hi wowo,\r\n  看了文章之后，还有些地方不是很明白，还请指点：\r\n1我们之前使用echo mem >/sys/power/state这种方式让系统进入休眠和中断方式唤醒系统（例如按键），现在换成了echo wake_test >/sys/power/wake_lock休眠和echo wake_test > /sys/power/wake_unlock，这2种休眠唤醒的方式会不会有冲突？还是只能二选一？\r\n\r\n2 假如我在串口中输入echo wake_test >/sys/power/wake_lock命令让系统进入休眠了，我如何能在串口中继续发送echo wake_test > /sys/power/wake_unlock命令呢？（休眠之后，串口也是休眠中的）\r\n谢谢"
+ },
+ {
+  "id": "7367",
+  "parent": "0",
+  "date": "2019-04-22T19:58:41+08:00",
+  "author": "chenan",
+  "site": "",
+  "text": "struct dev_pm_info      power;这个变量是在哪里填充的啊？对应的dts上是否会有体现？"
+ },
+ {
+  "id": "7368",
+  "parent": "7367",
+  "date": "2019-04-22T20:30:51+08:00",
+  "author": "chenan",
+  "site": "",
+  "text": "@chenan：不好意思  看的不认真   文中写了"
+ },
+ {
+  "id": "7664",
+  "parent": "0",
+  "date": "2019-09-24T16:48:07+08:00",
+  "author": "昵称",
+  "site": "",
+  "text": "文章有点久了，目前核心流程都更新不少，对着代码看差别还是不小的，比如wakeup_source_activate并没有唤醒"
+ },
+ {
+  "id": "7723",
+  "parent": "7154",
+  "date": "2019-10-29T22:55:16+08:00",
+  "author": "吴兵",
+  "site": "http://https://wu-being.blog.csdn.net/",
+  "text": "@Liwei：1. echo mem >/sys/power/state 只是让系统进入休眠；\r\n2. echo wake_test >/sys/power/wake_lock命令 是加锁，不让系统进入休眠了，在串口中继续发送echo wake_test > /sys/power/wake_unlock命令是去除锁wake_test 让系统进入系统"
+ },
+ {
+  "id": "7724",
+  "parent": "0",
+  "date": "2019-10-29T22:59:55+08:00",
+  "author": "吴兵",
+  "site": "http://https://wu-being.blog.csdn.net/",
+  "text": "如果是int整数的话，越界就从尾。\r\n是否可以展开讲一下一个原子函数atomic_add_return 啊？（我不到这个定义）比较可以说明wakeup events in progress减1，registered wakeup events加1。"
+ },
+ {
+  "id": "7729",
+  "parent": "0",
+  "date": "2019-10-31T10:46:19+08:00",
+  "author": "wall.e",
+  "site": "",
+  "text": "下面这个表述感觉不太准确，应该是最近一次wakeup source被操作的时间，修改这个\r\n变量的不仅在wakeup_source_activate这个函数，别的地方也有，但是只有这个地方获取的是active的开始时间，别的地方不是，麻烦确认一下，谢谢？\r\n\r\nlast_time，该wakeup source上次active的开始时间；"
+ },
+ {
+  "id": "8151",
+  "parent": "7724",
+  "date": "2020-12-02T16:24:29+08:00",
+  "author": "Eva",
+  "site": "",
+  "text": "@吴兵：可以参考下这篇文章——\r\nLinux的原子操作与同步机制"
+ },
+ {
+  "id": "8152",
+  "parent": "0",
+  "date": "2020-12-02T16:38:32+08:00",
+  "author": "Eva",
+  "site": "",
+  "text": "Hi wowo，\r\n\r\n感谢您的分析，这里有个疑问想请教一下~\r\n\r\n类型一（操作对象为wakeup source，编写设备驱动时，一般不会直接使用）\r\n\r\n==>对于这句，是说编写设备驱动式一般不会直接使用操作对象为ws的三个接口，问题是，一般在什么情况下，会直接调用这三个接口呢？是进程之类的吗？\r\n\r\nThanks！"
+ },
+ {
+  "id": "8198",
+  "parent": "0",
+  "date": "2021-02-21T16:21:46+08:00",
+  "author": "xxn",
+  "site": "",
+  "text": "Hi wowo,\r\n感谢您的文章让我重新了解了linux休眠的机制，但同时我的疑惑也更深了，想向您请教一下。\r\n因为以前我一直以为，系统进入休眠的机制必须要是系统中没有任务在跑，也就是所有任务都处阻塞，但看您上面的回复似乎不是这样的。\r\n一个wakeup event（带超时)往上报之后，上层必须要wake lock锁住，等这个事件处理完。不然会遇到传到一半就suspend的情况。这个地方我不是很理解，事件往上报的过程，cpu中的人任务必然是在跑的，这种情况下，系统为什么要进入休眠呢？\r\n然后是这个用户空间的代码，比如说是一个while（1）在跑，似乎不能阻止休眠。\r\n我能够理解的是linux有内核态和用户态，这种不管上层用户空间直接休眠确实可以做到，但不能理解这样设计的初衷是什么。。。如果上面用户还有事情在做，内核跑去休眠好像有点怪怪的。"
+ },
+ {
+  "id": "8199",
+  "parent": "0",
+  "date": "2021-02-21T16:26:31+08:00",
+  "author": "X1hq",
+  "site": "",
+  "text": "Hi wowo,\r\n感谢您的文章让我重新了解了linux休眠的机制，但同时我的疑惑也更深了，想向您请教一下。\r\n因为以前我一直以为，系统进入休眠的机制必须要是系统中没有任务在跑，也就是所有任务都处阻塞，但看您上面的回复似乎不是这样的。\r\n一个wakeup event（带超时)往上报之后，上层必须要wake lock锁住，等这个事件处理完。不然会遇到传到一半就suspend的情况。这个地方我不是很理解，事件往上报的过程，cpu中的人任务必然是在跑的，这种情况下，系统为什么要进入休眠呢？\r\n然后是这个用户空间的代码，比如说是一个while（1）在跑，似乎不能阻止休眠。\r\n我能够理解的是linux有内核态和用户态，这种不管上层用户空间直接休眠确实可以做到，但不能理解这样设计的初衷是什么。。。如果上面用户还有事情在做，内核跑去休眠好像有点怪怪的。"
+ },
+ {
+  "id": "9194",
+  "parent": "8199",
+  "date": "2026-09-16T17:39:13+08:00",
+  "author": "22",
+  "site": "",
+  "text": "@X1hq：你可以看下安卓的autosleep的实现，部分上层程序持wake_lock，然后以熄灭屏幕为检查点判断wake_lock是否全都释放，释放了就走内核休眠，也就是说上层程序也被分为了可以阻止休眠和不可以的两部分，内核不管上层在做什么任务，只要线程不是D状态就无法影响进入内核后的休眠"
+ }
+]

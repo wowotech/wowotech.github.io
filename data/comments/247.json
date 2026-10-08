@@ -1,0 +1,58 @@
+[
+ {
+  "id": "3672",
+  "parent": "0",
+  "date": "2016-03-15T19:32:25+08:00",
+  "author": "wittyman",
+  "site": "",
+  "text": "楼主，描述slab object layout那张图中，关于red zone的部分不是很准确，obj align前面那个red zone，里面实际上是pad数据（POSION_INUSE）,和前面个red zone不一样。这样画可能会引起误解。"
+ },
+ {
+  "id": "3802",
+  "parent": "0",
+  "date": "2016-04-06T19:27:42+08:00",
+  "author": "李勇",
+  "site": "",
+  "text": "你好，能请问下文章里面的图是用什么软件来绘制的吗？"
+ },
+ {
+  "id": "3806",
+  "parent": "3802",
+  "date": "2016-04-07T08:46:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@李勇：visio吧"
+ },
+ {
+  "id": "5888",
+  "parent": "0",
+  "date": "2017-08-08T11:01:24+08:00",
+  "author": "张小花",
+  "site": "",
+  "text": "//http://elixir.free-electrons.com/linux/latest/source/mm/slub.c#L2636\r\nstatic __always_inline void *slab_alloc_node(struct kmem_cache *s,\r\n\t\tgfp_t gfpflags, int node, unsigned long addr)\r\n{\r\n\tvoid *object;\r\n\tstruct kmem_cache_cpu *c;\r\n\tstruct page *page;\r\n\tunsigned long tid;\r\n    //钩子函数 可以做一些事情 比如测试和mmcgroup?\r\n\ts = slab_pre_alloc_hook(s, gfpflags);\r\n\tif (!s)\r\n\t\treturn NULL;\r\nredo:\r\n\t/*\r\n\t * Must read kmem_cache cpu data via this cpu ptr. Preemption is\r\n\t * enabled. We may switch back and forth between cpus while\r\n\t * reading from one cpu area. That does not matter as long\r\n\t * as we end up on the original cpu again when doing the cmpxchg.\r\n\t *\r\n\t * We should guarantee that tid and kmem_cache are retrieved on\r\n\t * the same cpu. It could be different if CONFIG_PREEMPT so we need\r\n\t * to check if it is matched or not.\r\n\t */\r\n    //看了一段时间 看不懂这里为何这么写\r\n\tdo {\r\n\t\ttid = this_cpu_read(s->cpu_slab->tid);\r\n\t\tc = raw_cpu_ptr(s->cpu_slab);\r\n\t} while (IS_ENABLED(CONFIG_PREEMPT) &&\r\n\t\t unlikely(tid != READ_ONCE(c->tid)));\r\n\r\n这个问题是不是可以归纳为:内核是如何解决在slab函数期间发生中断导致抢占与进程迁移的问题?"
+ },
+ {
+  "id": "5894",
+  "parent": "5888",
+  "date": "2017-08-08T14:14:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@张小花：是的。\r\n这个注释已经说的很明白了：\r\n         * We should guarantee that tid and kmem_cache are retrieved on         \r\n         * the same cpu. It could be different if CONFIG_PREEMPT so we need     \r\n         * to check if it is matched or not.  \r\n就是要保证tid和kmem_cache属于同一个CPU。\r\n无论此时发生了多少抢占，一直等到相同，再配合后面的barrier()，就能达到目的。"
+ },
+ {
+  "id": "5896",
+  "parent": "5894",
+  "date": "2017-08-08T14:54:53+08:00",
+  "author": "张小花",
+  "site": "",
+  "text": "@wowo：谢谢wowo\r\n原来它的目的是为了解决slab_alloc_node中Fastpath下进程迁移的问题.\r\n对于Slowpath则用另一套方案:关中断并重新读取当前CPU的kmem_cache.\r\n\r\n但是 while (IS_ENABLED(CONFIG_PREEMPT) && \r\n         unlikely(tid != READ_ONCE(c->tid))); 中,\r\ntid != READ_ONCE(c->tid)不同的CPU也可能相等啊,也就是说此While循环并不能百分百的保证tid和kmem_cache属于同一个CPU吧?"
+ },
+ {
+  "id": "5897",
+  "parent": "5896",
+  "date": "2017-08-08T16:13:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@张小花：可以保证的。如果使能了preempt，tid在不同CPU之间是可以区分，因此是唯一的，可参考：\r\n\r\nmm/slub.c\r\n\r\n#ifdef CONFIG_PREEMPT                                                           \r\n/*                                                                              \r\n * Calculate the next globally unique transaction for disambiguiation           \r\n * during cmpxchg. The transactions start with the cpu number and are then      \r\n * incremented by CONFIG_NR_CPUS.                                               \r\n */                                                                             \r\n#define TID_STEP  roundup_pow_of_two(CONFIG_NR_CPUS)                            \r\n#else"
+ }
+]

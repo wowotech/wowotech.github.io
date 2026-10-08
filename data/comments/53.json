@@ -1,0 +1,218 @@
+[
+ {
+  "id": "211",
+  "parent": "0",
+  "date": "2014-06-17T16:07:00+08:00",
+  "author": "综合搜索",
+  "site": "http://so.ifukua.com",
+  "text": "好像挺专业的样子。。。"
+ },
+ {
+  "id": "275",
+  "parent": "0",
+  "date": "2014-08-07T17:12:47+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "1、数据访问的局部性分析---下面的两个程序例子不太完整，是不是考虑补充一下？虽然不补充也能大体看懂。"
+ },
+ {
+  "id": "276",
+  "parent": "275",
+  "date": "2014-08-07T19:48:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：多谢！已经修复了！"
+ },
+ {
+  "id": "594",
+  "parent": "0",
+  "date": "2014-10-31T09:36:31+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "推荐一本书\r\n讲计算机系统的\r\n深入理解计算机系统\r\n作者: Randal E.Bryant / David O'Hallaron \r\n出版社: 中国电力\r\n原作名: Computer Systems: A Programmer's Perspective\r\n译者: 龚奕利 / 雷迎春"
+ },
+ {
+  "id": "597",
+  "parent": "594",
+  "date": "2014-10-31T10:18:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@heziq：多谢推荐！\r\n实际上，我们目前正在看的就是这本书的英文版。\r\n\r\n顺便也推荐一本：\r\nComputer Architecture: A Quantitative Approach\r\n正在看，也非常好"
+ },
+ {
+  "id": "1212",
+  "parent": "0",
+  "date": "2015-02-17T17:37:46+08:00",
+  "author": "Philip",
+  "site": "",
+  "text": "VIPT（Virtual index Physical tag）的中文說明似乎打錯字. \r\n    尋找cache set的index使用\"虛擬\"地址，而匹配cache line的tag都是使用\"物理\"地址。"
+ },
+ {
+  "id": "1213",
+  "parent": "1212",
+  "date": "2015-02-17T23:57:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Philip：多谢，多谢！已经修正了"
+ },
+ {
+  "id": "1994",
+  "parent": "0",
+  "date": "2015-06-15T20:58:42+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "请问@wowo和@linuxer有没有研究过ARMV8里面的指令cache？我们最近碰到的一个问题要dump出指令cache的内容，但感觉spec上面的描述没怎么看明白（DDI0500F: ARM Cortex A53 Technical Reference Manual (TRM), r0p4\r\n6.7.2节）。\r\nP326页提到：The L1 Instruction memory system has the following key features:\r\n• Instruction side cache line length of 64 bytes.\r\n• 2-way set associative L1 Instruction cache.\r\n• 128-bit read interface to the L2 memory system.\r\n也就说，cacheline的大小是64个字节，占6个bit;假设L1 instruction cache大小是64K的话，由于是2个way，那么用于set选择的bit应该是9个bit。所以留给TAG的bit也就是39-（6+9）=24个bit。但为什么在P340页描述的instruction cache line中tag的格式中， TAG address是28个bit呢？\r\nBits          Description\r\n[31]            Unused.\r\n[30:29]       Valid and set mode:\r\n               0b00  A32.\r\n               0b01  T32.\r\n               0b10  A64.\r\n               0b11  Invalid.\r\n[28]       Non-secure state (NS).\r\n[27:0]        Tag address.\r\n\r\n更疑惑的一点是：在P340页提到“The CP15 Instruction Cache Data  Read Operation returns two entries from the cache in Data Register 0 and Data Register  1 corresponding to the 16-bit al igned offset in the cache line:\r\nData Register 0  Bits[19:0] data from cache offset+ 0b00.\r\nData Register 1  Bits[19:0] data from cache offset+ 0b10.\r\nIn A32 or A64 state these tw o fields combined always represent a single pre-decoded instruction.”\r\n一条指令是32个bit，不是直接用一个寄存器就能返回去所有的data么？为什么要用到寄存器0和1呢？谢谢！"
+ },
+ {
+  "id": "1997",
+  "parent": "1994",
+  "date": "2015-06-16T11:20:55+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@bear20081015：我没有研究过ARMV8的cache，不过既然你问了这个问题，我就花了一点时间看了看，我的想法是这样的：\r\n1、ARM Cortex A53的物理地址空间是1TB，也就是说物理地址有40个bit\r\n2、cache的机制采用Physically Indexed Physically Tagged (PIPT)\r\n3、对于64KB的cache，其物理地址的组成是：0～5bit是cacheline offset（共计6个bit），6～14是set index（共计9个bit），15～39bit是tag（共计25个bit）。\r\n4、对于8KB的cache，其物理地址的组成是：0～5bit是cacheline offset（共计6个bit），6～11是set index（共计6个bit），12～39bit是tag（共计28个bit）。\r\n5、ARM Cortex A53的的L1 cache size可能的情况包括：8KB, 16KB, 32KB, or 64KB\r\n\r\n作为编成接口，当然要cover所有的情况，因此tag address是28个bit（对应cache size是8KB的情况）。\r\n\r\n虽然指令是32个bit，但是instruction cacheline中的数据并不是只有指令，还有其他的控制数据，因此需要两个寄存器。\r\n\r\n我对ARMV8不熟悉，可能理解有误，仅供参考。"
+ },
+ {
+  "id": "2001",
+  "parent": "1997",
+  "date": "2015-06-17T11:06:34+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@linuxer：谢谢linux！第一个问题我没有疑问了，应该就是你说的那样。第二个问题你提到“虽然指令是32个bit，但是instruction cacheline中的数据并不是只有指令，还有其他的控制数据，因此需要两个寄存器。 ”，这样解释确实比较合理。但这样的话就意味着每个指令实际上还有额外的8个bit来指示其状态，这些bit是作为控制数据存储在entry中的?另外，不知道你有没有找到文档来解释这两个寄存器是如何combine成一个指令的，以及这8个控制bit的含义?多谢！"
+ },
+ {
+  "id": "2005",
+  "parent": "2001",
+  "date": "2015-06-18T00:28:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@bear20081015：的确，不论是A32还是A64指令集，每个汇编指令都是32bit的，因此，instruction cache中的data信息应该就是32个bit，不过，spec中定义获取了两个20bit的data，共计40个bit，其实上面的回答我也是猜测的，可能又8个bit的控制状态信息，我也没有找到那多余8个bit的定义。"
+ },
+ {
+  "id": "2017",
+  "parent": "2005",
+  "date": "2015-06-22T23:24:48+08:00",
+  "author": "bear20081015",
+  "site": "",
+  "text": "@linuxer：@linuxer,\r\nlinuxer。\r\n我问了下ARM的人，他们的意思是说icache里面确实存储的是40个bit，是memory中的32bit指令经过predecoder得到的。还给了一个转换公式，不过我尝试了一下，似乎不是很对，还在等他们的进一步回复。供你参考。\r\n[From Jim Sykes - ARM Technical Support]\r\n\r\nCortex-A5/A7/A53 store a special extended format in the I$ which is:\r\n\r\nFor Cortex-A5/A7: 18 bits Thumb / 36 bits ARM\r\n\r\nFor Cortex-A53: 20 bits Thumb / 40 bits ARM aarch32 or aarch64\r\n\r\nThis is related to changes to the instruction decode logic – a predecoder is added before the I$ - the main decoder is simplified and this leads to power and area savings.\r\n\r\nWe do not have a script or documentation for this I$ format, however the tarmac logger contains functions to decode the instructions – when used with code below.\r\n\r\nThe below SystemVerilog code can reverse the translations done in the predecode process for Cortex-A53.\r\n\r\nThis includes snippets of code which show how to turn the 40-bit encoding in the I-cache into the 32-bit memory view (or at least as close as possible, the translation isn’t entirely two-way). For the code below \"icb_encoding_for_reconstruction\" is the 40-bit value from the I-cache, and \"pfb_to_raw_encoding\" is the 32-bit memory view of that value. \r\n\r\nARM A64:\r\n\r\n        if (icb_encoding_for_reconstruction[18:13] == 6'b000000) begin\r\n\r\n          // We need first to check if the original encoding was undef or unpred\r\n\r\n          pfb_to_raw_encoding[31:28] = icb_encoding_for_reconstruction[39:36];\r\n\r\n          pfb_to_raw_encoding[27:0]  = \r\n\r\n{icb_encoding_for_reconstruction[11:0],icb_encoding_for_reconstruction[35:20]};\r\n\r\n        end else begin\r\n    // normal case\r\n\r\n          pfb_to_raw_encoding[31:0] = t32_to_a64(icb_encoding_for_reconstruction);\r\n\r\n        end"
+ },
+ {
+  "id": "2019",
+  "parent": "2017",
+  "date": "2015-06-23T09:13:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bear20081015：涨姿势了，原来cache里面的内容已经pre-decode了，这样可以节省很多decode动作，进而节省power。多谢分享。"
+ },
+ {
+  "id": "2742",
+  "parent": "0",
+  "date": "2015-10-09T20:10:38+08:00",
+  "author": "snake",
+  "site": "",
+  "text": "请问 @wowo和@linuxer\r\n文章里面的\r\n\"当访问y[0]的时候，由于set index也是0，\"\r\n-----为什么set index也是0？　为什么不能是１？　把y的数据放到set index=1的不行吗？\r\n谢谢!"
+ },
+ {
+  "id": "2743",
+  "parent": "2742",
+  "date": "2015-10-09T23:34:29+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@snake：文章中给出了cache的组织信息：\r\n1、cacheline是16B，因此，地址中的低四位[3:0]是block offset\r\n2、有两个cache set，因此，地址中的bit 4用来选择cache set\r\n3、其余是tag\r\n\r\n访问y[0]的时候，其虚拟地址是0x20，bit 4是0，因此，set index也是0"
+ },
+ {
+  "id": "2744",
+  "parent": "2743",
+  "date": "2015-10-10T07:34:33+08:00",
+  "author": "snake",
+  "site": "",
+  "text": "@linuxer：谢谢@linuxer，看您的回复是真明白了，十分感谢　＾＿＾"
+ },
+ {
+  "id": "4399",
+  "parent": "2743",
+  "date": "2016-08-14T16:06:07+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "@linuxer：@linuxer, 文中五.1提到了“我们再看看virutal memory address的组成”。在回答@snake的问题中也提到了“其虚拟地址是0x20”。我想问一下，在看cache是否命中，或者说在解析set index的时候，用的到底是是物理地址还是虚拟地址？根据文中的描述和你的对snake问题的回答，应该是虚拟地址。\r\n我的理解是当cpu想要进行data store或者data load的时候，过程大概是先到TLB（或者MMU）进行地址翻译，然后再到cache看是否命中。那么在看cache是否命中的时候，应该使用的是物理地址而非虚拟地址。不知道我的理解是否有误，谢谢"
+ },
+ {
+  "id": "4402",
+  "parent": "4399",
+  "date": "2016-08-15T18:46:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zyq1228：这和具体的cache设计相关的，例如Cortex A53，它的L1 instruction cache是Virtually Indexed Physically Tagged (VIPT)的，也就是说，set index是用虚拟地址的。而L2的data cache（以及各个level的unified cache）是Physically Indexed Physically Tagged (PIPT)，这时候解析set index是使用物理地址。"
+ },
+ {
+  "id": "4408",
+  "parent": "4402",
+  "date": "2016-08-15T23:16:22+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "@linuxer：多谢@linuxer，了解了。还想请问一下MMU和Cache的关系。\r\n1. 可以只打开MMU，不打开D-Cache吗？\r\n2. 可以只打开D-Cache，不打开MMU吗？如果可以，在这种情况下，比如L1的VIPT是不是就变成PIPT了？\r\n3. 如果要关闭D-Cache（设置SCTLR.C bit为0）的话，flush cache的操作应该在mcr的语句之前还是之后呢？谢谢"
+ },
+ {
+  "id": "4409",
+  "parent": "4408",
+  "date": "2016-08-16T10:02:38+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zyq1228：下面是我的看法，不一定对，大家一起探讨啊。\r\n1. 可以只打开MMU，不打开D-Cache吗？ \r\n－－－－－－－－－－－－－－－－－－\r\n当然可以\r\n\r\n2. 可以只打开D-Cache，不打开MMU吗？如果可以，在这种情况下，比如L1的VIPT是不是就变成PIPT了？ \r\n－－－－－－－－－－－－－－－－－－\r\n打开D-Cache，而不打开MMU，其实这个配置怪怪的，但是在ARMv8中是允许的。\r\n我们知道，MMU和data cache是有一定关联的。在ARM64中，SCTLR, System Control Register（I bit、C bit和M bit）用来控制MMU icache和dcache，虽然这几个控制bit是分开的，但是并不意味着MMU、data cache、instruction cache的on/off控制是彼此完全独立的。一般而言，这里MMU和data cache是绑定的，即如果MMU 是off的，那么data cache也必须要off。因为如果打开data cache，那么要设定memory type、sharebility attribute、cachebility attribute等，而这些信息是保存在页表（Translation table）的描述符中，因此，如果不打开MMU，如果没有页表翻译过程，那么根本不知道怎么来应用data cache。当然，是不是说HW根本不允许这样设定呢？也不是了，在MMU OFF而data cache是ON的时候，这时候，所有的memory type和attribute是固定的，即memory type都是normal Non-shareable的，对于inner cache和outer cache，其策略都是Write-Back，Read-Write Allocate的。\r\n\r\n3. 如果要关闭D-Cache（设置SCTLR.C bit为0）的话，flush cache的操作应该在mcr的语句之前还是之后呢？\r\n－－－－－－－－－－－－－－－－\r\n我的理解是：先关闭D-Cache，然后flush cache。"
+ },
+ {
+  "id": "4412",
+  "parent": "4409",
+  "date": "2016-08-16T20:55:24+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "@linuxer：linuer，多谢!\r\n关于MMU和Dcache的，找了一篇arm support里的文章。和你说的意思差不多，一起学起参考。http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka13835.html"
+ },
+ {
+  "id": "4422",
+  "parent": "4409",
+  "date": "2016-08-19T11:00:31+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "@linuxer：linuxer, 又有问题来请教了。\r\n关于disable D-cache，SCTRL.C set为0时，在armv7上，只是L1被disable了呢？还是L1和L2都被disable了？\r\narm的spec是这么写的：\r\nSCTLR.C enables or disables all data and unified caches, across all levels of cache visible to the processor.\r\n这里说的all levels of cache是不是L1和L2全都包括了？谢谢"
+ },
+ {
+  "id": "4425",
+  "parent": "0",
+  "date": "2016-08-19T15:17:31+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "回复：zyq1228 \r\n你提出的问题是和具体的CPU实现相关。假设一个CPU在cache设计上采用了3级cache，分别是L1，L2，L3，其中L1是指令和数据分开的，而L2和L3是unified cache，不区分指令和数据。\r\n在这种情况下，SCTLR的I bit控制的是L1的instruction cache以及L2和L3 cache（这两个level是 unified cache）。同理SCTLR的C bit控制的是L1的data cache以及L2和L3 cache（这两个level是 unified cache）。"
+ },
+ {
+  "id": "4427",
+  "parent": "4425",
+  "date": "2016-08-20T10:02:22+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "@linuxer：了解了，那么按照3级cache的情况，SCTLR.C是控制L1的Dcache和L2/L3，那么有办法只关闭L1的Dcache吗？还是这个不可能的？"
+ },
+ {
+  "id": "4435",
+  "parent": "4427",
+  "date": "2016-08-22T18:54:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zyq1228：对于ARMv8，我认为是不可能的，要么打开L1的dcache以及L2和L3对数据的cache，要么disable all。顺便一提的是：clear了SCTLR.C比特并不意味turn off了L2和L3的cache，因为也许SCTLR.I比特是set的，这时候，L2和L3还是可以cache instruction的。"
+ },
+ {
+  "id": "4437",
+  "parent": "4435",
+  "date": "2016-08-22T23:08:48+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "@linuxer：谢谢！"
+ },
+ {
+  "id": "6946",
+  "parent": "0",
+  "date": "2018-09-13T11:15:52+08:00",
+  "author": "小海贼",
+  "site": "",
+  "text": "感谢题主的文章，看到您的文章有种相见恨晚的感觉\r\n我学linux时间不久，想请教一下，对于多核操作系统，当每个核都运行一个进程，这样两个核拥有独立的页表项，假设现在这两个进程对于一个相同的物理地址拥有不同的虚拟地址，也就是多核情况下的Cache Ambiguity，在这种情况下，我有如下两个问题：\r\n1. 当L1 cache是VIVT时，两个核的L1 cache利用mesi策略还能正常工作吗，由于是不同虚拟地址，那样会不会出现问题，是不是VIVT这种方式不能用于多核呢？VIVT这种方式好像确实没有出现在多核ARM中\r\n2. 当L2 cache是VIVT时，由于L2共享的，那么这两个不同的虚拟地址在L2中一定是两个不同的cache行，这样也会有问题吧，之前在网上看到说L2 cache一般都是PIPT的，是不是VIVT也不能用于多核的L2 cache呢？"
+ }
+]

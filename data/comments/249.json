@@ -1,0 +1,226 @@
+[
+ {
+  "id": "3299",
+  "parent": "0",
+  "date": "2015-12-29T10:23:30+08:00",
+  "author": "维尼",
+  "site": "",
+  "text": "窝窝 怎么不建个QQ群啊"
+ },
+ {
+  "id": "3301",
+  "parent": "3299",
+  "date": "2015-12-29T12:11:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@维尼：有QQ群，在/contact_us.html。"
+ },
+ {
+  "id": "3314",
+  "parent": "0",
+  "date": "2015-12-30T20:49:37+08:00",
+  "author": "cgp",
+  "site": "",
+  "text": "非常冒昧问下，在使用altera DE1-SOC ，quartus 13.1对光盘例程DE1_SOC_LINUX_FB生成dts时出现错误component alt_vip_itc_0 of class alt_vip_itc is unknown和component pll_stream of class altera_pull is unknown,使用sopc2dts程序，谢谢"
+ },
+ {
+  "id": "3317",
+  "parent": "3314",
+  "date": "2015-12-30T21:38:41+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cgp：非常抱歉，对FPGA不是很熟悉，无法解答您的问题。不知道有热心网友熟悉这块不？"
+ },
+ {
+  "id": "3325",
+  "parent": "0",
+  "date": "2015-12-31T16:07:17+08:00",
+  "author": "wangsuyu_1",
+  "site": "",
+  "text": "很期待KMS的分析，最近研究drm模块头都快大了，源码注释也太少了。顺便想问一下窝窝，看源码的时候如果没有注释，比如某个结构体里面的成员变量不知道做什么用的，某个函数在这里调用作用是什么的时候，有什么好的渠道去了解吗？谢谢。"
+ },
+ {
+  "id": "3327",
+  "parent": "3325",
+  "date": "2016-01-02T10:41:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wangsuyu_1：说实话，DRM/KMS我也是边学边写。\r\n至于你的问题，我觉得这个时候从上到下看会比较容易一些，先弄清楚使用这个模块的上层模块，到底要做什么事情，怎么通过这个模块做这些事情的，带着问题去看，效果应该好一些。"
+ },
+ {
+  "id": "3329",
+  "parent": "3327",
+  "date": "2016-01-03T12:56:51+08:00",
+  "author": "wangsuyu_1",
+  "site": "",
+  "text": "@wowo：谢谢wowo，持续关注中。"
+ },
+ {
+  "id": "3438",
+  "parent": "0",
+  "date": "2016-01-23T13:53:17+08:00",
+  "author": "momo",
+  "site": "",
+  "text": "wowo 提个问题，在DRM/KMS显示框架下应该如何录屏呢？\r\nFrameBuffer显示框架下录屏比较容易实现。\r\n谢谢~"
+ },
+ {
+  "id": "3440",
+  "parent": "3438",
+  "date": "2016-01-25T08:39:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@momo：录屏不应该和底层的实现有关，因此一般都在合成器（Composer）里面做。例如Android，录屏也是一个Display device，只是目的地是内存。"
+ },
+ {
+  "id": "3441",
+  "parent": "3440",
+  "date": "2016-01-25T10:44:30+08:00",
+  "author": "momo",
+  "site": "",
+  "text": "@wowo：谢谢wowo。录屏的确是应用层的事情，但底层应该开放相应的entity给应用录屏，比如说\r\nFrameBuffer显示框架可以通过访问/dev/fb0来录屏，Android应该也可以访问/dev/ graphics/fb0来录屏（没做过Android，此处仅是猜测）。DRI开放给应用程序的entity有/dev/dri/card0和/dev/dri/controlD64，而据我所知都不能用来录屏（也许可以只是我不知道）。所以想请教一下wowo，在DRI显示框架下，有什么好的办法或者建议来录屏？"
+ },
+ {
+  "id": "3442",
+  "parent": "3441",
+  "date": "2016-01-25T15:16:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "DRI所在的应用场景，远比Framebufffer复杂，因为硬件可以做很多事情，我们举一个支持双显的例子（这在现今的消费类系统是很常见的）：\r\n\r\nPlane 0--------------\\\r\n                                |\r\nPlane 1----------\\    |\r\n                            |   |\r\n                           V V\r\nPlane 2---->CRTC0------>Encoder0---->LCD\r\n      (Scanout buffer 0)\r\n\r\nPlane 3----------\\\r\n                           |\r\n                          V\r\nPlane 4---->CRTC1------>Encoder1---->HDMI\r\n      (Scanout buffer 1)\r\n\r\n问题的关键点是：\r\n1）Application可以同时送给DRI 7个framebuffer（Plane和Scanout buffer都是由framebuffer表示）。\r\n2）而我们的硬件（CRTC），可以对这多个buffer自行处理（缩放、叠加、Alpha混合等）后，驱动显示控制器（Encoder）输出。\r\n\r\n在这个过程中，我们不能简单的抓取任何一个framebuffer就可以完成屏幕录像。如果要做，只能在如下的2几个地方做：\r\n1）我们的CRTC在将合成后的图像送到Encoder的时候，同时送一份给内存，其实就是硬件的回写功能。\r\n2）由Application自行完成（这里的Application可能是合成器，如Wayland）。Application在将buffer送给CRTC的同时，调用软件API（OpenGL等））将这些buffer合成为一个，然后保存成文件。至于合成器是够提供这个功能，我也不是很清楚，要看你是使用什么样的GUI系统。\r\n\r\n当然，如果系统没有Plane，每个CRTC也就只有一个Scanout buffer，就可以将DRI降级为简单的framebuffer设备。旧的方法（/dev/fbX）依旧是可行的。"
+ },
+ {
+  "id": "3446",
+  "parent": "3442",
+  "date": "2016-01-26T10:56:33+08:00",
+  "author": "momo",
+  "site": "",
+  "text": "@wowo：谢谢wowo，讲得很清楚~\r\n准备使用硬件的回写功能来实现，对我这样的新手是个挑战。"
+ },
+ {
+  "id": "3793",
+  "parent": "0",
+  "date": "2016-04-06T14:40:25+08:00",
+  "author": "jinxinxin163",
+  "site": "",
+  "text": "特意注册了一个，讲的非常不错！"
+ },
+ {
+  "id": "3794",
+  "parent": "3301",
+  "date": "2016-04-06T14:51:02+08:00",
+  "author": "jinxinxin163",
+  "site": "",
+  "text": "@linuxer：你好，很感谢您能跟大家分享这么好的文章。\r\n看完这篇文章，我有两个问题，想请教下：\r\n1. 送显过程，从图上看也没有统一噢~~\r\n2. “妥协的结果是，为3D Rendering另起炉灶，给出一个直接访问硬件的框架，DRI就应运而生了”\r\n这里我有疑问：让3D Rendering 直接访问 fb设备不也是可以的么？\r\nfb driver里有DMA，其实也是直接操作显存，framebuufer跟DRI的区别究竟在哪里？"
+ },
+ {
+  "id": "3795",
+  "parent": "3794",
+  "date": "2016-04-06T15:21:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jinxinxin163：“1. 送显过程，从图上看也没有统一噢~~ ”\r\n    统一了啊，都是通过KMS下来。\r\n“framebuufer跟DRI的区别究竟在哪里”\r\n    其实大家都被DRI这个词汇混淆了试听，在DRI框架里面，有两个主要组成部分：DRI和KMS，DRI负责Rendering，KMS负责display。\r\n    而framebuffer，则是display层面的事情，它和KMS的区别是：framebuffer简单而功能较弱，KMS复杂而功能强大（KMS可以直接模拟出来framebuffer）。\r\n\r\n最后，3D Rendering 当然不能直接访问FB设备，因为这是两个事情（Rendering和Display）。"
+ },
+ {
+  "id": "4518",
+  "parent": "0",
+  "date": "2016-09-06T16:30:23+08:00",
+  "author": "J.Kerry",
+  "site": "",
+  "text": "HDMI的驱动，应该算是KMS对吧，如果只有这个KMS驱动，而没有DRM的话，二维的窗口系统应该可以表示的吧？"
+ },
+ {
+  "id": "4521",
+  "parent": "4518",
+  "date": "2016-09-06T17:24:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@J.Kerry：理论上是可以的，不过显示有关的buffer，还是依赖drm管理的，因此要做的话，就kms+drm一起做好了（和3D、GPU没有必然联系）~~"
+ },
+ {
+  "id": "4525",
+  "parent": "4521",
+  "date": "2016-09-07T10:41:46+08:00",
+  "author": "J.Kerry",
+  "site": "",
+  "text": "@wowo：谢谢你的回答，原来DRM还是要做的。我正准备做一个HDMI的驱动，也不知道用framebuffer/v4l2/KMS,DRM的那个好，看样子还是framebuffer最简单了，就用framebuffer吧。。。"
+ },
+ {
+  "id": "6990",
+  "parent": "0",
+  "date": "2018-10-17T14:39:43+08:00",
+  "author": "ctwillson",
+  "site": "",
+  "text": "后续的是不是没了？"
+ },
+ {
+  "id": "7090",
+  "parent": "0",
+  "date": "2018-12-18T19:49:08+08:00",
+  "author": "超哥",
+  "site": "",
+  "text": "感谢楼主分享，受教了！"
+ },
+ {
+  "id": "7399",
+  "parent": "0",
+  "date": "2019-05-08T11:39:49+08:00",
+  "author": "gmnail",
+  "site": "",
+  "text": "想请问一下，在某个文档里看到了这一句话：DRM本身实现了GPUs的切换，要使用 GPU 的程序将请求发送给 DRM，由 DRM 作为仲裁来避免冲突。但是我看了内核源码也没找到这里所说的实现。\r\n另外，我有两块相同的GPU，如何实现DRM同时对他们的控制呢？是需要同时注册两个驱动程序么？"
+ },
+ {
+  "id": "7773",
+  "parent": "0",
+  "date": "2019-12-03T14:09:45+08:00",
+  "author": "11号tony老师",
+  "site": "",
+  "text": "大神请教下.\r\n问题1:\r\n/dev/dri/card0\r\n/dev/dri/renderXX\r\n这俩个和/dev/fb 是什么样的千丝万缕的关系.\r\ndrm会模拟fb,请问这句话是什么意思?\r\n能详细解释下么?\r\n\r\n问题2:\r\ndrm其实还是GPU的驱动对吧?\r\n上层的lib库其实最终还是通过drm的ioclt或者节点访问形式来操作GPU,大神可以举例相关操作么,比如如何空置GPU渲染等等.?\r\n\r\n感谢大神"
+ },
+ {
+  "id": "8208",
+  "parent": "7773",
+  "date": "2021-03-18T19:25:04+08:00",
+  "author": "minicoco",
+  "site": "http://https://blog.csdn.net/qq_16054639?spm=1000.2115.3001.5343",
+  "text": "@11号tony老师：问题一：\r\n/dev/dri/card0 显示管理＋显示合成（fb）+3D加速\r\n/dev/dri/renderXX 仅仅包括3D加速\r\ndrm会模拟fb，/dev/dri/card0在fb功能的使用上跟framebuffer没什么太大区别\r\ncard0与renderXX一一对应，可以认为renderXX只是card0的一个子集，renderXX多数情况下用作离线渲染，渲染结果可以交由cardX显示（一般用gbm框架传递数据）。cardX也可以做离线渲染，单独给出一个renderXX的意义目前我也搞不清楚。\r\n\r\n问题二：\r\ndrm包括了很多功能，GPU驱动只是其中一部分，不知道叫GPU驱动框架会不会更合适。具体渲染操作可以参考libdrm的demo，也可以看我的博客（如果我更新了的话）"
+ },
+ {
+  "id": "8209",
+  "parent": "7399",
+  "date": "2021-03-18T19:30:01+08:00",
+  "author": "minicoco",
+  "site": "http://https://blog.csdn.net/qq_16054639?spm=1000.2115.3001.5343",
+  "text": "@gmnail：两块显卡会在/dev/dri/目录先生成4个设备文件，如果不带3D功能的显卡会缺少renderXX设备文件，同时控制使用离线渲染即可，libdrm与mesa opengl都可以实现。最终渲染显卡只有一个，切换渲染目标显卡可以在程序中控制，libdrm中打开正确的设备文件和配置好链路就可以，实现多张显卡同时渲染和显示都是可以的。目前xorg貌似不支持多显卡同时显示，oxrg/wayland切换显卡的方法是在debugfs中关掉不需要使用的显卡的电源。"
+ },
+ {
+  "id": "8370",
+  "parent": "0",
+  "date": "2021-11-12T09:32:12+08:00",
+  "author": "llp",
+  "site": "",
+  "text": "wowo大佬，还有后续的教程吗"
+ },
+ {
+  "id": "8373",
+  "parent": "8370",
+  "date": "2021-11-16T08:46:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@llp：抱歉啊！暂时没时间写了"
+ },
+ {
+  "id": "8403",
+  "parent": "0",
+  "date": "2021-12-10T15:21:03+08:00",
+  "author": "XYZ",
+  "site": "",
+  "text": "能讲讲DRM中的GEM, TTM吗"
+ },
+ {
+  "id": "8709",
+  "parent": "7773",
+  "date": "2022-11-29T19:46:31+08:00",
+  "author": "melo",
+  "site": "",
+  "text": "@11号tony老师：1 card0这个节点, 可以通过open打开, 获取crtc encoder connector fb等资源, 实现设置分辨率, 刷新率等设置\r\nrenderxx这个节点, 应该是card0的子集, 只有3d加速部分, 实际没看到过怎么打开使用\r\nfb这个是一个被drm淘汰下来的陈旧显示模块\r\n\r\n2 drm包括kms和gem, kms是和显示相关的, 抽象出来几个概念例如crtc connector encoder, gem是管理video memory相关的, 也是drm中和gpu有联系的唯一一个部分(我是这么觉得的)"
+ }
+]

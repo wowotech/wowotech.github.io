@@ -1,0 +1,34 @@
+[
+ {
+  "id": "6350",
+  "parent": "0",
+  "date": "2017-12-13T11:48:24+08:00",
+  "author": "sfn0331",
+  "site": "",
+  "text": "作者您好，感谢您对这些知识的整理。\r\n现在有个问题需要请教您:\r\n我可以让rcu忽略某个cpu的检测吗？比如我那个cpu是isolation的，专门运行一个进程。"
+ },
+ {
+  "id": "6357",
+  "parent": "6350",
+  "date": "2017-12-13T14:10:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@sfn0331：当前的kernel实现是没有考虑这种需求的。\r\n不过呢，你要是有代码，想这样做，应该也是有办法的，可以看看rcu_init中的实现，例如打一下rcu_process_callbacks的主意，仿照下面的判断，加入你那个cpu的条件：\r\n        if (cpu_is_offline(smp_processor_id()))\r\n                return;"
+ },
+ {
+  "id": "6361",
+  "parent": "6357",
+  "date": "2017-12-13T16:28:30+08:00",
+  "author": "sfn0331",
+  "site": "",
+  "text": "@wowo：让rcu忽略那个isolation的cpu会不会导致那个核上使用rcu_lock的代码出现异常呢？感觉忽略某个isolation的cpu也不是解决问题的方法。您有什么好的建议吗？"
+ },
+ {
+  "id": "6826",
+  "parent": "0",
+  "date": "2018-06-28T14:57:29+08:00",
+  "author": "Linuxkernel",
+  "site": "",
+  "text": "作者您好，想问一下RCU中softirq_snap 与 per-cpu中softriq[RCU_SOFTIRQ]在GP是否完成时的关系是什么样的？"
+ }
+]

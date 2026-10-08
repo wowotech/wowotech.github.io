@@ -1,0 +1,674 @@
+[
+ {
+  "id": "310",
+  "parent": "0",
+  "date": "2014-08-16T11:49:38+08:00",
+  "author": "lg2841",
+  "site": "",
+  "text": "又有高质量的作品出品了，期待。。。"
+ },
+ {
+  "id": "312",
+  "parent": "310",
+  "date": "2014-08-16T14:34:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lg2841：多谢鼓励，我也是把自己的理解写出来，不一定对。\r\n\r\n顺便把文章更新了一把，增加了一些硬件的描述。"
+ },
+ {
+  "id": "330",
+  "parent": "0",
+  "date": "2014-08-20T18:33:19+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "重新规划了一下准备发布的文档，看来全部完成要到下个月了"
+ },
+ {
+  "id": "333",
+  "parent": "0",
+  "date": "2014-08-21T17:47:50+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "我突然间发现，前几天没看完的这部分的文章变样了，博主重新整理了一下吧？重新发布的？中断的处理过程，我一直觉得是一个系统非常重要的一部分，或者是最重要的一部分，这部分的理解，我还是有些模糊，尤其是Linux的处理过程，希望博主的这个系列能让人眼前一亮啊。非常感谢博主出这么多精彩的文章，有幸来到你的网站后，时不时就来观摩一下博主是否有新作，嘿嘿。博主加油！！！"
+ },
+ {
+  "id": "334",
+  "parent": "333",
+  "date": "2014-08-21T18:53:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：这个综述改了2次了，昨天晚上思考的时候，觉得还是有些地方要修改，其实综述是最难写的，在完成全部的中断子系统相关的文档后，我还是会继续更新这份综述文档的。\r\n\r\n我在写high level interrupt handler这部分，希望自己能尽量把自己的理解写出来，大家一起讨论研究。"
+ },
+ {
+  "id": "367",
+  "parent": "0",
+  "date": "2014-08-29T10:38:29+08:00",
+  "author": "sea",
+  "site": "",
+  "text": "真的是非常好的文章，感谢楼主！"
+ },
+ {
+  "id": "370",
+  "parent": "0",
+  "date": "2014-08-29T17:18:38+08:00",
+  "author": "Androider",
+  "site": "",
+  "text": "有些疑惑。。。对于框架，我觉得看懂了，但是还是不会用，这属于什么情况啊？我是新手，刚刚开始Android驱动的工作，对内核了解甚少～～～给个指点吧，谢谢大牛～"
+ },
+ {
+  "id": "374",
+  "parent": "367",
+  "date": "2014-08-29T19:21:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@sea：不敢当啊，这些文章都是把自己的理解描述出来，其实也不一定对，大家可以一起讨论学习"
+ },
+ {
+  "id": "375",
+  "parent": "370",
+  "date": "2014-08-29T19:30:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Androider：我的想法：\r\n1、保持热情\r\n2、学好英文。这个没有办法，不是崇洋媚外，这方面的确是外国人领先，掌握好了英文就掌握了一个打开知识宝库的钥匙\r\n3、如果想做驱动，推荐看linux device driver（英文版），不懂的问题可以提出来，一起讨论\r\n剩下的就交给时间吧"
+ },
+ {
+  "id": "383",
+  "parent": "375",
+  "date": "2014-09-01T11:53:10+08:00",
+  "author": "Androider",
+  "site": "",
+  "text": "@linuxer：看来做驱动就是慢功夫啊，谢谢博主的建议，祝蜗窝科技越办越好！"
+ },
+ {
+  "id": "384",
+  "parent": "375",
+  "date": "2014-09-01T12:05:39+08:00",
+  "author": "Androider",
+  "site": "",
+  "text": "@linuxer：对了，您当时有没有像我这样的阶段？是怎么解决的？怎么学的？"
+ },
+ {
+  "id": "386",
+  "parent": "384",
+  "date": "2014-09-01T12:42:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Androider：第一次接触GNU/linux是在98年，用JDK，perl开发一些应用程序，2002年开始进入内核，版本是2.4.18。毫无疑问，最开始时候是最困难的，每一步都很困难，有两年的时间，我几乎是把所有的业余时间都用来阅读linux源代码，因为要补充的知识是在是太多了。这个阶段，情景分析那本书给了我很多帮助，我一直觉得对于刚入门的年轻人，《情景分析》要好过《深入理解linux内核》。《情景分析》那两本书几乎被我翻烂了。对于驱动部分，我选取了USB作为突破点，阅读协议，购买开发板学习等等。准备了2～3年，我才转投一家芯片公司真正开始了linux 内核的开发。做linux内核以及驱动，做好是去一家芯片公司，可以了解很多底层硬件的知识。真正进入驱动开发的角色反而比较简单，慢慢熟悉每一个硬件，调试各种驱动，fix各种issue，经过3～5年，总是可以成为一个较为资深的驱动工程师。\r\n\r\n总结一下：\r\n1、linux或者unix上的用户空间的系统编程对理解linux kernel帮助很大\r\n2、最开始的时候是《情景分析》加上网络搜索来获取大量的细节的知识\r\n3、《深入理解linux内核》给了很多框架性的指导\r\n4、勤于思考，找到问题所在"
+ },
+ {
+  "id": "387",
+  "parent": "386",
+  "date": "2014-09-01T12:56:31+08:00",
+  "author": "Androider",
+  "site": "",
+  "text": "@linuxer：博主太好太有耐心了。我觉得我找到原因了，自己不好好学还想些乱七八糟的事情。。。以后要踏踏实实的学习！谢谢博主的指点，从来没有博主那么耐心的解答问题，感动啊。如果能点赞，我就给你用力的点个大赞！"
+ },
+ {
+  "id": "487",
+  "parent": "0",
+  "date": "2014-09-30T10:52:24+08:00",
+  "author": "海",
+  "site": "",
+  "text": "拜读！\r\n中断的逻辑图中如果GIC画成两部分，一个是Distributor，一个是cpu interface，之前看过arm的block图，我觉得这样更好。"
+ },
+ {
+  "id": "868",
+  "parent": "0",
+  "date": "2014-12-09T17:46:32+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "quote:\"上面的红色线条也是逻辑层面的中断信号,可能是实际的PCB上的铜线（或者SOC内部的铜线），也可能是一个message而已\"\r\n\r\n我以为，就算是通过bus传输，其实也是铜线，因为bus本质上也是线。"
+ },
+ {
+  "id": "1061",
+  "parent": "386",
+  "date": "2015-01-12T21:08:37+08:00",
+  "author": "Ash",
+  "site": "",
+  "text": "@linuxer：不能赞更多了！"
+ },
+ {
+  "id": "1071",
+  "parent": "0",
+  "date": "2015-01-13T16:36:08+08:00",
+  "author": "ayue0425",
+  "site": "",
+  "text": "拜读了博主的中断系统，收货很多。\r\n现在我在做这么一件事：把网卡收发中断改为FIQ mode。\r\n我在gic中把网卡配置成fiq后，在实际的网卡驱动中 request_irq，为什么这个 irq handler还被调用？我明明在gic init中配置为fiq了啊？\r\n在这里卡了很久了，我不知道自己的理解哪里出去了。望博主帮忙解答。谢谢！"
+ },
+ {
+  "id": "1073",
+  "parent": "1071",
+  "date": "2015-01-13T17:22:25+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@ayue0425：因为request_irq 申请的是irq\r\n如果申请fiq的话要用别的申请函数，比如fiq_glue_register_handler\r\n如果有错误，请指正"
+ },
+ {
+  "id": "1087",
+  "parent": "1073",
+  "date": "2015-01-14T11:27:46+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "@tigger：谢谢博主的回复。\r\n楼主的意思是：\r\n request_irq是不管在gic_dist_init和gic_cpu_init的配置的？我是现在不管fiq的申请，先想弄明白为什么在gic中配置成fiq，request_irq还能正常使用。"
+ },
+ {
+  "id": "1089",
+  "parent": "1087",
+  "date": "2015-01-15T09:27:12+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ayeu0425：首先要搞清楚下面的问题：\r\n1、外设的中断是分配GIC的group0还是group1的中断。如果是group1，那么GIC根本不会触发FIQ中断\r\n2、如果是group0，那么是否enable了FIQ，GICC_CTLR寄存器有一个bit可以控制\r\n3、GIC和ARM processor是如何连接的？一般而言，GIC的nFIQCPU和nIRQCPU的信号线会连接到ARM processor的nFIQ和nIRQ的信号线，不过，有些SOC的设计中也许修改了这些硬件信号的连接"
+ },
+ {
+  "id": "1102",
+  "parent": "1089",
+  "date": "2015-01-16T11:08:56+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "@linuxer：非常感谢博主的热心回复！！！\r\n1、我现在外设中断分配的是GIC的group0中断。\r\n2、现在request_irq申请中断后已经不能触发irq中断了（原来的问题是因为 我把gic dist secure寄存器配错，导致配置的是 non-secure mode），但现在网卡的fiq还是不能被触发。这里不知道楼主有没有什么建议？\r\n3、也许 GIC的nFIQCPU和nIRQCPU的信号线都会被连接到cpu，但fiq和irq不可能同时被触发吧，具体触发哪个应该也是在 irq-gic.c中配置的吧？   一个中断具体是fiq or irq触发在gic init中就已经确定了吧？\r\n\r\n本人linux学习不长，对中断更没有仔细研究过。所以很多问题可能很愚蠢！"
+ },
+ {
+  "id": "1103",
+  "parent": "1102",
+  "date": "2015-01-16T23:48:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ayeu0425：但现在网卡的fiq还是不能被触发。这里不知道楼主有没有什么建议？ \r\n-----------------------------------------------------------\r\n建议是谈不上，我是觉得可以分段排除问题：\r\n1、检查网卡芯片的irq request line是否产生了指定的电平或者边缘信号\r\n2、检查GIC的寄存器配置（FIQ相关的配置）\r\n3、检查ARM的状态寄存器配置（FIQ的状态是否disable了）\r\n4、跟踪FIQ的处理代码\r\n\r\n  一个中断具体是fiq or irq触发在gic init中就已经确定了吧？ \r\n---------------------------------------------------------\r\n是的"
+ },
+ {
+  "id": "1104",
+  "parent": "1102",
+  "date": "2015-01-16T23:50:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ayeu0425：你的系统中是否只是网卡配置在group0，产生FIQ，其他的仍然使用IRQ？这样做是为了网卡的实时性吗？我不仅对你的系统的中断配置感兴趣了，因为我遇到的大部分系统都是不使用FIQ的"
+ },
+ {
+  "id": "1107",
+  "parent": "1104",
+  "date": "2015-01-19T11:51:57+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "@linuxer：是的，其他的都还是IRQ。\r\n这样做是为了后面继续做AVB(audio video bridging)。需要网卡发收包的实时性好，把音视频的处理作为系统的最高优先级，用fiq就是为了不让系统的其他任务打断。\r\n----------------------------------------\r\n其实原来已经实现了一个epit的fiq，但网卡的fiq好像不是那么简单。  \r\n感觉最有可能的是网卡中断没有触发。\r\n以楼主的经验：在gic的配置中，对epit和网卡其实也只是中断号的区别而已吧？我的意思是说，我epit已经成功配置好，在配置网卡，其实只是根据网卡的中断号，改对应gic寄存器的值而已？流程应该是相同的吧？"
+ },
+ {
+  "id": "1111",
+  "parent": "0",
+  "date": "2015-01-20T11:15:05+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "博主，还想请教你一个问题，因为也看到你写device tree的文章。\r\n对于一个具体的中断，例如 interrupt = <0 118 0x4>，它分别描述是中断类型、中断号、中断触发方式。\r\n这个中断触发方式是被使用的？ \r\n比如网卡驱动中有  irq=platform_get_irq(...)【为什么不是irq_of_parse_and_map】,然后request_irq(irq,handler,IRQF_DISABLED,...)。这是怎么确定触发方式是电平触发(0x04)的呢？"
+ },
+ {
+  "id": "1112",
+  "parent": "1111",
+  "date": "2015-01-20T14:31:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ayeu0425：对于那些标准的dts字段，如触发类型，可以让kernel在初始化的时候，帮忙解析，不再需要每个driver都手动调用irq_of_parse_and_map。大概流程如下，供您参考：\r\nof_device_alloc\r\n        num_irq = of_irq_count(np);\r\n        of_irq_to_resource_table-->of_irq_to_resource-->irq_of_parse_and_map\r\n                of_irq_map_one\r\n                irq_create_of_mapping\r\n                        irq_set_irq_type\r\n对于那些需要主动调用irq_of_parse_and_map的场景，一定是irq driver实现的不标准，这不是一个好的设计。"
+ },
+ {
+  "id": "1114",
+  "parent": "1112",
+  "date": "2015-01-21T10:49:52+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "@wowo：明白了，非常感谢！"
+ },
+ {
+  "id": "1131",
+  "parent": "1104",
+  "date": "2015-01-23T21:06:44+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "@linuxer：现在fiq基本没问题了。不过新问题就来了，网卡基本上能ping通了，但内核会经常hang住。个人觉得好像是napi的问题，napi在操作时为了保护临界区用了很多local_irq_save、local_irq_restore。这几个函数感觉不会对fiq起作用。"
+ },
+ {
+  "id": "1154",
+  "parent": "1111",
+  "date": "2015-02-03T10:06:54+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@ayeu0425：关于你fiq导致系统hung住的情况，我想是不是不用fiq，修改一下对于中断的优先级会比较好？"
+ },
+ {
+  "id": "1163",
+  "parent": "1154",
+  "date": "2015-02-03T20:18:26+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "@tigger：谢谢楼主，现在问题已经基本解决了。  还有一些小问题需要慢慢调调！"
+ },
+ {
+  "id": "1291",
+  "parent": "0",
+  "date": "2015-03-04T23:01:38+08:00",
+  "author": "rabbiteve",
+  "site": "",
+  "text": "思路相当清晰，赞个~~~"
+ },
+ {
+  "id": "1394",
+  "parent": "0",
+  "date": "2015-03-24T13:41:36+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "好像tasklet跟workqueue还没有发表呢。\r\n是不是先把草稿发出来？哈哈"
+ },
+ {
+  "id": "1405",
+  "parent": "1394",
+  "date": "2015-03-24T23:47:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：该来的总会来的，哈哈，本来想没有人催促更新就混过去了，看来还得写啊"
+ },
+ {
+  "id": "1408",
+  "parent": "1405",
+  "date": "2015-03-25T00:08:05+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：我也不想说的，但是思考了很久还是想跟你学啊。不跟你学一下感觉心里没底啊。你写的每一篇文章，都有我不知道的知识点。啥时候你到魔都来，我请你吃饭啊。我工资里面的50%都是跟你学的 给你半个月工资都没问题啊哈哈"
+ },
+ {
+  "id": "1409",
+  "parent": "1408",
+  "date": "2015-03-25T00:29:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：承蒙Tigger厚爱，他日若到上海，定会与君一醉方休，哈哈\r\n目前草稿中的是tick device，完成这份文档，就还是回到中断子系统，完成最后的两篇，算是给version 1的中断子系统有一个交代"
+ },
+ {
+  "id": "1963",
+  "parent": "330",
+  "date": "2015-06-10T13:33:31+08:00",
+  "author": "jason",
+  "site": "",
+  "text": "@linuxer：博主你好，\r\n请教个问题，\r\n为什么要使用local_irq_save函数保存中断标志，在local_irq_disable之后，什么情况会修改中断标志？"
+ },
+ {
+  "id": "1964",
+  "parent": "1409",
+  "date": "2015-06-10T14:28:17+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@linuxer：@linuxer @linuxer 来上海也要叫上我啊，我是很爱学习的好孩纸，很喜欢学习kernel里的东西的！"
+ },
+ {
+  "id": "1966",
+  "parent": "1963",
+  "date": "2015-06-10T14:44:04+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@jason：咱让博主清净清净好好写文章，你说的那玩意代码中都有，自己稍微跟一下代码就知道了"
+ },
+ {
+  "id": "1967",
+  "parent": "1966",
+  "date": "2015-06-10T14:58:38+08:00",
+  "author": "jason",
+  "site": "",
+  "text": "@SleepDeXiang：代码哪有说这个的，为什么我觉得是和硬件中断机制有关"
+ },
+ {
+  "id": "1968",
+  "parent": "1967",
+  "date": "2015-06-10T15:28:48+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@jason：保存在flags里边是从寄存器读出来的数据，这个不会修改，restore的时候把它在写进去，就这点作用！见arch_local_irq_save"
+ },
+ {
+  "id": "1969",
+  "parent": "1968",
+  "date": "2015-06-10T15:35:38+08:00",
+  "author": "jason",
+  "site": "",
+  "text": "@SleepDeXiang：你说的这个我知道，但是为什么需要保存，我觉得应该是这个标志可能发生变化，那么问题是，在disable期间，是谁在什么情况下会改变这个标志"
+ },
+ {
+  "id": "1970",
+  "parent": "1969",
+  "date": "2015-06-10T16:04:31+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@jason：没人会改变这个flags的，arm在irq模式是没有SPSR寄存器，所以切换模式钱需要把这个寄存器保存在内存里，然后再切换到irq模式时，再回复到原来的状态，这就是所谓的中断上下文吧，楼主来纠正一下，我理解的对不对？这个过程有点像驱动的suspend、resume功能"
+ },
+ {
+  "id": "1971",
+  "parent": "1969",
+  "date": "2015-06-10T16:52:10+08:00",
+  "author": "jason",
+  "site": "",
+  "text": "@jason：首先arm中断模式下是有SPSR的，而且当前状态下是由硬件自动完成的备份的，不需要程序干预\r\n其次，local_irq_save应该是为了防止在中断关闭的情况下，再次调用disble和enable导致中断响应标志被清空，所以这个标志还是会变化的\r\n\r\n多谢启发，写到这里我才发现这个问题我之前研究过..."
+ },
+ {
+  "id": "1972",
+  "parent": "1969",
+  "date": "2015-06-10T17:09:48+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@jason：呀，你说的对，刚查了下资料，我记错了，很久没看arm手册了；\r\n第二回复，你说的对不对，我还不确定，以前我就这么认为的，所以待我仔细研究哈，谢谢提醒哈"
+ },
+ {
+  "id": "1977",
+  "parent": "1963",
+  "date": "2015-06-11T00:06:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@jason：看来通过和SleepDeXiang网友的热烈讨论，你已经明白了这个local_irq_save、local_irq_restore这一对接口API的作用了，我这里补上几句吧：所谓save flag，也就是保存了cpsr中的状态，然后disable了本地的irq中断。local_irq_restore不是武断的打开中断，而是恢复到调用local_irq_save那一点的状态。\r\n\r\n我们有两种方法来保护临界区，方法A：\r\nlocal_irq_save\r\n临界区\r\nlocal_irq_restore\r\n\r\n方法B：\r\nlocal_irq_disable\r\n临界区\r\nlocal_irq_enable\r\n\r\n对于方法B，离开临界区的时候，本地中断用于是enable的。\r\n对于方法A，离开临界区的时候，本地中断可能是enable（如果进入临界区之前是enable的），也可能是disable的（如果进入临界区之前是disable的），local_irq_restore只是精准的恢复进入临界区之前的中断状态而已。"
+ },
+ {
+  "id": "1978",
+  "parent": "1964",
+  "date": "2015-06-11T00:09:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@SleepDeXiang：好啊，好啊。愿意在蜗窝科技停留的都是真爱linux kernel的好孩纸，大家一起努力吧！"
+ },
+ {
+  "id": "1981",
+  "parent": "1977",
+  "date": "2015-06-11T09:06:42+08:00",
+  "author": "jason",
+  "site": "",
+  "text": "@linuxer：多谢回复。"
+ },
+ {
+  "id": "1982",
+  "parent": "1978",
+  "date": "2015-06-11T10:02:13+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@linuxer：哈哈 楼主可以组织蜗窝博友聚个会  交流交流技术啥的"
+ },
+ {
+  "id": "1983",
+  "parent": "1977",
+  "date": "2015-06-11T10:05:50+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@linuxer：楼主真心牛逼，我昨晚下班看了好大一会代码，才明白怎么回事，原来以为就那样，这次通过jason讨论之后发现我理解的有问题"
+ },
+ {
+  "id": "3245",
+  "parent": "0",
+  "date": "2015-12-15T21:52:28+08:00",
+  "author": "Torres",
+  "site": "",
+  "text": "@linuxer 博主你好，我是个新手。有些问题想要请教一下，最近需要写一个GPIO中断的驱动，不知道从哪里下手。\r\n有以下几个问题：\r\n（1）中断号，对于GPIO作中断引脚，中断号是和GPIO控制器的中断号相同，还是需要自己在device tree中自己定义\r\n（2）我想把中断服务程序写在应用程序中，但是在驱动程序中已经有了中断服务程序。我想要外部GPIO中断到来，执行应用程序中的服务程序，应该如何实现。"
+ },
+ {
+  "id": "3246",
+  "parent": "0",
+  "date": "2015-12-15T22:24:18+08:00",
+  "author": "wind",
+  "site": "",
+  "text": "超赞 ..."
+ },
+ {
+  "id": "3247",
+  "parent": "3245",
+  "date": "2015-12-16T08:38:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Torres：（1）第一个问题，对于GPIO type的中断控制器，IRQ number和GPIO controller的hw interrupt number往往采用线性映射的关系，这样比较简单，适合初学者（当然，使用其他方法也OK）。device tree定义的是GPIO controller的hw interrupt number，不会定义IRQ Number和hw interrupt number的关系。\r\n\r\n（2）在用户空间完成硬件驱动也是OK的，只要没有timing和中断处理的需求。你想把中断服务程序写在应用程序中我感觉是不太可能的，你说的场景多半是属于AP和driver接口问题：即driver开放一个事件的接口给AP，当driver检测到GPIO中断到来的适合，通过AP和driver的接口将这个事件上报给AP，由AP完成这个事件服务处理程序。"
+ },
+ {
+  "id": "3248",
+  "parent": "3247",
+  "date": "2015-12-16T09:23:59+08:00",
+  "author": "Torres",
+  "site": "",
+  "text": "@linuxer：@linuxer感谢博主的解答\r\n1、对于第一个问题，我是不是不需要再在device tree中添加节点，直接在驱动程序中用GPIO就可以。比如我用 PE5 这个IO口作为GPIO中断，我是否直接调用\r\nrequest_irq(unsigned int irq, irq_handler_t handler, unsigned long flags,\r\n\t    const char *name, void *dev)\r\n就可以，第一个参数设置为5就可以。\r\n2、开放事件接口，是linux中的信号机制吗？是不是硬件中断触发软件中断，将软件中断服务程序放入AP。"
+ },
+ {
+  "id": "3250",
+  "parent": "3248",
+  "date": "2015-12-16T12:08:52+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Torres：1、不可以，PE5说明是port E中的第五个中断号，这里中断号都是HW interrupt ID，而request_irq中的是virtual interrupt number（我们常说的IRQ number）\r\n2、具体AP和driver的接口可以选用select接口的形式，AP open了设备节点之后，select在该设备节点上，如果driver有中断事件来，select则从阻塞态返回，从而AP得到了driver的事件"
+ },
+ {
+  "id": "3252",
+  "parent": "3250",
+  "date": "2015-12-16T20:34:45+08:00",
+  "author": "Torres",
+  "site": "",
+  "text": "@linuxer：谢谢博主，我再理解一下"
+ },
+ {
+  "id": "3278",
+  "parent": "1978",
+  "date": "2015-12-24T11:48:23+08:00",
+  "author": "linux_emb",
+  "site": "",
+  "text": "@linuxer：这个提议好阿，@wowo 怎么看。"
+ },
+ {
+  "id": "3279",
+  "parent": "0",
+  "date": "2015-12-24T14:02:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linux_emb：@linuxer：这个提议好阿，@wowo 怎么看。\r\n===================================================\r\n我也觉得这个提议很好啊。\r\n只不过，天朝地大物博，聚在一起也不容易啊（人力、财力）。\r\n而且，大家都是一帮技术宅啊，不太擅长搞活动。\r\n总结来说，蜗窝缺一个COO啊，且缺乏资金来源，不太好操作。"
+ },
+ {
+  "id": "3281",
+  "parent": "3279",
+  "date": "2015-12-24T14:39:14+08:00",
+  "author": "linux_emb",
+  "site": "",
+  "text": "@wowo：那目前这种情况下可以约一个时间在群里一起聊聊，联络联络感情也好啊。\r\n很想和志同道合的同学们交流。\r\n可以每次探讨一个主题，就是思想交流的那种，不涉及具体细节。\r\n也可以探讨一些非技术的话题阿。。。。\r\n反正很喜欢思想交流带给人那种眼前一亮的感觉。"
+ },
+ {
+  "id": "3282",
+  "parent": "3281",
+  "date": "2015-12-24T15:27:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linux_emb：个人愚见，谈人生谈理想不太适合在群里面啊，哪一个感情丰富的人愿意对着冷冰冰的机器袒露心声啊。我一直有个理想，开一个连锁的咖啡店----蜗窝咖啡馆，不为挣钱，最好会员制，每一个进来的人，都像已经认识的一样，可以畅所欲言，谈人生，聊技术……然后某一个天，突然发现，唉！您就是linux_emb兄啊？岂不快哉！\r\n至于技术交流，我觉得，一起做一个开源项目比较有效，为一个目标，享受过程！"
+ },
+ {
+  "id": "3285",
+  "parent": "3282",
+  "date": "2015-12-24T16:11:01+08:00",
+  "author": "linux_emb",
+  "site": "",
+  "text": "@wowo：我也只是想表达交流的需求，也是觉得群里很不合适。但是想不出更好的办法。\r\n交流还是面对面的最有效，记得之前在学校，有一个人每次和他谈话总是很开心。可是后来毕业了，偶尔的电话联系好像也没有当年的激情。\r\n不知道wowo 对窝窝的规划是则样的？愿参与其中！"
+ },
+ {
+  "id": "3288",
+  "parent": "3285",
+  "date": "2015-12-24T18:41:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linux_emb：不瞒你说，没有什么大的规划，因为财富不自由，大部分时间都要花在工作、挣钱上，仅余的一点精力，没办法做太多。不知道你有什么好的建议不？大家可以探讨一下。"
+ },
+ {
+  "id": "3439",
+  "parent": "3279",
+  "date": "2016-01-24T21:08:52+08:00",
+  "author": "blessed",
+  "site": "",
+  "text": "@wowo：非常棒的想法，如果组织起来，我愿意参与到其中！"
+ },
+ {
+  "id": "3550",
+  "parent": "3252",
+  "date": "2016-02-26T16:53:49+08:00",
+  "author": "狂奔的蜗牛",
+  "site": "",
+  "text": "@Torres：也可以这样操作，linux里面有通用gpio驱动给写好了，直接在应用层调用类似这样的接口就直接可以操作那些gpio_to_irq ,set_irq_type(gpio_to_irq(45),IRQF_TRIGGER_LOW);//设置GPIO0_A0中断为低电平触发,等等"
+ },
+ {
+  "id": "3582",
+  "parent": "0",
+  "date": "2016-03-04T15:25:50+08:00",
+  "author": "南山南",
+  "site": "",
+  "text": "因此，最普通的做法就是为Interrupt Controller支持的每一个中断设定一个target cpu的控制接口（当然应该是以寄存器形式出现，对于GIC，这个寄存器就是Interrupt processor target register）\r\n\r\n\r\n假设CPU个数是x，中断有N个，那岂不得分配N*x个寄存器？要是内存可以理解，寄存器没有这么多吧？"
+ },
+ {
+  "id": "3734",
+  "parent": "3582",
+  "date": "2016-03-27T11:43:14+08:00",
+  "author": "lianghao",
+  "site": "",
+  "text": "@南山南：每一个bit代表一个CPU，有x个CPU，需要(x+8-1)/8个字节代表所有CPU，有N个中断，那么总共需要N*(x+8-1)/8个字节，假设一个寄存器4字节，总共需要N*(x+8-1)/32个寄存器"
+ },
+ {
+  "id": "3855",
+  "parent": "0",
+  "date": "2016-04-25T20:08:23+08:00",
+  "author": "jueduilingdu27",
+  "site": "",
+  "text": "博主要是能把中断的设备树配置详细讲解一下就完美了"
+ },
+ {
+  "id": "3859",
+  "parent": "3855",
+  "date": "2016-04-26T10:51:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@jueduilingdu27：在设备树相关的文档中有描述，但是还是不够系统，不过可以参考一下！"
+ },
+ {
+  "id": "3862",
+  "parent": "3859",
+  "date": "2016-04-26T14:31:25+08:00",
+  "author": "jueduilingdu27",
+  "site": "",
+  "text": "@linuxer：博主是又问必答啊，非常感谢咯，感觉以后有什么搞不定的问题都可以向您讨教啊！！！"
+ },
+ {
+  "id": "3955",
+  "parent": "0",
+  "date": "2016-05-20T11:23:54+08:00",
+  "author": "jueduilingdu27",
+  "site": "",
+  "text": "大神，请教一个问题，小弟现在遇到这个一个情况，中断上升沿无效，下降沿又是可以的，能正确读出引脚的电平，但就是上升沿触发不了，麻烦帮我分析分析，这个问题要在哪方面入手去找，谢谢了，纠结了好几天了！！！！"
+ },
+ {
+  "id": "3956",
+  "parent": "3955",
+  "date": "2016-05-20T14:59:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jueduilingdu27：你这里的中断，应该指的是GPIO外部中断吧？\r\n既然下降沿没有问题，则说明GPIO到GIC的通路是正确的。\r\n如果通过波形测量，也看到有上升沿出现的话（需要仔细测量，检查高电平是否够高，是否是没有拉上去，否则沿太平缓），说明硬件信号是没有问题的。\r\n那很有可能是GPIO控制器外部中断有关的寄存器没有配置好，可以检查一下，一般可以配置为：\r\n高电平触发、低电平触发、上升沿触发、下降沿触发、双边沿触发等等。"
+ },
+ {
+  "id": "3957",
+  "parent": "3956",
+  "date": "2016-05-20T15:29:34+08:00",
+  "author": "jueduilingdu27",
+  "site": "",
+  "text": "@wowo：谢谢你的回答，对，是ｇｐｉｏ外部中断，而且其他的引脚都没问题，一样的代码，就把引脚换一下，就这个引脚不行，而且就是它的上升沿不行（但跟踪到驱动中的代码，它读有个地址ioread32(regs_umsk_isr_gpa + reg_ofst)）里的值总是０，所以到不了我们自己定义中断处理函数，而且也灭有中断计数，它是引脚复用的，另一个功能是ｉ２ｃ，不知道这会不会有什么影响，需要怎么处理一下不，我怀疑会不会是硬件的问题。"
+ },
+ {
+  "id": "3959",
+  "parent": "3957",
+  "date": "2016-05-20T16:11:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jueduilingdu27：这个寄存器判断的是什么东西呢？\r\n和I2C功能复用？可以检查一下pinmux是否配置正确。\r\n另外，这个管脚有上拉或者下拉电阻吗？建议你们用示波器量一下波形。"
+ },
+ {
+  "id": "4359",
+  "parent": "0",
+  "date": "2016-08-01T15:09:32+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "窝窝们好。我是新手，不大理解gpio_to_irq和irq_of_parse_and_map这两个函数的区别，他们的返回值都一样。是获取irq_num的方式有区别么?"
+ },
+ {
+  "id": "5471",
+  "parent": "0",
+  "date": "2017-04-14T17:31:46+08:00",
+  "author": "wesley",
+  "site": "",
+  "text": "因此，上面的红色线条也是逻辑层面的中断信号，可能是实际的PCB上的铜线（或者SOC内部的铜线），也可能是一个message而已。除了中断接口，CPU和Interrupt Controller之间还需要有控制信息的交流。Interrupt Controller会开放一些寄存器让CPU访问、控制。\r\n\r\n这里的MESSAGE，是指PCIE的MSI吗？"
+ },
+ {
+  "id": "5477",
+  "parent": "5471",
+  "date": "2017-04-21T10:39:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wesley：这里的message是一个通用的概念而已，不是特指某种具体实现的东西。当然PCIE的MSI应该通过message传递interrupt信息的，应该是属于message这种类型的。"
+ },
+ {
+  "id": "6131",
+  "parent": "0",
+  "date": "2017-10-22T09:59:19+08:00",
+  "author": "wellxin",
+  "site": "",
+  "text": "各位，大大楼主，想问下你们这些知识是怎样获取的，我好佩服你们一个知识能掌握这么透彻。你们一般是看那些资料，书籍，，，才能获得这些知识的。好想跟着你们的步伐走。另外各位大大，有什么好书推荐吗。\r\n目前自己刚入门就只看过《LKD》,《宋宝华》，内核的一点点Documentation.想问下各位大大的学习路线"
+ },
+ {
+  "id": "6236",
+  "parent": "0",
+  "date": "2017-11-23T18:36:39+08:00",
+  "author": "Linux小白",
+  "site": "",
+  "text": "wowo你好，我目前遇到一个问题，我在调试的TP中断经常发生偶然性的实效，一般开机的时候我触摸TP是能有event事件上报的，但是当我不去触摸它的时候，也就是搁置一段时间再去触摸就会实效了，log如下：\r\n irq 72: nobody cared (try booting with the \"irqpoll\" option)\r\n[  904.066378] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W      3.18.31 #3\r\n[  904.066391] Hardware name: Qualcomm Technologies, Inc. MSM8953 + PMI8950 QRD SKU3 (DT)\r\n[  904.066403] Call trace:\r\n[  904.066442] [<ffffffc000089b14>] dump_backtrace+0x0/0x270\r\n[  904.066460] [<ffffffc000089d98>] show_stack+0x14/0x1c\r\n[  904.066484] [<ffffffc000e74dcc>] dump_stack+0x80/0xa4\r\n[  904.066508] [<ffffffc0000f7ccc>] __report_bad_irq+0x38/0xdc\r\n[  904.066527] [<ffffffc0000f8194>] note_interrupt+0x1d0/0x274\r\n[  904.066543] [<ffffffc0000f5c74>] handle_irq_event_percpu+0x1d4/0x25c\r\n[  904.066558] [<ffffffc0000f5d48>] handle_irq_event+0x4c/0x78\r\n[  904.066575] [<ffffffc0000f8e68>] handle_level_irq+0xe0/0x114\r\n[  904.066591] [<ffffffc0000f519c>] generic_handle_irq+0x2c/0x3c\r\n[  904.066612] [<ffffffc00036869c>] msm_gpio_irq_handler+0x114/0x170\r\n[  904.066627] [<ffffffc0000f519c>] generic_handle_irq+0x2c/0x3c\r\n[  904.066642] [<ffffffc0000f5500>] __handle_domain_irq+0xb0/0xec\r\n[  904.066657] [<ffffffc000082560>] gic_handle_irq+0x68/0xa8\r\n[  904.066670] Exception stack(0xffffffc001773cd0 to 0xffffffc001773df0)\r\n[  904.066687] 3cc0:                                     00000001 00000000 000007be 00000000\r\n[  904.066706] 3ce0: 01773e20 ffffffc0 0094f7f4 ffffffc0 60000145 00000000 000001c0 00000000\r\n[  904.066724] 3d00: 001e3fbc 00000000 ffffffff 00ffffff 34155555 00000000 00000018 00000000\r\n[  904.066743] 3d20: 2cf60e00 002de543 155f19cc 00000004 00027b40 00000000 00000000 00000000\r\n[  904.066761] 3d40: b5193519 00000032 00085000 ffffffc0 00000000 00000000 00000001 00000000\r\n[  904.066779] 3d60: 04c5d91d 00000000 00000000 00000000 00000000 00000000 00000000 00000000\r\n[  904.066796] 3d80: 00000000 00000000 00000000 00000000 00000000 00000000 00000001 00000000\r\n[  904.066815] 3da0: 000007be 00000000 000003e8 00000000 a3542118 ffffffc0 00000001 00000000\r\n[  904.066832] 3dc0: 0000018c 00000000 b24549b0 ffffffc0 a3542168 ffffffc0 00000000 00000000\r\n[  904.066846] 3de0: a3542168 ffffffc0 01773e20 ffffffc0\r\n[  904.066861] [<ffffffc000085da8>] el1_irq+0x68/0xd4\r\n[  904.066887] [<ffffffc00094a82c>] cpuidle_enter_state+0xd0/0x224\r\n[  904.066902] [<ffffffc00094aa58>] cpuidle_enter+0x18/0x20\r\n[  904.066923] [<ffffffc0000e72ac>] cpu_startup_entry+0x2a4/0x3a0\r\n[  904.066939] [<ffffffc000e6df58>] rest_init+0x84/0x8c\r\n[  904.066964] [<ffffffc0016299c4>] start_kernel+0x3e8/0x410\r\n[  904.066974] handlers:\r\n[  904.066989] [<ffffffc0000f5d74>] irq_default_primary_handler threaded [<ffffffc0007836d0>] mxt_interrupt\r\n[  904.067020] Disabling IRQ #72"
+ },
+ {
+  "id": "6237",
+  "parent": "6236",
+  "date": "2017-11-24T09:03:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Linux小白：这个irq没人处理了，例如没有调用request_irq。从你描述的场景里面推测，可能是某个driver（TP？）在一些场景（动态电源管理？）下把自己的irq free了？（可以查查相应的request_irq and free_irq组合，看看是否有不合理的地方）。"
+ },
+ {
+  "id": "6238",
+  "parent": "6236",
+  "date": "2017-11-24T11:04:48+08:00",
+  "author": "bigpillow",
+  "site": "",
+  "text": "@Linux小白：可能没人register 这个irq\r\n也可能是share的时候，所有的IRQ function 都返回\"这不是我的irq\""
+ },
+ {
+  "id": "7044",
+  "parent": "6131",
+  "date": "2018-11-20T22:32:26+08:00",
+  "author": "Marcus",
+  "site": "",
+  "text": "@wellxin：同问"
+ },
+ {
+  "id": "7394",
+  "parent": "0",
+  "date": "2019-05-06T15:39:19+08:00",
+  "author": "songxin8466419",
+  "site": "",
+  "text": "博主要是把linux内核分析这部分做成pdf文档就好了。"
+ },
+ {
+  "id": "7698",
+  "parent": "7394",
+  "date": "2019-10-16T19:49:18+08:00",
+  "author": "Youthzzq",
+  "site": "",
+  "text": "@songxin8466419：已经有完整wowo全网站的pdf了"
+ },
+ {
+  "id": "7701",
+  "parent": "7698",
+  "date": "2019-10-17T20:25:29+08:00",
+  "author": "伊斯科明",
+  "site": "",
+  "text": "@Youthzzq：在哪里能获取？"
+ },
+ {
+  "id": "8758",
+  "parent": "0",
+  "date": "2023-03-23T16:33:24+08:00",
+  "author": "cc",
+  "site": "",
+  "text": "博主你好，说起来是在其他博文里看的东西，但是有个问题一直没有解决。问题是这样的，检测充电器的插拔，插和拔两个动作产生两种中断，但是只有一个检测中断的引脚。我看到文章的示例中，设备节点的interrupts属性中只有一个中断向量，但是获取中断号时却可以得到两个中断号，很疑惑，如果博主或者其他读者看到我的问题，可以解答一下，不胜感激。博文的地址：blog.csdn.net/qq_37858386/article/details/125298804，该文章下面的评论也是我的，可以参考，"
+ }
+]

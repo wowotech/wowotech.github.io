@@ -1,0 +1,386 @@
+[
+ {
+  "id": "3107",
+  "parent": "0",
+  "date": "2015-11-24T15:47:20+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "文章短小精悍^_^."
+ },
+ {
+  "id": "3110",
+  "parent": "3107",
+  "date": "2015-11-24T16:14:17+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@Daniel Shieh：^_^  freeze确实简单而巧妙，我思考它最多的地方是为什么会产生这个技术"
+ },
+ {
+  "id": "3111",
+  "parent": "0",
+  "date": "2015-11-24T16:27:55+08:00",
+  "author": "云",
+  "site": "",
+  "text": "很棒的分析， suspend很重要的一个环节就是freezing task :)\r\n\r\n感谢分享"
+ },
+ {
+  "id": "3113",
+  "parent": "3111",
+  "date": "2015-11-24T16:50:28+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@云：O(∩_∩)O"
+ },
+ {
+  "id": "3114",
+  "parent": "0",
+  "date": "2015-11-24T19:03:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "非常感谢itrocker帮我把这篇文章补齐啊！~~~\r\n现在freeze也被独立成一个电源状态，和standby、STR并列，而且设备的电源管理接口（struct dev_pm_ops）中也有很多freeze的回调函数（.freeze、freeze_late、.freeze_noirq），不知道itrocker 对此有什么看法？或者在哪里看到过这样的用法没？"
+ },
+ {
+  "id": "3122",
+  "parent": "3114",
+  "date": "2015-11-25T12:11:45+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@wowo：哈哈，主要是参考了wowo对suspend的精彩介绍。\r\n\r\nfreeze作为电源状态应该是一种只冻结进程，而不改变cpu状态的低阶休眠。\r\n在suspend_enter中，如果是freeze状态，系统就保持awake\r\nif (state == PM_SUSPEND_FREEZE) {\r\n  freeze_enter();\r\n  goto Platform_wake;\r\n}\r\n\r\ndev_pm_ops中的freeze回调应该是考虑到系统暂停过程的各个阶段，一些复杂外设可能会有有不同的处理。.freeze、.freeze_late、.freeze_noirq分别会在dpm_suspend_start和dpm_suspend_end中调用\r\n不过这些回调依赖于编译选项CONFIG_HIBERNATE_CALLBACKS，目前我还没有用到过。"
+ },
+ {
+  "id": "3126",
+  "parent": "3122",
+  "date": "2015-11-25T15:19:35+08:00",
+  "author": "云",
+  "site": "",
+  "text": "@itrocker：我实现过suspend to RAM.\r\n我想了解下目前在ARM上有实现HIBERNATE么？比如suspend to disk这种方案，suspend时候需要把memory snapshot保存在flash(nand或者emmc)上。"
+ },
+ {
+  "id": "3127",
+  "parent": "0",
+  "date": "2015-11-25T15:29:32+08:00",
+  "author": "云",
+  "site": "",
+  "text": "另外一个想与大伙交流下。\r\n根据这篇文章，大伙都已经知道了在suspend过程中，application层是被freezed了，resume后该application会继续运行。(仿佛都不知道自己“休眠”了一段时间)\r\n\r\n那么我们现在假设这么一个场景：\r\n1.该APP是控制(或者与其通信)CPU外围一个运行着firmware的模块(比如DSP,FPGA)\r\n2.在系统进入STR以后除了DDR里面内容是保持的，其他模块的logic都loss了(包括CPU)\r\n3.系统resume以后，由于运行在CPU上的Linux有机制保证还原运行时的context, 但外围设备却不行,firmware是需要re-load\r\n4.这样一来，如何能保证这个application能正常运行？"
+ },
+ {
+  "id": "3128",
+  "parent": "3126",
+  "date": "2015-11-25T16:22:34+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@云：hibernate好像一般用在PC或服务器，arm一般用于终端设备，所以很少使用CONFIG_HIBERNATION选项"
+ },
+ {
+  "id": "3129",
+  "parent": "3127",
+  "date": "2015-11-25T16:28:01+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@云：有些firmware会有自己的suspend逻辑。\r\n个人感觉如果firmware上下文与AP强相关，会有相互同步协议保证一致性。"
+ },
+ {
+  "id": "3130",
+  "parent": "3127",
+  "date": "2015-11-25T16:33:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@云：我觉得里面的关键点是：你这个APP，应该能保证不依赖DSP/FPGA的状态而独立运行，这样它才有机会re-load。因此只要在resume后，APP能判断是否需要re-load即可。"
+ },
+ {
+  "id": "3197",
+  "parent": "0",
+  "date": "2015-12-07T16:23:57+08:00",
+  "author": "C",
+  "site": "",
+  "text": "今年CLK南京的会议上的topic就是suspend-to-idle。 freeze task的一个重要作用就是支持s2i。\r\n因为freeze task之后一些有趣的优化就成为了可能，比如cpu可能进入更深的cstate，可以停掉timer，timekeeping module甚至tsc，达到进一步节能。主要是，suspend to idle可以替代suspend to mem，毕竟后者需要firmware支持。"
+ },
+ {
+  "id": "3199",
+  "parent": "3197",
+  "date": "2015-12-08T09:18:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@C：suspend-to-idle是很诱人的，我们在很久之前一个项目中也想这样做，但是迫于框架的不完善，最终没敢行动。我觉得它的好处主要是在于便利性，随时睡，随时醒。如果省电效果不错的话，还是很好用的。"
+ },
+ {
+  "id": "3236",
+  "parent": "0",
+  "date": "2015-12-14T22:39:58+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "我比较关心那么没有freeze的kernel thread，在cpu down的时候，怎么处理的？resume的时候 ，它们又是从哪里开始的。"
+ },
+ {
+  "id": "3239",
+  "parent": "3236",
+  "date": "2015-12-15T10:21:04+08:00",
+  "author": "itrocker",
+  "site": "",
+  "text": "@heziq：这个点在文中第2节只是一笔带过。其实不只是kernel thread，如果没有freeze，所有的task都是在cpu down时从dying cpu的runqueue迁移到剩余active cpu的runqueue\r\nresume时如果是STR，就直接从内存中的runqueue继续调度"
+ },
+ {
+  "id": "3293",
+  "parent": "3239",
+  "date": "2015-12-28T10:39:57+08:00",
+  "author": "C",
+  "site": "",
+  "text": "@itrocker：freeze跟cpu down没关系吧。有些涉及到磁盘操作的kernel thread是freezable的，因为freeze task最早提出是因为做磁盘的hibernation，比如kjournald，而workqueue则不再接收新的work item的queue请求。"
+ },
+ {
+  "id": "3294",
+  "parent": "3293",
+  "date": "2015-12-28T10:41:48+08:00",
+  "author": "C",
+  "site": "",
+  "text": "@C：sorry我没看到最初的问题，请无视上面的回答。"
+ },
+ {
+  "id": "3295",
+  "parent": "3199",
+  "date": "2015-12-28T15:01:23+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：@wowo,suspend-to-idle是指所有CPU都不会掉电，只是进入CPU的低功耗状态吗？这样就不需要将task irq等从nonboot cpu中转移到boot cpu吗？"
+ },
+ {
+  "id": "3296",
+  "parent": "3295",
+  "date": "2015-12-28T16:29:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：是的，对软件来说，这些CPU都还在，只是小睡了一下。"
+ },
+ {
+  "id": "3481",
+  "parent": "3197",
+  "date": "2016-01-30T12:03:45+08:00",
+  "author": "archer",
+  "site": "",
+  "text": "@C：请问一下，为什么要freeze task呢？就是为了避免进程运行干扰suspend的过程吧？但是suspend to idle也可以达到同样的效果吧？"
+ },
+ {
+  "id": "5229",
+  "parent": "0",
+  "date": "2017-02-18T14:41:03+08:00",
+  "author": "comlee",
+  "site": "",
+  "text": "@wowo \r\n你好，请问一个弱弱的问题。\r\n如果应用释放的wake_lock锁是系统中的最后一把wake_lock锁的话，那么系统会马上进入suspend吗？还是要系统中的所有应用不再跑或进入阻塞等状态才进suspend?"
+ },
+ {
+  "id": "5230",
+  "parent": "5229",
+  "date": "2017-02-18T16:11:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@comlee：一般情况下，负责电源管理的进度或者线程，优先级应该是最低的。\r\n另外，休眠的过程中，执行freeze的过程，也会给应用机会，所以休眠的时候，应该应该不跑了。"
+ },
+ {
+  "id": "5231",
+  "parent": "5230",
+  "date": "2017-02-19T12:33:03+08:00",
+  "author": "comlee",
+  "site": "",
+  "text": "@wowo：@wowo:我看到/proc/power/wake_unlock这个节点的内核实现会在unlock时check并进入suspend流程。另外，我自己写了两个应用进行测试:\r\n1.    main\r\n     {\r\n         while(1)\r\n           ;\r\n     }\r\n发现这个系统是可以进入suspend的。\r\n\r\n但是\r\n    main()\r\n    {\r\n         system(\"echo 'mylock'>/proc/power/wake_lock\");\r\n         while(1)\r\n           ;\r\n     }\r\n跑这个的话，系统进不了suspend(两个测试程序分别都是在init rc里面启动）。\r\n\r\n所以看上去系统不会等应用层的程序阻塞或休眠才suspend? 只要应用释放的是系统最后一把wake_lock就走suspend流程？"
+ },
+ {
+  "id": "5232",
+  "parent": "5231",
+  "date": "2017-02-19T21:18:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@comlee：是的，wakeup lock的思路就是，假如你不想让系统睡，你就要持一个锁。既然你没有保持锁，系统就假设可以睡了。"
+ },
+ {
+  "id": "5412",
+  "parent": "0",
+  "date": "2017-04-01T15:15:47+08:00",
+  "author": "废柴",
+  "site": "",
+  "text": "@wo神，\r\n\r\n有个疑惑，android6.0以后搞出来一个Doze模式，请问Doze和PM suspend有关系么，还是说Doze仅仅只是android层的一种低功耗模式，和PM suspend没毛线关系？\r\n\r\n谢谢\r\n\r\n废柴"
+ },
+ {
+  "id": "5415",
+  "parent": "5412",
+  "date": "2017-04-01T16:43:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@废柴：Doze是应用层的节电行为，和kernel中的PM没有关系。"
+ },
+ {
+  "id": "6136",
+  "parent": "0",
+  "date": "2017-10-23T15:23:01+08:00",
+  "author": "yinjian",
+  "site": "",
+  "text": "你好，对于内核线程freeze的过程，还有点疑问：执行完wake_up_state函数后，是如何跑到kthread_freezable_should_stop函数的？ ：）"
+ },
+ {
+  "id": "6140",
+  "parent": "6136",
+  "date": "2017-10-24T09:27:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yinjian：关键点在于：freeze task的过程是“请求freeze”，也就是说给要被freeze的thread发一个信号，接下来的freeze过程是thread自行处理的。\r\n因此kthread_freezable_should_stop是被freeze thread自己调用的。\r\nkernel中有对应的例子，你可以看看。"
+ },
+ {
+  "id": "6168",
+  "parent": "3239",
+  "date": "2017-11-04T09:26:19+08:00",
+  "author": "wmzjzwlzs",
+  "site": "",
+  "text": "@itrocker：1.没有设置为可冻结状态的内核线程有可能在device suspend之后还在运行？\r\n2.如果一个内核线程设置成可冻结的，是不是系统会等待这个线程主动冻结自己后才不调度它，如果这个线程就是不主动冻结自己，是不是系统就睡不下去了"
+ },
+ {
+  "id": "6169",
+  "parent": "0",
+  "date": "2017-11-04T09:27:22+08:00",
+  "author": "wmzjzwlzs",
+  "site": "",
+  "text": "1.没有设置为可冻结状态的内核线程有可能在device suspend之后还在运行？\r\n2.如果一个内核线程设置成可冻结的，是不是系统会等待这个线程主动冻结自己后才不调度它，如果这个线程就是不主动冻结自己，是不是系统就睡不下去了"
+ },
+ {
+  "id": "6171",
+  "parent": "6169",
+  "date": "2017-11-06T09:10:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wmzjzwlzs：是的。这个问题其实很好验证，了解了kernel的机制之后，你可以写一个不可冻结的应用程序，实际测试一下。"
+ },
+ {
+  "id": "6173",
+  "parent": "6171",
+  "date": "2017-11-06T15:23:02+08:00",
+  "author": "wmzjzwlzs",
+  "site": "",
+  "text": "@wowo：谢谢wowo大神，测试了下\r\n1.没有设置为可冻结状态的内核线程确实在device suspend之后还在运行\r\n2.我把一个内核线程设置成可冻结的，然后就是不主动冻结自己，系统确实就睡不下去了"
+ },
+ {
+  "id": "6174",
+  "parent": "6173",
+  "date": "2017-11-06T16:55:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wmzjzwlzs：实践是检验真理的唯一标准啊，赞！！！～～～"
+ },
+ {
+  "id": "6464",
+  "parent": "0",
+  "date": "2018-01-11T22:17:27+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "@wowo:\r\n你在下面回答的问题，我有个疑问\r\na.关键点在于：freeze task的过程是“请求freeze”，也就是说给要被freeze的thread发一个信号，接下来的freeze过程是thread自行处理的。 \r\n=>看了代码的流程，没看到有发信号的地方呀，能指出一下吗？\r\nb.因此kthread_freezable_should_stop是被freeze thread自己调用的。\r\n=>同样，没进程处理signal的时候有调用到这个函数，能一起把代码指出一下吗？\r\n\r\n非常感谢~"
+ },
+ {
+  "id": "6468",
+  "parent": "6464",
+  "date": "2018-01-15T11:43:30+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "@hzm：看到了，应该是这里\r\n2138int get_signal(struct ksignal *ksig)\r\n2139{\r\n2140\tstruct sighand_struct *sighand = current->sighand;\r\n2141\tstruct signal_struct *signal = current->signal;\r\n2142\tint signr;\r\n2143\r\n2144\tif (unlikely(current->task_works))\r\n2145\t\ttask_work_run();\r\n2146\r\n2147\tif (unlikely(uprobe_deny_signal()))\r\n2148\t\treturn 0;\r\n2149\r\n2150\t/*\r\n2151\t * Do this once, we can't return to user-mode if freezing() == T.\r\n2152\t * do_signal_stop() and ptrace_stop() do freezable_schedule() and\r\n2153\t * thus do not need another check after return.\r\n2154\t */\r\n2155\ttry_to_freeze();\r\n2156"
+ },
+ {
+  "id": "6477",
+  "parent": "6468",
+  "date": "2018-01-16T09:38:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hzm：找到就行了，最近太忙，没来得及回复，抱歉哈~~"
+ },
+ {
+  "id": "6654",
+  "parent": "0",
+  "date": "2018-04-09T18:28:42+08:00",
+  "author": "Rafe",
+  "site": "",
+  "text": "@wowo : applicaton被freeze，然后系统resume回来，对于app来说，像是什么都没发生一样。\r\n请问，application有方法知道，系统是resume回来的吗？"
+ },
+ {
+  "id": "6777",
+  "parent": "0",
+  "date": "2018-06-01T15:52:06+08:00",
+  "author": "test",
+  "site": "",
+  "text": "从3.10的内核来看,内核线程的冻结这一块描述的不太准确,调查发现,对于内核线程的冻结,\r\n一部分是忽略了绝大多数的内核线程,一部分是主动调用try_to_freeze()进行的冻结操作,\r\n但是并没有调用kthread_freeable_should_stop.\r\n\r\n请参考一下\r\nhttps://www.kernel.org/doc/Documentation/power/freezing-of-tasks.txt\r\n中的\"III. Which kernel threads are freezable?\"\r\n\r\n相关的代码分析参考如下,\r\n\r\nstatic int try_to_freeze_tasks(bool user_only)\r\n 48                 do_each_thread(g, p) {\r\n 49                         if (p == current || !freeze_task(p))\r\n 50                                 continue;\r\n 51 \r\n 52                         if (!freezer_should_skip(p))\r\n 53                                 todo++;\r\n 54                 } while_each_thread(g, p);\r\n\r\n在冻结用户空间的进程时,内核线程是直接忽略过去的\r\n也就是freeze_task(p)返回的是false,\r\n\r\nbool freeze_task(struct task_struct *p)\r\n125         spin_lock_irqsave(&freezer_lock, flags);\r\n126         if (!freezing(p) || frozen(p)) {\r\n127                 spin_unlock_irqrestore(&freezer_lock, flags);\r\n128                 return false;   \r\n129         }       \r\n因为查看freezing(),\r\n 34 static inline bool freezing(struct task_struct *p)\r\n 35 {\r\n 36         if (likely(!atomic_read(&system_freezing_cnt)))\r\n 37                 return false;\r\n 38         return freezing_slow_path(p);\r\n 39 }  \r\n而freezing_slow_path的实现如下,\r\n 34 bool freezing_slow_path(struct task_struct *p)\r\n 35 {\r\n 36         if (p->flags & PF_NOFREEZE)\r\n 37                 return false;\r\n 38 \r\n 39         if (pm_nosig_freezing || cgroup_freezing(p))\r\n 40                 return true;\r\n 41 \r\n 42         if (pm_freezing && !(p->flags & PF_KTHREAD))\r\n 43                 return true;\r\n 44 \r\n 45         return false;\r\n 46 }\r\n对于绝大多数内核线程都是PF_NOFREEZE的.\r\n而对于冻结用户空间进程的过程中,pm_freezing=true,所以对于内核线程,!(p->flags & PF_KTHREAD)=0,\r\n所以freezing()返回false,进一步讲,freeze_task()返回false,所以在try_to_freeze_tasks()的循环中直接就continue了,没有让todo++,\r\n\r\n而另一方面,对于冻结内核空间的进程而言,除去绝大多数的PF_NOFREEZE的内核线程以外,由于pm_nosig_freezing=true, freezing_slow_path()返回true,\r\nfreezing()返回true,\r\n在freeze_task()中,\r\nbool freeze_task(struct task_struct *p)\r\n125         spin_lock_irqsave(&freezer_lock, flags);\r\n126         if (!freezing(p) || frozen(p)) {\r\n127                 spin_unlock_irqrestore(&freezer_lock, flags);\r\n128                 return false;   \r\n129         }      \r\n需要等待 frozen(p)返回1,而进程的冻结就是通过进程自己主动调用try_to_freeze()来完成的.\r\n典型的例子就是kswapd%d进程和file-storage进程."
+ },
+ {
+  "id": "7618",
+  "parent": "0",
+  "date": "2019-08-27T14:52:59+08:00",
+  "author": "nowar",
+  "site": "",
+  "text": "有两个问题请帮忙解答，先行谢过\r\n1）因为只有指明了freezable的内核线程才会进入freeze, 意思是在suspend后，其实系统中默认的内核线程原来处于running状态的依然在running状态吗？\r\n2）那些本来就已经在uninterruptable 状态的用户线程是否也要响应freeze请求进入freeze状态呢？如果是的话，这些状态的线程没有机会来响应这个请求吧？\r\n---------------------------------\r\nstatic int try_to_freeze_tasks(bool user_only) \r\n48                 do_each_thread(g, p) {   //这里应该遍历所有状态的线程，不管是否已经sleep了\r\n49                         if (p == current || !freeze_task(p)) \r\n50                                 continue; \r\n--------------------------"
+ },
+ {
+  "id": "7759",
+  "parent": "0",
+  "date": "2019-11-20T17:40:40+08:00",
+  "author": "rikeyone",
+  "site": "",
+  "text": "hibernate的流程是不是有点问题，我看到的代码是先执行freeze，然后在生成snapshot\r\n\r\nerror = freeze_processes();\r\nif (error)\r\n    goto Exit;\r\n\r\nlock_device_hotplug();\r\n/* Allocate memory management structures */\r\nerror = create_basic_memory_bitmaps();\r\nif (error)\r\n    goto Thaw;\r\n\r\nerror = hibernation_snapshot(hibernation_mode == HIBERNATION_PLATFORM);\r\n\r\n\r\n否则，snapshot和 freeze之间是可能导致进程修改文件系统数据的"
+ },
+ {
+  "id": "7956",
+  "parent": "6654",
+  "date": "2020-04-16T19:06:10+08:00",
+  "author": "nemo",
+  "site": "",
+  "text": "@Rafe：app 的 watchdog？"
+ },
+ {
+  "id": "8203",
+  "parent": "7618",
+  "date": "2021-03-10T10:51:43+08:00",
+  "author": "finics",
+  "site": "",
+  "text": "@nowar：可惜发布者可能太忙了，好像很久没有更新了。\r\n因为最近也在看这个部分，就借用这个平台一起讨论下吧。\r\n---------------------------------------------------------\r\n（1）我理解是的，内核线程如果没有刻意配置为freezable by set_freezable()，这个内核thread就不会被freeze\r\n\r\n(2) 其实对于这一点，我也觉得很奇怪，我就基于目前4.19 kernel的实现谈一下我的理解，希望高人来确认吧。\r\n基于如下的调用路径，在wake_up_state(task A)中，如果task A目前具有mask flag TASK_INTERRUPTIBLE的话，这个task A就可以被加入到running queue等待下一次的调度；如果task A 的mask flag 没有 TASK_INTERRUPTIBLE的话，不管A目前是TASK_UNINTERRUPTABLE或者TASK_NORMAL，都会调用kick_process，通过一个ipi软中断触发了当前另外一个CPU上正在运行的user mode task A 进行freezing。这里就有两个疑问，如果task A是TASK_UNINTERRUPTABLE flag，理论上不应该kick process，因为当前运行的task并不是A；另外一个疑问是是不是只有正在另外一个CPU上运行的user mode application才可能被freeze，另外一些user mode task，虽然也在running queue上，但是正好还没有被调度到，是不是就没有机会被freeze了。\r\nfreeze_processes\r\n try_to_freeze_tasks\r\n  freeze_task\r\n   fake_signal_wake_up\r\n    signal_wake_up\r\n     signal_wake_up_state\r\n       wake_up_state"
+ },
+ {
+  "id": "8204",
+  "parent": "8203",
+  "date": "2021-03-10T11:14:22+08:00",
+  "author": "finics",
+  "site": "",
+  "text": "@finics：对于疑问“是不是只有正在另外一个CPU上运行的user mode application才可能被freeze，另外一些user mode task，虽然也在running queue上，但是正好还没有被调度到，是不是就没有机会被freeze了。”\r\n自己又看了下如下代码。我觉得应该这样理解：所有的user mode task都会被添加sigpending标志，所以只要这个user mode task被调度，当系统调用ret_to_user时候，这个task就会被freeze。如果这个user mode task正在执行的话，就应该立刻kick_process，让这个task进行freezing. 感觉这里面是不是有个bug，如果这个task没有正在执行，并且时uninterrutable flag时，不应该直接调用kick_process吧。\r\nvoid signal_wake_up_state(struct task_struct *t, unsigned int state)\r\n{\r\n\tset_tsk_thread_flag(t, TIF_SIGPENDING);---》这个task添加sigpending标志，\r\n\r\n\tif (!wake_up_state(t, state | TASK_INTERRUPTIBLE))\r\n\t\tkick_process(t);\r\n}"
+ },
+ {
+  "id": "8205",
+  "parent": "8204",
+  "date": "2021-03-10T11:28:10+08:00",
+  "author": "finics",
+  "site": "",
+  "text": "@finics：突然灵光一闪，再来自问自答一下，抱歉。\r\n对于问题“如果这个task没有正在执行，并且是uninterrutable flag时，不应该直接调用kick_process吧”\r\n\r\n如果这个task处于TASK_UNINTERRUPTIBLE状态，如下代码并不会kick_process。见kick_process（）代码，只有当前task正在运行时候才去kick。所以可以这样理解，如果task处于TASK_UNINTERRUPTIBLE状态,除了加个sig_pending啥也不做，等这个user mode task自己去完成自己的事情；如果task处于TASK_INTERRUPTIBLE状态,把这个task直接唤醒，然后最终通过ret_to_user再把这个task freeze；如果这个task正在运行的话，kick_process，通过ipi中断让这个task别干活了，快点去freeze.\r\nvoid signal_wake_up_state(struct task_struct *t, unsigned int state)\r\n{\r\n    set_tsk_thread_flag(t, TIF_SIGPENDING);---》这个task添加sigpending标志，\r\n\r\n    if (!wake_up_state(t, state | TASK_INTERRUPTIBLE))\r\n        kick_process(t);\r\n}\r\n\r\nvoid kick_process(struct task_struct *p)\r\n{\r\n\tint cpu;\r\n\r\n\tpreempt_disable();\r\n\tcpu = task_cpu(p);\r\n\tif ((cpu != smp_processor_id()) && task_curr(p))\r\n\t\tsmp_send_reschedule(cpu);\r\n\tpreempt_enable();\r\n}"
+ },
+ {
+  "id": "8255",
+  "parent": "8205",
+  "date": "2021-07-20T17:03:24+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@finics：是的，TASK_UNINTERRUPTIBLE的task 不会去wakeup;\r\nkernel-4.14中：\r\nstatic int try_to_freeze_tasks(bool user_only)\r\n        while (true) {\r\n                todo = 0;\r\n                for_each_process_thread(g, p) {\r\n                        if (p == current || !freeze_task(p))\r\n                                continue;\r\n\r\n                        if (!freezer_should_skip(p))\r\n                                todo++;\r\n                }\r\n}\r\n这里freeze_task会通过wake_up_state(p, TASK_INTERRUPTIBLE)，发送信号给interruptable的task，p->flags |= PF_FREEZER_SKIP，并返回true；\r\n后面freezer_should_skip检测p->flags，UNINTERRUPTIBLE的task->flags没有置1，返回false，todo++，表示这个task freeze失败。\r\n后面就会打印error并退出suspend。\r\n        } else if (todo) {\r\n                pr_cont(\"\\n\");\r\n                pr_err(\"Freezing of tasks failed after %d.%03d seconds\"\r\n                       \" (%d tasks refusing to freeze,"
+ },
+ {
+  "id": "8256",
+  "parent": "0",
+  "date": "2021-07-20T17:18:43+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "提个问题：\r\n为什么UNINTERRUPTIBLE的task设计成 不能freeze，即freeze_task()为什么调用wake_up_state(p, TASK_INTERRUPTIBLE)而不是 wake_up_state(p, TASK_UNINTERRUPTIBLE);\r\n\r\n自问自答下：\r\n系统suspend的流程肯定是先freeze所有的task，然后suspend driver，类似人睡眠时 先停止跳舞/吃饭的活动，再躺下闭上眼睛 停止身体；\r\n但是一个 UNINTERRUPTIBLE的task，比如一个file write的操作，给disk发送了指令 并等待IO完成；如果他被freeze了，在从free_task到suspend_disk中间，disk的IO完成了，此时 之前的task已经freeze无法响应此complete或者需要重新唤醒来响应此IO的complete。\r\n所有，最好还是设计成UNINTERRUPTIBLE的task在freeze时失败，并循环检测几次（freeze_timeout_msecs = 20s）等待IO完成，如果IO一直没有完成，退出suspend，一个task处于suspend时间过长也是有问题的。"
+ },
+ {
+  "id": "8576",
+  "parent": "6140",
+  "date": "2022-03-17T20:56:38+08:00",
+  "author": "杰少",
+  "site": "",
+  "text": "@wowo：你这回答看不懂呀？感觉跟没回答一样"
+ },
+ {
+  "id": "8751",
+  "parent": "8255",
+  "date": "2023-03-13T00:49:31+08:00",
+  "author": "禅机子",
+  "site": "",
+  "text": "@bsp：想问一下，最近我遇到一个问题，就是user_task，存在扫描文件的操作，如果刚好在suspend流程中，会出现freezing of tasks。\r\n有什么解决思路嘛，麻烦啦"
+ }
+]

@@ -1,0 +1,138 @@
+[
+ {
+  "id": "3866",
+  "parent": "0",
+  "date": "2016-04-26T23:18:41+08:00",
+  "author": "LINGL",
+  "site": "",
+  "text": "好文章！wowo有没有打算写关于ALSA的文章呢？"
+ },
+ {
+  "id": "3867",
+  "parent": "3866",
+  "date": "2016-04-27T08:58:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@LINGL：等到“X Project”涉及到音频功能的时候，我们就写了。多谢关注~~"
+ },
+ {
+  "id": "3886",
+  "parent": "0",
+  "date": "2016-05-05T16:29:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "补充一点点内容，呵呵～～～\r\ngit config 的工具(注:实际是 git-config 命令)专门用来配置或读取相应的工作环境变量。而正是由这些环境变量,决定了 Git 在各个环节的具体工作方式和行为。这些变量可以存放在以下三个不同的地方:\r\n（1）/etc/gitconfig文件:系统中对所有用户都普遍适用的配置。若使用 git config 时用 –system 选项,读写的就是这个文件。\r\n（2）.gitconfig文件:用户目录下的配置文件，只适用于该用户。若使用 git config 时用 –global 选项,读写的就是这个文件。\r\n（3）当前项目的 git 目录中的配置文件(也就是工作目录中的 .git/config 文件):这里的配置仅仅针对当前项目有效。\r\n\r\n需要注意的是：每一个级别的配置都会覆盖上层的相同配置,.git/config 里的配置优先级最高，其~/.gitconfig,优先级最低的是 /etc/gitconfig。\r\n\r\n在这份文档中，配置user.name user.email的时候使用的是global选型，也就是说该git配置适用于该用户的所有的代码仓库。"
+ },
+ {
+  "id": "3887",
+  "parent": "0",
+  "date": "2016-05-05T17:53:17+08:00",
+  "author": "小白",
+  "site": "",
+  "text": "script小白问一句：\r\n\r\n$ eval $(ssh-agent -s) \r\n\r\n这里必须用eval吗？直接ssh-agent -s不行吗？"
+ },
+ {
+  "id": "3891",
+  "parent": "3887",
+  "date": "2016-05-06T10:14:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@小白：没问题的，只是返回的东西不一样而已。"
+ },
+ {
+  "id": "3899",
+  "parent": "0",
+  "date": "2016-05-09T10:04:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "补充一点：git commit时的编辑器，可以通过如下命令修改：\r\ngit config --global core.editor vim"
+ },
+ {
+  "id": "3901",
+  "parent": "0",
+  "date": "2016-05-10T23:11:18+08:00",
+  "author": "zyqcome",
+  "site": "",
+  "text": "懒人应该选个图形化的工具，SourceTree，之类的"
+ },
+ {
+  "id": "3903",
+  "parent": "3901",
+  "date": "2016-05-11T09:12:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zyqcome：我的理解是，图形化工具确实是给懒人用的，但命令行是给更懒的人用的。举个例子，我用命令行的vim用惯了，在windowns下用gvim都觉得很难受，坐立不安的感觉。\r\n纯个人感觉，不知道大家的想法如何？呵呵"
+ },
+ {
+  "id": "3931",
+  "parent": "3903",
+  "date": "2016-05-13T11:29:38+08:00",
+  "author": "云",
+  "site": "",
+  "text": "@wowo：对头，图形化的效率太差了。"
+ },
+ {
+  "id": "3975",
+  "parent": "3903",
+  "date": "2016-05-25T15:13:02+08:00",
+  "author": "barry",
+  "site": "",
+  "text": "@wowo：我们现在公司工作用ubuntu，图形与命令行结合使用，git 一般用命令行，图形化用gitk，个人感觉还比较方便。不知道各位有什么比这个更方便的介绍一下。"
+ },
+ {
+  "id": "3979",
+  "parent": "3975",
+  "date": "2016-05-25T18:28:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@barry：这些是个人习惯问题，没有哪个比哪个方便。比如我用虚拟机，都是用SecureCRT远程登录，从来不用GUI；看代码、写代码也永远是vim+ctags+grep；git当然也就是命令行了。呵呵"
+ },
+ {
+  "id": "4067",
+  "parent": "3979",
+  "date": "2016-06-14T12:28:41+08:00",
+  "author": "KUCEN",
+  "site": "",
+  "text": "@wowo：不用cscope和其他的vim插件吗？您是怎么使用vim的，这块有没有个文章能说下提高效率的使用方法？"
+ },
+ {
+  "id": "4070",
+  "parent": "4067",
+  "date": "2016-06-14T15:30:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@KUCEN：ctags和cscope类似，可以符号跳转和返回。至于关键字搜索，直接用grep了。至于vim技巧，只能说熟能生巧了。我之前写过一篇介绍文章，可供你参考：\r\n/linux_application/vim_skill.html"
+ },
+ {
+  "id": "4220",
+  "parent": "0",
+  "date": "2016-07-09T21:56:47+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "wowo，为什么我git clone了你的uboot代码之后，git checkout -b test或者git branch test再切过去test.\r\n不管修改什么，都会影响到原来的x_integration分支。\r\n以前没遇到过这种情况啊。又clone了build的代码，也是这样。\r\n还是说是操作的问题？"
+ },
+ {
+  "id": "4223",
+  "parent": "4220",
+  "date": "2016-07-10T16:25:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：你的操作是没有问题啊。你这里“影响到原来的x_integration分支”是什么意思呢？只要你不push，永远是在本地操作，不会影响的。"
+ },
+ {
+  "id": "4564",
+  "parent": "3867",
+  "date": "2016-09-15T02:24:45+08:00",
+  "author": "Ming",
+  "site": "",
+  "text": "@wowo：十分期待ALSA的文章"
+ },
+ {
+  "id": "4567",
+  "parent": "4564",
+  "date": "2016-09-16T21:37:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Ming：谢谢关注，不过不知道什么时间能写呢"
+ }
+]

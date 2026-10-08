@@ -1,0 +1,274 @@
+[
+ {
+  "id": "112",
+  "parent": "0",
+  "date": "2014-05-02T15:07:02+08:00",
+  "author": "VPS运维",
+  "site": "http://www.sanduoyun.com/",
+  "text": "博主你好，很欣赏你的网站，希望能跟你做个友情连接！"
+ },
+ {
+  "id": "793",
+  "parent": "0",
+  "date": "2014-12-03T11:13:06+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "有个问题，之前一直没有考虑到。 \r\n我们写传统的字符设备驱动的时候，似乎并没有将驱动挂载到任何bus上，只有主、次设备号什么的。\r\n这些字符设备驱动也是属于设备模型范畴吗？"
+ },
+ {
+  "id": "794",
+  "parent": "793",
+  "date": "2014-12-03T12:14:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@puppypyb：普通的字符设备也是需要设备模型的，例如一个lcd驱动，你会定义一个plaform driver，并注册到系统。通过device tree，将lcd的platform device加入系统。当匹配的时候，调用platform driver中的lcd probe函数，而在这个函数中会分配cdev并加入到系统。\r\n\r\ncdev和设备模型不冲突啊，还是我没有明白你的问题？"
+ },
+ {
+  "id": "795",
+  "parent": "793",
+  "date": "2014-12-03T12:21:17+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@puppypyb：驱动的逻辑可以说主要包括两个方面：\r\n1、对AP提供接口\r\n2、和HW block交互\r\n\r\n基本上cdev是属于向AP提供接口而设立的一个数据结构，并不是统一设备模型的一部分。因为在linux中“一切皆文件”，设备也是文件，因此cdev数据结构更多的是属于linux虚拟文件子系统而不是linux设备模型。"
+ },
+ {
+  "id": "797",
+  "parent": "795",
+  "date": "2014-12-03T13:50:13+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "@linuxer：根据你的描述，是不是可以如下理解：\r\n平常我们喜闻乐见的字符设备驱动，其实是不属于linux设备模型范围的。所以我们注册的cdev可以在/dev目录下找到对应的设备节点，但/sys目录下却没有任何相关信息。\r\n当然，我们也可以将cdev驱动加入到设备模型（例如通过platform），这样cdev也纳入到sysfs进行统一管理。"
+ },
+ {
+  "id": "798",
+  "parent": "797",
+  "date": "2014-12-03T15:18:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@puppypyb：“当然，我们也可以将cdev驱动加入到设备模型（例如通过platform），这样cdev也纳入到sysfs进行统一管理。”\r\n－－－－－－－－－－－－－－－－－－－－－－－\r\n上面这句话不对，感觉怪怪的，cdev无法加入到设备模型（加入设备模型的总是device或者driver、bus什么的），cdev仅仅说明你的driver的接口形态而以。\r\n\r\n如果你的driver想要提供传统字符设备的节点（/dev目录下），那么一定需要定义cdev这样的数据结构，并通过cdev_add（或者旧的register_chrdev）接口函数，向字符设备vfs层注册这个cdev。注意：这里虽然有dev，但是和设备模型无关，如果你不想提供传统的字符设备的节点，那么其实根本不需要cdev，统一设备模型的sys fs也提供了用户空间的接口。\r\n\r\ncdev不需要挂入任何总线，cdev需要向文件系统 layer注册。"
+ },
+ {
+  "id": "799",
+  "parent": "798",
+  "date": "2014-12-03T15:52:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：这样理解会好点：字符设备里面的“设备”，和设备模型里面的“设备”，不是一个概念。字符设备或块设备，是在描述设备的的物理特性。设备模型是在描述设备的拓扑结构。所以这二者，没啥关系，谁离了谁都没有问题。"
+ },
+ {
+  "id": "800",
+  "parent": "0",
+  "date": "2014-12-03T16:04:25+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "这样理解很OK\r\n谢谢两位"
+ },
+ {
+  "id": "801",
+  "parent": "799",
+  "date": "2014-12-03T16:05:47+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "@wowo：谢谢两位！"
+ },
+ {
+  "id": "1097",
+  "parent": "799",
+  "date": "2015-01-15T14:38:07+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "@wowo：同意这个说法。有时候我喜欢注册虚拟的字符设备文件，以这个虚拟设备上的 read/write/ioctl 等接口与用户交互，不过虚拟字符设备并不描述任何物理特性就是了"
+ },
+ {
+  "id": "1099",
+  "parent": "1097",
+  "date": "2015-01-15T23:23:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Physh：这是个好习惯，一看就是个linux老手啊，呵呵。"
+ },
+ {
+  "id": "1398",
+  "parent": "0",
+  "date": "2015-03-24T17:30:22+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "博主，我现在还真遇到一个of_match_table驱动了：\r\nstatic struct platform_driver cdns_uart_platform_driver = {\r\n\t.probe   = cdns_uart_probe,\r\n\t.remove  = cdns_uart_remove,\r\n\t.driver  = {\r\n\t\t.name = CDNS_UART_NAME,\r\n\t\t.of_match_table = cdns_uart_of_match,\r\n\t\t.pm = &cdns_uart_dev_pm_ops,\r\n\t\t},\r\n};\r\n在这个驱动中：\r\n     name=CDNS_UART_NAME=\"xuartps\";\r\n     of_match_table = cdns_uart_of_match=\"xlnx,xuartps\"\r\n而在dts文件中是这样的：\r\n     uart0: serial@e0000000 {\r\n\tcompatible = \"xlnx,xuartps\", \"cdns,uart-r1p8\";\r\n        ...\r\n我的问题是：这里在匹配设备和驱动的时候，是不是使用的是of_match_table 里的数据和DTB里的compatible 数据进行匹配？\r\n一般情况下，是匹配name？"
+ },
+ {
+  "id": "1400",
+  "parent": "1398",
+  "date": "2015-03-24T18:30:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：总线上的device和driver进行匹配的时候会调用bus的match函数，对于platform bus而言就是platform_match：\r\n\r\nstatic int platform_match(struct device *dev, struct device_driver *drv)\r\n{\r\n\tstruct platform_device *pdev = to_platform_device(dev);\r\n\tstruct platform_driver *pdrv = to_platform_driver(drv);\r\n\r\n\t/* Attempt an OF style match first */\r\n\tif (of_driver_match_device(dev, drv))\r\n\t\treturn 1;\r\n\r\n\t/* Then try ACPI style match */\r\n\tif (acpi_driver_match_device(dev, drv))\r\n\t\treturn 1;\r\n\r\n\t/* Then try to match against the id table */\r\n\tif (pdrv->id_table)\r\n\t\treturn platform_match_id(pdrv->id_table, pdev) != NULL;\r\n\r\n\t/* fall-back to driver name match */\r\n\treturn (strcmp(pdev->name, drv->name) == 0);\r\n}\r\n\r\n代码注释已经非常的清楚了，我就不赘述了"
+ },
+ {
+  "id": "1404",
+  "parent": "1400",
+  "date": "2015-03-24T21:46:26+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：嗯，是很清楚，匹配时有先后次序，谢谢前辈。\r\n   现拜读前辈数篇博文，思路慢慢清晰；手头刚好有个新开发板，里面有官方给的串口驱动。想看看驱动，再自己写一个类似驱动出来；本以为有了驱动模型概念、bus概念（platformbus），做起来应该不来，但是看了一个下午，仍感到知识点众多。还在啃代码中\r\n    像tty串口驱动，官方初始化给的是两步：\r\n        // Register the cdns_uart driver with the serial core\r\n\tuart_register_driver(&cdns_uart_uart_driver);\r\n\t/* Register the platform driver */\r\n\tplatform_driver_register(&cdns_uart_platform_driver);\r\n    按照总线、设备、驱动的概念，不是只需要注册驱动即platform_driver_register()就可以了吗，为何还要uart_register_driver()？\r\n    uart_register_driver()注册的驱动跟总线驱动模型是什么层次关系？"
+ },
+ {
+  "id": "1412",
+  "parent": "1404",
+  "date": "2015-03-25T12:01:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：虽然代码是那样的，但是我的观点是：\r\n1、串口driver的初始化代码应该只有注册platform driver的内容\r\n2、在platform driver的probe函数中调用 uart_register_driver接口，向serial core注册UART driver"
+ },
+ {
+  "id": "1414",
+  "parent": "1412",
+  "date": "2015-03-25T18:22:15+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：现在那个代码中是驱动模块初始化时候是先uart_register_driver()；然后再platform_driver_register()；最后在驱动probe()函数中添加uart_add_one_port()。\r\n    tty core驱动跟设备驱动之间有什么联系和区别？"
+ },
+ {
+  "id": "1415",
+  "parent": "1412",
+  "date": "2015-03-25T21:34:36+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：看完关于bus、device、driver的博文，再看如下两个数据结构，有点晕：\r\nstruct cdev {\r\n\tstruct kobject kobj;\r\n\tstruct module *owner;\r\n\tconst struct file_operations *ops;\r\n\tstruct list_head list;\r\n\tdev_t dev;\r\n\tunsigned int count;\r\n};\r\nstruct device {\r\n\tstruct device\t\t*parent;\r\n\tstruct device_private\t*p;\r\n\tstruct kobject kobj;\r\n\tconst char\t\t*init_name; \r\n\tconst struct device_type *type;\r\n\t... ...\r\n\tstruct bus_type\t*bus;\t\t\r\n\tstruct device_driver *driver;\r\n\tvoid\t\t*platform_data;\t\r\n\tvoid\t\t*driver_data;\t\r\n\t... ...\r\n\t}\r\n    cdev和device结构体中都直接包含kobject基类，如何理解呢？\r\n    能这样理解吗：内核从两个角度管理设备驱动；对于物理硬件的抽象使用的是总线、设备、驱动模型，而对于具体设备的功能，又分字符设备、块设备、网络设备等。我也不知道怎么表达了，还是想不通。"
+ },
+ {
+  "id": "1416",
+  "parent": "1415",
+  "date": "2015-03-25T22:08:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@callme_friend：您可以参考下面的评论，大家对这个问题有讨论过的。"
+ },
+ {
+  "id": "1417",
+  "parent": "1414",
+  "date": "2015-03-26T09:40:26+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：使用USB串口可能会更好的解释你提出的问题，任何的设备都是两个方面：\r\n1、从设备拓扑的角度看\r\n2、从功能层面看\r\n“USB串口”中的串口描述其设备拓扑，而串口描述其功能。无论是连接到PCI总线，还是连接到platform这样的伪总线上的串口都是串口，都有共同的特点，这些内容都在串口这个软件层次处理。同样的道理，无论是是串口还是普通中断，还是网络终端，都有tty的属性，都要处理break信号、发送延迟等tty设备需要处理的内容，这些共同的内容当然不适合在各自的驱动中处理，因此放到tty core处理。一言以蔽之，软件就像洋葱，是有层次的，是需要抽象的。对应你说的这个场景，软件层次是：\r\n－－－－－－－－－－－－－－－－\r\nchar device driver layer\r\n－－－－－－－－－－－－－－－－\r\ntty device driver layer\r\n－－－－－－－－－－－－－－－－\r\nserial device driver layer\r\n－－－－－－－－－－－－－－－\r\nplatform device driver layer\r\n\r\n对于串口驱动的初始化，我认为最佳的方式是：\r\n1、设备树建立串口设备对应的platform device\r\n2、串口驱动调用platform_driver_register接口注册该串口的platform driver\r\n3、设备模型会调用probe函数进行该串口设备的初始化。\r\n4、probe函数中处理serial device driver layer的内容。例如你说的uart_register_driver或者uart_add_one_port什么的\r\n5、在serial的初始化过程中，调用tty layer的接口进行该层次的初始化。"
+ },
+ {
+  "id": "1426",
+  "parent": "1417",
+  "date": "2015-03-26T21:22:49+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：既然cdev和device是独立的，那cdev里面为啥要包含kobject，kobject不是只服务于统一设备模型吗？\r\n至于洋葱问题，那cdev和device是不是属于两个不同的洋葱？"
+ },
+ {
+  "id": "1427",
+  "parent": "0",
+  "date": "2015-03-26T23:03:29+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "既然cdev和device是独立的，那cdev里面为啥要包含kobject，kobject不是只服务于统一设备模型吗？\r\n----------------------------------------------------------------\r\nkobject这个基类从来都不是只服务于统一设备模型，当然，在设备模型中用的比较多，内核中很多地方也都使用了kobject这个基类，有兴趣的话可以自己查查内核代码。\r\n\r\n至于洋葱问题，那cdev和device是不是属于两个不同的洋葱？\r\n--------------------------------------------------------\r\n对于一个字符设备，cdev和device位于一个洋葱的不同层次，cdev（和文件系统比较近）算是洋葱的最外层，和用户接口，而device（属于设备模型）属于比较内层"
+ },
+ {
+  "id": "1483",
+  "parent": "1427",
+  "date": "2015-04-09T11:31:35+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：本想完整看懂tty驱动再回复，但遇到问题多多。\r\n突然有个建议提给博主：\r\n   能否仿照侯捷的《深入浅出MFC》来阐述linux内核？\r\n   去掉旁支，留下主干，然后用非常精简的一个示例代码展示内核；对于理解内核来说，这应该是最容易的。"
+ },
+ {
+  "id": "1488",
+  "parent": "1483",
+  "date": "2015-04-10T04:59:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：多谢你的建议，作为一个linuxer，我其实是没有看过深入浅出MFC这本书的，当然知道它是一本好书。如果你确实需要，那我就写一份tty driver的文档，尽量使用你说的方法，看看是否可以达到良好的效果。"
+ },
+ {
+  "id": "1495",
+  "parent": "1488",
+  "date": "2015-04-12T22:07:38+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：要是有tty分析文档，那真是太感谢啦！\r\n我又阅读了相关子系统，问题多多，有没有专门提问的板块？"
+ },
+ {
+  "id": "1724",
+  "parent": "794",
+  "date": "2015-05-06T09:53:28+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：我现在是这样理解cdev和设备模型：\r\n按照与app最接近的次序，程序调用首先应该是经过vfs；然后由vfs分为cdev、块设备或fifo设备等。应该说从始至终，只有“文件设备”、字符设备、块设备等，没有统一设备模型。设备模型只是为以上设备服务而已。\r\n你怎么看？"
+ },
+ {
+  "id": "1729",
+  "parent": "1724",
+  "date": "2015-05-07T00:04:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：我怎么感觉我是元芳呢，呵呵\r\n\r\n在没有统一设备模型的时代，设备文件就存在了，并且也是unix操作系统中，一切皆文件中的重要一环。\r\n那么美妙的接口设计，当然要配美妙的内部设计。统一设备模型让系统中的所有设备有组织、有层次、有内涵。\r\n如果说：设备模型只是为以上设备服务而已，这多少有些藐视我”大“统一模型的功能，毕竟如果是这样，kernel为何要增加统一设备模型呢？毕竟“文件设备”一直都在kernel中愉快的工作着，即便在没有统一设备模型的日子里。\r\n\r\n本身，统一设备模型是为了热拔插、开关机、电源管理等复杂的系统动作而设计的，当然，由于sys文件系统开放了属性文件，实际上也担负了部分原来“文件设备”的接口功能。"
+ },
+ {
+  "id": "1731",
+  "parent": "1729",
+  "date": "2015-05-07T08:45:42+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：还没有细看这部分。\r\n形而上学的通过“热拔插、开关机、电源管理”这些字眼猜测：这些东西都是跟总线联系紧密的东西。有了总线，自然而然的就会有次序的插拔设备、电源管理。\r\n但是linux的核心仍然是一切皆文件；如果哪天硬件拓扑不再是总线树形，而是一种截然不同的形式，那统一设备模型会被剔除内核，而vfs相关的东西仍然要保留在内核。\r\n一点猜测，欢迎大牛拍砖。"
+ },
+ {
+  "id": "1732",
+  "parent": "799",
+  "date": "2015-05-07T08:46:28+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@wowo：wowo如何看我上面的想法呢？"
+ },
+ {
+  "id": "1733",
+  "parent": "1731",
+  "date": "2015-05-07T09:49:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@callme_friend：总结的很对啊，这些VFS/CDEV和设备模型，不是一个层面的事情：前者用于提供人机交互的API，是面向用户的；后者倾向于抽象、管理硬件设备，是面向设备的。不要混在一起，就容易理解了。\r\n不过呢，“那统一设备模型会被剔除内核”这句话不太准确，不会剔除的，可能会换一种形式。"
+ },
+ {
+  "id": "1738",
+  "parent": "1733",
+  "date": "2015-05-07T16:54:11+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@wowo：是的，换种形势更准确。"
+ },
+ {
+  "id": "5146",
+  "parent": "1427",
+  "date": "2017-01-14T17:22:14+08:00",
+  "author": "hony",
+  "site": "",
+  "text": "@linuxer：这里节选了一段kobject设计意图的一段话：“The \"kobject\" structure first made its appearance in the 2.5.45 development kernel. It was initially meant as a simple way of unifying kernel code which manages reference counted objects. The kobject has since encountered a bit of \"mission creep,\" however; it is now the glue that holds much of the device model and its sysfs interface together. ”——可以解释为什么cdev虽然不属于设备模型但是也用到了它。\r\n\r\n而且仅仅用到了kobject的两个功能：\r\n1、Reference counts\r\n2、name\r\n\r\n另外一段关于cdev的节选：“Often, much of the initialization of a kobject is handled by the layer that manages the containing kset. Thus, to get back to our old example, a char driver might create a struct cdev, but it need not worry about setting any of the fields in the embedded kobject - except for the name. Everything else is handled by the char device layer.”——这段话说明了kobject的功能和设备模型并没有什么直接关系（甚至都可以不用使用sysfs的功能）。\r\n\r\n因此cdev和device本质是两种东西,只是它们都使用了kobject仅此而已。"
+ },
+ {
+  "id": "5154",
+  "parent": "5146",
+  "date": "2017-01-16T09:11:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hony：分析的很好，赞！～"
+ },
+ {
+  "id": "5479",
+  "parent": "0",
+  "date": "2017-04-22T10:23:55+08:00",
+  "author": "独寻",
+  "site": "",
+  "text": "在“Linux设备模型(6)_Bus”中有提过，内核允许存在多个名称相同的设备。而设备驱动的probe，依赖于名称，Linux采取的策略是：在bus的设备链表....\r\n======\r\n查看bus_type没有看到指向保存设备的链表？"
+ },
+ {
+  "id": "5481",
+  "parent": "5479",
+  "date": "2017-04-24T14:58:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@独寻：在“struct subsys_private”指针中。"
+ }
+]

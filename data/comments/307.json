@@ -1,0 +1,122 @@
+[
+ {
+  "id": "4062",
+  "parent": "0",
+  "date": "2016-06-12T09:13:55+08:00",
+  "author": "qdzhaox",
+  "site": "",
+  "text": "BTW，第一幅图的wordline,标记错了."
+ },
+ {
+  "id": "4063",
+  "parent": "4062",
+  "date": "2016-06-12T14:05:26+08:00",
+  "author": "Codingbelief",
+  "site": "",
+  "text": "@qdzhaox：感谢指正，已经修复了～"
+ },
+ {
+  "id": "4076",
+  "parent": "0",
+  "date": "2016-06-15T15:54:19+08:00",
+  "author": "blessed",
+  "site": "",
+  "text": "写得不错！作为一个软件工程师，没怎么看懂~~"
+ },
+ {
+  "id": "6177",
+  "parent": "0",
+  "date": "2017-11-06T18:27:46+08:00",
+  "author": "陈里昂",
+  "site": "",
+  "text": "我不太明白，为什么 “Write Operation 的前期流程和 Read Operation 是一样的，执行 Precharge、Access、Sense 和 Restore 操作。”？我觉得没必要呀？直接Write Recovery为什么不可以？"
+ },
+ {
+  "id": "6204",
+  "parent": "6177",
+  "date": "2017-11-16T10:29:52+08:00",
+  "author": "codingbelief",
+  "site": "",
+  "text": "@陈里昂：可以参考 “数据读写原理”小节的描述，由于一些问题，DRAM 引入了 Differential Sense Amplifier 的设计，这一设计要求写操作也需要执 Precharge、Access 等操作。"
+ },
+ {
+  "id": "6976",
+  "parent": "0",
+  "date": "2018-10-10T20:26:59+08:00",
+  "author": "yygcs",
+  "site": "",
+  "text": "为什么当 Access Transistor 导通后，如果 Storage Capacitor 存储的信息为 1 时，Bitline 电压变化非常小呢"
+ },
+ {
+  "id": "7617",
+  "parent": "0",
+  "date": "2019-08-27T10:39:00+08:00",
+  "author": "北海风云",
+  "site": "",
+  "text": "图又挂了，能麻烦补下马，谢谢"
+ },
+ {
+  "id": "8179",
+  "parent": "0",
+  "date": "2021-01-05T17:18:44+08:00",
+  "author": "HH_Xz",
+  "site": "",
+  "text": "写的太好了，这才是从基础把ddr弄明白了，其它地方没有找到那个能把原理说清楚的！"
+ },
+ {
+  "id": "8185",
+  "parent": "0",
+  "date": "2021-01-18T20:09:53+08:00",
+  "author": "Jasming",
+  "site": "",
+  "text": "Q = +Vcc/2 / C，这个换算错了，应该是Q = +Vcc/2 * C"
+ },
+ {
+  "id": "8194",
+  "parent": "0",
+  "date": "2021-02-08T21:18:29+08:00",
+  "author": "CCC",
+  "site": "",
+  "text": "请问如果sense amplifier两根bit line上都有cell并且会同时被wordline信号打开，这时sense amplifier是不是就没法正确将cell里信号放大？6F2的架构的sense amplifier的电路是怎样的？"
+ },
+ {
+  "id": "8617",
+  "parent": "0",
+  "date": "2022-05-19T10:12:03+08:00",
+  "author": "hw07",
+  "site": "",
+  "text": "output 和/output 那个是输出？"
+ },
+ {
+  "id": "8705",
+  "parent": "0",
+  "date": "2022-11-29T09:52:13+08:00",
+  "author": "sxr",
+  "site": "",
+  "text": "图片没挂，但是加载不出来，f12查看源代码找到图片链接是能打开的，求修正"
+ },
+ {
+  "id": "8706",
+  "parent": "8705",
+  "date": "2022-11-29T10:13:06+08:00",
+  "author": "sxr",
+  "site": "",
+  "text": "@sxr：哦哦，没事了，貌似是加载很慢，我过了五六分钟就出来了"
+ },
+ {
+  "id": "8901",
+  "parent": "0",
+  "date": "2024-05-24T16:18:40+08:00",
+  "author": "新手",
+  "site": "",
+  "text": "請問為什麼Storage Capacitor 中儲存正電荷會流向Bitline 呢兩邊電壓不是都是VCC/2嗎 \r\n感謝。"
+ },
+ {
+  "id": "8911",
+  "parent": "0",
+  "date": "2024-07-05T16:38:35+08:00",
+  "author": "新手",
+  "site": "",
+  "text": "圖面好像顯示不出來，請問有什麼方法可以看到圖示呢謝謝"
+ }
+]

@@ -1,0 +1,42 @@
+[
+ {
+  "id": "8376",
+  "parent": "0",
+  "date": "2021-11-18T19:56:12+08:00",
+  "author": "wahaha02",
+  "site": "http://https://www.cnblogs.com/wahaha02/",
+  "text": "最近也刚好遇到这个问题。后来翻阅AMR标准手册，其中只定义了LDREX and STREX operations shall only be performed on memory supporting the Normal memory attribute。后来也咨询了CPU厂家，对于non-cached attribute内存上的原子操作，不能使用独占访存指令，按他们建议，改用了hwspinlock实现。"
+ },
+ {
+  "id": "8606",
+  "parent": "8376",
+  "date": "2022-04-28T22:00:00+08:00",
+  "author": "raceant",
+  "site": "",
+  "text": "@wahaha02：hwspinlock 是怎样实现的呢？"
+ },
+ {
+  "id": "8671",
+  "parent": "8606",
+  "date": "2022-09-06T19:19:18+08:00",
+  "author": "schspa",
+  "site": "",
+  "text": "@raceant：hwspinlock是外部IP提供的（不同厂家的IP会有不同），每次操作都需要通过MMIO来方位外部寄存器(Device nGnRnE)，速度会慢的多. 这种的每次访问都不会经过cache."
+ },
+ {
+  "id": "8672",
+  "parent": "8606",
+  "date": "2022-09-06T19:19:29+08:00",
+  "author": "schspa",
+  "site": "",
+  "text": "@raceant：hwspinlock是外部IP提供的（不同厂家的IP会有不同），每次操作都需要通过MMIO来方位外部寄存器(Device nGnRnE)，速度会慢的多. 这种的每次访问都不会经过cache."
+ },
+ {
+  "id": "8673",
+  "parent": "8606",
+  "date": "2022-09-06T19:19:30+08:00",
+  "author": "schspa",
+  "site": "",
+  "text": "@raceant：hwspinlock是外部IP提供的（不同厂家的IP会有不同），每次操作都需要通过MMIO来方位外部寄存器(Device nGnRnE)，速度会慢的多. 这种的每次访问都不会经过cache."
+ }
+]

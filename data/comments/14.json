@@ -1,0 +1,562 @@
+[
+ {
+  "id": "820",
+  "parent": "0",
+  "date": "2014-12-04T23:04:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "对kobject中的parent和kset还是有些不解，感觉有些重复，不知道是否有更深入的解释。"
+ },
+ {
+  "id": "822",
+  "parent": "820",
+  "date": "2014-12-04T23:14:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：kset的用处，在bus（Linux设备模型(6)_Bus）中有很好的例子，”subsys、devices_kset、drivers_kset是三个kset...“，其实没有什么玄妙的，就是kobject的集合，主要功能之一，是统一处理下面所有kobject的uevent（从uevent_ops指针中可以看出），或者，也可以有其它扩展功能。"
+ },
+ {
+  "id": "823",
+  "parent": "822",
+  "date": "2014-12-04T23:18:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：我的意思是kset似乎就足够了，为何要parent呢？大部分的parent不是指向kset对应的那个kobject吗？"
+ },
+ {
+  "id": "824",
+  "parent": "822",
+  "date": "2014-12-04T23:18:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wowo：至于parent，应该不难理解吧？我的理解是：\r\nkobject是大多数kernel数据结构的父类，那么，系统的所有kobject，一定可以组成一个树状组织，这个parent就是指向自己的parent kobject。"
+ },
+ {
+  "id": "825",
+  "parent": "823",
+  "date": "2014-12-04T23:22:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：可以没有kset，kernel允许例外存在。\r\n从逻辑的角度讲，一个个体可以存在于一个组织里，也可以不存在。但一定会有parent。所以kset和parent是两个抽象，和生活息息相关。"
+ },
+ {
+  "id": "826",
+  "parent": "825",
+  "date": "2014-12-04T23:25:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wowo：所以我觉得，设计师在设计一个原型时，首先考虑的可能不是实用性，而是逻辑上的合理、通顺。\r\n我有点慢慢认同逻辑解析了，哈哈~~~"
+ },
+ {
+  "id": "827",
+  "parent": "824",
+  "date": "2014-12-04T23:25:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：kset也可以以组织成树状结构的，明天我去到kernel中找一个实例看看，实际的例子更容易理解一些。"
+ },
+ {
+  "id": "828",
+  "parent": "825",
+  "date": "2014-12-04T23:34:18+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：从纯逻辑上是讲的通的。kset就是组织，如果我是一个kobject，那么公司就是一个kset，而parent就我的父母了，不是实现面需要再思考一下。\r\n\r\n我最近准备通过一些kernel的中的实例来深入理解kobject。我发现struct cdev这个数据结构嵌入了kobject，但是它没有kset，也没有parent，似乎在cdev模块中，对kobject的使用仅仅限于reference counter和ktype。"
+ },
+ {
+  "id": "829",
+  "parent": "826",
+  "date": "2014-12-04T23:39:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：要不要回来，你的办公室还保留着呢，呵呵~~~\r\n\r\n逻辑解析从来都是需要的，其实就是data flow和control flow分析。只不过如何解析是个技术活，很容易跑偏~~~~"
+ },
+ {
+  "id": "830",
+  "parent": "829",
+  "date": "2014-12-04T23:50:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：哈哈，这不太好~～~~\r\n是啊，度很难把握。我觉的那不是强求的，而是随着经验的积累，自然而然升华出来的。\r\n睡觉去了，明天继续。呵呵。"
+ },
+ {
+  "id": "832",
+  "parent": "0",
+  "date": "2014-12-05T09:09:05+08:00",
+  "author": "loo.king.for",
+  "site": "",
+  "text": "最近在研究platform，自己用execl画数据结构之间的逻辑关系，真是辛苦。没想到窝窝已经做了这么好的总结，真是太好了。"
+ },
+ {
+  "id": "833",
+  "parent": "828",
+  "date": "2014-12-05T09:27:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：这里面有一句话：“使用一个引用计数（reference count），来记录Kobject被引用的次数，并在引用次数变为0时把它释放（这是Kobject诞生时的唯一功能）。 ”\r\n我猜cdev只是用了kobject最原始的功能而已。可以去查一下kobject的演化过程，估计kset之类的是后来加的。"
+ },
+ {
+  "id": "834",
+  "parent": "832",
+  "date": "2014-12-05T09:29:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@loo.king.for：多谢鼓励。其实文章写的不好，我们也是学习的过程，希望过交流讨论。"
+ },
+ {
+  "id": "839",
+  "parent": "0",
+  "date": "2014-12-05T14:42:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "Kobject必须动态分配\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n这句话是不对的，cdev使用了kobject，可以动态分配，但是也可以静态定义cdev，也就是静态定义了kobject。具体可以参考讨论区中的那份文档：/116.html。只不过这时候静态定义和动态定义的ktype类型不一样而已"
+ },
+ {
+  "id": "840",
+  "parent": "839",
+  "date": "2014-12-05T15:15:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：呵呵，是的，这句话写完我就知道是错的了，一直没改。\r\n不过，静态分配不符合kobject的初衷啊。内核慢慢再限制这个了，例如现在静态注册的platform设备，编译成模块的话，模块卸载就会有个Warning。"
+ },
+ {
+  "id": "1186",
+  "parent": "0",
+  "date": "2015-02-08T16:53:23+08:00",
+  "author": "Issues",
+  "site": "",
+  "text": "读源码时有个疑问，当调用kset_create()时，为何kset->kobj.kset=NULL;\r\n源码中的解释如下：\r\n/*\r\n * The kobject of this kset will have a type of kset_ktype and belong to\r\n * no kset itself.  That way we can properly free it when it is\r\n * finished being used.\r\n*/\r\n\r\n但是当第三个参数*parent_kobj有值时，既然kset->kobj.parent=parent_kobj; 那么说明kset->kobj是有上层kset的，而这个上层kset应该可以用container_of由parent_kobj得出。\r\n\r\n但为何在源码中直接就将kset->kobj.kset置为NULL了呢。是因为kset不会从属于其它kset么。谢谢"
+ },
+ {
+  "id": "1187",
+  "parent": "1186",
+  "date": "2015-02-09T10:17:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Issues：个人理解，它是这个意思：\r\n首先，kset是一个特殊的kobject，它是kobject的容器，用于将多个kobject收集在一起。那么kset是否还会从属于另一个kset？即容器是否会嵌套？从代码注释上可以看出，答案是否定的。从实际逻辑上考虑，这也是合理的。这就是kset->kobj.kset为NULL的原因。\r\n其次，虽然kset->kobj.kset为NULL，但为了kset的自动free，它还是需要一个ktype的，这就是为什么kset->kobj.ktype不为NULL。\r\n最后，您提到的kset->kobj.parent=parent_kobj，也就是说该kset可能会有一个上层的parent（也是一个kset），这就是另外一个含义了，kset之间可以组成一个树形结构，这不是kset要描述的事情，而是kobject要描述的。"
+ },
+ {
+  "id": "1801",
+  "parent": "0",
+  "date": "2015-05-14T23:49:11+08:00",
+  "author": "laobiyangde",
+  "site": "",
+  "text": "好文章，好评论！"
+ },
+ {
+  "id": "3049",
+  "parent": "0",
+  "date": "2015-11-16T11:21:12+08:00",
+  "author": "R.G.",
+  "site": "",
+  "text": "博主您好！看了您的文章，我开始对Linux设备驱动分层思想的实现有了一点理解，特来分享于斯。如有错误，望指出。\r\n\r\n从面向对象的角度来看：\r\n    - struct kobj（及其相关结构如kset, ktype等）属于最抽象的基类，代码最简洁，最不具体；\r\n    - struct device（及其相关结构如device_driver，device_type等）是对kobj的封装，是第一层派生类；\r\n    - 再上层的结构（如platform_device等），是在struct device的基础上再封装一次，是第二层派生类。\r\n\r\n因此，例如我们创建了一个struct platform_device的实例，使用完毕后要释放它。那么这个过程按道理应该是：\r\n    - 系统内部先调用platform_device的remove函数，它只处理自己层特有的变量；\r\n    - 完毕后，系统调用第一层派生类struct device的release函数，处理了自己这一层的特有变量；\r\n    - 最后，调用基类kobject的release函数，将整个空间释放掉。\r\n\r\n整个过程应该会跟C++析构过程比较类似，上述的“系统内部”也应该类似于C++编译器自动生成的代码，因为C++中析构函数的逆向调用是自动进行的，并没有在派生类的析构函数中显示调用。类似地，在此处上层的release中也不会显式调用下层的release，都是由系统内部完成的。\r\n\r\n以上乃个人愚见，还请不吝赐教。"
+ },
+ {
+  "id": "3050",
+  "parent": "3049",
+  "date": "2015-11-16T12:26:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@R.G.：您的总结很到位啊，设备模型就是基于这种思路展开的。"
+ },
+ {
+  "id": "3099",
+  "parent": "3049",
+  "date": "2015-11-23T14:59:19+08:00",
+  "author": "Vedic",
+  "site": "",
+  "text": "@R.G.：好文章，好评论！！！！"
+ },
+ {
+  "id": "3231",
+  "parent": "0",
+  "date": "2015-12-14T10:21:30+08:00",
+  "author": "linux_emb",
+  "site": "",
+  "text": "“Kobject是基本数据类型，每个Kobject都会在\"/sys/“文件系统中以目录的形式出现。”\r\n对这一句有点疑问？我看LDD3 说每个Kobject不一定出现在sys中，但Kset中的每个Kobject会出现在sys中。"
+ },
+ {
+  "id": "3232",
+  "parent": "3231",
+  "date": "2015-12-14T11:13:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linux_emb：抱歉，这句表述是有误的。很多时候，为了好理解，我倾向于把一个东西简单化，但却没有照顾到正确性，以后坚决努力改正。\r\n这一句，真正想表达是：在sysfs中，kobject对应的是目录。至于其它的，我相信95%的读者是不关心的。\r\n另外，kobject太抽象了，而sysfs中目录却比较具象，所以绑在一起会加深理解。\r\n感谢指针，等等我修正一下表述。"
+ },
+ {
+  "id": "3233",
+  "parent": "3232",
+  "date": "2015-12-14T13:12:27+08:00",
+  "author": "linux_emb",
+  "site": "",
+  "text": "@wowo：其实我很能理解WOWO，我们很难将一件事情的所有细节都说明，如果那样的话源码是最能体现细节的。不过对于说明原理，这样的取舍是很正确的，Kobject本来就特别抽象，这样便于理解。\r\n再次表示对wowo的敬佩。。。"
+ },
+ {
+  "id": "3234",
+  "parent": "3233",
+  "date": "2015-12-14T15:52:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linux_emb：您过奖了…\r\n欢迎常来，多提宝贵意见。\r\n谢谢"
+ },
+ {
+  "id": "3513",
+  "parent": "0",
+  "date": "2016-02-23T11:23:34+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "device_driver 中没有发现kobject啊？"
+ },
+ {
+  "id": "3514",
+  "parent": "0",
+  "date": "2016-02-23T11:24:31+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "struct device_driver {\r\n        const char              *name;\r\n        struct bus_type         *bus;\r\n\r\n        struct module           *owner;\r\n        const char              *mod_name;      /* used for built-in modules */\r\n\r\n        bool suppress_bind_attrs;       /* disables bind/unbind via sysfs */\r\n\r\n        const struct of_device_id       *of_match_table;\r\n        const struct acpi_device_id     *acpi_match_table;\r\n\r\n        int (*probe) (struct device *dev);\r\n        int (*remove) (struct device *dev);\r\n        void (*shutdown) (struct device *dev);\r\n        int (*suspend) (struct device *dev, pm_message_t state);\r\n        int (*resume) (struct device *dev);\r\n        const struct attribute_group **groups;\r\n\r\n        const struct dev_pm_ops *pm; \r\n\r\n        struct driver_private *p;\r\n};"
+ },
+ {
+  "id": "3515",
+  "parent": "3513",
+  "date": "2016-02-23T11:42:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：在‘p’里面，注册driver的时候，会在bus_add_driver中分配空间并赋值。"
+ },
+ {
+  "id": "3516",
+  "parent": "3515",
+  "date": "2016-02-23T12:16:13+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@wowo：谢谢wowo，看到了，这里有些不解，既然kobject是一个基类，正常来说应该放到对应的数据结构中，如struct device， 这里为何device_driver，确是间接的方式？这里有什么玄机吗？"
+ },
+ {
+  "id": "3517",
+  "parent": "3516",
+  "date": "2016-02-23T15:18:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：struct driver_private和bus/class中的类似，就是一些数据结构的组合而已，没有特殊含义，可参考/device_model/bus.html中描述。"
+ },
+ {
+  "id": "3626",
+  "parent": "0",
+  "date": "2016-03-09T16:44:06+08:00",
+  "author": "wangbo",
+  "site": "",
+  "text": "Kobject所占用的meomry空间。这就决定了Kobject必须是动态分配的（只有这样才能动态释放）。\r\n\r\n在字符设备cdev机构体中，cdev的分配分为两种:静态和动态，那如果静态分配，cdev.kobj也是静态分配？是不是哪里我理解错了？"
+ },
+ {
+  "id": "3629",
+  "parent": "3626",
+  "date": "2016-03-09T18:45:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wangbo：Sorry，当初的表述有误，一直没有改过来。具体您可以看本页下面和linuxer的讨论。多谢~~"
+ },
+ {
+  "id": "3647",
+  "parent": "3629",
+  "date": "2016-03-11T10:24:11+08:00",
+  "author": "wangbo",
+  "site": "",
+  "text": "@wowo：好的，谢谢"
+ },
+ {
+  "id": "3685",
+  "parent": "0",
+  "date": "2016-03-18T11:11:18+08:00",
+  "author": "bat0301",
+  "site": "",
+  "text": "小弟入行linux驱动两个月，最近发现wowo的网址，帮助颇大，感谢~"
+ },
+ {
+  "id": "3686",
+  "parent": "3685",
+  "date": "2016-03-18T13:15:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bat0301：:-)欢迎常来~~"
+ },
+ {
+  "id": "3699",
+  "parent": "3686",
+  "date": "2016-03-21T15:38:51+08:00",
+  "author": "dsf90",
+  "site": "",
+  "text": "@wowo：Hi wowo:\r\n    今天刚发现这块宝地，我是linux新手，正在学习imx6ul linux的电源管理、省电优化。先了解了芯片硬件手册、PMIC使用，这几天在看linux电源管理，了解了一周还是云里雾里的不知道从何处下手。看了博主电源管理的博文，感觉基础还有差距，看不太明白，能否指点一下，新手该从何入手呀？"
+ },
+ {
+  "id": "3700",
+  "parent": "3699",
+  "date": "2016-03-21T21:24:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dsf90：这个问题还真不好回答，因为电源管理是系统级的事情，涉及到的东西太多，对一个新手来说，不太容易掌握。建议你从一个点入手，例如系统是怎么供电的、怎么启动的，不要试图一下子去理解太多东西"
+ },
+ {
+  "id": "3729",
+  "parent": "0",
+  "date": "2016-03-26T23:11:11+08:00",
+  "author": "Musiclover",
+  "site": "",
+  "text": "作为新手，wowo的文章应该时常拿出来读一读。第一次读的时候根本不懂wowo在说什么，时隔多日再次拜读，感觉豁然开朗，感谢wowo的无私奉献！"
+ },
+ {
+  "id": "3878",
+  "parent": "0",
+  "date": "2016-05-03T18:27:20+08:00",
+  "author": "kevin",
+  "site": "",
+  "text": "谢谢！常看常新，刚入行的时候读这篇文章完全不知所云，现在快一年了，再回过头来看真的帮助我理解了很多东西！\r\n\r\n结合 bus.c，在 bus_register 中通过调用 kset_create_and_add 初始化了一个 driver_kset，在函数bus_add_driver 中，priv->kobj.kset = bus->p->driver_kset; 再调用 kobject_init_and_add();为其添加了 ktype，在 driver_ktype 中实现了 release 函数，跟文中总结的 kobj 使用流程一模一样。\r\n\r\n感谢窝窝们，谢谢你们的无私分享。"
+ },
+ {
+  "id": "3879",
+  "parent": "0",
+  "date": "2016-05-03T20:07:34+08:00",
+  "author": "tinylaker",
+  "site": "",
+  "text": "好文点赞，如果可以添加设备模型的结构图进行说明就更完美了"
+ },
+ {
+  "id": "3880",
+  "parent": "3878",
+  "date": "2016-05-03T21:41:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@kevin：能够帮助到大家，是蜗窝的荣幸，不用客气:-)"
+ },
+ {
+  "id": "3881",
+  "parent": "3879",
+  "date": "2016-05-03T21:41:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tinylaker：多谢建议，下次整理的时候，一定填上！"
+ },
+ {
+  "id": "4324",
+  "parent": "3881",
+  "date": "2016-07-27T09:30:31+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "@wowo：http://pic002.cnblogs.com/images/2012/314660/2012012909402335.gif\r\nhttp://pic002.cnblogs.com/images/2012/314660/2012012909435638.gif\r\n不知道这两张图对您是否有帮助"
+ },
+ {
+  "id": "4328",
+  "parent": "4324",
+  "date": "2016-07-27T22:03:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@maze：多谢分享，图画的很好:-)"
+ },
+ {
+  "id": "4424",
+  "parent": "3049",
+  "date": "2016-08-19T15:14:24+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@R.G.：总结的非常好，学习了！不懂C++，这里有几点不解希望不吝赐教：\r\n在设备模型中，基类的空间是在派生类里的，即是由派生类分配的，因此正常的逻辑应该是直接由派生类释放即可，我想Linux也应该是通过这种形式，只不过过程曲折了点，简单表述如下：ObjectRemove->DevicePut-->KobjPut->KrefPut->KobjectRelease->DeviceRelease->ObjectRelease，最终还是回到由派生类释放。对于C++，不知其基类的空间是由派生类提供的还是说是由基类本身自己创建的，如果是自己创建的，那它的析构过程和Linux这里的弄型应该是不同的。比如Linux中，也可在在派生类里通过指针的方式来引用基类，这样释放时就由每一层来处理，可能变成下面的形式ObjectRemove->ObjectRelease->DeviceRelease->KobjectRelease。\r\n\r\n不知这样理解是否正确！"
+ },
+ {
+  "id": "4426",
+  "parent": "4424",
+  "date": "2016-08-20T09:24:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：说实话，我仅有的那一点C++知识，也早还给学校了，呵呵~~\r\n“在设备模型中，基类的空间是在派生类里的，即是由派生类分配的，因此正常的逻辑应该是直接由派生类释放即可，我想Linux也应该是通过这种形式”，我觉得这样的理解是对的：\r\n我自己申请的空间，肯定是我自己释放才比较合理。\r\n当然，释放的时机，可以让上层的core帮忙决定。"
+ },
+ {
+  "id": "5120",
+  "parent": "1186",
+  "date": "2017-01-09T22:54:04+08:00",
+  "author": "hony",
+  "site": "",
+  "text": "@Issues：个人理解：\r\n1、kobject->parent用于构建sysfs树形目录\r\n2、kobject->kset用于处理uevent事件（相似的kobject集合）\r\n\r\n总结：kobject->parent不一定和kobject->kset->kobj是同一个。"
+ },
+ {
+  "id": "5121",
+  "parent": "5120",
+  "date": "2017-01-10T09:03:41+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hony：理解1没有问题。理解2有失偏颇，处理uevent只是kset的副业，其主业是描述sysfs中的一个目录。"
+ },
+ {
+  "id": "5530",
+  "parent": "0",
+  "date": "2017-05-09T20:34:14+08:00",
+  "author": "loren",
+  "site": "",
+  "text": "楼主，在3.3.2节的第一种方法中，如果我定义了一个ktype,但是其中的release回调函数没有定义（或者设置为NULL），这种case下使用这种方法来创建kobject是否会有问题呢？因为我看kobject_init()和kobject_add()两个函数都没有去检查ktype.release是否为空，而只是检查了ktype是否为空，不知道是不是我哪里理解有问题。\r\nBTW：我看的是3.16.0的内核"
+ },
+ {
+  "id": "5531",
+  "parent": "5530",
+  "date": "2017-05-10T08:27:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@loren：release的检查，只有在kobject_cleanup时，做了一次，如果为空，会给出一个debug信息，要求fix：\r\n        if (t && !t->release)                                                   \r\n                pr_debug(\"kobject: '%s' (%p): does not have a release() \"       \r\n                         \"function, it is broken and must be fixed.\\n\",         \r\n                         kobject_name(kobj), kobj);     \r\n至于其它的，要有开发者自己把握了。"
+ },
+ {
+  "id": "5533",
+  "parent": "1187",
+  "date": "2017-05-10T20:09:25+08:00",
+  "author": "loren",
+  "site": "",
+  "text": "@wowo：“kset->kobj.parent=parent_kobj，能说明该kset可能会有一个上层的parent（也是一个kset）”\r\n为什么这个上层的parent必须是一个kset呢？不能这个parent不属于任何一个kset吗？"
+ },
+ {
+  "id": "5534",
+  "parent": "1187",
+  "date": "2017-05-10T20:09:50+08:00",
+  "author": "loren",
+  "site": "",
+  "text": "@wowo：“kset->kobj.parent=parent_kobj，能说明该kset可能会有一个上层的parent（也是一个kset）”\r\n为什么这个上层的parent必须是一个kset呢？不能这个parent不属于任何一个kset吗？"
+ },
+ {
+  "id": "5535",
+  "parent": "5534",
+  "date": "2017-05-11T08:56:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@loren：是的，你说的对，kernel没有规定这个parent kobj必须是什么，它只是为了让kset有个树形结构，因而可以是另一个kset，也有可能是一个普通的数据结构。\r\n不过看kernel代码，大部分时候，都是一个kset。因为kset的上级是kset，结构上比较清晰。"
+ },
+ {
+  "id": "5635",
+  "parent": "0",
+  "date": "2017-06-07T22:55:48+08:00",
+  "author": "kobj",
+  "site": "",
+  "text": "“调用kobject_get增加该kobject的parent的引用计数（如果存在parent的话）。”\r\n调用kobject_get不应该是增加参数自己的引用计数么，为什么是parent的呢？源码：kobject_get(struct kobject *kobj) -> kref_get(&kobj->kref) -> WARN_ON_ONCE(atomic_inc_return(&kref->refcount) < 2)；"
+ },
+ {
+  "id": "5638",
+  "parent": "5635",
+  "date": "2017-06-08T09:25:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@kobj：可以看kobject_add_internal的代码：\r\nparent = kobject_get(kobj->parent);\r\n\r\n为什么要增加parent的引用计数呢？加入该obj在使用，能删除parent吗？不能，所以要确保parent的引用计数不为0（不被删除）。"
+ },
+ {
+  "id": "5641",
+  "parent": "5638",
+  "date": "2017-06-08T09:55:08+08:00",
+  "author": "kobj",
+  "site": "",
+  "text": "@wowo：哦，的确是这样的。感谢wowo，祝福本站。"
+ },
+ {
+  "id": "7216",
+  "parent": "0",
+  "date": "2019-03-04T15:08:30+08:00",
+  "author": "tmmdh",
+  "site": "",
+  "text": "入行1年发现这个博客，真是相见恨晚，文章好，评论也好"
+ },
+ {
+  "id": "7235",
+  "parent": "827",
+  "date": "2019-03-07T02:50:17+08:00",
+  "author": "wyz",
+  "site": "",
+  "text": "@linuxer：可以理解为工党谍报组织的单线联系，或者是组织内部的直接上报，不需要经过你的领导..."
+ },
+ {
+  "id": "7498",
+  "parent": "0",
+  "date": "2019-07-01T14:52:44+08:00",
+  "author": "ask_dir",
+  "site": "",
+  "text": "@wowo :文中讲到注册kobject的时候，其中kobj_type中有一个default_attrs，该种类型的Kobject的atrribute列表（所谓attribute，就是sysfs文件系统中的一个文件）。这个attribute属性好像只有name和mode两个成员，但是我实际在sysfs目录下的属性好像是可以实现读写操作的啊，请问这里面读写操作该文件的时候是调用的是kobject的读写函数吗？"
+ },
+ {
+  "id": "7504",
+  "parent": "7498",
+  "date": "2019-07-02T14:02:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ask_dir：设备模型其他的文章里面有讲，你可以再看看~"
+ },
+ {
+  "id": "7542",
+  "parent": "0",
+  "date": "2019-07-19T22:29:56+08:00",
+  "author": "Mike_5",
+  "site": "",
+  "text": "同时，如果该kobject没有parent，却存在kset，则将它的parent设为kset（kset是一个特殊的kobject），并增加kset的引用计数\r\n\r\n这句话后面是不是说错了，应该是kset设为它的parent"
+ },
+ {
+  "id": "7571",
+  "parent": "4328",
+  "date": "2019-08-03T22:35:44+08:00",
+  "author": "ymj",
+  "site": "",
+  "text": "@wowo：maze发的图2,ksetB 向右的箭头方向反了吧,因该都指向ksetA."
+ },
+ {
+  "id": "7586",
+  "parent": "0",
+  "date": "2019-08-13T09:33:20+08:00",
+  "author": "jams-cui",
+  "site": "",
+  "text": "个人觉得kset正如wowo所言，是后续添加的。它属于一个大的子项的共性“行为”接口，用于底层和应用层互动的行为。也可以理解为热插拔之类。。。kobject和ktype偏向于个体，描述一个对象自身的行为，如创立，释放，以及这个个体对应于sysfs这种设备模型下各种属性的预留管理接口"
+ },
+ {
+  "id": "7966",
+  "parent": "7542",
+  "date": "2020-04-21T17:38:59+08:00",
+  "author": "Xavior",
+  "site": "",
+  "text": "@Mike_5：If a kset is associated with a kobject, then the parent for the kobject can be set to NULL in the call to kobject_add() and then the kobject's parent will be the kset itself.\r\n\r\n不需要设置吧？"
+ },
+ {
+  "id": "8139",
+  "parent": "7498",
+  "date": "2020-11-18T16:57:23+08:00",
+  "author": "noobwang",
+  "site": "",
+  "text": "@ask_dir：驱动里定义一个str，echo会调用ktype->sysfs_ops->store，可以给str赋值；cat会调用ktype->sysfs_ops->show, 显示str的值。我说错了的话大家指正我喔：）"
+ },
+ {
+  "id": "8160",
+  "parent": "0",
+  "date": "2020-12-18T12:03:18+08:00",
+  "author": "xpo",
+  "site": "",
+  "text": "kset是 chain of responsibity 设计模式组织的kobject. 和 SEH, message proc是相同的设计,只不过要简陋的多."
+ },
+ {
+  "id": "8755",
+  "parent": "0",
+  "date": "2023-03-18T15:06:53+08:00",
+  "author": "devin",
+  "site": "",
+  "text": "动态创建\r\n\"前面讲过，Kobject必须动态分配，而不能静态定义或者位于堆栈之上，它的分配方法有两种。\"这里笔误了吗？"
+ },
+ {
+  "id": "8768",
+  "parent": "8755",
+  "date": "2023-04-10T18:03:03+08:00",
+  "author": "hulianqing",
+  "site": "",
+  "text": "@devin：我的理解是：1、把kobject定义在你的自定义结构体内，然后自定义结构体动态分配 2、直接单独分配kobject"
+ },
+ {
+  "id": "8821",
+  "parent": "0",
+  "date": "2023-09-14T13:18:07+08:00",
+  "author": "xiaotongs",
+  "site": "",
+  "text": "kobject,内核基础设施，怎么和device（抽象设备）关联？怎么和driver关联？内核怎么通过kobject调用到对应的device？\r\n1. kobject会设备文件的形式在“sys”下出现，ket是kobject的集合，会将相似的kobj集合起来，在sys下也会以设备文件形式显示。\r\n2.ktype包含kobj数据结构中属性的集合，有释放kobject数据结构内存占用接口release。\r\n3.每个包含kobject结构，如bus、device、devie_driver都需实现ktype,并实现其回调函数release，而sysfs_ops相关操作必须通过ktype中接口中转。因为sysfs看到是kobject对应的设备文件，真正操作文件的主体是包含kobj结构的上层数据结构，它才知道什么时候释放和操作设备文件，并调用kobj中ktype相关接口实现释放内存和调用文件接口。\r\n4. syscall->sysfs->fs_ops->callback->kobject->device"
+ },
+ {
+  "id": "8822",
+  "parent": "8755",
+  "date": "2023-09-14T15:12:40+08:00",
+  "author": "xiaotongs",
+  "site": "",
+  "text": "@devin：1.动态创建：在内核空间动态分配内存。\r\n2.而不能静态定义或者位于堆栈之上：静态变量区、堆、栈是用户空间，用户空间分配内存需用通过C库或系统调用分配内存，实际上，用户空间分配的物理内存需通过内核来分配；"
+ }
+]

@@ -1,0 +1,162 @@
+[
+ {
+  "id": "1269",
+  "parent": "0",
+  "date": "2015-03-04T09:46:38+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "wowo & linuxer 二位您是在具体公司工作吗？怎么有这么多时间写这么详细的文档？"
+ },
+ {
+  "id": "1270",
+  "parent": "0",
+  "date": "2015-03-04T10:25:53+08:00",
+  "author": "haichunzhao",
+  "site": "",
+  "text": "suspend时，设备的动作到底是什么，只有设备驱动最清楚，所以，把事情交给driver做，是合理的。\r\n这句话道出了本质。曾经有其它模块的工程师问我，在suspend中到底要做什么，我和他们说，为了省电，你可以进入低功耗模式，也可以给设备掉电。现在看来还是应该驱动自己决定到底要怎么做。"
+ },
+ {
+  "id": "1274",
+  "parent": "1269",
+  "date": "2015-03-04T12:22:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@schedule：是在公司，都是晚上抽空写的。"
+ },
+ {
+  "id": "1276",
+  "parent": "1270",
+  "date": "2015-03-04T12:28:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@haichunzhao：是的，抛开具体的设备去讲suspend时要做什么，是没有意义的，因为设备是多样的。"
+ },
+ {
+  "id": "1280",
+  "parent": "1274",
+  "date": "2015-03-04T14:43:26+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@wowo：牛！期待你们关于网络系统的分析！"
+ },
+ {
+  "id": "1283",
+  "parent": "0",
+  "date": "2015-03-04T15:07:42+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "wowo & linuxer 是帝都的吗？"
+ },
+ {
+  "id": "1285",
+  "parent": "1269",
+  "date": "2015-03-04T16:09:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：当然是在公司上班了，主要是没有爱好，不爱看电视，不看电影，不爱泡吧，不爱交际....唯有从这些技术知识上获取快感，呵呵～～～"
+ },
+ {
+  "id": "1286",
+  "parent": "1283",
+  "date": "2015-03-04T16:12:18+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：非也，虽然我们都是北方人，但是都在珠三角（非深圳）工作，都曾经是华南（深圳除外）首席linux团队（我们自己封的，哈哈）的一员，^_^"
+ },
+ {
+  "id": "1288",
+  "parent": "1286",
+  "date": "2015-03-04T18:33:30+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：听起来好厉害的样子"
+ },
+ {
+  "id": "1289",
+  "parent": "1288",
+  "date": "2015-03-04T18:43:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：哈哈，当时都是为了好玩，每当想要把一个任务，比如说I2C驱动交给某个工程师的时候，我都是语重心长的告诉他，xxx，组织上准备把你培养成华南区首席I2C驱动工程师，你要好好干啊，慢慢的，我们team每个工程师没有2～3首席的称号都不好意思和别人打招呼"
+ },
+ {
+  "id": "1296",
+  "parent": "0",
+  "date": "2015-03-05T15:57:06+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "首席功耗专家不是盖的啊，读完豁然开朗。"
+ },
+ {
+  "id": "1297",
+  "parent": "1296",
+  "date": "2015-03-05T21:35:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：哈哈，这不是损我的吧？只是记录一下阅读笔记而已，让Tigger兄见笑了哈~~"
+ },
+ {
+  "id": "1298",
+  "parent": "1296",
+  "date": "2015-03-05T22:38:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：我觉得还是叫做华南区首席PM driver专家好了，不加上个华南区好像不习惯啊"
+ },
+ {
+  "id": "2239",
+  "parent": "0",
+  "date": "2015-07-17T16:50:46+08:00",
+  "author": "enjoyer",
+  "site": "",
+  "text": "读完感觉思路清晰多了，wowo太厉害了，赞~！"
+ },
+ {
+  "id": "2240",
+  "parent": "0",
+  "date": "2015-07-17T16:51:52+08:00",
+  "author": "enjoyer",
+  "site": "",
+  "text": "后悔没有早点看到你们写的东西~"
+ },
+ {
+  "id": "2242",
+  "parent": "2239",
+  "date": "2015-07-17T19:48:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@enjoyer：过奖了，我也是学习的过程，没事可以多交流"
+ },
+ {
+  "id": "6055",
+  "parent": "0",
+  "date": "2017-09-21T20:43:40+08:00",
+  "author": "winton",
+  "site": "",
+  "text": "请教一个问题，我想在drivers/rtc/rtc-ds1374.c的watchdog设备加一个suspend函数，但是本身是一个miscdevice设备，没有合适的地方加dev_pm_ops.\r\n已经有rtc的dev_pm_ops,但是同一个芯片还有watchdog的功能，不知道该加在哪个地方合适。\r\n#ifdef CONFIG_RTC_DRV_DS1374_WDT\r\n    save_client = client;\r\n    ret = misc_register(&ds1374_miscdev);\r\n    if (ret)\r\n        return ret;\r\n    ret = register_reboot_notifier(&ds1374_wdt_notifier);\r\n    if (ret) {\r\n        misc_deregister(&ds1374_miscdev);\r\n        return ret;\r\n    }\r\n    ds1374_wdt_settimeout(131072);\r\n#endif"
+ },
+ {
+  "id": "6058",
+  "parent": "6055",
+  "date": "2017-09-22T09:40:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@winton：misc设备注册的时候，kernel会为它创建一个struct device，之后的事情，你懂的（参考本文的介绍，应该可以找到放的地方吧？）：\r\n\r\n由之前的文章可知，kernel在电源管理的过程中，会按照如下优先级调用dev_pm_ops中的回调函数，以命令设备实现相应的状态切换：\r\ndev->pm_domain->ops、dev->type->pm、dev->class->pm、dev->bus->pm、dev->driver->pm。\r\n\r\nint misc_register(struct miscdevice * misc)                                     \r\n{\r\n        ...\r\n        dev = MKDEV(MISC_MAJOR, misc->minor);                                   \r\n                                                                                \r\n        misc->this_device = device_create(misc_class, misc->parent, dev,        \r\n                                          misc, \"%s\", misc->name);              \r\n        if (IS_ERR(misc->this_device)) {                                        \r\n                int i = DYNAMIC_MINORS - misc->minor - 1;                       \r\n                if (i < DYNAMIC_MINORS && i >= 0)                               \r\n                        clear_bit(i, misc_minors);                              \r\n                err = PTR_ERR(misc->this_device);                               \r\n                goto out;                                                       \r\n        }\r\n        ...\r\n}"
+ },
+ {
+  "id": "7137",
+  "parent": "0",
+  "date": "2019-01-15T14:59:06+08:00",
+  "author": "ctwillson",
+  "site": "",
+  "text": "hi～只看了这篇文章，有一个问题想请教,platform device driver 一般会填充 device_driver->pm 成员变量，那这里面的是什么时候调用的？什么时候会调用里面的suspend？"
+ },
+ {
+  "id": "8921",
+  "parent": "0",
+  "date": "2024-08-08T15:23:54+08:00",
+  "author": "元神高手",
+  "site": "",
+  "text": "围观首席power managerment专家"
+ }
+]

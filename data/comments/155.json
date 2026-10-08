@@ -1,0 +1,346 @@
+[
+ {
+  "id": "1342",
+  "parent": "0",
+  "date": "2015-03-14T08:48:40+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "psy 也关联了一个thermal zone 的温控接口。虽然实际项目中很少使用到"
+ },
+ {
+  "id": "1343",
+  "parent": "1342",
+  "date": "2015-03-14T10:55:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@schedule：是的，不过如果battery或者charger中集成了温度传感器，还是会用的，而且用着很方便。"
+ },
+ {
+  "id": "1351",
+  "parent": "0",
+  "date": "2015-03-18T13:52:38+08:00",
+  "author": "guan",
+  "site": "",
+  "text": "wowo有关注Project Volta吗？发邮件到公司邮箱和我联系guanjianzhe@allwinnertech.com"
+ },
+ {
+  "id": "1355",
+  "parent": "1351",
+  "date": "2015-03-18T19:32:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@guan：听说过，但没有更多了解。也没有看到在Android L上到底是怎么用的。"
+ },
+ {
+  "id": "1356",
+  "parent": "0",
+  "date": "2015-03-19T09:15:55+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "HaHa,终于看到power-supply这部分了，不会是因为我之前提建议了再加的这部分吧。\r\n最近看了一周代码了，还不如看你一篇文章理解的快。不过看完你的分析，回去看代码，理解会快些~~~\r\n期待以Android为例的介绍啊！！！"
+ },
+ {
+  "id": "1357",
+  "parent": "1356",
+  "date": "2015-03-19T14:33:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@RobinHsiang：呵呵，确实有这个原因。我写文章没有多明确的目标，想到哪写到哪~~~"
+ },
+ {
+  "id": "1358",
+  "parent": "0",
+  "date": "2015-03-19T16:53:51+08:00",
+  "author": "ioleon13",
+  "site": "http://https://github.com/ioleon13",
+  "text": "@wowo，什么时候写一下thermal这块啊"
+ },
+ {
+  "id": "1359",
+  "parent": "1358",
+  "date": "2015-03-19T18:16:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ioleon13：感谢关注，PSY写完后，可以写一下。"
+ },
+ {
+  "id": "1451",
+  "parent": "0",
+  "date": "2015-04-01T15:57:53+08:00",
+  "author": "haichunzhao",
+  "site": "",
+  "text": "刚使用完power supply的接口，展讯PMIC上ADC釆值不准，加了个max17049.这样好多了"
+ },
+ {
+  "id": "1457",
+  "parent": "1451",
+  "date": "2015-04-01T18:42:41+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@haichunzhao：展讯PMIC？芯片内部集成的？发热和功耗做的怎样呢？"
+ },
+ {
+  "id": "1466",
+  "parent": "1457",
+  "date": "2015-04-02T09:35:15+08:00",
+  "author": "haichunzhao",
+  "site": "",
+  "text": "@wowo：不是内部集成的，我们在自己的手机上加的。展讯片子的发热，我觉得还是问题不少，首先他们自己搞了一套cpu变频的策略。而且他们将连上AC时候的电流都给限制了。\r\n待机功耗还好，不过运行时候的功耗做的不是很好。"
+ },
+ {
+  "id": "1467",
+  "parent": "1466",
+  "date": "2015-04-02T09:44:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@haichunzhao：了解。能把PMIC集成到片子里面，而且能把发热做的很好的话，就比较厉害了。我以为展讯这么牛了呢。呵呵。"
+ },
+ {
+  "id": "1469",
+  "parent": "1467",
+  "date": "2015-04-02T10:57:03+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：集成到片子里面，而且能把发热做好的很难把。\r\n模拟的东西本来就是靠时间积累才能做好的。\r\n集成起来主要是能省空间，省钱吧。没看到其他家有这么做的.......\r\n我记得freescale 的PMIC好大一颗呢"
+ },
+ {
+  "id": "1470",
+  "parent": "1467",
+  "date": "2015-04-02T10:57:24+08:00",
+  "author": "haichunzhao",
+  "site": "",
+  "text": "@wowo：其实看展讯driver里的代码就能看到和高通，marvell的差距了，太混乱。还有一个比较乱的，mtk。"
+ },
+ {
+  "id": "1471",
+  "parent": "1469",
+  "date": "2015-04-02T11:19:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：这里的用词有点歧义，应该是集成PMU。PMIC本来就是一颗IC。确实有很多片子集成了PMU，不知道效果和外置的PMIC比起来怎么样。"
+ },
+ {
+  "id": "1472",
+  "parent": "1470",
+  "date": "2015-04-02T11:21:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@haichunzhao：赞成。看一个IC厂商的功力，看一下它的driver就行了。driver能写的很漂亮的话，其它做的一定不差。"
+ },
+ {
+  "id": "1473",
+  "parent": "1472",
+  "date": "2015-04-02T15:09:48+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：嘿嘿\r\n有道理"
+ },
+ {
+  "id": "1512",
+  "parent": "0",
+  "date": "2015-04-16T09:27:11+08:00",
+  "author": "coray",
+  "site": "",
+  "text": "期待 以android系统为例，介绍应用软件怎样利用power supply class"
+ },
+ {
+  "id": "1515",
+  "parent": "1512",
+  "date": "2015-04-16T11:24:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@coray：感谢来访，我会尽快写这部分内容。"
+ },
+ {
+  "id": "1517",
+  "parent": "1466",
+  "date": "2015-04-16T14:44:19+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@haichunzhao：高通现在推的几款8核64位的手机CPU才是发热严重，连相机拍照刚开始没做散热大幅度优化时都能跑到60度。各种散热和功耗问题，一句话高通今年CPU太坑。"
+ },
+ {
+  "id": "1566",
+  "parent": "1357",
+  "date": "2015-04-23T15:49:50+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "@wowo：以Android为例的介绍-------万众瞩目，万众期待啊～～～"
+ },
+ {
+  "id": "1571",
+  "parent": "1566",
+  "date": "2015-04-23T17:20:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@RobinHsiang：哈哈，好吧，我赶紧写~~~"
+ },
+ {
+  "id": "1583",
+  "parent": "1571",
+  "date": "2015-04-23T23:00:42+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "@wowo：哈哈，不急呢。\r\n慢工出细活，要保持蜗窝的精神----慢下来，享受技术。"
+ },
+ {
+  "id": "1621",
+  "parent": "1343",
+  "date": "2015-04-28T22:40:00+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@wowo：目前电池内部一般都有温度传感器。不过手机thermal做法一般没用到psy架构。而是利用了thermal自己的架构中的读各种温度的接口。期待wowo thermal大作。"
+ },
+ {
+  "id": "1622",
+  "parent": "1471",
+  "date": "2015-04-28T22:41:52+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@wowo：目前手机平台没有把pmu也集成吧，除了发热，PMU工艺一般和AP也不同，比较难集成。并且现在主流的方式是用2个PMU,把pmu集成的一般在feature phone时代。"
+ },
+ {
+  "id": "1623",
+  "parent": "1621",
+  "date": "2015-04-28T22:42:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@shoujixiaodao：这些是小driver，只要方便，怎么做都成的。"
+ },
+ {
+  "id": "2432",
+  "parent": "0",
+  "date": "2015-08-06T09:42:45+08:00",
+  "author": "paoshapaoxue",
+  "site": "",
+  "text": "@wowo：\r\n  在看到那个软件架构图的时候，总觉得 PSY driver 这一层应该在 power supply class 的下面才对，直接通过sys 、uevent 和用户空间交互的应该是power supply class 吧。虽然 pwer supply class 也会提供api函数给到具体的PSY drivers 进行调用，但是他的核心功能应该是把供电设备的信心进行抽象反馈给上层，而PSY driver是直接处理和硬件、平台相关的东西，是不会和上层直接交互的。"
+ },
+ {
+  "id": "2433",
+  "parent": "2432",
+  "date": "2015-08-06T09:56:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@paoshapaoxue：是的，您说的非常对。各个文章中有关framework driver和framework core之间的关系，没有统一，有时候为了强调driver，我就把driver放上面了。等等我会统一改一下，无论什么时候，都应该由core提供API。多谢您的指正。"
+ },
+ {
+  "id": "2434",
+  "parent": "2433",
+  "date": "2015-08-06T10:01:57+08:00",
+  "author": "paoshapaoxue",
+  "site": "",
+  "text": "@wowo：@wowo：\r\n   你用的是哪一款画图工具，最近用visio 感觉不怎么满意啊"
+ },
+ {
+  "id": "2435",
+  "parent": "2434",
+  "date": "2015-08-06T10:35:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@paoshapaoxue：PPT。我觉得visio也还行啊，只是它转出来的gif格式没有PPT好，我才用PPT的。"
+ },
+ {
+  "id": "2481",
+  "parent": "0",
+  "date": "2015-08-20T11:53:48+08:00",
+  "author": "0Oo",
+  "site": "",
+  "text": "什么时候更新应用软件怎样利用power supply class啊？"
+ },
+ {
+  "id": "3264",
+  "parent": "0",
+  "date": "2015-12-22T10:02:56+08:00",
+  "author": "龙旋风",
+  "site": "",
+  "text": "大牛什么时候写下你说的第三篇和第二篇，看了第一篇获益匪浅。"
+ },
+ {
+  "id": "3267",
+  "parent": "3264",
+  "date": "2015-12-22T11:04:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@龙旋风：抱歉，最近在和graphic纠结，没有完成电源管理剩下的部分。有时间了会尽快补充的，多谢关注。"
+ },
+ {
+  "id": "3283",
+  "parent": "3267",
+  "date": "2015-12-24T16:05:03+08:00",
+  "author": "龙旋风",
+  "site": "",
+  "text": "@wowo：期待中......"
+ },
+ {
+  "id": "3284",
+  "parent": "1359",
+  "date": "2015-12-24T16:07:04+08:00",
+  "author": "龙旋风",
+  "site": "",
+  "text": "@wowo：同样想学习下thermal这一块，强烈期待中！"
+ },
+ {
+  "id": "3287",
+  "parent": "3284",
+  "date": "2015-12-24T18:38:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@龙旋风：真是惭愧啊，动作有点慢，一直没有写…"
+ },
+ {
+  "id": "3641",
+  "parent": "0",
+  "date": "2016-03-10T14:17:14+08:00",
+  "author": "binq",
+  "site": "",
+  "text": "set_charged，该回调函数的应用场景有点奇怪\r\n——关于这个，有个猜测啊，并联充电的时候，从充电芯片有可能是受主充电芯片控制的，不知道会不会用到这个接口。这礼拜先得学习otg，下礼拜看看并联充电，再验证下"
+ },
+ {
+  "id": "3681",
+  "parent": "3641",
+  "date": "2016-03-17T15:42:15+08:00",
+  "author": "binq",
+  "site": "",
+  "text": "@binq：其实没什么关系，还是set_property(XX_enable)"
+ },
+ {
+  "id": "3682",
+  "parent": "3681",
+  "date": "2016-03-17T17:28:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@binq：没看太懂哦，set_charged这个东东是做什么的？"
+ },
+ {
+  "id": "4047",
+  "parent": "0",
+  "date": "2016-06-07T13:59:16+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "期待后续啊"
+ },
+ {
+  "id": "7656",
+  "parent": "0",
+  "date": "2019-09-17T19:40:49+08:00",
+  "author": "金塔尖",
+  "site": "",
+  "text": "对应有本很老旧的手册，谁知道叫啥么？"
+ },
+ {
+  "id": "8288",
+  "parent": "0",
+  "date": "2021-09-03T15:45:37+08:00",
+  "author": "220",
+  "site": "",
+  "text": "有后续吗"
+ },
+ {
+  "id": "8626",
+  "parent": "0",
+  "date": "2022-06-06T10:55:24+08:00",
+  "author": "十岁卖切糕丶",
+  "site": "",
+  "text": "能基于kernel5.4以上的内核，用gki的方式写个添加节点的文章吗"
+ }
+]

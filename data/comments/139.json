@@ -1,0 +1,178 @@
+[
+ {
+  "id": "1109",
+  "parent": "0",
+  "date": "2015-01-19T19:49:07+08:00",
+  "author": "haichunzhao",
+  "site": "",
+  "text": "ladder 梯子 必须一级一级的向上。所以ladder实现的就是状态必须逐级变化\r\nmenu 菜单  想要哪个直接选中。所以menu实现的就是目标状态直接选中\r\n\r\n最后的问题，我想就是cpu从退出状态到开始工作，要尽可能的快。"
+ },
+ {
+  "id": "1110",
+  "parent": "1109",
+  "date": "2015-01-19T22:21:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@haichunzhao：多谢haichun解惑，这样一解释，还是很贴切、形象的，佩服老外的想象力。\r\n最后的问题，我和你的想法是一样的，优雅的设计啊！"
+ },
+ {
+  "id": "1361",
+  "parent": "0",
+  "date": "2015-03-20T13:44:45+08:00",
+  "author": "coray",
+  "site": "",
+  "text": "看了wowo一系列都文章，总的来说，文章质量都很高。但是，有点意见必须提出的：文章很少用示意图表达模块的框架，例如用UML顺序图等。现在文章内容很多，看了几篇了觉得只见树木，不见树林。希望这方面能改进啊wowo"
+ },
+ {
+  "id": "1362",
+  "parent": "1361",
+  "date": "2015-03-20T18:57:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@coray：感谢coray的建议，您说的非常对，很多时候，一张图比一堆文字所表达的东西都多。但画图很耗时间，以后有机会整理这些文章的时候，我一定遵照您的建议。多谢~~"
+ },
+ {
+  "id": "1843",
+  "parent": "1109",
+  "date": "2015-05-21T10:00:13+08:00",
+  "author": "radar",
+  "site": "",
+  "text": "@haichunzhao：赞，感谢！！"
+ },
+ {
+  "id": "2274",
+  "parent": "0",
+  "date": "2015-07-21T18:48:58+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "透彻。不过我看了下虽然governor费力选择出来合适的idle state，但是到具体平台，比如三星，nvdia等并没有支持到这么多的idle state。\r\n   同时看了下MTK的实现方式。根本没有用kernel现有的这些cpu idle机制。而是根据自己的平台制定出多重cpu idle状态。进入各种idle状态的条件除了考虑CPUidle state中停留超过一定的时间（没有考虑校正因子），还考虑了CLK tree， power domain以及当前cpus online情形。\r\n   所以感觉内核自带的这个gonver结合具体平台不是很亲密。"
+ },
+ {
+  "id": "2278",
+  "parent": "2274",
+  "date": "2015-07-21T21:37:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@shoujixiaodao：个人感觉，ARM和linux kernel的目标是一致的，尽量做到标准化。其它厂商，特别是那些有实力的厂商，就不这么想了。\r\n从技术的角度看，标准化是好的选择，可以更优雅，更高效。但从商业的角度看，就不一定了。"
+ },
+ {
+  "id": "3008",
+  "parent": "0",
+  "date": "2015-11-06T16:27:39+08:00",
+  "author": "szlhappy",
+  "site": "",
+  "text": "有个疑问，”menu将“距离下一个tick来临的时间（由next timer event测量，简称next_timer_us）”作为基础的predicted_us“\r\n1、系统的tick来临时间不应该是固定的么？\r\n2、在启用noHz之后是怎么来预测这个来临时间呢？\r\n\r\n另外，最近在研究cpuidle的退出原因，是否在idle之后schedule的进程就是退出的原因呢？"
+ },
+ {
+  "id": "3010",
+  "parent": "3008",
+  "date": "2015-11-06T17:23:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@szlhappy：1. 对于周期性tick的系统，tick的来临时间是固定的，文中有提到：“menu governor用于tickless system”，因此这个上下文里指的是tickless的系统，也即是no Hz。\r\n\r\n2. 对no Hz系统来说，下一次tick的来临，取决于下一次timer中断，这一般是由系统中最近的一个定时器所决定。而系统不可能只由timer唤醒，因此需要加入校正因子。\r\n\r\nidle退出的原因很简单：有中断发生了，检查一下idle前后的中断数量，看看是哪一个。引发进程调度的原因很多，idle退出后被调度的那个不一定是罪魁祸首。"
+ },
+ {
+  "id": "3015",
+  "parent": "3010",
+  "date": "2015-11-09T08:30:53+08:00",
+  "author": "szlhappy",
+  "site": "",
+  "text": "@wowo：“对no Hz系统来说，下一次tick的来临，取决于下一次timer中断，这一般是由系统中最近的一个定时器所决定。”\r\n\r\n下一次timer中断的时间不也是不可确定的么？那么用下个timer中断来的时间next_timer_us作为基础，本身也是不确定的？"
+ },
+ {
+  "id": "3016",
+  "parent": "3015",
+  "date": "2015-11-09T08:53:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@szlhappy：\"下一次timer中断的时间\"是可以确定的，只要看最近的一个定时器是什么时候expire就行了。"
+ },
+ {
+  "id": "3064",
+  "parent": "0",
+  "date": "2015-11-17T11:16:35+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "有个问题\r\n1：如果exit_latency 设计的不合理，会出现什么样的后果，\r\n2：或者说exit_latency 是怎么得到的呢？\r\n3：exit_latency 是从c state到完全退出的时间吗？"
+ },
+ {
+  "id": "3066",
+  "parent": "3064",
+  "date": "2015-11-17T13:16:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：exit_latency是由CPU的特性决定的，软件无法干涉。一般从平台的设计spec里面能拿到，例如“arch/arm/mach-omap2/cpuidle34xx.c”中的那个数组。\r\n当然，从设计的角度看，这个值越小越好，最好是0，但不可能。软件和硬件的实际情况最好能匹配。\r\n“exit_latency 是从c state到完全退出的时间吗？”，从定义上，应该是，但需要根据实际情况取一个近似值。"
+ },
+ {
+  "id": "5598",
+  "parent": "0",
+  "date": "2017-05-23T19:40:40+08:00",
+  "author": "lj",
+  "site": "",
+  "text": "next_timer_us的值是最近一个timer定时的值，arch timer也算吧？ 在SMP中，next_timer_us并不是只针对自己cpu上的线程或进程来考虑的？ 比如当前cpu 150 us后回有arch timer的中断 ，另一个cpu上 10 us后会有中断，那么next_timer_us的值应该是10us?\r\n\r\n但是 next_timer_us的值是通过tick_nohz_get_sleep_length来获取的，该函数里面是调用 this_cpu_ptr(&tick_cpu_sched)来获取的，这样会影响到前面所说的next_timer_us的值是最近一个timer定时的值，这个结论吗？"
+ },
+ {
+  "id": "5600",
+  "parent": "5598",
+  "date": "2017-05-25T10:12:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lj：next_timer_us在cpufreq的上下文里面，并不关心timer的绝对值，而是关心在下一个timer到期的时候，自己（当前cpu）会sleep多久。\r\n因此，计算这个时间的时候，会考虑所有的timer（global timer或者arch timer）。"
+ },
+ {
+  "id": "5715",
+  "parent": "0",
+  "date": "2017-06-21T16:14:04+08:00",
+  "author": "yellow",
+  "site": "",
+  "text": "@wowo: 为什么我打印log出来，select 函数一直在调用的（一直在操作手机）？ 不是应该在suspend的时候才通过select选择 state level吗？\r\n望指教，谢谢"
+ },
+ {
+  "id": "5716",
+  "parent": "5715",
+  "date": "2017-06-21T16:45:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yellow：cpu的idle和suspend不是一回事，调用频度也不是一个数量级的。\r\n（idle可能会一直在进进出出～）"
+ },
+ {
+  "id": "5717",
+  "parent": "5716",
+  "date": "2017-06-22T09:09:30+08:00",
+  "author": "yellow",
+  "site": "",
+  "text": "@wowo：但奇怪的是我一直在操作手机app，还是能打印出来。这个时候idle还有机会被调度到的吗？"
+ },
+ {
+  "id": "5721",
+  "parent": "5717",
+  "date": "2017-06-22T17:15:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yellow：你可以看看idle的统计信息，操作APP的粒度不够小，cpu进idle很正常。再说了，系统中还不只有一个CPU，所有cpu一直run的可能性很小。"
+ },
+ {
+  "id": "8222",
+  "parent": "3010",
+  "date": "2021-04-23T17:31:22+08:00",
+  "author": "ccczh",
+  "site": "",
+  "text": "@wowo：在新版的内核代码，在la在新版的内核代码，在ladder.c 有针对nohz处理，这似乎和“menu governor用于tickless system”有点出入.\r\n\r\nhttps://elixir.bootlin.com/linux/latest/source/drivers/cpuidle/governors/ladder.c#L191"
+ },
+ {
+  "id": "8637",
+  "parent": "0",
+  "date": "2022-07-01T15:19:49+08:00",
+  "author": "ctwillson",
+  "site": "",
+  "text": "一直没理解在抓到的 systrace 中有个\r\n<idle>-0     (-----) [002] .n.1 39203.759393: cpu_idle: state=4294967295 cpu_id=2\r\n这种 c-state 代表的是什么含义？"
+ },
+ {
+  "id": "9136",
+  "parent": "8637",
+  "date": "2025-02-07T11:07:11+08:00",
+  "author": "pdzhu",
+  "site": "",
+  "text": "@ctwillson：state=4294967295为-1，退出idle态的意思"
+ }
+]

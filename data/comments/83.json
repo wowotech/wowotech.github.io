@@ -1,0 +1,410 @@
+[
+ {
+  "id": "376",
+  "parent": "0",
+  "date": "2014-08-29T19:33:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "补充两句，实际上这份文档我是写不下去了，我准备从具体的中断控制器驱动开始，把各种中断控制器的代码理清楚的话，在回头review这份文档，也许这份文档也是注定要打上“废弃”的标签"
+ },
+ {
+  "id": "382",
+  "parent": "376",
+  "date": "2014-09-01T10:41:08+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：这份文档，看起来也很累啊，哈哈。"
+ },
+ {
+  "id": "385",
+  "parent": "382",
+  "date": "2014-09-01T12:18:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：我写的也很累啊，哈哈\r\n这种抽象层的东西就是理解起来比较困难，因此实际的系统是千奇百怪的，因此，要要足够的底层知识的累积才可以悟到上层逻辑的精妙。"
+ },
+ {
+  "id": "388",
+  "parent": "385",
+  "date": "2014-09-01T15:32:33+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：辛苦了，前辈～～"
+ },
+ {
+  "id": "389",
+  "parent": "385",
+  "date": "2014-09-01T18:21:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：因此实际的系统是千奇百怪的－－－>因为实际的系统是千奇百怪的\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n这里没有精确的表达我的意思，本来我想说的是：目前我还不掌握足够的底层知识，需要积累到一定程度才能领会上层逻辑的精妙。因此，我准备先潜心研究一下具体的中断控制器再回头看看怎么修改这份文档。目前考虑先看看ARM+GIC系统，X86+Multi APIC系统和PowerPC+MPIC系统"
+ },
+ {
+  "id": "611",
+  "parent": "0",
+  "date": "2014-11-04T00:10:36+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "现在回头再看这篇文章，我能体会到你想表达的啦。不得不说，没有一些积累，比较难体会你要描述的这个high level irq event handler 处理的过程。还有您的苦心啊。想尽全力的要把一个抽象的过程描写清楚。"
+ },
+ {
+  "id": "1354",
+  "parent": "0",
+  "date": "2015-03-18T17:23:36+08:00",
+  "author": "Rocky",
+  "site": "",
+  "text": "a、没有注册specific handler。如果没有注册handler，那么保持mask并设定pending标记（这个pending标记有什么作用还没有想明白）。\r\n\r\n@linuxer \r\n应该没有特别的作用，就是代码简洁吧？！要不是为了mark一下IRQS_PENDING，表明此中断曾经来过？？\r\n\r\n if (unlikely(!desc->action || irqd_irq_disabled(&desc->irq_data))) {－－－－－（3） \r\n        if(desc->action)//啰嗦吧？！\r\n            desc->istate |= IRQS_PENDING; \r\n        goto out_unlock; \r\n    }\r\n\r\nps：写的真的挺好的，看第二遍就理解很清楚了！"
+ },
+ {
+  "id": "1371",
+  "parent": "0",
+  "date": "2015-03-23T10:19:54+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "@linuxer:\r\n请教几个问题：\r\n1.有没有同时支持上升沿和下降沿的中断控制器？当然我觉得不可能有同时支持高电平和低电平出发的中断控制器。\r\n2.gpio type 中断，如果是上升沿中断，是不是要使用下拉电阻或者根本不使用上下拉？如果使用了上拉电阻会怎么样？\r\n3.gpio type 中断，如果是高电平，我觉得肯定要使用下拉电阻，将电平钳制在低电平。\r\n3.gpio type 中断，如果是下降沿，是不是要使用上拉电阻，或者不使用。如果使用了下拉电阻会怎么样？\r\n4.gpio type  中断，如果是低电平，我觉得肯定要使用上拉电阻，将电平钳制在高电平。\r\n5.如果gpio中断内部使用了上拉电阻，如果外部在使用上拉电阻，会出现什么副作用吗。我觉得有，两个上拉电源之间会互相影响。\r\n5.如果gpio中断内部使用了下拉电阻，如果外部在使用下拉电阻，会使pin脚的输入电阻变低，有可能高电平信号拉不起来。\r\n6.如果外设使用边沿触发。比如上升沿，那么它的高电平维持时间有要求吗，由高电平变低电平，是外设自己拉低的？还是interrupt controler控制？\r\n\r\n这都是我在工作中碰到的疑问。有些设置不好，会造成中断触发失败，有些会造成功耗过大。在这里想和大家交流一下。"
+ },
+ {
+  "id": "1372",
+  "parent": "1371",
+  "date": "2015-03-23T11:21:41+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "@heziq：同样想了解上面的问题，希望Linuxer能分享宝贵经验..!!"
+ },
+ {
+  "id": "1373",
+  "parent": "1371",
+  "date": "2015-03-23T12:44:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@heziq：非常好的问题，不过问题有些多，呵呵，我晚上再回答你吧"
+ },
+ {
+  "id": "1379",
+  "parent": "0",
+  "date": "2015-03-23T16:33:18+08:00",
+  "author": "heziq",
+  "site": "",
+  "text": "1.有没有同时支持上升沿和下降沿的中断控制器？当然我觉得不可能有同时支持高电平和低电平出发的中断控制器。 ---------- 这句话有问题。是某条中断线是否可以同时支持上升沿和下降沿， 我见过的中断控制器控制某条中断线的时候，只能四种方式触发方式里面选一种。中断控制器当然支持4种触发方式。"
+ },
+ {
+  "id": "1384",
+  "parent": "1371",
+  "date": "2015-03-23T23:15:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@heziq：我单独开了一篇文章讨论这些问题，有兴趣的读者可以到/pull-up-resistor.html去讨论。"
+ },
+ {
+  "id": "1385",
+  "parent": "1354",
+  "date": "2015-03-23T23:21:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Rocky：多谢！有机会的话可以考虑出中断子系统version 2，这次写的很多文档有些自己也没有搞明白，因此很难让读者明白。有些自己明白，写出来又不是那么明白。总之，这次的中断系统的文档就当是爱因斯坦的第一个小板凳吧，虽然粗糙，但是有些板凳的形状，需要后续不断的打磨。"
+ },
+ {
+  "id": "1407",
+  "parent": "1385",
+  "date": "2015-03-24T23:59:16+08:00",
+  "author": "Rocky",
+  "site": "",
+  "text": "@linuxer：‘看第二遍就理解很清楚了。’\r\n\r\n哦，我没有说清楚。之前没有接触过gic，所以看第一遍的时候，我概要的看了关于中断的所有文章，不懂也看完了一遍。\r\n\r\n等回头再看第二遍的时候，发现总体都看明白了。\r\n\r\n谢谢wowotech的付出。"
+ },
+ {
+  "id": "1425",
+  "parent": "1384",
+  "date": "2015-03-26T17:29:58+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "@linuxer：一般所说GPIO导致漏电，是什么导致的？是比如GPIO设置，或者类似中断类型GPIO错误的上下拉导致的吗？\r\n而漏电的方向是从CPU漏到device还是反过来漏？这个主要看电源域吗？\r\n一般怎么样去查证项目中有没有GPIO上面的漏电呢？"
+ },
+ {
+  "id": "1437",
+  "parent": "1425",
+  "date": "2015-03-28T22:22:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@RobinHsiang：多谢你的问题，让我仔细思考了一番（好的问题总是有这样的特性），因此延迟到今天才回复。\r\n一般而言，漏电（leakage current）是一个芯片的DC参数之一，例如Iozl和Iozh这两个参数，分别表示引脚处于高阻（High-Impedance）状态时，外加高电平和低电平的电流值。由于是高阻状态，因此这时候的leakage current应该是很小的（例如1uA）。当然，我想你这里说的不是这种漏电。\r\n我们调试嵌入式设备总是从功能开始，然后性能，特别是功耗，例如待机或者关机电流，我们都是希望能够满足功能的情况下越小越好。当大刀阔斧的针对各个HW block的的检查过后，最后往往会纠缠在GPIO状态的调整上，正确的GPIO设定往往能节省几个毫安的电流（例如如果一个GPIO的状态的错误设定可能导致0.1mA的电流，那么精细的调整10个GPIO可以节省1个mA）\r\n具体电流是source（用你的描述就是从CPU漏到device）还是sink（从device漏到CPU）是和实际的电路连接、cpu pin的特性以及外设芯片引脚的特性相关。例如CPU的一个GPIO是tri state，假设在CPU处于suspend的时候，将该pin设定为high-impedance状态，如果对端连接的是外设芯片的enable引脚（低电平有效），为了稳定的电路状态，可能需要连接一个上拉电阻，确保外设芯片处于disable状态，以便节省功耗。如果CPU处于suspend的时候，将该pin设定为低电平，那么上拉电阻上将有一个不小的电流消耗（假设上拉到3V，上拉电阻是10k，那么CPU在该GPIO上的sink current大约要0.3mA）。如果调整输出成高电平，也不会有这个sink current。\r\n具体的电路形形色色，这里无法每一个都描述了。"
+ },
+ {
+  "id": "1462",
+  "parent": "1437",
+  "date": "2015-04-01T20:44:31+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "@linuxer：多谢。大致上明白了，有些概念再消化消化~~~"
+ },
+ {
+  "id": "1661",
+  "parent": "0",
+  "date": "2015-04-30T20:22:51+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "对level 类型中断的irqs_pending的解读如下：\r\n\r\nLevel irq的IRQS_PENDING状态来自于下面这个patch：\r\ncommit d4dc0f90d243fb54cfbca6601c9a7c5a758e437f\r\nAuthor: Thomas Gleixner <tglx@linutronix.de>\r\nDate:   Wed Apr 25 12:54:54 2012 +0200\r\n\r\n    genirq: Allow check_wakeup_irqs to notice level-triggered interrupts\r\n    \r\n    Level triggered interrupts do not cause IRQS_PENDING to be set when\r\n    they fire while \"disabled\" as the 'pending' state is always present in\r\n    the level - they automatically refire where re-enabled.\r\n    \r\n    However the IRQS_PENDING flag is also used to abort a suspend cycle -\r\n    if any 'is_wakeup_set' interrupt is PENDING, check_wakeup_irqs() will\r\n    cause suspend to abort. Without IRQS_PENDING, suspend won't abort.\r\n    \r\n    Consequently, level-triggered interrupts that fire during the 'noirq'\r\n    phase of suspend do not currently abort suspend.\r\n    \r\n    So set IRQS_PENDING even for level triggered interrupts, and make sure\r\n    to clear the flag in check_irq_resend.\r\n\r\n从注释里面可以看出来：\r\n•\t这个patch是为了解决一个level irq suspend状态错误的问题。\r\n•\t如果这是一个edge irq，假设在中断上半部disable_irq()，然后启动workqueue处理下半部，假设这个时候来了第二个同样的edge irq，系统设置IRQS_PENDING状态之后退出来，假设workqueue运行到一半还没有结束的时候系统进入suspend流程，那么在函数check_wakeup_irqs()会判断这个irq，如果这个irq是一个可以唤醒系统的中断，系统就不会suspend，而是直接退出suspend流程。\r\n•\t如果这是一个level irq，kernel之前的处理办法是先mask当前正在处理的这个irq，如果有相同的irq第二次进来，假设当前irq已经被disable了，那么就什么也不做直接退出。这样的结果是如果系统接下来进入suspend流程，假设这个irq是可以唤醒系统的，它的状态不是pending，所以系统真正进入suspend。这样子从逻辑上面来讲就是错误的，因为一个可以唤醒系统的中断源已经有效了，系统不应该进入suspend。\r\n•\t为了解决这个bug，在level irq重入的时候，如果状态已经是disable了，就设置IRQS_PENDING，然后在check_wakeup_irqs函数里面一旦检测到这种状态之后就会退出suspend流程。当最后enable_irq()函数被呼叫的时候，通过呼叫check_irq_resend()来去掉level irq的pending位。"
+ },
+ {
+  "id": "1685",
+  "parent": "1661",
+  "date": "2015-05-03T22:43:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：先标记一下，陪孩子玩了一天，累死了，脑袋转不动了，明天再理解。anyway，多谢分享！"
+ },
+ {
+  "id": "2745",
+  "parent": "0",
+  "date": "2015-10-11T23:43:52+08:00",
+  "author": "ezword",
+  "site": "",
+  "text": "time_after(jiffies, desc->last_unhandled + HZ/10),\r\n这里应该是1/10 s，既100ms吧，而不是您上面所说的10s吧。"
+ },
+ {
+  "id": "2746",
+  "parent": "2745",
+  "date": "2015-10-12T10:52:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ezword：多谢指正，您说的是对的。"
+ },
+ {
+  "id": "3044",
+  "parent": "0",
+  "date": "2015-11-13T15:52:24+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "问个问题：\r\n在arm 平台上，针对spi 和 ppi有不同的处理函数\r\nspi： \r\nirqreturn_t handle_irq_event(struct irq_desc *desc)\r\n{\r\n\tstruct irqaction *action = desc->action;\r\n\tirqreturn_t ret;\r\n\r\n\tdesc->istate &= ~IRQS_PENDING;\r\n\tirqd_set(&desc->irq_data, IRQD_IRQ_INPROGRESS);\r\n\traw_spin_unlock(&desc->lock);\r\n\r\n\tret = handle_irq_event_percpu(desc, action);\r\n\r\n\traw_spin_lock(&desc->lock);\r\n\tirqd_clear(&desc->irq_data, IRQD_IRQ_INPROGRESS);\r\n\treturn ret;\r\n}\r\n这里有个设置和清除 IRQD_IRQ_INPROGRESS 标记的代码，但是对于ppi的处理函数\r\nhandle_percpu_devid_irq（），这里却没有类似的处理函数， 为什么？ 还有一个问题，我看了一下这个handle_percpu_devid_irq（）的解释， 貌似percou的中断，这里不能加锁 ，为什么？"
+ },
+ {
+  "id": "3046",
+  "parent": "3044",
+  "date": "2015-11-14T00:10:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madang：SPI和PPI有显著的不同，SPI可以被分发到系统中的任何一个cpu上去处理，而PPI是送达指定的CPU，你只要思考一下中断处理代码的并发情况就知道内核为何如此处理了。\r\n\r\npercou的中断不是不能加锁，而是不需要加锁。"
+ },
+ {
+  "id": "3951",
+  "parent": "0",
+  "date": "2016-05-19T11:35:57+08:00",
+  "author": "xie1230",
+  "site": "",
+  "text": "linuxer君写的真是太好了"
+ },
+ {
+  "id": "4016",
+  "parent": "0",
+  "date": "2016-06-01T11:26:13+08:00",
+  "author": "xie1230",
+  "site": "",
+  "text": "hi,linuxer!\r\n我把这一个系列看完了，回头第2遍看这一篇文章了，发现一个问题不解。GIC驱动一篇中介绍说GIC是可以配置中断类型为电平触发，或者边缘触发的。\r\n但是这一篇文章中只介绍的两个high level应该是只支持其中的某一种触发方式的场景。\r\n1.GIC如何做到同时支持电平和边缘触发两种情景的呢？\r\n2.本文中还提到说边缘触发场景不适合GIC，那么如果电平触发适合GIC，GIC又是怎么处理边缘中断的？\r\n3.我看到GIC驱动里面设置的是handle_fasteoi_irq这个handler，和上面介绍的两种有什么区别？\r\n求大神解惑"
+ },
+ {
+  "id": "4021",
+  "parent": "4016",
+  "date": "2016-06-01T19:04:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@xie1230：GIC如何做到同时支持电平和边缘触发两种情景的呢？ \r\n－－－－－－－－－－－－－－－－－－－－－－－－\r\nGIC可以支持电平和边缘触发，但是不可能同时\r\n\r\n本文中还提到说边缘触发场景不适合GIC，那么如果电平触发适合GIC，GIC又是怎么处理边缘中断的？ \r\n－－－－－－－－－－－－－－－－－－－－－－－－\r\n请帮忙把原文贴出来，这份文档有些久远，我有些忘记了\r\n\r\n我看到GIC驱动里面设置的是handle_fasteoi_irq这个handler，和上面介绍的两种有什么区别？ \r\n－－－－－－－－－－－－－－－－－－－－－－－－\r\n这个需要硬件支持EOI，GIC是支持EOI的，因此其high level handler就是handle_fasteoi_irq"
+ },
+ {
+  "id": "4026",
+  "parent": "4021",
+  "date": "2016-06-02T08:54:46+08:00",
+  "author": "xie1230",
+  "site": "",
+  "text": "@linuxer：原文在边缘中断的介绍里面，有如下这么一段：\r\n“ARM＋GIC组成的系统不符合这个类型。虽然GIC提供了IAR（Interrupt Acknowledge Register）寄存器来让ARM来ack中断，但是，在调用high level handler之前，中断处理程序需要通过读取IAR寄存器获得HW interrpt ID并转换成IRQ number，因此实际上，对于GIC的irq chip，它是无法提供本场景中的irq_ack函数的。很多GPIO type的interrupt controller符合上面的条件，它们会提供pending状态寄存器，读可以获取pending状态，而向pending状态寄存器写1可以ack该中断，让interrupt controller可以继续触发下一次中断。 ”\r\n可以看出边缘中断的high level handler是无法给GIC使用的，那么GIC又是如何处理这种类型的中断呢？在handle_fasteoi_irq里面是怎么处理的呢？也许这个就是TODO部分没有介绍的内容吧"
+ },
+ {
+  "id": "4036",
+  "parent": "4026",
+  "date": "2016-06-03T09:01:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@xie1230：在中断子系统中定义了很多high level handler，例如handle_edge_irq、handle_level_irq、handle_fasteoi_irq，具体选择哪一个是和该interrupt controller的type相关的，对于GIC，我们选择了handle_fasteoi_irq"
+ },
+ {
+  "id": "4984",
+  "parent": "0",
+  "date": "2016-12-07T12:10:13+08:00",
+  "author": "理查德1030",
+  "site": "",
+  "text": "hi,linuxer:\r\n    request_irq()用irq:176，但在中断触发的时候确变成了184（下一个GPIO bank），导致irq_flow_handler_t获取寄存器地址到184对应的bank，两个gpio bank用同一硬件中断号75.\r\n\r\n               |--(76)---pl061 A\r\ncpu----GIC-----|                    |-----bank 1, [176,+8]\r\n               |--(75)---pl061 B----|\r\n                                    |-----bank 2, [184,+8]\r\n不知是在那个环节出问题了？？？\r\n\r\n1、注册分配过程：\r\n[pl061_probe:315] irq:75, irq_base:0\r\nirq: irq_create_mapping(0xc8dd2c00, 0x0)\r\nirq: -> using domain @c8dd2c00\r\n[__irq_alloc_descs:444] irq:-1, from:1, cnt:1, node:-1\r\n[__irq_alloc_descs:477] start:176, from:1, cnt:1, nr_irqs:177\r\nirq: irq 0 on domain /soc/amba/gpio@12146000 mapped to virtual irq 176\r\n\r\n2、中断请求过程：\r\n[request_threaded_irq:1637] irq:176, retval:0\r\n[pl061_irq_type;146] offset:0, trigger:8, chip.base:0xfea46000\r\n[pl061_irq_unmask;241] irqd_to_hwirq:1, mask:1\r\n\r\n3、中断低电平触发\r\n[generic_handle_irq:353] hwirq:75, irq:75\r\n[pl061_irq_handler:197] irq_base:184, gpio_base:448\r\n[pl061_irq_handler:200] irq:75, GPIOMIS:0, GPIOIC:0\r\n[pl061_irq_handler:201] chip->base:fea47000, GPIOIS:0, GPIOIE:0\r\n[pl061_irq_handler:202] offset:0, GPIOIEV:0, GPIORIS:253\r\n[pl061_irq_handler;211] irqnumber:184, offset:0, pending:0\r\n/*pending手动置1后的进入high level handler */\r\n[generic_handle_irq:352] irq:184, parent_irq:75\r\n[generic_handle_irq:353] hwirq:0, irq:184\r\n[handle_simple_irq;393] irq:184, desc->action:  (null)\r\n4、中断注册状态\r\n~ # cat /proc/interrupts \r\n           CPU0       CPU1       \r\n 29:       3425       1009       GIC  29  arch_timer\r\n ......\r\n 96:          0      43018       GIC  96  timer\r\n176:          0          0     pl061   0  GPIO\r\nIPI0:          0          0  CPU wakeup interrupts"
+ },
+ {
+  "id": "5350",
+  "parent": "0",
+  "date": "2017-03-21T20:09:59+08:00",
+  "author": "cade",
+  "site": "",
+  "text": "@linuxer:\r\n向大神请教下\r\ndisable_irq_nosync(data->irq);\r\nenable_irq(data->irq);\r\n== > 是操作 interrupt controller还是操作cpu?"
+ },
+ {
+  "id": "5351",
+  "parent": "5350",
+  "date": "2017-03-21T22:19:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@cade：操作interrupt controller"
+ },
+ {
+  "id": "6052",
+  "parent": "0",
+  "date": "2017-09-21T14:26:10+08:00",
+  "author": "Hisenberg",
+  "site": "",
+  "text": "感谢linuxer大神的分享。关于probe_irq_on/off有个疑问。我自己的理解，这两个API是为了让驱动程序在不知道自己的硬件使用的中断线的情况下，找到对应的IRQ number，随后进行specific handler的注册。但是在probe过程中，需要该IRQ number已经分配了irq_desc，并且注册了high-level irq handler。我的问题是：1. 对于ARM平台，现在基本上都是用DTS来告知系统，每个HW module使用的HW Interrupt ID信息，这是否意味着，这类设备都是无需进行irq probe的？2. 如果需要probe，那是不是要求对所有的IRQ number都预先分配了irq_desc并注册了high-level irq handler？对于那些动态分配的方式是不可以进行探测的吗？理解的不深刻，如有谬误，还望指正。谢谢！"
+ },
+ {
+  "id": "6151",
+  "parent": "0",
+  "date": "2017-10-30T10:16:36+08:00",
+  "author": "linuxer_fy",
+  "site": "http://no home page yet",
+  "text": "\"什么时候会resend一个中断呢？我们考虑一个简单的例子：\r\n（1）CPU A上正在处理x外设的中断\r\n（2）x外设的中断再次到来（CPU A已经ack该IRQ，因此x外设的中断可以再次触发），这时候其他CPU会处理它（mask and ack），并设置该中断描述符是pending状态，并委托CPU A处理该pending状态的中断。需要注意的是CPU已经ack了该中断，因此该中断的硬件状态已经不是pending状态，无法触发中断了，这里的pending状态是指中断描述符的软件状态。\r\n“\r\n针对(2)。之前你提到过同一个IRQ上的中断是不会嵌套的。\r\n那和这里的描述是否有冲突？\r\n在（1）中CPU A刚开始处理x外设中断时，不应该也是mask and ack吗。如此一来x外设应该不会再产生中断才是。"
+ },
+ {
+  "id": "6152",
+  "parent": "6151",
+  "date": "2017-10-30T10:58:55+08:00",
+  "author": "linuxer_fy",
+  "site": "http://no home page yet",
+  "text": "@linuxer_fy：追加：根据handle_edge_irq的代码来看\r\n\r\nA. 产生x外设的中断，如果是”首次“，则只是调用ack成员函数(让外设可以重新产生中断)\r\nB. 再产生x外设的中断，由于A中某CPU正在处理，所以B产生的中断只是设置pending，同时调用mask_and_ack(让外设禁止产生中断）\r\n\r\n如此看来，同一个IRQ的中断还是可以嵌套的。这和linuxer之前的说法:在旧的内核中允许中断嵌套，但是嵌套永远都是发生在不同的irq之间，同一种irq，无论过去还是现在都不会嵌套。\"有出入了吧。\r\n\r\n注：有些ack成员函数做的内容其实是mask+ack(比如X86上的8259A芯片)，如果是这种case，则同一个IRQ上是不会产生中断嵌套的。"
+ },
+ {
+  "id": "6266",
+  "parent": "0",
+  "date": "2017-11-30T10:45:17+08:00",
+  "author": "linuxer_fy",
+  "site": "http://no home page yet",
+  "text": "@linuxer\r\n针对handle_edge_irq的疑问 (版本3.4.x)\r\n进入中断时CPU自动关闭本地中断\r\nhandle_edge_irq{\r\n  raw_spin_lock(&desc->lock);\r\n  \r\n  do -while\r\n\r\n  raw_spin_unlock(&desc->lock);\r\n}\r\n由于当前CPU关闭中断，所以本CPU上不会再次进入handle_edge_irq，又由于有spin的限制，其他CPU也不会再次进入handle_edge_irq，如此一来，什么情况下会产生设定pending状态的case??\r\n\r\n\tif (unlikely(irqd_irq_disabled(&desc->irq_data) ||\r\n\t\t     irqd_irq_inprogress(&desc->irq_data) || !desc->action)) {\r\n\t\tif (!irq_check_poll(desc)) {\r\n\t\t\tdesc->istate |= IRQS_PENDING;\r\n\t\t\tmask_ack_irq(desc);\r\n\t\t\tgoto out_unlock;\r\n\t\t}\r\n\t}\r\n\r\n\r\n另外linuxer在讨论这一块内容时，是不是假定HW interrupt ID与IRQ number一一对应？\r\n如果情况是在同一个irq domain中，两个HW interrupt ID对应一个IRQ number呢？\r\n当需要执行mask时，mask_ack_irq(desc);的结果是否是正确mask到某个HW interrupt ID呢？\r\n我看 struct irq_desc -> struct irq_data -> hwirq这个成员是单的\r\n如果某个 irq_desc是被多个HW interrupt共用的情况下，mask的动作是什么样的？\r\nlinuxer本文中提到的mask，比较详细的说法应该是：mask该中断控制器上的某个HW interrupt ID吧。\r\n而没有mask IRQ number一说。"
+ },
+ {
+  "id": "6268",
+  "parent": "0",
+  "date": "2017-11-30T11:14:06+08:00",
+  "author": "jak",
+  "site": "http://no home page yet",
+  "text": "问题1：同一个irq domain中，多个HW interrupt ID能否映射到同一个IRQ number?\r\n问题2：多个HW interrupt ID处于多个irq domain中，能否映射到同一个IRQ number?\r\n问题3：(如果允许多对一映射)那么在high level handler中如果要触发mask时，怎么样根据IRQ number反过去知道要mask哪个HW interrupt"
+ },
+ {
+  "id": "6609",
+  "parent": "0",
+  "date": "2018-03-13T16:20:06+08:00",
+  "author": "Jarson",
+  "site": "",
+  "text": "int generic_handle_irq(unsigned int irq) \r\n{ \r\n    struct irq_desc *desc = irq_to_desc(irq); －－－通过IRQ number获取该irq的描述符\r\n    if (!desc) \r\n        return -EINVAL; \r\n    generic_handle_irq_desc(irq, desc);－－－－调用high level的irq handler来处理该IRQ \r\n    return 0; \r\n}\r\n在获取irq描述符时，只有一个传入参数irq（IRQ number），考虑有级联中断控制器的情况，如何确保 irq_to_desc返回正确的irq描述符？irq_to_desc是如何知道所传入的IRQ number位于哪一个 irq domain？"
+ },
+ {
+  "id": "6610",
+  "parent": "6609",
+  "date": "2018-03-13T16:29:57+08:00",
+  "author": "Jarson",
+  "site": "",
+  "text": "@Jarson：补充一个GPIO type中断控制器的中断处理函数，该函数在进一步处理GPIO中断时，也调用了generic_handle_irq函数，但传入的irq参数值为GPIO irq domain下的IRQ number。\r\nstatic void gpio_irq_handler(unsigned irq, struct irq_desc *desc)\r\n{\r\n        struct irq_chip *chip = irq_desc_get_chip(desc);\r\n        struct irq_data *idata = irq_desc_get_irq_data(desc);\r\n        struct at91_gpio_chip *at91_gpio = irq_data_get_irq_chip_data(idata);\r\n        void __iomem    *pio = at91_gpio->regbase;\r\n        unsigned long   isr;\r\n        int             n;\r\n\r\n        chained_irq_enter(chip, desc);\r\n        for (;;) {\r\n                /* Reading ISR acks pending (edge triggered) GPIO interrupts.\r\n                 * When there none are pending, we're finished unless we need\r\n                 * to process multiple banks (like ID_PIOCDE on sam9263).\r\n                 */\r\n                isr = __raw_readl(pio + PIO_ISR) & __raw_readl(pio + PIO_IMR);\r\n                if (!isr) {\r\n                        if (!at91_gpio->next)\r\n                                break;\r\n                        at91_gpio = at91_gpio->next;\r\n                        pio = at91_gpio->regbase;\r\n                        continue;\r\n                }\r\n\r\n                n = find_first_bit(&isr, BITS_PER_LONG);\r\n                while (n < BITS_PER_LONG) {\r\n                        generic_handle_irq(irq_find_mapping(at91_gpio->domain, n));\r\n                        n = find_next_bit(&isr, BITS_PER_LONG, n + 1);\r\n                }\r\n        }\r\n        chained_irq_exit(chip, desc);\r\n        /* now it may re-trigger */\r\n}"
+ },
+ {
+  "id": "6612",
+  "parent": "6610",
+  "date": "2018-03-14T11:08:49+08:00",
+  "author": "Jarson",
+  "site": "",
+  "text": "@Jarson：自问自答了，继续跟踪irq描述符分配代码 irq_alloc_desc_from 函数和 irq_domain_associate 函数，可知道 virq 也即IRQ number在内核空间是唯一的，而 hwirq 是与irq domain相关。简单来说，virq 值不会重复，而 hwirq 在不同的irq domain中可能相同。"
+ },
+ {
+  "id": "6737",
+  "parent": "0",
+  "date": "2018-05-06T18:21:09+08:00",
+  "author": "jianwei",
+  "site": "",
+  "text": "中断描述符状态有 IRQD_IRQ_MAKSED 和 IRQD_IRQ_DISABLED，它们区别是什么？"
+ },
+ {
+  "id": "6827",
+  "parent": "0",
+  "date": "2018-06-29T10:47:06+08:00",
+  "author": "abcde1120",
+  "site": "",
+  "text": "（2）ack该中断。对于中断控制器，一旦被ack，表示该外设的中断被enable，硬件上已经准备好触发下一次中断了。再次触发的中断会被调度到其他的CPU上。\r\n》》》》》》》》》》\r\n在V2 specification里说，对于SPI，只有EOI后，才会再次触发中断。ACK后，其它CPU应该是收不到中断的吧\r\n\r\n原文：\r\n3.2  General handling of interrupts\r\n....\r\n...\r\n     For SPIs,the active status of an interupt is common to all CPU interface. This means that if an interrupt is active or active and pending on one CPU then it is not signaled on any CPU interface."
+ },
+ {
+  "id": "7634",
+  "parent": "0",
+  "date": "2019-08-30T11:18:02+08:00",
+  "author": "nowar",
+  "site": "",
+  "text": "在阅读前一篇文章的中断流程里面，没有看到哪个环节需要中断自动探测啊。这篇文章怎么突然就出现了中断自动探测的东东？什么情景下需要使用它呢？不是在中断控制器 和 设备driver的初始化流程中已经自动mapping了irq number和hw irq id了吗？这个过程之后它已经知道自己的irq number了啊"
+ },
+ {
+  "id": "7635",
+  "parent": "0",
+  "date": "2019-08-30T11:20:35+08:00",
+  "author": "nowar",
+  "site": "",
+  "text": "@linuxer，\r\n这些博客不维护了吗？"
+ },
+ {
+  "id": "7637",
+  "parent": "7635",
+  "date": "2019-08-31T14:00:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@nowar：工作太忙，近一段时间估计是无法回答大家的问题了。"
+ },
+ {
+  "id": "8057",
+  "parent": "6052",
+  "date": "2020-07-21T11:58:04+08:00",
+  "author": "每天一小步",
+  "site": "",
+  "text": "@Hisenberg：同样有这些疑惑，现在你搞懂了吗？linuxer能解答一下不？谢谢"
+ },
+ {
+  "id": "8084",
+  "parent": "0",
+  "date": "2020-08-06T09:56:49+08:00",
+  "author": "VincentLi",
+  "site": "",
+  "text": "请教大神一个问题，对于 每一个 IRQ number 对应的 irq_desc，都必须注册了 high-level irq handler吗？\r\n但是我看一些驱动代码，是直接 devm_request_irq 这一步的，并没有注册 high-level irq handler ，有点疑惑"
+ },
+ {
+  "id": "8149",
+  "parent": "0",
+  "date": "2020-11-30T16:32:30+08:00",
+  "author": "zgh",
+  "site": "",
+  "text": "即使是dts告知系统,如果你无法获知virq,你之所以问这个问题,你是不是没搞清楚virq和hwirq 以及irq_domain的关系?"
+ },
+ {
+  "id": "8150",
+  "parent": "6266",
+  "date": "2020-11-30T16:34:00+08:00",
+  "author": "zgh",
+  "site": "",
+  "text": "@linuxer_fy：不存在同一个irq domain中，两个HW interrupt ID对应一个IRQ number"
+ },
+ {
+  "id": "8189",
+  "parent": "0",
+  "date": "2021-01-26T21:27:35+08:00",
+  "author": "linux初学者",
+  "site": "",
+  "text": "是的，我看到这个描述也很困惑，linux里设置eionmod=1，ack只是获取中断号并将中断状态置为active，eoi只是将当前cpu上的running prority改为idle，idr才真正结束中断"
+ },
+ {
+  "id": "8577",
+  "parent": "8084",
+  "date": "2022-03-18T13:51:59+08:00",
+  "author": "yz",
+  "site": "",
+  "text": "@VincentLi：调用devm_request_irq前先要获取irq，例如platform_get_irq函数；\r\n这里以GIC为例：\r\nplatform_get_irq\r\n  -->of_irq_get\r\n      -->irq_create_of_mapping\r\n         -->irq_domain_associate\r\n            -->domain->ops->map(domain, virq, hwirq);\r\n               -->gic_irq_domain_map\r\n                  -->irq_domain_set_info(d, irq, hw, &gic_chip, \r\n                      d->host_data, handle_fasteoi_irq, NULL, NULL);"
+ },
+ {
+  "id": "8760",
+  "parent": "0",
+  "date": "2023-03-24T14:51:00+08:00",
+  "author": "YG",
+  "site": "",
+  "text": "博主14年写的文章，现在读起来依然受益匪浅，佩服！！\r\n真想知道博主是怎么一步步到达这种水平的"
+ }
+]

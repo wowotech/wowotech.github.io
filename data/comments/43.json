@@ -1,0 +1,298 @@
+[
+ {
+  "id": "146",
+  "parent": "0",
+  "date": "2014-05-20T12:30:55+08:00",
+  "author": "有理想的咸鱼",
+  "site": "",
+  "text": "针对5.1 section，我的看法如下：\r\n实际上，硬件是分三个层次：\r\n1、用的哪一类型CPU，是X86的还是ARM的（对应linux kernel中的arch/XXX目录）\r\n2、如果使用的是X86的CPU，那么具体使用哪一种CPU，是AMD的Geode 处理器还是intel的mid处理器。如果是ARM，那么使用的是S3C2410还是OMAP3530（在ARM中，我看不出什么对应关系。对与X86平台，对应linux kernel中的arch/platform/XXX目录）\r\n3、具体的target board。这个是和具体的项目相关，和CPU以及周边的外设相关。具体的target board必须要选择一个CPU platform以及外设芯片（对应linux kernel中的driver目录）。而描述board相关的信息对应对应linux kernel中的arch/platform/XXX/board-xxx.c文件。\r\n\r\n对于arch/arm目录下的东西，非常凌乱，希望近期的kernel release能够改善。我理想的目录结构是：\r\n1、arch保持不变，映射CPU architecture的概念\r\n2、建立platform目录，映射CPU platform的概念。\r\n3、选择了某个CPU platform的target board代码应该尽量的少（和CPU platform相关的代码是公共代码，并非board specific，和外设相关的代码在driver目录）并集中在一个文件（我看不出来这个board specific文件存在的必要性，可能有些board fixup吧）。\r\n\r\nMachine的概念在ARM上比较模糊。在定义每一个SOC的时候，使用了ARCH这个术语，例如对于Marvell的PXA2xx/PXA3xx-based的CPU platform，arm kernel使用了ARCH_PXA这样的定义，而在board specific文件，例如mainstone.c中，我们需要定义一个MAINSTONE相关的MACHINE。linus大骂ARM linux的代码“this whole ARM thing is a f*cking pain in the ass”也是有些道理的。"
+ },
+ {
+  "id": "148",
+  "parent": "146",
+  "date": "2014-05-20T15:58:04+08:00",
+  "author": "linux_fans",
+  "site": "",
+  "text": "@有理想的咸鱼：确实，arch/arm目录是很凌乱的。所以那些概念性的东西，如Architecture，如Machine，其定义也不是很清晰。我们看内核的时候，不要太纠结这些词汇就是了。"
+ },
+ {
+  "id": "149",
+  "parent": "0",
+  "date": "2014-05-20T17:09:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "有点歪楼哦，本文的主题是电源管理，呵呵～～～不过我喜欢这个话题\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n实际上，按照arch/SOC/board这样的代码组织是否OK？对于很多的ARM soc，其实它的很多controller都是购买的，例如USB OTG controller，可能都是购买自同一家公司。而目前的ARM的代码组织导致很多的代码重复。\r\n也许确实应该从功能角度进行目录规划......"
+ },
+ {
+  "id": "152",
+  "parent": "149",
+  "date": "2014-05-21T08:53:58+08:00",
+  "author": "linux_fans",
+  "site": "",
+  "text": "@linuxer：这里的SOC具体是什么含义呢？目前按照arch/arm来分，也有一定的合理性，因为有很多ARM相关的很新代码，是共用的。"
+ },
+ {
+  "id": "153",
+  "parent": "152",
+  "date": "2014-05-22T09:06:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linux_fans：抱歉，我写的太快了，没有检查，arch/arm是必须的，应该是这样的：\r\narch/SOC/board  －－－修改成－－－》 arch/arm/platform-SOC/board specific\r\nNote：当引入Device Tree之后，board specific的文件不应该存在了。\r\n\r\n也就是说：\r\n1、arm目录保存所有的ARM cpu体系结构的东西以及platform cross的代码。这里的platform是指SOC family，每个公司可能出若干个SOC family以便适应不同的市场。当前的plat-pxa、plat-omap等不是我想要的。每个ARM vendor都是以自己为中心，只是考虑自己平台的通用性，而不是ARM platform的通用性。一个简单的例子就是不同的ARM vendor公司会购买同样的IP block，毫无疑问，这些代码应该是被复用的，不过有些无节操的厂商会copy and paste，然后稍加修改。当然，厂商这么做也情有可原，毕竟他们的目标只是让linux kernel在他们的平台上跑起来，不关心整个ARM LINUX code是否优雅。\r\n2、platform-SOC目录包含了各个ARM SOC family的代码，这些代码必须是platform specific的，如果有共用性，那么需要抽取出来，并入到上级目录。例如GPIO driver，各个ARM SOC平台都有自己的GPIO driver，但也不过是copy and paste的产物，为何不进一步抽象？（新的内核已经这么做了，不过我还没有去深入了解），更进一步，是否所有的arch都要同样的问题？基于MIPS的SOC也是一样的需要GPIO，那么是否GPIO变成driver目录的一个block？（写完上面的文字，我去瞄了一眼3.14的内核，其实现在已经是这么做的了，呵呵～～）\r\n3、ARM已经引入了device tree来解决hardcode board specific的问题"
+ },
+ {
+  "id": "154",
+  "parent": "0",
+  "date": "2014-05-22T12:05:14+08:00",
+  "author": "动漫情报站",
+  "site": "http://cc.yikehome.com/",
+  "text": "这个确实可以看看哈"
+ },
+ {
+  "id": "155",
+  "parent": "154",
+  "date": "2014-05-22T12:32:38+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@动漫情报站：谢谢~~"
+ },
+ {
+  "id": "357",
+  "parent": "0",
+  "date": "2014-08-27T16:15:33+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "hi 蜗蜗\r\n有一个问题\r\ncase LINUX_REBOOT_CMD_POWER_OFF:\r\n\tkernel_power_off();\r\n\tdo_exit(0);\r\n\tbreak;\r\n是不是正常情况下，do_exit(0)，应该不会执行是不是这样？"
+ },
+ {
+  "id": "358",
+  "parent": "357",
+  "date": "2014-08-27T17:15:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@forion：我个人的看法是这样的：\r\nlinux的reboot指令包括shutdown、halt、power off和restart，这些指令中，只有power off可能不被底层的平台支持（特别是早期的基于ARM的嵌入式平台），以ARM为例，可以参见arch/arm/kernel/process.c中machine_xxx的实现。\r\n因此，很有可能，kernel_power_off()的调用会直接返回，do_exit会被执行。\r\n\r\n下面是arm平台power off的实现，可以佐证这一点：\r\nvoid machine_power_off(void)\r\n{\r\n    local_irq_disable();\r\n    smp_send_stop();\r\n\r\n    if (pm_power_off)\r\n        pm_power_off();\r\n}"
+ },
+ {
+  "id": "359",
+  "parent": "358",
+  "date": "2014-08-27T19:12:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：pm_power_off()这个函数应该是machine或者是board specific的，有的板子还是支持这个函数的，在这个函数中，可以shutdown整个系统的电源。在这种情况下，do_exit(0)还是有可能不执行的。"
+ },
+ {
+  "id": "360",
+  "parent": "359",
+  "date": "2014-08-27T20:13:29+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：我现在就是这样的，因为我看到pm_power_off（）把所有的电都关了，按照道理，do_exit(0)应该不会执行到，如果执行到了那就有可能走到panic里面"
+ },
+ {
+  "id": "361",
+  "parent": "360",
+  "date": "2014-08-27T20:20:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@forion：关电的动作可能会有延迟，CPU可以挣扎一会儿。所以一般会在pm_power_off中加一些延时。"
+ },
+ {
+  "id": "362",
+  "parent": "361",
+  "date": "2014-08-27T23:09:19+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：延时有点困难吧，中断已经关闭了。其他的CPU已经停下来，只剩下一个boot CPU做最后的清理工作。\r\n对于X86平台，我估计kernel_power_off之后程序已经跑到BIOS里面去了，应该是会不来了。"
+ },
+ {
+  "id": "469",
+  "parent": "0",
+  "date": "2014-09-27T10:23:37+08:00",
+  "author": "perr",
+  "site": "",
+  "text": "#define LINUX_REBOOT_MAGIC1     0xfee1dead\r\n#define LINUX_REBOOT_MAGIC2     672274793 //0x28121969 Linus Torvalds\r\n#define LINUX_REBOOT_MAGIC2A    85072278  //0x05121996\r\n#define LINUX_REBOOT_MAGIC2B    369367448 //0x16041998\r\n#define LINUX_REBOOT_MAGIC2C    537993216 //0x20112000\r\n\r\nFROM wikipedia:\r\nTove and Linus were later married and have three daughters, Patricia Miranda (born 1996), Daniela Yolanda (born 1998), and Celeste Amanda (born 2000), two of whom were born in the United States.\r\n\r\nlife is a interesting thing. isn't it?\r\n汉字"
+ },
+ {
+  "id": "470",
+  "parent": "469",
+  "date": "2014-09-27T18:52:07+08:00",
+  "author": "蜗蜗~",
+  "site": "",
+  "text": "@perr：呵呵，是啊，Linus一家4口的生日都在里面了。"
+ },
+ {
+  "id": "1503",
+  "parent": "0",
+  "date": "2015-04-15T12:55:15+08:00",
+  "author": "Tekkaman Ninja",
+  "site": "",
+  "text": "Reboot系统调用的实现位于“kernel/sys.c”  --> 现在在 kernel/reboot.c 了"
+ },
+ {
+  "id": "1504",
+  "parent": "1503",
+  "date": "2015-04-15T13:11:27+08:00",
+  "author": "Tekkaman Ninja",
+  "site": "",
+  "text": "@Tekkaman Ninja：kernel_restart、kernel_halt和kernel_power_off 这三个接口也位于“kernel/reboot.c”"
+ },
+ {
+  "id": "1505",
+  "parent": "1504",
+  "date": "2015-04-15T14:24:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Tekkaman Ninja：多谢提醒~~\r\n这个世界变化真快啊，呵呵~~"
+ },
+ {
+  "id": "1666",
+  "parent": "362",
+  "date": "2015-05-01T22:38:21+08:00",
+  "author": "shoujixiaodao",
+  "site": "",
+  "text": "@linuxer：在手机的做法一般如下\r\n1，pm_power_off()这个函数最终machine 都会实现的。\r\n2，machine的实现方式大都一样。即控制PMIC。让PMIC给soc断电\r\n3，下完如上第二点的命令后。虽然控制pmic掉电。但是一般pmic的输出电源都有滤波电容。所以电源是慢慢掉下去的。即下电后cpu还能挣扎执行一些命令\r\n4，如上第3点。所以一般加一些delay\r\n5.有的做法还会做一些判断。比如我插入充电器。执行了关机命令。一般充电器插入pmic的时候，即使cpu发命令让pmic下电。pmic也不会掉电。所以如果延时过后会check是否插入充电器。如果插入则重启手机，以便进入关机充电模式。"
+ },
+ {
+  "id": "1674",
+  "parent": "0",
+  "date": "2015-05-02T21:14:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@shoujixiaodao：在手机的做法一般如下……感谢分享，总结很清楚。"
+ },
+ {
+  "id": "3240",
+  "parent": "0",
+  "date": "2015-12-15T11:04:34+08:00",
+  "author": "swingboard",
+  "site": "",
+  "text": "个人认为do_exit(0)还是会调用的，这个函数的最后调用：\r\nfor (;;)\r\n    cpu_relax();    /* For when BUG is null */\r\n不就是傻等着掉点吗？\r\n请指教。"
+ },
+ {
+  "id": "3242",
+  "parent": "3240",
+  "date": "2015-12-15T17:20:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@swingboard：是不是能走到这里，是取决于pm_power_off中做了什么事情的。举2个极端的例子：\r\n如果pm_power_off直接断电，肯定无法到这里；\r\n如果pm_power_off什么都不做，肯定能到这里。"
+ },
+ {
+  "id": "4400",
+  "parent": "0",
+  "date": "2016-08-14T17:22:24+08:00",
+  "author": "lamaboy",
+  "site": "",
+  "text": "你好，， \r\n我在 追踪 pm_power_off 的时候，如下发现，在关机之前把所有的设备都关闭，或者 put_device(dev)了，可是下面部分的挂机是通过i2c 写寄存器，让pmic 断电，， 这里还有什么特殊的设置存在吧\r\n\r\n具体看如下代码；\r\n\r\npm_power_off = act8865_power_off;\r\n\r\nstatic void act8865_power_off(void)\r\n{\r\n\tstruct act8865 *act8865;\r\n\r\n\tact8865 = i2c_get_clientdata(act8865_i2c_client);\r\n\tregmap_write(act8865->regmap, act8865->off_reg, act8865->off_mask);\r\n\twhile (1);\r\n}"
+ },
+ {
+  "id": "4401",
+  "parent": "4400",
+  "date": "2016-08-15T12:26:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lamaboy：你可以检查一下，i2c有关的Shutdown接口应该没有实现（或者没有真的Shutdown），或者这里就不会起作用了。"
+ },
+ {
+  "id": "4404",
+  "parent": "4401",
+  "date": "2016-08-15T20:36:47+08:00",
+  "author": "lamaboy",
+  "site": "",
+  "text": "@wowo：谢谢，， 你一说我就明白是怎么回事了，，谢谢啊1"
+ },
+ {
+  "id": "5133",
+  "parent": "0",
+  "date": "2017-01-11T15:45:56+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "看了一遍又一遍，螺旋上升的感觉还是不错的\r\n窝窝加油"
+ },
+ {
+  "id": "5137",
+  "parent": "5133",
+  "date": "2017-01-12T13:31:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@maze：加油～！"
+ },
+ {
+  "id": "5830",
+  "parent": "148",
+  "date": "2017-07-21T11:08:31+08:00",
+  "author": "wildbook",
+  "site": "",
+  "text": "@linux_fans：其实arch/arm下的代码不乱，你们使用的是老kernel,新的kernel把平台相关的代码都放在dtsi中（即：arch/arm64/boot/dts）;"
+ },
+ {
+  "id": "5950",
+  "parent": "0",
+  "date": "2017-08-25T10:45:46+08:00",
+  "author": "liuxingyu",
+  "site": "",
+  "text": "我是一个linux小菜鸟，想要搞懂内核却又无从下手，无意中发现了这个网站，连续看了好几篇文章，让我有了那么一丝丝顿悟的感觉，博主文章写的太好了，逻辑缜密，条理清晰！感谢wowo和linuxer大神的分享。\r\n看了这篇文章，我有个问题想要请教下wowo：\r\n文章中说到的“调用machine-dependent的restart接口，实现真正的restart。该接口是一个回调函数，由“arch/arm/kernel/process.c”声明，由具体的machine代码实现。格式如下： \r\nvoid (*arm_pm_restart)(char str, const char *cmd) = null_restart; \r\nEXPORT_SYMBOL_GPL(arm_pm_restart);”\r\n我跟随着大神的分析思路找到了这里，发现null_restart实现如下：\r\nstatic void null_restart(char mode, const char *cmd)\r\n{\r\n}\r\n这个函数啥都没干，而我在应用层调用了system(\"reboot\");设备能够重启成功，难道设备重启只需要前面所有设备shutdown就可以了么？\r\n还有我看了下machine_power_off的实现，\r\nvoid machine_power_off(void) \r\n{ \r\n    local_irq_disable(); \r\n    smp_send_stop(); \r\n\r\n    if (pm_power_off) \r\n        pm_power_off(); \r\n}\r\npm_power_off这个函数并没有实现，那么应用层power_off，设备会关机成功吗？"
+ },
+ {
+  "id": "5951",
+  "parent": "5950",
+  "date": "2017-08-25T11:21:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@liuxingyu：你去查一下代码，pm driver需要用一些手段将arm_pm_restart（这是一个变量）设置为真正的restart函数。至于具体的手段，不用的kernel版本处理方法有些差异，就不给你贴代码了，搜索一下arm_pm_restart关键字就找到了。"
+ },
+ {
+  "id": "6157",
+  "parent": "0",
+  "date": "2017-11-01T10:28:01+08:00",
+  "author": "Jackie",
+  "site": "",
+  "text": "@wowo\r\n@linuxer:\r\n我遇到一个问题，现在没什么思路，不知大神们有没有遇到过：\r\n1.前提是只有一个keypad可以trigger power on的动作（查过spec和线路图）\r\n2.写PowerIC寄存器，将keypad 配置成不可以trigger power on的动作（也就是理论上即使关机了，在PowerIC不断电的情况下，没有任何硬件讯号可以触发开机动作）\r\n3.执行shutdown的动作（命令行和AP调用都有尝试）\r\n4.系统并没有关机而是重启了。log中可以明确看到执行到了machine_power_off函数（高通平台）中的最后一步：拉低PS_HOLD\r\n5.我去读取之前配置的PowerIC的寄存器值，发现kepad又被配置成可以trigger power on了\r\n\r\n以上就是问题描述，没什么思路...\r\n另外，请问reboot重启的命令，会断PowerIC的电吗？因为我猜想会不会shutdown的driver实现有问题，它实际执行的是reboot的操作。"
+ },
+ {
+  "id": "6471",
+  "parent": "0",
+  "date": "2018-01-15T21:49:39+08:00",
+  "author": "mars8888",
+  "site": "",
+  "text": "Hi 版主您好，\r\n\r\n請教如果想判斷當使用者透過手動下adb reboot的方式做重開機時，然後當下去設定某個persist.prop，我應該在哪個目錄檔案去做修改較OK呢?? 我試過了在system/core/reboot/reboot.c修改，但不work。也看不到自己的log。"
+ },
+ {
+  "id": "6899",
+  "parent": "0",
+  "date": "2018-08-17T17:17:28+08:00",
+  "author": "大道无门",
+  "site": "http://mupb",
+  "text": "Hi 楼主，\r\n两周前我遇到了一个关于suspend/resume的defect，主要表现为在执行echo > mem /sys/power/state的时候,进行usb格式化，就一直buffer i/o出错。 U-boot下一切正常，用uefi进行pm起来之后就有这个问题。前提是同一个linux kernel，同一个dts，同一个板子。\r\n后来我将注意力转移到了PM上面，因为用uefi作为boot-loader的时候，休眠之前格式化u盘都是正常的，我们自己写了限定系统休眠醒来时间的驱动。但是之后就不正常了，所以我想是PM可能影响了什么。\r\n我dump了在PM期间usb驱动的寄存器，没发现什么异常。\r\n所以，还是云里雾里的......\r\n已经被这个问题卡了两周了......\r\n求帮助......"
+ },
+ {
+  "id": "6905",
+  "parent": "6899",
+  "date": "2018-08-22T09:26:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@大道无门：休眠的过程中，操作文件系统？操作的时间点是什么？是不是在suspend的过程中，格式化的还未完成？"
+ },
+ {
+  "id": "6919",
+  "parent": "1503",
+  "date": "2018-08-30T17:19:22+08:00",
+  "author": "大道无门",
+  "site": "http://mupb",
+  "text": "@Tekkaman Ninja：哈哈，我刚准备说呢"
+ },
+ {
+  "id": "6942",
+  "parent": "0",
+  "date": "2018-09-10T17:46:09+08:00",
+  "author": "天津网站建设",
+  "site": "http://https://www.pangookj.com",
+  "text": "路过看看"
+ },
+ {
+  "id": "6997",
+  "parent": "0",
+  "date": "2018-10-22T11:16:36+08:00",
+  "author": "初入空门",
+  "site": "",
+  "text": "hi 麻烦问下：最新版的kernel(v4.9)在device_shutdown函数里有增加dev->class->shutdown(dev)且这个是在dev->bus->shutdown(dev)及dev->driver->shutdown(dev)之前，想请教大神这三个shutdown排序的依据是啥？"
+ }
+]

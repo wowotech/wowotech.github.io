@@ -1,0 +1,314 @@
+[
+ {
+  "id": "3961",
+  "parent": "0",
+  "date": "2016-05-20T16:17:00+08:00",
+  "author": "温柔海洋",
+  "site": "",
+  "text": "点赞，文章质量相当好"
+ },
+ {
+  "id": "4058",
+  "parent": "0",
+  "date": "2016-06-08T16:30:32+08:00",
+  "author": "bruno_liu",
+  "site": "",
+  "text": "请问勘误表是干什么用的阿"
+ },
+ {
+  "id": "4059",
+  "parent": "4058",
+  "date": "2016-06-08T21:56:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bruno_liu：就是ARM有一些bug，但可以通过软件的方法绕过去，由u-boot的代码注释可知，应该只有Cortex-A57才有。具体什么bug，我也没有去研究，不过可以参考一下下面的文件：\r\nhttp://infocenter.arm.com/help/topic/com.arm.doc.epm049219/cortex_a57_mpcore_software_developers_errata_notice.pdf"
+ },
+ {
+  "id": "4218",
+  "parent": "0",
+  "date": "2016-07-08T13:48:49+08:00",
+  "author": "黯魂天残",
+  "site": "",
+  "text": "已支持！继续加油！"
+ },
+ {
+  "id": "4219",
+  "parent": "4218",
+  "date": "2016-07-08T14:10:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@黯魂天残：多谢~~"
+ },
+ {
+  "id": "4245",
+  "parent": "0",
+  "date": "2016-07-13T11:20:58+08:00",
+  "author": "wilson002",
+  "site": "",
+  "text": "在进内核之前，uboot需要切换到EL1.而缺省是El3，请问在哪里做切换呢？"
+ },
+ {
+  "id": "4248",
+  "parent": "4245",
+  "date": "2016-07-13T17:13:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wilson002：boot_jump_linux\r\n    do_nonsec_virt_switch\r\n        \r\n#ifdef CONFIG_ARM64                                                             \r\nstatic void do_nonsec_virt_switch(void)                                         \r\n{                                                                               \r\n        smp_kick_all_cpus();                                                    \r\n        dcache_disable();       /* flush cache before swtiching to EL2 */       \r\n        armv8_switch_to_el2();                                                  \r\n#ifdef CONFIG_ARMV8_SWITCH_TO_EL1                                               \r\n        armv8_switch_to_el1();                                                  \r\n#endif                                                                          \r\n}                                                                               \r\n#endif"
+ },
+ {
+  "id": "4278",
+  "parent": "4245",
+  "date": "2016-07-18T16:14:13+08:00",
+  "author": "wilson002",
+  "site": "",
+  "text": "@wilson002：把这个开关打开好像也不行啊？我在uboot之前没有运行trust boot，直接运行的是uboot。"
+ },
+ {
+  "id": "4280",
+  "parent": "4278",
+  "date": "2016-07-18T21:57:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wilson002：应该可以啊，CONFIG_ARM64和CONFIG_ARMV8_SWITCH_TO_EL1控制这段代码逻辑。你怎么判断没有成功呢？"
+ },
+ {
+  "id": "4281",
+  "parent": "4280",
+  "date": "2016-07-19T09:18:19+08:00",
+  "author": "wilson002",
+  "site": "",
+  "text": "@wowo：看cpsr寄存器值是：0x600003cd"
+ },
+ {
+  "id": "4282",
+  "parent": "4281",
+  "date": "2016-07-19T09:22:58+08:00",
+  "author": "wilson002",
+  "site": "",
+  "text": "@wilson002：mode指示是EL3_SP3"
+ },
+ {
+  "id": "4312",
+  "parent": "0",
+  "date": "2016-07-25T14:35:41+08:00",
+  "author": "ooonebook",
+  "site": "",
+  "text": "wowo\r\n在你project-x的那个版本中u-boot/arch/arm/cpu/armv7/start.S下找不到_start的入口。\r\n在其他uboot的版本上是可以看得到的。\r\narmv7应该是使用./arch/arm/cpu/u-boot.lds这个链接脚本的，ENTRY(_start)。\r\n如果应该就是_start。是不是armv7的版本上还要自己加_start？"
+ },
+ {
+  "id": "4313",
+  "parent": "4312",
+  "date": "2016-07-25T15:19:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ooonebook：碰到这样的疑问，我的解决思路是这样的（供你参考）。\r\n1. 以_start关键字，搜索git仓库的提交记录\r\ngit log -U arch/arm/cpu/armv7/start.S\r\n找到如下的提交记录：\r\ncommit 41623c91b09a0c865fab41acdaff30f060f29ad6\r\nAuthor: Albert ARIBAUD <albert.u.boot@aribaud.net>\r\nDate:   Tue Apr 15 16:13:51 2014 +0200\r\n\r\n    arm: move exception handling out of start.S files\r\n    \r\n    Exception handling is basically identical for all ARM targets.\r\n    Factorize it out of the various start.S files and into a\r\n    single vectors.S file, and adjust linker scripts accordingly.\r\n    \r\n    Signed-off-by: Albert ARIBAUD <albert.u.boot@aribaud.net>\r\n\t\r\n可以得知，_start被这位老兄抽出来，放到公共的vectors.S中了（arch/arm/lib/vectors.S）。\r\n\r\n查看该文件，确实如此，疑问解决。\r\n\r\n2. 那么armv8为什么不是这个样子呢？看一下Makefile文件\r\narch/arm/lib/Makefile\r\n\r\nifdef CONFIG_CPU_V7M\r\nobj-y   += vectors_m.o crt0.o\r\nelse ifdef CONFIG_ARM64\r\nobj-y   += crt0_64.o\r\nelse\r\nobj-y   += vectors.o crt0.o\r\nendif\r\n\r\n一目了然了。"
+ },
+ {
+  "id": "5192",
+  "parent": "0",
+  "date": "2017-01-27T19:49:26+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "uboot再结合x-project确实是很强大的博文，有没有必要加入makefile方面的博文？"
+ },
+ {
+  "id": "5553",
+  "parent": "4278",
+  "date": "2017-05-16T10:04:45+08:00",
+  "author": "yym_hjr",
+  "site": "",
+  "text": "@wilson002：uboot怎么运行起来trust boot,armv8架构怎么初始化trustzone,不用arm-trusted-firmware 而用uboot来初始化"
+ },
+ {
+  "id": "5556",
+  "parent": "5553",
+  "date": "2017-05-16T19:19:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yym_hjr：这个问题有点太大了哈，不好回答;-)"
+ },
+ {
+  "id": "5559",
+  "parent": "5556",
+  "date": "2017-05-17T09:02:11+08:00",
+  "author": "yym_hjr",
+  "site": "",
+  "text": "@wowo：现在是不是没有在armv8架构上去用u-boot去启动和初始化EL3的,基本都是跳过了,发现都用的armTF"
+ },
+ {
+  "id": "5560",
+  "parent": "5559",
+  "date": "2017-05-17T09:09:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yym_hjr：是的，armTF其实可以取代uboot的功能。"
+ },
+ {
+  "id": "5686",
+  "parent": "5560",
+  "date": "2017-06-17T07:51:53+08:00",
+  "author": "yym_hjr",
+  "site": "",
+  "text": "@wowo：你好，主要是想问uboot 是怎么跳过trustzone的，在armv7中有tzpc_init（），但是在armv8中没看到相应跳过安全模块的代码。期待您的回复。"
+ },
+ {
+  "id": "5692",
+  "parent": "0",
+  "date": "2017-06-19T09:05:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yym_hjr \r\n2017-06-17 07:51\r\n@wowo：你好，主要是想问uboot 是怎么跳过trustzone的，在armv7中有tzpc_init（），但是在armv8中没看到相应跳过安全模块的代码。期待您的回复。\r\n================================================\r\n如果基于下面的前提：\r\n板子上已经跑了安全代码，你又没有办法把它删掉的话，仅仅用u-boot去绕过，估计不太可行（否则安全代码就失去其安全的意义了）。\r\n\r\n如果你可以控制一切，那不就好办了吗？把安全代码去掉就行了。"
+ },
+ {
+  "id": "5720",
+  "parent": "5692",
+  "date": "2017-06-22T16:48:52+08:00",
+  "author": "paper_tiger",
+  "site": "",
+  "text": "@wowo：我也想问一下：uboot 没有初始化trustzone，博主你能找到跳过这个trustzone的初始化位置在哪吗？"
+ },
+ {
+  "id": "5722",
+  "parent": "5720",
+  "date": "2017-06-22T17:16:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@paper_tiger：不是特别熟悉这一块的内容，抱歉～～"
+ },
+ {
+  "id": "5926",
+  "parent": "0",
+  "date": "2017-08-19T10:16:16+08:00",
+  "author": "nico",
+  "site": "",
+  "text": "如果u-boot是64位的，能用它来启动32位的可执行程序吗？"
+ },
+ {
+  "id": "5931",
+  "parent": "5926",
+  "date": "2017-08-21T08:55:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@nico：uboot在把cpu的控制权交给可执行程序之前，它不知道这个程序的格式，因此这个程序能否执行，应该是这个程序自己保证的，和uboot无关（当前，uboot可能需要做一些前期的准备工作），所以我觉得应该可以（没有测试过，你有时间的话可以测试一下，把结果告诉大家～～）"
+ },
+ {
+  "id": "5954",
+  "parent": "0",
+  "date": "2017-08-27T12:18:15+08:00",
+  "author": "佚名",
+  "site": "",
+  "text": "请问spl和完整的uboot是不是调用不同文件下的board_init_f函数"
+ },
+ {
+  "id": "5955",
+  "parent": "5954",
+  "date": "2017-08-27T21:44:28+08:00",
+  "author": "小白",
+  "site": "",
+  "text": "@佚名：是的"
+ },
+ {
+  "id": "5960",
+  "parent": "5931",
+  "date": "2017-08-30T19:24:29+08:00",
+  "author": "nico",
+  "site": "",
+  "text": "@wowo：找了一堆关于Aarch64切换到Aarch32的方法，最终发现uboot在16年11月份的时候已经开始支持加载32bit内核（uboot本身运行在64位模式），具体实现在这个文件中arch/arm/include/asm/macro.h，宏函数armv8_switch_to_el2_m实现从EL3切换至EL2，并可改变处理器运行状态从Aarch64到Aarch32；宏函数armv8_switch_to_el1_m实现从EL2切换至EL1，并改变运行状态。已测试加载32bit程序正常运行，有兴趣的同学可以研究研究这段汇编的具体实现过程。"
+ },
+ {
+  "id": "6280",
+  "parent": "5720",
+  "date": "2017-12-03T20:53:11+08:00",
+  "author": "Allen",
+  "site": "",
+  "text": "@paper_tiger：关于trustzone 相关，可以读一下arm trusted firmware相关的实现或者文档。\r\nu-boot 相当于是BL33，一般运行在EL2或者PL2，通常是已经执行完了EL3/Secure EL1或者Secure PL1的代码，从安全世界退出来后执行的，也就是说轮到u-boot执行的时候，安全世界的事情已经做完了。通常谈不上跳过安全世界。\r\n\r\nARM V7可以把uboot/kernel都跑在安全世界，但电源管理需要调整，timer, gic需要少量修改，V8通常至少用EL3来实现了PSCI相关的逻辑了。除非你愿意挑战社区的逻辑，实际没必要了。包括在V8上运行32位的Linux."
+ },
+ {
+  "id": "6711",
+  "parent": "0",
+  "date": "2018-04-27T07:25:25+08:00",
+  "author": "bigbigtree",
+  "site": "",
+  "text": "您好，请问您一下，上面图中的流程是cpu->arch->machine->board。但是您在后面写初始化流程的时候却是cpu->arch->board->machine，请问这个是为什么呢？谢谢！"
+ },
+ {
+  "id": "6712",
+  "parent": "6711",
+  "date": "2018-04-27T08:56:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bigbigtree：你看看图中的调用关系，board会调用machine（machine的code可以看做是一个通用的库），所以实现的时候可以按照调用流写代码。"
+ },
+ {
+  "id": "7697",
+  "parent": "0",
+  "date": "2019-10-16T12:06:58+08:00",
+  "author": "蚂蚁",
+  "site": "",
+  "text": "你好，看了这篇文章，得到了一些启迪。\r\n在此，我下载了uboot的最新版重新看了一下，也补充一下自己的观点。\r\n对于博文中“u-boot把arm（包括arm32和arm64）归为一个ARCH大类，而把armv8等抽象为CPU。”其实，这样分类并无不妥。armv8这个术语，对开发者而言，就是cpu的，而arm32和arm64，只是在这个框架上的延伸，对armv8架构来说，并没有\"armv8-32\"和\"armv8-64\"之分。"
+ },
+ {
+  "id": "7769",
+  "parent": "0",
+  "date": "2019-11-29T11:01:08+08:00",
+  "author": "shopping",
+  "site": "",
+  "text": "你好我是小白 想了解一些关于linux kernel与硬件交互 以及uboot相关的知识。有推荐的书籍吗。"
+ },
+ {
+  "id": "8054",
+  "parent": "0",
+  "date": "2020-07-20T12:01:34+08:00",
+  "author": "renameit",
+  "site": "",
+  "text": "wowo的这篇文章有点泛泛而谈了。看过一边代码之后才能领悟一点东西。"
+ },
+ {
+  "id": "8314",
+  "parent": "7697",
+  "date": "2021-09-17T11:31:53+08:00",
+  "author": "蚂蚁的爸爸",
+  "site": "",
+  "text": "@蚂蚁：“并无不妥”是妥的意思，先学好语文再来评论别人。"
+ },
+ {
+  "id": "8315",
+  "parent": "7697",
+  "date": "2021-09-17T11:32:21+08:00",
+  "author": "蚂蚁的爸爸",
+  "site": "",
+  "text": "@蚂蚁：“并无不妥”是妥的意思，先学好语文再来评论别人。"
+ },
+ {
+  "id": "8320",
+  "parent": "8314",
+  "date": "2021-09-23T09:19:44+08:00",
+  "author": "lamb0145",
+  "site": "",
+  "text": "@蚂蚁的爸爸：其实是你理解错了。你再仔细看看。"
+ },
+ {
+  "id": "8638",
+  "parent": "0",
+  "date": "2022-07-04T16:22:15+08:00",
+  "author": "雁落",
+  "site": "",
+  "text": "那张uboot架构图是你自己理解画出来的吗，把我惊住了"
+ },
+ {
+  "id": "8681",
+  "parent": "8315",
+  "date": "2022-09-30T13:53:28+08:00",
+  "author": "Aero",
+  "site": "",
+  "text": "@蚂蚁的爸爸：人家说的就是妥的意思. 别反复嚼舌根子, 自己理解错了还用昵称骂人, 这是不对的. \r\n这里是技术论坛, 蚂蚁说话一直都客客气气, 你别把扣帽子WG气息带到这里来. \r\n你的回复暴露你的智商, 你的昵称又暴露了你的素质. 换了马甲再来吧."
+ },
+ {
+  "id": "9163",
+  "parent": "0",
+  "date": "2025-07-13T21:16:54+08:00",
+  "author": "black8mamba",
+  "site": "",
+  "text": "CONFIG_SPL_BUILD这个配置项应该在哪里配置打开呢。"
+ }
+]

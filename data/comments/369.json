@@ -1,0 +1,26 @@
+[
+ {
+  "id": "5167",
+  "parent": "0",
+  "date": "2017-01-19T14:48:54+08:00",
+  "author": "小豌豆",
+  "site": "",
+  "text": "eMMC也有几种模式： \r\n   1线，4线，8线\r\n   不同的速度，DDR52，SDR50等，\r\n\r\n 和NandFlash最大的不同就在于，eMMC的速度更快，所以需要调试delayChain，\r\n   比起NandFlash，eMMC在kernel的代码少的太太多了，而且无 physicBlock和LogicalBlock的概念~\r\n等~"
+ },
+ {
+  "id": "7983",
+  "parent": "0",
+  "date": "2020-05-07T17:40:25+08:00",
+  "author": "lethe",
+  "site": "http://android develope",
+  "text": "所以对于emmc和ufs这种内部集成了flash controller的话，ecc 、wear leveing 和 bad block management这些软件层面的逻辑只有flash vendor可以对吗？ 感觉这些很关键呐。。"
+ },
+ {
+  "id": "7984",
+  "parent": "7983",
+  "date": "2020-05-07T17:41:34+08:00",
+  "author": "lethe",
+  "site": "http://android develope",
+  "text": "@lethe：仅vendor可见对吗？漏字了"
+ }
+]

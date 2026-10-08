@@ -1,0 +1,106 @@
+[
+ {
+  "id": "4807",
+  "parent": "0",
+  "date": "2016-10-31T13:54:56+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "Hi wowo, 这段时间一直跟着你们的文章还有自己的理解，对于console发表下自己的看法，（PS 不一定正确）\r\n\r\n首先对于console，我的理解就现在的Linux而言似乎已经退化到打印Log的用途，简而理解仅仅作为printk输出的对象。如果这个理解正确，那么对console我个人觉得当前似乎和tty没有什么关系，从printk的代码我仅仅看出console的write等函数被调用，完全不见terminal的足迹。\r\n如果非要说console和终端的联系，我觉得仅仅是和uart有联系。和tty没有什么关联。当然在处理tty时可能需要考虑下如果该tty如果作为console需要额外的特殊处理，仅此而矣！\r\n因此，个人觉得在当下的Linux系统，console仅仅抽象了一个log输出的底层接口而矣！"
+ },
+ {
+  "id": "4808",
+  "parent": "0",
+  "date": "2016-10-31T13:58:28+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "另外对于这段时间的学习，我也总结下我对相关的几个概念的理解（请指教理解的是否正确）：\r\n\r\n    tty\r\n    从时间轴上看tty仅是电传打印机，由于广泛的作为终端设备来使用，因此成了终端的代名词。请先忘记当前你手中使用的PC机及当前使用的终端，因为我们现在所讲的是终端还是远在时代无图形界面的计算机时代。\r\n\r\n    Pty 伪终端\r\n    构造出的一对通信链路，这个链路服务于本机上的应用程序。如telnet/ssh远程登录程序，大概的过程可以描述如下：\r\n    sshd 等待client的socket connect request，如果有client申请登录，则sshd daemon会通过系统调用创建两个伪终端，然后通过getty来对相应的终端进行设置。\r\n    sshd只需要从其中特定的一个终端读出或写入数据并通过socket转发给client。此时sshd只负责数据转发，相应的prompt和登录相应的还可以由标准的getty和login来完成。\r\n    因getty login默认使用tty作为它们的输入输出，因此我们可以通过伪造一对假的终端来供它们使用。\r\n\r\n    仿真终端\r\n    随着时间的流逝，计算机发展出图形界面，于是仿真的终端应运而生，如大名鼎鼎的xterm。 仿真终端运行在用户空间的一个程序，它使用软件模拟的方式来仿真一个真的终端所具有的所有功能。比如响应调节相应的显示size等。 对于终端另一端的应用程序来说，它们甚至无法识别对面是一个假的终端应用程序。xterm捕捉用户的输入并发送到终端另一边的应用，收集终端另一边的应用的数据，并通过图形接口显示到我们LCD上。因此对于仿真终端来说也使用伪终端来构建这样的数据通路。\r\n\r\n另外对于vt这块，暂时还不能和tty及console在源码上联系起来。"
+ },
+ {
+  "id": "4809",
+  "parent": "4807",
+  "date": "2016-10-31T14:19:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：其实我对TTY的熟悉程度也不高，我们刚好可以一起讨论:-)\r\nconsole一直是两个功能，一个是我们熟悉的printk，这里就不提了。\r\n另一个，console真的代表了正宗的“控制台终端”。要理解这个概念，需要围绕“/dev/console”和“console->device”来说：\r\n“/dev/console”代表了Linux/Unix系统中正宗的“控制台终端”，不需要知道为什么，就当是一种定义；\r\n“/dev/console”是由tty core（tty_io.c）在初始化时创建的，是一个虚拟的设备；\r\nLinux kernel在启动时会打开“/dev/console”，然后dup出来3个文件句柄（我们熟悉的0，1，2）交给init进程使用，然后一直被继承（除非被应用程序显式的修改）；\r\n既然“/dev/console”是一个虚拟的设备，它对应的物理设备是什么呢？你应该猜到了，根据命令行参数，调用“console->device”获取对应的struct tty_driver之后，就得到了实际的物理设备。\r\n最后总结，如果你不想kernel在open(“/dev/console”)报错，就应该实现当前所使用的console的“console->device”回调。当然，就算打不开，也没关系，后果顶多是有些应用无法输入输出（例如init进程）。"
+ },
+ {
+  "id": "4810",
+  "parent": "4808",
+  "date": "2016-10-31T14:21:41+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：总结的很好啊，不过我觉得:从TTY技术本身看，应该没有仿真终端的概念（你这里提到的仿真终端，本质上还是一个伪终端，因为shell等传统应用一定需要一个tty设备，你不能不给它）。"
+ },
+ {
+  "id": "4812",
+  "parent": "4809",
+  "date": "2016-10-31T19:31:59+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@wowo：1、我试着从你的这个角度理解了下，感觉有道理！我也试着简单跟了下open（/dev/console）代码，发现对于找到tty_driver这个数据结构时会区分console是tty device。但是对于console_device这个函数，有点疑惑？这个函数会遍历所有注册的console driver只要driver存在便返回。我的理解是console应该只会有一个，这里为什么会使用遍历！\r\n2、对于启动参数我们传入的console=xxx, console=yyy, ...这种形式，系统会打印logs到所有我们注册的console，但系统真正的console只会是最后一个。是不是意味着前面的几个console其实是不需要tty_driver这样的数据结构的？\r\n3、我的理解 Open(/dev/console)其实打开是对应应用程序的controlling terminal？"
+ },
+ {
+  "id": "4813",
+  "parent": "4810",
+  "date": "2016-10-31T20:16:51+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@wowo：对的！\r\n\r\n对于vt是否会有相应的专题？感觉从代码上现在完全没有头绪！"
+ },
+ {
+  "id": "4814",
+  "parent": "4812",
+  "date": "2016-11-01T08:57:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：问题1：关于console_device，你可以去printk.c中检查一下它遍历的那个链表（console_drivers），其实是排序过的，最先拿到的，就是那些preferred driver（带CON_CONSDEV标记的）。话说这一段代码逻辑也是很巧妙的，值得学习一下。\r\n问题2：是的。但是本着console和tty分离的原则，我们注册console的时候，其实是不假设它是否会作为控制台的，所以如果能提供，最好都提供，如果觉得没必要，不提供也ok。\r\n问题3：(/dev/console)不是controlling terminal，（/dev/tty）才是。说实话这几个术语的中文翻译有点绕，我倒觉得，(/dev/console)翻译成工作台反而更容易理解，它的操作者是人。（/dev/tty）是控制终端，它的操作者是软件（shell）。"
+ },
+ {
+  "id": "4816",
+  "parent": "4814",
+  "date": "2016-11-01T10:26:05+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@wowo：抱歉！能提示下排序的关键点在哪些代码上吗？真的没有看出来！"
+ },
+ {
+  "id": "4820",
+  "parent": "4816",
+  "date": "2016-11-01T11:29:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：这一段代码逻辑我还没有细看，还是你看看之后给我讲解一下吧^V^"
+ },
+ {
+  "id": "5070",
+  "parent": "0",
+  "date": "2016-12-29T15:56:28+08:00",
+  "author": "xmj",
+  "site": "",
+  "text": "hi，wowo\r\n看了你这篇文字有疑问，能否解答一下呢\r\n1. console的write和它里面的tty_driver write有什么区别吗\r\n2. 般情况下我们看串口log，手机bootloader起来就可以看了，这个时候console没初始化完成，是根据什么来输出log的吗，还有JIGTAG也可以在很早输出log？ 能说下这几个的差别吗"
+ },
+ {
+  "id": "5071",
+  "parent": "5070",
+  "date": "2016-12-29T21:36:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xmj：1. 我觉得这两个没有本质的区别，是向同一个通道里写数据的两个路径，参考本文的图片1.\r\n2. 手机bootloader一般会自己初始化串口屏输出信息；JTAG的log，我也不是特别了解，估计类似一个虚拟串口。"
+ },
+ {
+  "id": "6184",
+  "parent": "0",
+  "date": "2017-11-08T17:42:06+08:00",
+  "author": "lucky",
+  "site": "",
+  "text": "Hi wowo,\r\n你上面有提到:Linux kernel在启动时会打开“/dev/console”，然后dup出来3个文件句柄（我们熟悉的0，1，2）交给init进程使用，然后一直被继承（除非被应用程序显式的修改）;\r\n有个问题想请教下, 就console的打印log功能来讲, 内核空间的log printk和用户空间的log都是输出到 console上吗?也就是都会最终调用到 struct console 的write函数? 最终log是输出到哪里呢? 内存里还是某块存储空间? 这个log和平时android平台常抓的串口log(串口log是最终写到物理串口设备上)是一回事吗?"
+ },
+ {
+  "id": "6188",
+  "parent": "6184",
+  "date": "2017-11-09T18:23:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lucky：用户空间的日志输出，是通过VFS接口，经由TTY driver，给到具体的console driver。和kernel printk（ struct console 的write函数）的路径不一样。\r\n至于log输出到哪里，由相应的driver决定。\r\n至于android的logcat，不是一个层次的事情，不要搅在一起理解……"
+ }
+]

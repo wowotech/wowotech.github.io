@@ -1,0 +1,90 @@
+[
+ {
+  "id": "311",
+  "parent": "0",
+  "date": "2014-08-16T14:31:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "ARMV7提供了三条指令\r\nData Memory Barrier(DMB)\r\nData Synchronization Barrier(DSB)\r\nInstruction Synchronization Barrier(ISB)\r\n原来ARMV6是通过cp15寄存器操作的。\r\n\r\n对于这些memory barrier相关的内容，原来有些印象，不过从来没有很系统的整理过。forion，你要不要帮忙整理一下。呵呵～～～\r\n\r\n乱序执行（out-of-orderexecution）这个就是真的没有概念了，应该是和CPU设计相关的"
+ },
+ {
+  "id": "315",
+  "parent": "0",
+  "date": "2014-08-18T10:15:32+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "http://community.arm.com/groups/processors/blog/2011/03/22/memory-access-ordering--an-introduction\r\n可以参考上面网址。"
+ },
+ {
+  "id": "316",
+  "parent": "315",
+  "date": "2014-08-18T11:32:47+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@forion：一共有3篇文章，老外写的东西还是系统一些，而且深入准确一些。"
+ },
+ {
+  "id": "317",
+  "parent": "315",
+  "date": "2014-08-18T12:18:06+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：不错的文章。不过，真正理解这些概念可能需要深入理解CPU的设计。Forion，看你对底层软件非常感兴趣，是不是你做的工作和硬件相关？有没有兴趣设计一款简单的CPU？我们网站的项目还是空的，有机会大家可以考虑一些有趣的项目来做一做，玩一玩"
+ },
+ {
+  "id": "319",
+  "parent": "317",
+  "date": "2014-08-18T13:48:31+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：之所以提到这几个，是因为之前遇到一个问题，debug了两个月，发现是android上面SMP的宏没有开，因为那个bug，所以对这几条指令还有SMP有一定的了解。我的工作是IC CHIP driver，所以会跟硬件或者ASIC打交道。如果有时间可以啊，不过加班比较严重，很可能有没有稳定的充裕的时间。不知道你要做个什么呢？我对cpu的架构也是很有兴趣了解的。"
+ },
+ {
+  "id": "320",
+  "parent": "319",
+  "date": "2014-08-18T18:30:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：如果做通用意义的CPU core，我想那一定是玩玩而已，短时间内，不可能有突破（超越ARM或者X86），如果要做可能只能在一些特别的专业市场发掘需求。\r\n我有考虑做一个小的RF模块，一定要非常小。在这样的条件下，如果有一个FPGA，可以集成我们这个小的RF模块的功能，例如USB device、一个简单的CPU，高速ADC，这样的FPGA加上RF模拟前端的电路是否有可能组成一个size非常小的RF模块呢？\r\nSize小而且功耗极低的RF模块应该有可能有一些现实的意义\r\n\r\n但是，对于软件工程师而言，做这样的项目有点异想天开吧！我有时候太理想化......"
+ },
+ {
+  "id": "8716",
+  "parent": "0",
+  "date": "2022-12-09T13:58:20+08:00",
+  "author": "xxxxxxx",
+  "site": "",
+  "text": "赞~"
+ },
+ {
+  "id": "8815",
+  "parent": "0",
+  "date": "2023-09-06T16:13:08+08:00",
+  "author": "阿布",
+  "site": "",
+  "text": "我一直不理解DMB 和DSB的应用场景，如果在使用DSB的场景下使用了DMB，会出现什么情况？请问能指点一下吗"
+ },
+ {
+  "id": "8816",
+  "parent": "315",
+  "date": "2023-09-06T16:19:31+08:00",
+  "author": "阿布",
+  "site": "",
+  "text": "@forion：请问能结合点实际例子指点下DMB和DSB的使用吗？他们的应用场景有什么区别？如果在使用DSB的场景下使用了DMB，会出现什么情况？执行乱序除了是由多核cache 一致性引起的？还有别的地方也会造成执行乱序吗？我的理解是DMB避免了cache一致性造成的执行乱序，那么DSB在DMB的基础上到底为了应对什么情况？"
+ },
+ {
+  "id": "8817",
+  "parent": "8816",
+  "date": "2023-09-07T10:28:16+08:00",
+  "author": "阿布",
+  "site": "",
+  "text": "@阿布：在 real memory space 和io memory space交换数据时，由于io 设备可能对指令存在强依赖的关系（比如必须先给io 设备的时钟寄存器初始化，才能使能该io 设备的控制寄存器的使能bit），这种情况下需要使用dsb 指令去保证到达io设备的指令顺序是符合预期的(dsb 指令等待在此之前的io指令已经执行完毕:指令已经发送到了io设备总线上)。在只针对real memory space的数据交换场景（比如从ram addr0 迁移到 addr1、或者对ram addr0 数据的读写）里dmb 指令完全可以保证数据和程序流结果是符合预期的，即使存在延后执行，应该也不会违反预期逻辑的吧"
+ },
+ {
+  "id": "8818",
+  "parent": "8817",
+  "date": "2023-09-07T10:37:14+08:00",
+  "author": "阿布",
+  "site": "",
+  "text": "@阿布：内核中io.h里使用dsb 定义了 io barriers。内核源码里的其他地方也有使用dsb 的，但有些地方的使用感觉有些不太好，比如android7.1 内核(msm-3.18)里 app_setting.c 75行中的mb()，其实完全可以使用smp_mb()，对吗？"
+ }
+]

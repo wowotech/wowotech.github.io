@@ -1,0 +1,322 @@
+[
+ {
+  "id": "7066",
+  "parent": "0",
+  "date": "2018-12-04T09:57:55+08:00",
+  "author": "happain",
+  "site": "",
+  "text": "什么时候闻泰科技的员工都像您一样优秀, 就好了"
+ },
+ {
+  "id": "7067",
+  "parent": "7066",
+  "date": "2018-12-04T10:38:42+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@happain：暴露了"
+ },
+ {
+  "id": "7118",
+  "parent": "7067",
+  "date": "2019-01-03T13:52:07+08:00",
+  "author": "happain",
+  "site": "",
+  "text": "@smcdef：我由衷的佩服你, 短短工作几年, linux造诣已经如此之深, 如果有更加合适的平台你会腾飞的; ps:我经常和你们公司打交道"
+ },
+ {
+  "id": "7124",
+  "parent": "0",
+  "date": "2019-01-07T10:56:21+08:00",
+  "author": "小亮",
+  "site": "",
+  "text": "通俗易懂，厉害"
+ },
+ {
+  "id": "7374",
+  "parent": "0",
+  "date": "2019-04-24T11:10:30+08:00",
+  "author": "sinai",
+  "site": "",
+  "text": "CPU为什么要有就绪队列呢？调度器选择好进程之后让CPU运行被调度器选择的进程不久可以了么？"
+ },
+ {
+  "id": "7381",
+  "parent": "0",
+  "date": "2019-04-29T10:23:52+08:00",
+  "author": "markened",
+  "site": "",
+  "text": "大神，您好。 关于在CFS调度里面提到的调度延迟保持有界的延迟，这个最小调度时间sysctl_sched_min_granularity（0.75ms）指的是虚拟时间吧？我通过阅读这个系列第二篇的文章猜的，这个是否正确？  谢谢！"
+ },
+ {
+  "id": "7385",
+  "parent": "7381",
+  "date": "2019-04-29T16:15:02+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@markened：0.75ms是wall time，不指virtual time"
+ },
+ {
+  "id": "7387",
+  "parent": "7374",
+  "date": "2019-04-29T23:18:44+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@sinai：根据你的描述问题，我反问一个问题吧！你说“调度器选择好进程之后......”,那么调度器怎么选择好进程呢？从哪里选择？为什么要选？\r\n\r\n既然你知道要选择进程，也就是你明白了调度器可以有多个选择，每个选择对应不同的进程。那么下个问题，调度器从哪里选择进程呢？这里的“哪里”其实就是就绪队列。就绪队列就是包含了调度器所有的所有选择。所以，我们需要就绪队列记录可以被选择运行的进程。"
+ },
+ {
+  "id": "7410",
+  "parent": "7385",
+  "date": "2019-05-11T18:51:14+08:00",
+  "author": "markened",
+  "site": "",
+  "text": "@smcdef：那如果是这样的话，当进程很多的时候，有些优先级高的进程不会仅仅执行）0.75ms就切换成其他进程，那么调度延迟 nr_running * sysctl_sched_min_granularity 这个时间内也就没有办法保证所有的进程都调度一遍了吧。"
+ },
+ {
+  "id": "7411",
+  "parent": "7410",
+  "date": "2019-05-11T22:21:17+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@markened：这个问题可以看下CFS调度器的最后一篇文章"
+ },
+ {
+  "id": "7414",
+  "parent": "7411",
+  "date": "2019-05-13T15:39:12+08:00",
+  "author": "markened",
+  "site": "",
+  "text": "@smcdef：谢谢！是不是这样的，的确有可能会出现一个进程单次运行时间大于sysctl_sched_min_granularity。还是要根据vruntime判断在运行了时间大于sysctl_sched_min_granularity时是否要调度下一个进程。 也就是说调度延迟也许或大于 nr_running * sysctl_sched_min_granularity。大神，是否可以这样理解？"
+ },
+ {
+  "id": "7415",
+  "parent": "7414",
+  "date": "2019-05-13T18:06:55+08:00",
+  "author": "markened",
+  "site": "",
+  "text": "@markened：se = __pick_first_entity(cfs_rq);\r\n\tdelta = curr->vruntime - se->vruntime;\r\n \r\n\tif (delta < 0)\r\n\t\treturn;\r\n \r\n\tif (delta > ideal_runtime)\r\n\t\tresched_curr(rq_of(cfs_rq));\r\n从这段代码应该可以得到上面的结论？谢谢！"
+ },
+ {
+  "id": "7421",
+  "parent": "7411",
+  "date": "2019-05-15T17:23:44+08:00",
+  "author": "markened",
+  "site": "",
+  "text": "@smcdef：以下推测能否成立，大神，给解解惑呗？"
+ },
+ {
+  "id": "7425",
+  "parent": "7414",
+  "date": "2019-05-18T14:57:56+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@markened：如果进程nice值小于0，其单次运行时间自然就会大于sysctl_sched_min_granularity。这点来说，挺正常的。后半部分的问题描述我就有点看不懂问题了。你是好奇下面的代码的片段的意思吗？"
+ },
+ {
+  "id": "7429",
+  "parent": "7425",
+  "date": "2019-05-19T21:34:24+08:00",
+  "author": "markened",
+  "site": "",
+  "text": "@smcdef：那调度周期岂不是有可能大于这个值 nr_running * sysctl_sched_min_granularity？"
+ },
+ {
+  "id": "7587",
+  "parent": "7425",
+  "date": "2019-08-14T10:13:05+08:00",
+  "author": "takahashien",
+  "site": "http://www.google.com",
+  "text": "@smcdef：额，我的理解是， 内核先确定了一个sched_period， 是根据nr_running*sysctl_sched_min_granularity 来的。之后呢在根据自己的就绪队列里的调度实体的权重把上面这一大块时间分给就绪队列里的各个调度实体。对于se而言如果它权重比就绪队列里的其它的某个实体大的话，那它get到的实际时间就比它多些， 即从大块(sched_period)里分到的时间就多些， 最终整个就绪队列里进程都运行一遍的时间不会超过sched_period"
+ },
+ {
+  "id": "7588",
+  "parent": "7425",
+  "date": "2019-08-14T10:19:20+08:00",
+  "author": "takahashien",
+  "site": "http://www.google.com",
+  "text": "@smcdef：对不起我回复错了。。。"
+ },
+ {
+  "id": "7589",
+  "parent": "7415",
+  "date": "2019-08-14T10:27:16+08:00",
+  "author": "takahashien",
+  "site": "http://www.google.com",
+  "text": "@markened：额，我的理解是， 内核先确定了一个sched_period， 是根据nr_running*sysctl_sched_min_granularity 来的。之后呢在根据自己的就绪队列里的调度实体的权重把上面这一大块时间分给就绪队列里的各个调度实体。对于se而言如果它权重比就绪队列里的其它的某个实体大的话，那它get到的实际时间就比它多些， 即从大块(sched_period)里分到的时间就多些， 最终整个就绪队列里进程都运行一遍的时间不会超过sched_period"
+ },
+ {
+  "id": "7730",
+  "parent": "0",
+  "date": "2019-10-31T11:27:00+08:00",
+  "author": "see",
+  "site": "",
+  "text": "因此CFS主要保证每一个进程获得执行的虚拟时间一致即可。在选择下一个即将运行的进程的时候，只需要找到虚拟时间最小的进程即可-----前面说保证虚拟时间相同，后面说选择虚拟时间最小的，如果相同了，拿来最小虚拟时间，感觉自相矛盾？请大神解释下"
+ },
+ {
+  "id": "7731",
+  "parent": "7730",
+  "date": "2019-10-31T11:28:32+08:00",
+  "author": "see",
+  "site": "",
+  "text": "@see：-前面说保证虚拟时间相同，后面说选择虚拟时间最小的，如果相同了，哪来的最小虚拟时间，感觉自相矛盾？"
+ },
+ {
+  "id": "7732",
+  "parent": "7730",
+  "date": "2019-10-31T22:00:21+08:00",
+  "author": "湫",
+  "site": "",
+  "text": "@see：保证只是说明调度器想要做的事是去保证虚拟运行时间相同。选择最小的虚拟时间运行就是为了保证这一点，让小增大一些使其和大的一样。"
+ },
+ {
+  "id": "7733",
+  "parent": "7730",
+  "date": "2019-11-01T10:52:08+08:00",
+  "author": "figo",
+  "site": "",
+  "text": "@see：同问"
+ },
+ {
+  "id": "7734",
+  "parent": "7732",
+  "date": "2019-11-01T10:54:25+08:00",
+  "author": "figo",
+  "site": "",
+  "text": "@湫：请教下什么叫最小的虚拟时间？从文章来看，虚拟时间根据公式推算出来就是相等的，那这个\"最小虚拟时间\"的概念是从何而来？"
+ },
+ {
+  "id": "7735",
+  "parent": "7733",
+  "date": "2019-11-01T11:02:17+08:00",
+  "author": "figo",
+  "site": "",
+  "text": "@figo：在其他文章里面找到了关于这块内容的解释：\r\n目前linux内核中所使用的调度器为CFS调度器[16, 26]，CFS定义了一种新的模型，它给CFS的运行队列中的每一个进程安排一个虚拟时钟，vruntime。如果一个进程得以执行，其vruntime将不断增大。没有得到执行的进程vruntime不变。而调度器总是选择vruntime最小的进程来执行。这就是所谓的“完全公平”。为了区别不同进程的优先级，优先级高的进程vruntime增长的较慢，以至于它可能得到更多的运行机会。"
+ },
+ {
+  "id": "7736",
+  "parent": "7734",
+  "date": "2019-11-01T17:06:04+08:00",
+  "author": "湫",
+  "site": "",
+  "text": "@figo：准确的说是虚拟运行时间（vruntime），表示的是进程在某种意义上的运行了多长时间，所以它是动态的。虚拟运行时间可以根据那个公式由真实运行时间来转换得到。最小虚拟运行时间是相对于一个就绪队列来说的。就是一个就绪队列上的就绪进程的虚拟运行时间最小的那个。"
+ },
+ {
+  "id": "7746",
+  "parent": "7730",
+  "date": "2019-11-12T15:37:08+08:00",
+  "author": "s",
+  "site": "http://s",
+  "text": "@see：进程A的虚拟时间3.3 * 1024 / 1024 = 3.3ms，我们可以看出nice值为0的进程的虚拟时间和实际时间是相等的。进程B的虚拟时间是2.7 * 1024 / 820 = 3.3ms。\r\n如果进程B先执行，执行1ms后发生调度，此时B的vtime=1*1024/820+3.3=4.5ms,\r\n此时A执行，A可以执行1.2*1024/1024+3.3=4.5。进程A可以执行1.2ms甚至更长一些。\r\n最终按照比例A/B 3.3/2.7的时间"
+ },
+ {
+  "id": "7788",
+  "parent": "7730",
+  "date": "2019-12-18T14:23:00+08:00",
+  "author": "小亮",
+  "site": "",
+  "text": "@see：CFS设计之处的模型是理想的CPU模型，在这种模型中，CPU上的所有任务都是并行执行的，平分CPU的power, 虚拟CPU时间和物理时间是相等的， 但是在现实当中，这种模型是不存在的，CPU上任务是不可能同时并行执行，因此，会造成物理时间不相同，继而导致虚拟时间不相同的情况出现，得到执行权的任务，虚拟时间在不停的增加，没有得到执行权的并没有增加，因此，在每次挑选任务时，挑选虚拟时间最小的任务执行。\r\n我知道我的这种解释，是否正确？求证"
+ },
+ {
+  "id": "7872",
+  "parent": "0",
+  "date": "2020-02-10T16:03:02+08:00",
+  "author": "tandf",
+  "site": "",
+  "text": "您好，如果红黑树只用于寻找最小的元素，为什么不使用最小堆呢？非常感谢"
+ },
+ {
+  "id": "7937",
+  "parent": "0",
+  "date": "2020-04-02T12:32:07+08:00",
+  "author": "yyll",
+  "site": "",
+  "text": "vruntime是一个虚拟的时钟，\r\n1. 在一个调度周期内T，其关联任务的步长Step和它的权重weight有关系，\r\n步长公式:\r\n    step = T * NICE_0_LOAD/weight, NICE_0_LOAD为参考虚拟时钟，与物理时钟一致\r\n2. 在一个调度周期内，vruntime单调递增，调度周期结束后，所有任务的vruntime都会归一到一个相近的初始值，然后又是一个循环。\r\nCFS的核心思想，保证在一个CPU上的一个调度周期内，所有的任务调度时间的总和是相等的，这是通过调节各个task的虚拟时钟的步长做到的，如上的step公式。\r\n1. 优先级高的task，它的步长就小，在一个CPU的调度周期内，调用的次数就多。\r\n2. 优先级低的task，它的步长就长，在一个CPU的调度周期内，调用的次数就少。"
+ },
+ {
+  "id": "8076",
+  "parent": "0",
+  "date": "2020-07-30T21:06:20+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "一个小小的bug，SCHED_IDLE其实是属于CFS 调度类的，而不是idle调度类。\r\n\r\nCFS调度类实际上有三种调度策略：\r\n1、 SCHED_NORMAL策略（在用户空间中称为SCHED_OTHER），适用于用于Linux环境中运行的大多数任务。\r\n2、 SCHED_BATCH策略，用于非交互式任务的批处理，这些任务会在一段时间内不间断地运行（cpu-bound），通常只有在完成所有SCHED_NORMAL任务之后才进行调度。\r\n3、 SCHED_IDLE策略是为系统中优先级最低的任务设计的，只有在没有其他任务可运行时，这些任务才有机会运行。\r\n\r\n目前的CFS调度器，SCHED_NORMAL和SCHED_BATCH基本是一样的（仅仅在yield CPU时候处理不同），SCHED_IDLE是很有意思的策略，不过，标准内核并没有真正实现SCHED_IDLE任务的语义，具体的实现逻辑是：\r\n1、 设定为优先级最低（139）\r\n2、 在check_preempt_curr（）回调函数中对SCHED_IDLE任务进行特殊处理，即当前正在运行的SCHED_IDLE任务将立即被新唤醒的SCHED_NORMAL任务抢占。\r\n\r\n从这个角度看，所有的CFS任务，无论是SCHED_NORMAL、SCHED_BATCH、还是SCHED_IDLE，都是在标准CFS框架下运作的。例如当一个SCHED_NORMAL和SCHED_IDLE放置到一个cpu runqueue的时候，SCHED_NORMAL并不会一直执行，SCHED_IDLE也会占据一定的CPU时间，只不过很短。"
+ },
+ {
+  "id": "8077",
+  "parent": "0",
+  "date": "2020-07-31T09:27:16+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "‘SCHED_FIFO调度策略的实时进程永远比SCHED_NORMAL调度策略的普通进程优先运行’有一个例外场景：\r\nsysctl sched_rt_runtime_us/sched_rtperiod_us, 可以控制RT任务占用cpu的比例，默认95%，也就是cpu还有%5的时间给非RT任务（normal task）执行；从而是系统更好的运行。"
+ },
+ {
+  "id": "8218",
+  "parent": "7872",
+  "date": "2021-04-07T23:48:54+08:00",
+  "author": "StevenSun",
+  "site": "",
+  "text": "@tandf：事实上考虑的不只是寻找最小的元素. 还可以参考这里 https://www.zhihu.com/question/27840936"
+ },
+ {
+  "id": "8312",
+  "parent": "7731",
+  "date": "2021-09-13T16:43:16+08:00",
+  "author": "ccilery",
+  "site": "",
+  "text": "@see：我的理解是CFS保证一个调度周期/延迟内，就绪队列上的所有任务获得相同的虚拟时间执行，但实际的墙上时间还是不同的（高权重的任务执行时间长）；虽然在一个调度周期内，就绪队列上的任务虚拟时间的增量是相同的，但是因为新任务的创建以及唤醒任务的加入，会导致红黑树上调度实体虚拟时间的差异，所以会有最小虚拟时间的任务。但我觉得这都是理想情况下，现实中一个调度周期内就绪队列是静态的吗，我觉得一个调度周期中就绪队列都是动态的（有任务删除或加入），如何保证每个任务有相同的虚拟时间？"
+ },
+ {
+  "id": "8316",
+  "parent": "8312",
+  "date": "2021-09-18T10:19:09+08:00",
+  "author": "abcdefg345",
+  "site": "",
+  "text": "@ccilery：当就绪队列有任务增加、删除时，需要考虑的只是当前任务要不要停止、或者还可以运行多久的问题。因此，每次就绪队列有任务增加、删除时，更新当前任务的虚拟时间，并按新的就绪任务情况来重新计算当前任务的时间片。"
+ },
+ {
+  "id": "8404",
+  "parent": "0",
+  "date": "2021-12-10T22:07:57+08:00",
+  "author": "二仙桥老叟",
+  "site": "",
+  "text": "博主真是大聪明，文章一看就明白原理"
+ },
+ {
+  "id": "8573",
+  "parent": "0",
+  "date": "2022-03-15T20:05:32+08:00",
+  "author": "hahaha",
+  "site": "",
+  "text": "请教大家一个问题：\r\n\r\n在我的理解中，cfs的_sched_period是使每个任务都能运行一次的时间。当进程数小于sched_nr_latency_延迟时，CFS会将时间分割为每个进程预计运行一次的时段\r\n\r\nu64 __sched_period(unsigned long nr_running)\r\n{\r\n    if (unlikely(nr_running > sched_nr_latency))\r\n        return nr_running * sysctl_sched_min_granularity;\r\n    else\r\n        return sysctl_sched_latency;\r\n}\r\n\r\n1. 如果有两个具有相同权重的cfs进程，每个进程的 最大 运行时间是否为“sysctl_sched_latency/2”(进程可以不运行这么多)，还是说我们是否必须为每个进程执行“sysctl_sched_latency/2”？\r\n2. 那么上下文切换时间、调度程序成本计算和其他因素产生的时间呢? sched_period到底由哪些东西构成 调度延时/调度周期存在的意义是什么，感觉每时每刻都会有进程从TASK_RUNNING转变成睡眠，nr_running会不断变化，那每次被调度的进程进来算调度时期的值都不一样..."
+ },
+ {
+  "id": "8575",
+  "parent": "8573",
+  "date": "2022-03-17T09:24:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@hahaha：target latency(sched period)本意是保证CPU runqueue上的任务的最小调度延迟，即在target latency的时间内，任务至少被调度一次。目标如此，但是目前的代码不能保证这一点。\r\n\r\n诚如你所说，系统的状态不断的变迁，其实sched period和slice本来就是一个不断变化的值，调度器是在tick中不断的检查当前任务的时间片是否耗尽，如果耗尽那么就抢占。tick的精度本来就不高（不考虑sched hrtick），那么我们其实不能精准的控制每次任务执行时间精准的等于其slice的。\r\n\r\n此外，如果有异步事件唤醒了其他的任务，那么还要考虑wakeup preempt，这也会影响任务的一次执行时间"
+ },
+ {
+  "id": "8621",
+  "parent": "0",
+  "date": "2022-05-24T22:43:14+08:00",
+  "author": "摩斯电码",
+  "site": "",
+  "text": "SCHED_IDLE属于fair_sched_class，而不是idle_sched_class"
+ },
+ {
+  "id": "8880",
+  "parent": "7730",
+  "date": "2024-04-11T14:49:43+08:00",
+  "author": "aly",
+  "site": "",
+  "text": "@see：cfs保证一个调度周期结束后所有进程的虚拟时间是一样的。\r\n\r\n调度周期内，不同进程会累积自己的虚拟时间，因此会有虚拟时间上的差别。"
+ },
+ {
+  "id": "9137",
+  "parent": "0",
+  "date": "2025-02-13T15:16:37+08:00",
+  "author": "R_R",
+  "site": "",
+  "text": "weight = 1024 / 1.25nice\r\n看起来不完全是根据这个公式计算得到的，大佬知道这些数值具体由来嘛"
+ }
+]

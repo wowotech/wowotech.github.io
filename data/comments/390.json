@@ -1,0 +1,250 @@
+[
+ {
+  "id": "5778",
+  "parent": "0",
+  "date": "2017-07-06T11:18:33+08:00",
+  "author": "Phenix",
+  "site": "",
+  "text": "请问设置了IRQF_NO_SUSPEND flag的中断在系统suspend状态，interrupt handler是怎么被执行的呢？"
+ },
+ {
+  "id": "5780",
+  "parent": "5778",
+  "date": "2017-07-07T09:27:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Phenix：和正常运行的时候的执行过程是一样的啊，没有什么特别的。或者我没有找到你想问的点？"
+ },
+ {
+  "id": "5816",
+  "parent": "0",
+  "date": "2017-07-17T10:44:04+08:00",
+  "author": "Ekko",
+  "site": "",
+  "text": "enable_irq_wake接口需要平台支持吗？"
+ },
+ {
+  "id": "5889",
+  "parent": "0",
+  "date": "2017-08-08T11:51:17+08:00",
+  "author": "hw_boboy",
+  "site": "",
+  "text": "Hi,\r\n    我们的设备在启动的时候，有时候中间会停个30s左右再继续启动。（已经过了uboot阶段）\r\n    这个情况不是每次都会这样，能帮忙猜测一下是什么原因？或者有什么好的办法可以debug?\r\n    谢谢！"
+ },
+ {
+  "id": "5893",
+  "parent": "5889",
+  "date": "2017-08-08T14:04:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hw_boboy：把打印都打开，加上时间戳，看看那部分代码耗时较久。\r\n如果还找不到，就手动的添加打印，知道找到为止。"
+ },
+ {
+  "id": "5903",
+  "parent": "5893",
+  "date": "2017-08-10T10:30:56+08:00",
+  "author": "hw_boboy",
+  "site": "",
+  "text": "@wowo：Hi,\r\n    通过log，发现30秒delay是在/kernel/init/main.c文件中的static int __ref kernel_init(void *unused)函数中，为方便查阅代码部分代码如下。最值得怀疑的\r\n有两个地方：\r\n1. 938行的free_initmem()->free_reserved_area()->free_reserved_page(),这里面如果有错误是否会导致sleep.\r\n2. 946行的ret = run_init_process(ramdisk_execute_command)，当满足(!strcmp(basename(argv[0]), \"watchdogd\"))时，会watchdogd_main(argc, argv);\r\n因为现在很难复现，所以帮忙猜一下。谢谢！\r\n\r\n\r\nstatic int __ref kernel_init(void *unused)\r\n932{\r\n933\tint ret;\r\n934\r\n935\tkernel_init_freeable();\r\n936\t/* need to finish all async __init code before freeing the memory */\r\n937\tasync_synchronize_full();\r\n938\tfree_initmem();\r\n939\tmark_rodata_ro();\r\n940\tsystem_state = SYSTEM_RUNNING;\r\n941\tnuma_default_policy();\r\n942\r\n943\tflush_delayed_fput();\r\n944\r\n945\tif (ramdisk_execute_command) {\r\n946\t\tret = run_init_process(ramdisk_execute_command);\r\n947\t\tif (!ret)\r\n948\t\t\treturn 0;\r\n949\t\tpr_err(\"Failed to execute %s (error %d)\\n\",\r\n950\t\t       ramdisk_execute_command, ret);\r\n951\t}"
+ },
+ {
+  "id": "5923",
+  "parent": "0",
+  "date": "2017-08-18T17:02:31+08:00",
+  "author": "melo",
+  "site": "",
+  "text": "@wowo\r\n@linuxer\r\n有个问题请教下博主,最近在接触高通的板子,对于gpio而言,所有的gpio都能产生中断,但是只有MPM interrupt才能wakeup\r\n\r\n现在的情况是,spec里msm8909这颗U支持的最大MPM 数目是64个\r\n但是硬件给到我们能用的是42个\r\n这42个所谓的能用的 我的理解是还需要设备树配置加enable_irq_wake申请\r\n\r\n也就是硬件支持 加 设备树配置 加 驱动申请么(这里其实我有疑问,因为我半路出家所有对硬件有点茫然,不知道我这里理解的硬件支持和设备树配置是不是同一件事)"
+ },
+ {
+  "id": "5924",
+  "parent": "5923",
+  "date": "2017-08-18T17:03:50+08:00",
+  "author": "melo",
+  "site": "",
+  "text": "@melo：不对   HW给我们能用的在先  配置设备树在后 应该没关系"
+ },
+ {
+  "id": "5925",
+  "parent": "5924",
+  "date": "2017-08-18T17:39:03+08:00",
+  "author": "melo",
+  "site": "",
+  "text": "@melo：..我蠢了  其实我一开始就是没找到对应的寄存器,后来发现msm的spec里面已经把TLMM_MPM_WAKEUP_INT 都给出来了"
+ },
+ {
+  "id": "5930",
+  "parent": "5925",
+  "date": "2017-08-21T08:50:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@melo：哈哈，找出来了就行，多折腾一下，总能找到答案的，加油！～"
+ },
+ {
+  "id": "5934",
+  "parent": "0",
+  "date": "2017-08-21T14:19:52+08:00",
+  "author": "yinjian",
+  "site": "",
+  "text": "Hi,wowo and linuxer \r\n有个问题请教下，在disable irq之前已经执行了suspend device，那如果在suspend device之后来了中断，此时中断处理程序还可以正常执行吗？"
+ },
+ {
+  "id": "5936",
+  "parent": "5934",
+  "date": "2017-08-21T14:41:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yinjian：device被suspend之后，应该保证不能再产生中断了，如果不能保证，当然，相应的中断处理程序还是会执行。"
+ },
+ {
+  "id": "5952",
+  "parent": "0",
+  "date": "2017-08-25T17:10:21+08:00",
+  "author": "michael",
+  "site": "",
+  "text": "@linuxer\r\n1）IRQF_NO_SUSPEND保证irq处于enable状态，相应的handler可以被执行，不明白的是，既然系统已经suspend，如何处理其handler，难道是系统被唤醒了？\r\n2）如果IRQF_NO_SUSPEND可以唤醒系统，函数enable_irq_wake也可以唤醒系统，岂不是重复了？"
+ },
+ {
+  "id": "5953",
+  "parent": "5952",
+  "date": "2017-08-25T19:06:45+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@michael：第一个问题：suspend是一个漫长的过程，在这个过程中，如果有中断发生，那么handler都会执行，从而让整个suspend过程回滚。一旦进入了suspend状态，那么只有几个设定的唤醒源可以把系统唤醒。\r\n第二个问题：IRQF_NO_SUSPEND并不能唤醒系统，只是保证在suspend的过程中，中断是开启的。函数enable_irq_wake才是设定唤醒源的接口。"
+ },
+ {
+  "id": "5957",
+  "parent": "5780",
+  "date": "2017-08-30T08:00:32+08:00",
+  "author": "Qi",
+  "site": "",
+  "text": "@linuxer：我猜题主说到的“系统suspend状态”是指suspend完成了。但这个flag能有作用时间，只有suspend_device_irq之后，到系统suspend之前。\r\n系统suspend以后，有此flag的中断也是无法响应的"
+ },
+ {
+  "id": "6015",
+  "parent": "0",
+  "date": "2017-09-11T09:41:32+08:00",
+  "author": "Rafe",
+  "site": "",
+  "text": "@wowo\r\n@linuxer\r\n请教一个问题：\r\n当有中断唤醒系统的时候，我们要把该event上报到App层(通过uevent)，那么这个时候如何保证App层能收到该事件？\r\nresume的过程，应该是kernel先resume，然后App才resume，那么上报event的时候，App岂不是存在没有ready的情况？"
+ },
+ {
+  "id": "6017",
+  "parent": "6015",
+  "date": "2017-09-11T10:06:46+08:00",
+  "author": "Rafe",
+  "site": "",
+  "text": "@Rafe：@wowo\r\n@linuxer\r\n我想了一下，这是不是跟uevent的上报机制有关？这样问吧，当我们用uevent上报数据的时候，如果用户空间还没有resume，那么我们上报的数据这个时候去哪里了？是阻塞在那里或者说存储在了什么地方，等待用户空间来读取吗？"
+ },
+ {
+  "id": "6018",
+  "parent": "6017",
+  "date": "2017-09-11T11:10:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Rafe：其实这是一个应用层面的事情，和kernel的机制已经无关了：\r\n上报event可以唤醒系统，也可以阻止系统休眠；\r\n如果这个event有timeout，则系统会在timeout之后重新休眠，除非其它模块重新报一个event（例如拿一把锁）；\r\n如果这个event没有timeout，则会一直阻止系统休眠，直到有人把这个event清除（例如driver把数据放在某一个位置，并上报event，app读取数据的时候，顺便清除event。\r\n\r\n如果理解了原理，我们有N多种方法保证你所提到的这种同步。当然，如果什么都不考虑、不去做，系统出问题是很正常的。"
+ },
+ {
+  "id": "6019",
+  "parent": "6018",
+  "date": "2017-09-11T12:07:51+08:00",
+  "author": "Rafe",
+  "site": "",
+  "text": "@wowo：Hi wowo,\r\n非常感谢回复。\r\n是这样的，目前用户空间和kernel空间都没有timeout机制，suspend的进入完全由用户空间根据收到kernel的消息来控制。例如kernel发出一个1，用户空间判断是1才会让系统进入suspend.也就是说发送的event并没有在kernel阻止休眠或是重新进入休眠的状态,它只是发送消息，让用户空间去处理。\r\n\r\n而我现在困惑的点是，kernel被唤醒了（例如是被USB唤醒的吧），这个时候，用户空间要根据USB的状态来做一些处理，那么USB driver就通过uevent发送了状态改变的消息，但是这个时候用户空间还没有resume完全，接收USB driver发送消息的进程还没resume,那么这个时候USB driver发送的消息是否就丢失了？用户空间也就接收不到这个消息了？\r\n\r\n另外我们的uevent发送机制，会将数据存放起来，直到有人去获取？"
+ },
+ {
+  "id": "6028",
+  "parent": "6019",
+  "date": "2017-09-12T13:20:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Rafe：uevent发送的是异步消息，会不会丢，取决于实现方法，可参考下面的文章：\r\n/device_model/uevent.html\r\n如果是kmod的方式，会调用用户空间程序，接下来用户空间程序要保证后面的事情；\r\n如果是netlink，取决于msg buffer的大小。"
+ },
+ {
+  "id": "6718",
+  "parent": "0",
+  "date": "2018-04-29T16:08:39+08:00",
+  "author": "linux菜鸟",
+  "site": "",
+  "text": "@wowo：Hi, 作为wakeup source的IRQ会怎样呢？虽然它的中断没有被mask掉，但是其interrupt handler也不会执行（这时候的HW Signal只是用来唤醒系统）。\r\n这句话的意思是,即使系统唤醒后，该IRQ对应的中断处理函数也不会执行是吗？并不是延迟执行，而是根本不会执行，是这样理解的吗"
+ },
+ {
+  "id": "6720",
+  "parent": "6718",
+  "date": "2018-04-29T22:07:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linux菜鸟：文章中你引用的话后面还有这样的表述：\r\n唯一有机会执行的interrupt handler是那些标记IRQF_NO_SUSPEND flag的IRQ，因为它们的中断始终是enable的。\r\n所以如果不标记IRQF_NO_SUSPEND flag的IRQ，是不会执行的。"
+ },
+ {
+  "id": "6981",
+  "parent": "5953",
+  "date": "2018-10-14T16:16:37+08:00",
+  "author": "leo",
+  "site": "",
+  "text": "@linuxer：你好，我也有相同的疑问，既然IRQF_NO_SUSPEND标志并不能唤醒系统，只是保证suspend的过程中该中断enable，并且可以执行handler。但是我的理解是系统都无法唤醒，那么内核的调度应该也没有起来，此时进程都冻结了，谁来执行这个handler呢？\r\n还有假设这个handler被执行了，系统没起来，也做不了什么事情啊。\r\n对这一块很模糊，还请linuxer指点下"
+ },
+ {
+  "id": "7039",
+  "parent": "0",
+  "date": "2018-11-16T14:19:21+08:00",
+  "author": "crash",
+  "site": "",
+  "text": "一直觉得很费解，假如suspend的过程一切顺利，进入到suspend_ops->enter，休眠一段时间后，外部中断唤醒产生wakeup event,这时候程序是从哪里开始跑起来的呢，继续events_check_enabled = false;这样往下跑吗\r\n{\r\n\t\t*wakeup = pm_wakeup_pending();\r\n\t\tif (!(suspend_test(TEST_CORE) || *wakeup)) {\r\n\t\t\terror = suspend_ops->enter(state);\r\n\t\t\tevents_check_enabled = false;\r\n\t\t}\r\n\t\tsyscore_resume();\r\n\t}"
+ },
+ {
+  "id": "7361",
+  "parent": "6720",
+  "date": "2019-04-18T16:32:51+08:00",
+  "author": "orange",
+  "site": "",
+  "text": "@wowo：@wowo\r\n根据上面的描述，意思时wakeup source的IRQ，如果其注册中断Handler时带了IRQF_NO_SUSPEND标志，这个IRQ的Handler是会执行的，是这个意思吗？"
+ },
+ {
+  "id": "7758",
+  "parent": "7361",
+  "date": "2019-11-19T16:07:12+08:00",
+  "author": "wall.e",
+  "site": "",
+  "text": "@orange：我也好奇，感觉IRQF_NO_SUSPEND 标志和enable_irq_wake没有看明白，大神能不能再解释一下"
+ },
+ {
+  "id": "7836",
+  "parent": "0",
+  "date": "2020-01-14T10:31:19+08:00",
+  "author": "hly",
+  "site": "",
+  "text": "@wowo\r\n    我现在遇到一个问题，在休眠的过程中产生了一个中断，然后中断的下半部分去操作i2c，此时i2c已经休眠了，所以一直在报错。这个中断我已经设置为enable_irq_wake了，为什么在休眠流程过程中产生中断不会去唤醒系统呢，而且直接走CPU kill 流程。只中断只能完全进去suspend 后才能wakeup 系统。\r\n怎么样让中断持有wakeup source"
+ },
+ {
+  "id": "7837",
+  "parent": "0",
+  "date": "2020-01-14T10:34:02+08:00",
+  "author": "hly",
+  "site": "",
+  "text": "@wowo\r\n不过，在非常特殊的场合下，一个IRQ可以被设定为wakeup source-----怎么设置为wakeup source."
+ },
+ {
+  "id": "7903",
+  "parent": "7836",
+  "date": "2020-03-02T09:14:55+08:00",
+  "author": "Definitely",
+  "site": "",
+  "text": "@hly：i2c一般会通过2.2k上拉接到一个单独的regulator(和touch IC的regulator不同)，你在DTS和driver里需要单独配置这个regulator，确保系统休眠时，touch使用的i2c还有上拉，如果你的driver里只配置了touch IC的regulator，就会导致这个问题"
+ },
+ {
+  "id": "8012",
+  "parent": "7039",
+  "date": "2020-06-04T09:47:09+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@crash：分享下通过psci处理system_suspend, suspend_ops->enter的流程：\r\n\r\n1， psci初始化：suspend_set_ops(&psci_suspend_ops);\r\n\tstatic const struct platform_suspend_ops psci_suspend_ops = {\r\n\t\t.enter          = psci_system_suspend_enter,\r\n\t};\r\n\r\n2， suspend_ops->enter，即\t\r\n\tstatic int psci_system_suspend_enter(suspend_state_t state)\r\n\t{\r\n\t\treturn cpu_suspend(0, psci_system_suspend);\r\n\t}\r\n\t\r\n\tarch/arm64/kernel/suspend.c\r\n\tint cpu_suspend(unsigned long arg, int (*fn)(unsigned long))\r\n\t{\r\n\t\tstruct sleep_stack_data state;\r\n\t\t\r\n\t\t这里类似fork，有返回两次的效果：\r\n\t\tif (__cpu_suspend_enter(&state)) {\r\n\t\t\t//第一次返回1， 往下走\r\n\t\t\tret = invoke_psci_fn(PSCI_FN_NATIVE(1_0, SYSTEM_SUSPEND),\r\n\t\t\t\t\t  __pa_symbol(cpu_resume), 0, 0);;\r\n\t\t} else {\r\n\t\t\t//第二次由于cpu_resume返回值为0，往这走：\r\n\t\t\t__cpu_suspend_exit();\r\n\t\t}\r\n\t\r\n\t2.1，这里通过psci组装smc指令，跳转到TZ执行tzbsp_psci_cpu_suspend_wrapper；\r\n\t\tTZ会和RPM通信配置lpm mode,比如power down l3/ power down cpu-core；\r\n\t\tPSCI(Power State Coordination Interface), 是arm定义的一套处理cpu on/off/suspend等的协议，\r\n\t\t比如Linux-kernel发送相应的cpu operation到和Trust-Zone（EL3 by smc）或Hypervirsor(EL2 by hvc)，再由TZ或Hyp做对应的操作：\r\n\t\t比如： Linux-kernel 要offline、suspend一个cpu，Hypervisor只是把这个cpu给其它的OS使用。\r\n\t\t\r\n\t2.2 cpu_resume是物理地址；\r\n\t\t唤醒cpu重新power-up时，cpu 会call cpu_resume；\r\n\t\t因为此时mmu还未打开，所以2.2必须传入cpu_resume的物理地址；\r\n\t\tcpu_resume中会打开mmu；\r\n\t\t\r\n\t2.3 __cpu_suspend_enter两次返回的效果：\r\n\t\t__cpu_suspend_enter做一些准备工作后返回 1，then call smc into TZ and suspend system/cpu;\r\n\t\t重新唤醒cpu时，cpu call cpu_resume() and return 0 to the next instruction of __cpu_suspend_enter;\r\n\t\t因为是0，所以会call __cpu_suspend_exit。\r\n\t\t\r\n3， arch/arm64/kernel/sleep.S\r\n\tENTRY(__cpu_suspend_enter)\r\n\t//第一步保存当前lr到state中\r\n\tstp     x29, lr, [x0, #SLEEP_STACK_DATA_CALLEE_REGS]\r\n\t...\r\n\tmov     x0, #1\t\t//这里返回1\r\n\tret\r\n\tENDPROC(__cpu_suspend_enter)\r\n\r\n\tENTRY(cpu_resume)\r\n\t\t\tbl      el2_setup               // if in EL2 drop to EL1 cleanly\r\n\t\t\tbl      __cpu_setup\r\n\t\t\t/* enable the MMU early - so we can access sleep_save_stash by va */\r\n\t\t\tbl      __enable_mmu\r\n\t\t\tldr     x8, =_cpu_resume\r\n\t\t\tbr      x8\r\n\tENDPROC(cpu_resume)\r\n\t\r\n\tENTRY(_cpu_resume)\r\n\t\t...\r\n        ldp     x29, lr, [x29]\t//从之前的state中恢复lr\r\n        mov     x0, #0\t\t\t//返回值为0\r\n        ret\t\t\t\t\t\t//return到__cpu_suspend_enter下一行\r\n\tENDPROC(_cpu_resume)\r\n\r\n4,  for cpu suspend, intead of system suspend:\r\n\tstatic int psci_suspend_finisher(u32 state, unsigned long entry_point)\r\n\t{\r\n\t\t\tint err;\r\n\t\t\tu32 fn;\r\n\r\n\t\t\tfn = psci_function_id[PSCI_FN_CPU_SUSPEND];\r\n\t\t\terr = invoke_psci_fn(fn, state, __pa_symbol(cpu_resume), 0);\r\n\t\t\treturn psci_to_linux_errno(err);\r\n\t}\r\n\r\n\tcpu_suspend(state_id, psci_suspend_finisher);"
+ },
+ {
+  "id": "8476",
+  "parent": "7039",
+  "date": "2022-01-07T10:14:12+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@crash：是的，这样往下跑。但中间会经历很多操作，比如通过psci处理suspend_ops->enter时，要经过和TZ的通信；唤醒第一步是在TZ里处理的，然后再到EL1的linux-kernel中的cpu_resume。。"
+ }
+]

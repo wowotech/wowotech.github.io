@@ -1,0 +1,55 @@
+---
+title: "电源管理子系统"
+url: "/sort/pm_subsystem"
+---
+
+分类「电源管理子系统」共 48 篇。
+
+- [linux thermal framework(5)_thermal core](/pm_subsystem/523.html) <span class="small">2025-04-14</span>
+- [linux thermal framework(4)_thermal governor](/pm_subsystem/522.html) <span class="small">2025-04-14</span>
+- [linux thermal framework(3)_thermal cooling device](/pm_subsystem/521.html) <span class="small">2025-04-14</span>
+- [linux thermal framework(2)_thermal zone](/pm_subsystem/520.html) <span class="small">2025-04-14</span>
+- [linux thermal framework(1)_概述](/pm_subsystem/519.html) <span class="small">2025-04-14</span>
+- [irq wakeup in linux](/pm_subsystem/491.html) <span class="small">2021-11-15</span>
+- [Linux reset framework](/pm_subsystem/reset_framework.html) <span class="small">2017-09-01</span>
+- [系统休眠（System Suspend）和设备中断处理](/pm_subsystem/suspend-irq.html) <span class="small">2017-04-21</span>
+- [Common Clock Framework系统结构](/pm_subsystem/ccf-arch.html) <span class="small">2016-04-21</span>
+- [Linux进程冻结技术](/pm_subsystem/237.html) <span class="small">2015-11-24</span>
+- [linux cpufreq framework(5)_ARM big Little driver](/pm_subsystem/arm_big_little_driver.html) <span class="small">2015-11-10</span>
+- [Linux CPU core的电源管理(5)_cpu control及cpu hotplug](/pm_subsystem/cpu_hotplug.html) <span class="small">2015-09-19</span>
+- [linux cpufreq framework(4)_cpufreq governor](/pm_subsystem/cpufreq_governor.html) <span class="small">2015-08-23</span>
+- [linux cpufreq framework(3)_cpufreq core](/pm_subsystem/cpufreq_core.html) <span class="small">2015-07-30</span>
+- [Linux CPU core的电源管理(3)_cpu ops](/pm_subsystem/cpu_ops.html) <span class="small">2015-07-17</span>
+- [Linux cpufreq framework(2)_cpufreq driver](/pm_subsystem/cpufreq_driver.html) <span class="small">2015-06-19</span>
+- [linux cpufreq framework(1)_概述](/pm_subsystem/cpufreq_overview.html) <span class="small">2015-06-13</span>
+- [Linux电源管理(15)_PM OPP Interface](/pm_subsystem/pm_opp.html) <span class="small">2015-06-04</span>
+- [Linux CPU core的电源管理(2)_cpu topology](/pm_subsystem/cpu_topology.html) <span class="small">2015-05-30</span>
+- [Linux CPU core的电源管理(1)_概述](/pm_subsystem/cpu_core_pm_overview.html) <span class="small">2015-04-30</span>
+- [Linux Regulator Framework(2)_regulator driver](/pm_subsystem/regulator_driver.html) <span class="small">2015-04-16</span>
+- [Linux Regulator Framework(1)_概述](/pm_subsystem/regulator_framework_overview.html) <span class="small">2015-03-20</span>
+- [Linux power supply class(1)_软件架构及API汇整](/pm_subsystem/psy_class_overview.html) <span class="small">2015-03-13</span>
+- [Linux电源管理(14)_从设备驱动的角度看电源管理](/pm_subsystem/device_driver_pm.html) <span class="small">2015-03-02</span>
+- [Linux PM QoS framework(3)_per-device PM QoS](/pm_subsystem/per_device_pm_qos.html) <span class="small">2015-02-26</span>
+- [Linux PM QoS framework(2)_PM QoS class](/pm_subsystem/pm_qos_class.html) <span class="small">2015-02-10</span>
+- [Linux PM QoS framework(1)_概述和软件架构](/pm_subsystem/pm_qos_overview.html) <span class="small">2015-02-04</span>
+- [Linux cpuidle framework(4)_menu governor](/pm_subsystem/cpuidle_menu_governor.html) <span class="small">2015-01-18</span>
+- [Linux cpuidle framework(3)_ARM64 generic CPU idle driver](/pm_subsystem/cpuidle_arm64.html) <span class="small">2015-01-06</span>
+- [Linux cpuidle framework(2)_cpuidle core](/pm_subsystem/cpuidle_core.html) <span class="small">2014-12-30</span>
+- [Linux电源管理(13)_Driver的电源管理](/pm_subsystem/driver_pm.html) <span class="small">2014-12-26</span>
+- [Linux电源管理(12)_Hibernate功能](/pm_subsystem/hibernation.html) <span class="small">2014-12-22</span>
+- [Linux cpuidle framework(1)_概述和软件架构](/pm_subsystem/cpuidle_overview.html) <span class="small">2014-12-17</span>
+- [Linux common clock framework(3)_实现逻辑分析](/pm_subsystem/clock_framework_core.html) <span class="small">2014-11-24</span>
+- [Linux PM domain framework(1)_概述和使用流程](/pm_subsystem/pm_domain_overview.html) <span class="small">2014-11-13</span>
+- [Linux common clock framework(2)_clock provider](/pm_subsystem/clock_provider.html) <span class="small">2014-10-23</span>
+- [Linux common clock framework(1)_概述](/pm_subsystem/clk_overview.html) <span class="small">2014-10-20</span>
+- [Linux电源管理(11)_Runtime PM之功能描述](/pm_subsystem/rpm_overview.html) <span class="small">2014-10-08</span>
+- [Linux电源管理(10)_autosleep](/pm_subsystem/autosleep.html) <span class="small">2014-09-18</span>
+- [Linux电源管理(9)_wakelocks](/pm_subsystem/wakelocks.html) <span class="small">2014-09-14</span>
+- [Linux电源管理(8)_Wakeup count功能](/pm_subsystem/wakeup_count.html) <span class="small">2014-09-12</span>
+- [Linux电源管理(7)_Wakeup events framework](/pm_subsystem/wakeup_events_framework.html) <span class="small">2014-09-09</span>
+- [Linux电源管理(6)_Generic PM之Suspend功能](/pm_subsystem/suspend_and_resume.html) <span class="small">2014-08-22</span>
+- [Linux电源管理(5)_Hibernate和Sleep功能介绍](/pm_subsystem/std_str_func.html) <span class="small">2014-06-10</span>
+- [Linux电源管理(4)_Power Management Interface](/pm_subsystem/pm_interface.html) <span class="small">2014-05-29</span>
+- [Linux电源管理(3)_Generic PM之Reboot过程](/pm_subsystem/reboot.html) <span class="small">2014-05-19</span>
+- [Linux电源管理(2)_Generic PM之基本概念和软件架构](/pm_subsystem/generic_pm_architecture.html) <span class="small">2014-05-13</span>
+- [Linux电源管理(1)_整体架构](/pm_subsystem/pm_architecture.html) <span class="small">2014-05-07</span>

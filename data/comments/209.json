@@ -1,0 +1,274 @@
+[
+ {
+  "id": "2556",
+  "parent": "0",
+  "date": "2015-09-11T07:09:53+08:00",
+  "author": "mj",
+  "site": "",
+  "text": "什么时候也出一篇关于RCU的文章，特别是update的时机，期待中。"
+ },
+ {
+  "id": "2557",
+  "parent": "2556",
+  "date": "2015-09-11T09:04:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@mj：蜗窝当然不会忽略RCU这么强大的工具，关于RCU的文档已经开了个头，不过RCU比较复杂，估计需要酝酿一段时间，^_^"
+ },
+ {
+  "id": "2558",
+  "parent": "0",
+  "date": "2015-09-11T16:14:07+08:00",
+  "author": "leefong.chen",
+  "site": "",
+  "text": "@linuxer 你在Linux maillist中提交patch了吗？模块比较多，想为Linux做点贡献，想找些志同道合的人一起分析、讨论内核某个模块，可否建立一个平台，让大家讨论最新Linux。"
+ },
+ {
+  "id": "2559",
+  "parent": "2558",
+  "date": "2015-09-11T18:31:39+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@leefong.chen：很遗憾，我也没有提交过patch，如果想要提交patch，自身需要很强才可以，我感觉目前我的水平还不足以向内核提交patch（当然，那种外设驱动级别或者ARM下的某个machine级别的code之类的patch并不需要很高的能力，但是我没有兴趣），因此我现在就是想修炼内功，先把内核的几个基础模块（中断子系统、时间子系统、内核同步机制、进程管理、内存管理、I/O系统）研究透彻之后，然后选定一个内核模块（例如现在比较活跃的btrfs），进行深入理解，思考，看看是否有机会增加其功能或者改善其性能。\r\n\r\nBTW，你想建立平台，让志同道合的人一起分析、讨论内核某个模块，想法当然好，不过这样的人其实很少，就算是有，又忙于生计，其实是挺困难的一件事情，因此，我对这件事情不看好，很容易虎头蛇尾......"
+ },
+ {
+  "id": "2560",
+  "parent": "2559",
+  "date": "2015-09-11T21:06:07+08:00",
+  "author": "leefong.chen",
+  "site": "",
+  "text": "@linuxer：中国就是这样，先要生计，再谈兴趣。什么时候学习IO系统，一起学习。"
+ },
+ {
+  "id": "2568",
+  "parent": "0",
+  "date": "2015-09-13T18:36:13+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "btrfs 目前看没啥前途啊，linuxer怎么看中了这个模块"
+ },
+ {
+  "id": "2569",
+  "parent": "2568",
+  "date": "2015-09-14T09:02:55+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：原因有几个：\r\n1、我一直对文件系统比较感兴趣，但是之前由于搞嵌入式，因此都是一些小打小闹的文件系统（例如yaffs），一直想了解一个功能比较强大的文件系统的运作机制。\r\n2、有一段时间我很关注内核的更新情况（现在都没有时间去了解了），看到btrfs更新非常频繁，处于活跃期，这时候的模块有很多issue，可参与度比较高\r\n3、我简单的检索了一下资料，似乎btrfs有取代EXT4文件系统的趋势\r\n\r\n文件系统模块，schedule有什么推荐？"
+ },
+ {
+  "id": "2570",
+  "parent": "2569",
+  "date": "2015-09-14T09:18:52+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@linuxer：其实文件系统方面我就是菜鸟级别的。\r\nbtrfs更新是很快，但是感觉好多东西都是在模仿ZFS，ZFS 10年前都有商业部署了，btrfs概念炒的比较厉害，但是总是感觉像付不起的阿斗，有那么点不给力。一直以为红帽会在fedora发行版上作为默认的文件系统，结果XFS 突然上位。\r\n\r\n我觉得现在想在文件系统做投入，要么搞大（像Global FS），要么搞小（F2FS）。PC或者小型机级别的FS都被云概念炒翻了。当然btrfs很多概念很先进，学习是绝对值得的。"
+ },
+ {
+  "id": "2572",
+  "parent": "2570",
+  "date": "2015-09-14T12:38:52+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：schedule，你是做哪一行的？虽然你说你是菜鸟级别，不过感觉对fs还是比较了解的，你是搞服务器（数据中心、云计算什么的）方向的吗？"
+ },
+ {
+  "id": "2585",
+  "parent": "2572",
+  "date": "2015-09-15T20:51:21+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@linuxer：呃呃呃，我是个医生。。。从小对电脑感兴趣，没事就看看代码，"
+ },
+ {
+  "id": "2587",
+  "parent": "2585",
+  "date": "2015-09-15T22:45:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：天哪，我已经晕倒......别和我说话，我想静静"
+ },
+ {
+  "id": "2590",
+  "parent": "2585",
+  "date": "2015-09-15T22:48:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@schedule：这才是真正的大神啊，我的偶像啊！把兴趣留给业余时间，不想当厨子的生物学家不是好程序员啊！羡慕……"
+ },
+ {
+  "id": "2592",
+  "parent": "2590",
+  "date": "2015-09-15T23:25:32+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@wowo：比不了你们年轻人啊，周围的朋友有爱玩飞行器的，有玩汽车的，偏偏我喜欢静心下来看看代码，就像看书似的，就是一种爱好。"
+ },
+ {
+  "id": "2598",
+  "parent": "0",
+  "date": "2015-09-17T11:13:32+08:00",
+  "author": "维尼",
+  "site": "",
+  "text": "都3.10后内核都是64的 但是为什么大部分手机还是32的  \r\n楼主能 讲一下 怎么看android 手机 内核位数吗  我都是print一下 long类型"
+ },
+ {
+  "id": "2603",
+  "parent": "2598",
+  "date": "2015-09-17T23:20:43+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@维尼：linux支持多种cpu，32位的、64位的、ARM、x86、powerPC什么的都支持，只要在编译内核的时候进行配置就OK了。"
+ },
+ {
+  "id": "2606",
+  "parent": "2603",
+  "date": "2015-09-18T08:57:10+08:00",
+  "author": "维尼",
+  "site": "",
+  "text": "@linuxer：现在市面是的手机貌似没有64位的内核啊"
+ },
+ {
+  "id": "3258",
+  "parent": "2585",
+  "date": "2015-12-18T16:04:28+08:00",
+  "author": "C",
+  "site": "",
+  "text": "@schedule：这位大哥使我想到一个澳大利亚的kernel hacker，他的正常职业是麻醉师，最早他帮内核写了一个Fair Scheduler，得到大量好评，然后Ingo眼红，跟着写了一个Complete Fair Scheduler， 然后两个scheduler互相PK看谁能进主线， 结果最后linus拍板说CFS进吧，问他为啥，他说，Fair Scheduler的哥们回复邮件太慢了。。。 别人又不是专职的，怎么可能和Ingo这些geek拼时间。"
+ },
+ {
+  "id": "3259",
+  "parent": "3258",
+  "date": "2015-12-18T16:07:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@C：哈哈，让我笑一会…"
+ },
+ {
+  "id": "3261",
+  "parent": "2585",
+  "date": "2015-12-21T10:06:30+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@schedule：医生啊。。。。。。\r\n哪个科室？\r\n听说牙科跟妇产科最挣钱"
+ },
+ {
+  "id": "3974",
+  "parent": "0",
+  "date": "2016-05-25T14:55:43+08:00",
+  "author": "js_wawayu",
+  "site": "",
+  "text": "都是高手，佩服！"
+ },
+ {
+  "id": "4465",
+  "parent": "0",
+  "date": "2016-08-29T19:18:58+08:00",
+  "author": "will",
+  "site": "",
+  "text": "释放seqlock操作如下：\r\n\r\n（1）释放锁，允许其他writer thread进入临界区。\r\n\r\n（2）sequence counter加一（注意：不是减一哦，sequence counter是一个不断累加的counter） \r\n\r\n这个加一应该在释放锁之前吧。。？？？"
+ },
+ {
+  "id": "4466",
+  "parent": "4465",
+  "date": "2016-08-30T08:35:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@will：为何你觉得是加一在前呢？"
+ },
+ {
+  "id": "5456",
+  "parent": "0",
+  "date": "2017-04-11T15:47:36+08:00",
+  "author": "qnh",
+  "site": "",
+  "text": "write_sequnlock里：\r\nsequence counter加一确实应该在释放锁之前，需要这个锁来保护sequence counter"
+ },
+ {
+  "id": "5470",
+  "parent": "3261",
+  "date": "2017-04-14T14:22:32+08:00",
+  "author": "lamaboy",
+  "site": "",
+  "text": "@tigger：其实我有个疑问，一直想清楚，医生在给人看病的时候，是不是像程序员一样先开点药试下，看看效果理想不？？ 不理想找问题再试！ 会不会是在这个过程中把病情给耽误了？？"
+ },
+ {
+  "id": "5505",
+  "parent": "2598",
+  "date": "2017-04-30T12:45:38+08:00",
+  "author": "hony",
+  "site": "",
+  "text": "@维尼：可以查看，cat /proc/cpuinfo"
+ },
+ {
+  "id": "5859",
+  "parent": "5456",
+  "date": "2017-07-30T10:06:58+08:00",
+  "author": "fanzhang",
+  "site": "",
+  "text": "@qnh：嗯，对，这里有一个spin_lock,确保只有一个writer."
+ },
+ {
+  "id": "6091",
+  "parent": "0",
+  "date": "2017-10-08T23:00:02+08:00",
+  "author": "flyfish",
+  "site": "",
+  "text": "现在在分析网络子系统，除了看代码之外还需要阅读大量的资料，譬如RFC，还要上班，加班，而工作又跟linux kernel没有太大关系，感觉真累"
+ },
+ {
+  "id": "6098",
+  "parent": "6091",
+  "date": "2017-10-10T16:35:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@flyfish：要有兴趣，喜欢就不累了～@"
+ },
+ {
+  "id": "7178",
+  "parent": "0",
+  "date": "2019-02-08T18:24:57+08:00",
+  "author": "air_123456",
+  "site": "",
+  "text": "reader在检测到有writer thread在临界区后，仍然放reader thread进入，可能会导致writer thread的一些额外的开销（cache miss）     //这里为什么会导致writer thread的cache miss????"
+ },
+ {
+  "id": "7478",
+  "parent": "7178",
+  "date": "2019-06-20T14:13:41+08:00",
+  "author": "sailing",
+  "site": "",
+  "text": "@air_123456：writer thread 在另外一个CPU上，应该没啥关系。我认为主要是此时读关键数据也是白读，如果这个无意义的读影响到了本CPU的Cache，那就更无意义了."
+ },
+ {
+  "id": "7517",
+  "parent": "0",
+  "date": "2019-07-09T11:13:21+08:00",
+  "author": "呜啦啦",
+  "site": "",
+  "text": "（3）数据类型比较简单，但是数据的访问又无法利用原子操作来保护。我们举一个简单的例子来描述：假设需要保护的数据是一个链表，header--->A node--->B node--->C node--->null。reader thread遍历链表的过程中，将B node的指针赋给了临时变量x，这时候，中断发生了，reader thread被preempt（注意，对于seqlock，reader并没有禁止抢占）。这样在其他cpu上执行的writer thread有充足的时间释放B node的memory（注意：reader thread中的临时变量x还指向这段内存）。当read thread恢复执行，并通过x这个指针进行内存访问（例如试图通过next找到C node），悲剧发生了……\r\n\r\n这是场景是不是不太适合seqlock，如果就是read thread校验通过认为此时临时变量是有效的，后面write thread又把对应的B node释放了，read thread试着访问B node的时候不还是会出错吗？"
+ },
+ {
+  "id": "8588",
+  "parent": "7517",
+  "date": "2022-04-18T20:53:15+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@呜啦啦：是的，我也觉得seqlock不适合保护指针。"
+ },
+ {
+  "id": "8754",
+  "parent": "7517",
+  "date": "2023-03-15T14:07:09+08:00",
+  "author": "double_qiang",
+  "site": "",
+  "text": "@呜啦啦：不是啊，write thread把reader thread给抢占了，然后将对应的B node释放后，之后reader thread还会再重新进临界区，这时候再去遍历链表时，链表中已经不存在B node，又怎么会去访问B node呢"
+ },
+ {
+  "id": "8777",
+  "parent": "7517",
+  "date": "2023-04-28T12:37:14+08:00",
+  "author": "storage",
+  "site": "",
+  "text": "@呜啦啦：好问题，确实是这样"
+ }
+]

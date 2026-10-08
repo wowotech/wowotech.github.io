@@ -1,0 +1,106 @@
+[
+ {
+  "id": "7106",
+  "parent": "0",
+  "date": "2018-12-25T12:38:26+08:00",
+  "author": "gnx",
+  "site": "",
+  "text": "期待load balance和numa balance"
+ },
+ {
+  "id": "7109",
+  "parent": "7106",
+  "date": "2018-12-27T08:50:51+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@gnx：后续可以考虑，现在暂时还没打算"
+ },
+ {
+  "id": "7326",
+  "parent": "0",
+  "date": "2019-03-20T00:15:25+08:00",
+  "author": "null",
+  "site": "",
+  "text": "设置task_group带宽200%,这里是不是写错了，应该是1s的quota和500ms的period？"
+ },
+ {
+  "id": "7328",
+  "parent": "0",
+  "date": "2019-03-20T09:23:33+08:00",
+  "author": "conlin_lc",
+  "site": "",
+  "text": "学习一下"
+ },
+ {
+  "id": "7365",
+  "parent": "7326",
+  "date": "2019-04-21T15:08:15+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@null：是的，多谢指正。"
+ },
+ {
+  "id": "7416",
+  "parent": "0",
+  "date": "2019-05-14T11:18:41+08:00",
+  "author": "cw",
+  "site": "",
+  "text": "如果qcfs_rq运行的进程只有即将被dequeue的se一个的话，那么parent se也需要dequeue。如果qcfs_rq->load.weight不为0，说明qcfs_rq就绪队列上运行的进程不止se一个，那么parent se理所应当不能被dequeue\r\n\r\n“parent se理所应当不能被dequeue”这句话有没有问题？"
+ },
+ {
+  "id": "7420",
+  "parent": "7416",
+  "date": "2019-05-14T23:10:02+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@cw：parent se 指的是即将被dequeue的se挂载的cfs rq对应的group se。感觉没什么问题，不知你指什么问题？"
+ },
+ {
+  "id": "7560",
+  "parent": "0",
+  "date": "2019-07-31T17:34:54+08:00",
+  "author": "xyz",
+  "site": "",
+  "text": "期待load balance和numa balance"
+ },
+ {
+  "id": "7980",
+  "parent": "0",
+  "date": "2020-05-07T16:37:10+08:00",
+  "author": "小顽石",
+  "site": "",
+  "text": "感觉：assign_cfs_rq_runtime()负责从“全局时间池中”申请时间片。感觉全局时间池说的容易让人误解，看源码我理解应该是从这个cfs_rq所在的taks_group中申请时间片；仅从“全局时间池”这个次来看，容易理解成从root group直接申请；"
+ },
+ {
+  "id": "8092",
+  "parent": "0",
+  "date": "2020-08-12T15:42:21+08:00",
+  "author": "wangxingxing",
+  "site": "",
+  "text": "Hi 您好：\r\n在period_timer的回调中，我们调用distribute_cfs_runtime为受限的cfs_rq重新设置runtime_remaining：\r\n\t\truntime = -cfs_rq->runtime_remaining + 1;\r\n\t\tif (runtime > remaining)\r\n\t\t\truntime = remaining;\r\n\t\tremaining -= runtime;\r\n\r\n\t\tcfs_rq->runtime_remaining += runtime;\r\n这样的处理之后cfs_rq->runtime_remaining很多时候会等于1ns，看起来并没有为cfs_rq分配足够的运行时间。所以我的疑问是为什么不在100ms的period_timer到期的时候为cfs_rq分配足够的（比如5ms）可运行时间呢？只分配1ns的背后设计原理是什么呢？"
+ },
+ {
+  "id": "8093",
+  "parent": "0",
+  "date": "2020-08-12T20:09:33+08:00",
+  "author": "wangxingxing",
+  "site": "",
+  "text": "HI您好：\r\n在unthrottle_cfs_rq中，CFS调度器会调用for_each_sched_entity循环当前cfs_rq向上依附的所有cfs_rq，如果他们没有on_rq的话，会调用enqueue_entity把他们都入队，但是我看到这里有一个检查：\r\n\t\tif (cfs_rq_throttled(cfs_rq))\r\n\t\t\tbreak;\r\n也就是说如果向上有一个依附的cfs_rq处于throttle状态的话直接break。这样的话即便当前cfs_rq成功enqueue，因为他依附的cfs_rq没有enqueue，所以也不能得到CPU执行的机会。所以想请教一下cfs如何保证unthrottle的cfs_rq可以立马被调度器调度到呢？"
+ },
+ {
+  "id": "8311",
+  "parent": "0",
+  "date": "2021-09-12T23:09:24+08:00",
+  "author": "Tim",
+  "site": "",
+  "text": "按照CFS的代码逻辑，整个cfs_rq对应的group se都会被dequeue。那么剩余的4.5ms是否应该归返给全局时间池呢？如果不归返，可能这个进程失眠很久，而其他CPU的cfs_rq很有可能申请不到5ms时间片（全局时间池时间剩余4ms）导致throttle\r\n\r\nassign_cfs_rq_runtime 函数中下列代码应该是选择 全局时间池剩余时间和 5ms的较小值，所谓我理解，不会因为申请不到5ms时间片而导致 throttle ？\r\namount = min(cfs_b->runtime, min_amount);"
+ },
+ {
+  "id": "8940",
+  "parent": "0",
+  "date": "2024-11-20T17:34:55+08:00",
+  "author": "zrant",
+  "site": "",
+  "text": "为什么调大cpu.cfs_period_us会有更大吞吐量。默认都是100ms这个是什么依据选的呢"
+ }
+]

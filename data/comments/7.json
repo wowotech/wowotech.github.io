@@ -1,0 +1,50 @@
+[
+ {
+  "id": "1941",
+  "parent": "0",
+  "date": "2015-06-04T15:22:44+08:00",
+  "author": "我欲乘风归去",
+  "site": "",
+  "text": "日志提供单独的模块控制输出接口很重要啊。 \r\n我理解日志应该是一个全局接口，但是每个模块可以加上自己的tag比较好，这样控制输出的时候，可以通过配置的方式启用某些模块的输出。在系统大了以后非常有用。"
+ },
+ {
+  "id": "1943",
+  "parent": "1941",
+  "date": "2015-06-04T17:10:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@我欲乘风归去：你说的很对，所以Linux Kernel的日志管理系统（Dynamic Debug）就相当复杂了，只有那样，才可以很方便的debug。我这边文章只是一个例子。"
+ },
+ {
+  "id": "4298",
+  "parent": "0",
+  "date": "2016-07-21T16:39:34+08:00",
+  "author": "anchen",
+  "site": "",
+  "text": "我这里有一个问题想请教，是关于fprintf（），因为想把输出重定向（写入）到一块存储区域，等后面需要的时候把他们读出来。我找到相关的类似代码，如下：\r\ntypedef struct bufferInfo_t\r\n{\r\n  void (*print_function)(void *context, char toprint);\r\n..\r\n} bufferInfo;\r\n\r\nuint32 init_log_buffer(FILE *buffInfo, void *location, uint32 size);\r\nvoid buffer_putchar(void *port, char toprint);\r\n\r\nbufferInfo _LOG0;\r\nFILE *LOG0=(FILE *)&_LOG0;\r\ninit_log_buffer(LOG0, (void *) Buffer_Address, Buffer_Size);\r\nfprintf(LOG0, \"hello\\n\");\r\n\r\n就是不能理解，这里调用fprintf的时候，怎么就实际调用了buffer_putchar()来写入buffer了呢？\r\n谢谢！"
+ },
+ {
+  "id": "4299",
+  "parent": "4298",
+  "date": "2016-07-21T21:40:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@anchen：多谢您的问题啊，这是我见过的最奇葩、最粗暴、也是最有意思的用法了。不过最近有点忙，没时间追根问底，建议您先看一下fprintf的源码，应该就有答案了。"
+ },
+ {
+  "id": "4300",
+  "parent": "4299",
+  "date": "2016-07-22T15:02:29+08:00",
+  "author": "anchen",
+  "site": "",
+  "text": "@wowo：一连三个最，我也要醉了。实际是Cortex A9的dual core里，实现AMP，一个是linux，一个是BM。BM输出到shared memory，由Linux应用读出来打印到串口。我实际去调试看看，有心得再来汇报。"
+ },
+ {
+  "id": "6105",
+  "parent": "0",
+  "date": "2017-10-12T22:47:33+08:00",
+  "author": "pumpkin",
+  "site": "",
+  "text": "跟uvm verbosity的用法好像啊"
+ }
+]

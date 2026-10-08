@@ -1,0 +1,10 @@
+[
+ {
+  "id": "7022",
+  "parent": "0",
+  "date": "2018-11-09T14:11:57+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "硬文一篇！楼主的翻译 生动锦上添花！\r\nL = L0 + L1*y + L2*y2 + L3*y3 + ...\r\n这里用到了卷积的思想，不得不说 牛逼的程序员一般都还是一个算法工程师。\r\nkernel4.9中，cpufreq的governor默认使用schedutil，也是基于PELT的。\r\n\r\n最近在尝试看Deep Learning的东西，发现不同的领域 也有很多相似的地方。"
+ }
+]

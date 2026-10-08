@@ -1,0 +1,1298 @@
+[
+ {
+  "id": "198",
+  "parent": "0",
+  "date": "2014-06-07T11:45:19+08:00",
+  "author": "建站技巧",
+  "site": "",
+  "text": "很好  学习了  谢谢分享"
+ },
+ {
+  "id": "199",
+  "parent": "0",
+  "date": "2014-06-10T20:01:15+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "这部分的内容感觉好复杂啊，如果仅仅是简单的使用device tree来配置已有驱动，需要修改对应的dts文件中的内容，然后编译，再放回就可以了吧？这些文件一般都是在哪里呢？是如何被内核动态加载的呢？"
+ },
+ {
+  "id": "200",
+  "parent": "199",
+  "date": "2014-06-11T11:57:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：一些示例性的dts文件位于linux/arch/arm/boot/dts目录下，修改完毕后可以使用dtc来进行编译，dtc的source code位于linux/scripts/dtc。编译之后编程dtb文件。kernel的image中不会包含dtb的内容，具体dtb放在哪里是和bootloader相关的，可以放在NAND FLASH上，这样，bootloader在load OS之前要向从NAND FLASH中加载dtb文件到SDRAM中，然后把控制权交给kernel，kernel不会加载dtb文件的，kernel只是分析dtb而已。"
+ },
+ {
+  "id": "201",
+  "parent": "200",
+  "date": "2014-06-11T14:27:16+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@linuxer：我用的板子是BeagleboneBlack，从SD卡启动，dtb文件是编译内核后生成的，然后解压拷贝到uboot所在的SD卡上。这些应该都是没问题的。启动的时候，最后报错的信息就是下面这个函数中的错误处理，你觉得可能是什么错误呢？\r\n\r\nconst struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys) \r\n{ \r\n    const struct machine_desc *mdesc, *mdesc_best = NULL;\r\n    if (!dt_phys || !early_init_dt_scan(phys_to_virt(dt_phys))) \r\n        return NULL;\r\n    mdesc = of_flat_dt_match_machine(mdesc_best, arch_get_next_mach);\r\n    if (!mdesc) {  \r\n        出错处理 \r\n    }\r\n    /* Change machine number to match the mdesc we're using */ \r\n    __machine_arch_type = mdesc->nr;\r\n    return mdesc; \r\n}"
+ },
+ {
+  "id": "202",
+  "parent": "201",
+  "date": "2014-06-11T15:12:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：这一定是匹配问题了，可以用下面的步骤debug：\r\n1、反编译你使用的dtb文件，查看root node的compatible是什么？\r\n2、DUMP linux kernel ELF文件，看看.arch.info.init这个section中的内容。这个section中一定要有和root node的compatible相同的字符串"
+ },
+ {
+  "id": "203",
+  "parent": "202",
+  "date": "2014-06-11T16:07:46+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "@linuxer：readelf vmlinux信息，出来下面这个，怎么能查看这段的字符信息呢？\r\n\r\n[21] .init.arch.info   PROGBITS        c07bc6ac 7c46ac 0002f4 00   A  0   0  4\r\n这的确是匹配问题，会不会是uboot传递的参数信息中有device tree的相关的compatible不在内核比对的那个列表里？uboot都传递哪些参数给kernel呢？"
+ },
+ {
+  "id": "204",
+  "parent": "203",
+  "date": "2014-06-12T09:13:39+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：如果你是ARM平台，建议用arm-linux-objcopy这个命令把.init.arch.info这个segment从linux kernel的elf文件中copy出来，形成一个文件，然后用UltraEdit或者其他的可以看文本和binary的工具阅读文件即可。"
+ },
+ {
+  "id": "279",
+  "parent": "0",
+  "date": "2014-08-10T18:53:12+08:00",
+  "author": "lg2841",
+  "site": "",
+  "text": "多谢您的三篇精彩文章，终于算是大概将整个基于device tree的启动加载搞清楚了。"
+ },
+ {
+  "id": "280",
+  "parent": "279",
+  "date": "2014-08-10T23:25:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lg2841：不必客气。那怕就是能够帮助一个对linux内核有兴趣的人我就满足了，呵呵~~~~~"
+ },
+ {
+  "id": "322",
+  "parent": "0",
+  "date": "2014-08-19T16:16:57+08:00",
+  "author": "问问",
+  "site": "",
+  "text": "神一般的人物"
+ },
+ {
+  "id": "345",
+  "parent": "0",
+  "date": "2014-08-24T11:06:14+08:00",
+  "author": "竹萃集",
+  "site": "",
+  "text": "这部分的内容感觉好复杂啊，如果仅仅是简单的使用device tree来配置已有驱动，需要修改对应的dts文件中的内容，然后编译，再放回就可以了吧？这些文件一般都是在哪里呢？是如何被内核动态加载的呢？"
+ },
+ {
+  "id": "347",
+  "parent": "345",
+  "date": "2014-08-24T21:11:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@竹萃集：你提的问题和下面的Daniel Shieh 网友提出的问题类似，请参考下面我的回答，多谢！"
+ },
+ {
+  "id": "466",
+  "parent": "0",
+  "date": "2014-09-25T21:05:26+08:00",
+  "author": "perr",
+  "site": "",
+  "text": "试图通过dtb启动,遇到以下问题.请求站长给看看\r\nhttp://www.21qa.net/questions/713/713"
+ },
+ {
+  "id": "467",
+  "parent": "466",
+  "date": "2014-09-26T12:00:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@perr：抱歉，实际工作中我也没有使用过device tree，我只能给你一些思考的方向：\r\n1、是不是在数据传递路径上有些代码错误的访问了DTB block的数据。数据完整性检查的点包括：\r\n（1）dts编译阶段，产生dtb文件\r\n（2）bootloader阶段，0x20000100位置的数据\r\n（3）kernel执行阶段，setup_machine_fdt之前，dump0xc0000100位置的数据\r\n如果这三个阶段dump出来的数据都是一样的话，那么dtb在数据copy过程中没有问题\r\n\r\n2、编译过程和kernel中的解析过程中，对dtb的格式理解不一致，例如版本什么的"
+ },
+ {
+  "id": "468",
+  "parent": "467",
+  "date": "2014-09-26T13:57:12+08:00",
+  "author": "perr",
+  "site": "",
+  "text": "@linuxer：已调通,原因是dtb过大,尾部被内核解压时使用的临时页表覆盖.\r\n见    http://www.21qa.net/questions/713/713"
+ },
+ {
+  "id": "639",
+  "parent": "0",
+  "date": "2014-11-05T15:05:46+08:00",
+  "author": "Mr_White",
+  "site": "",
+  "text": "我想请问新版的内核如果不用device tree，把以前可用的uboot和新版的uImage放到系统中可以正常启动吗？"
+ },
+ {
+  "id": "668",
+  "parent": "639",
+  "date": "2014-11-05T23:51:45+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Mr_White：有些arch已经强制使用device tree了，例如ARM64，如果你的硬件平台式ARM64的当然不行。如果是ARM 32bit的平台，当然可以不使用device tree，这时候，uboot仍然传递旧的tag list给kernel，kernel解析之并可以正常启动。"
+ },
+ {
+  "id": "716",
+  "parent": "668",
+  "date": "2014-11-11T16:37:51+08:00",
+  "author": "Mr_White",
+  "site": "",
+  "text": "@linuxer：我试着移植新内核到AM3352上，但是用之前的uboot，内核总是起不来，我想请问在make menuconfig的时候，需要如何配置才能使内核不使用device tree？我看到Boot options中的第一个选项“Flattened Device Tree support”是强制选中的"
+ },
+ {
+  "id": "717",
+  "parent": "716",
+  "date": "2014-11-11T16:53:30+08:00",
+  "author": "Mr_White",
+  "site": "",
+  "text": "@Mr_White：内核版本是3.12"
+ },
+ {
+  "id": "727",
+  "parent": "716",
+  "date": "2014-11-11T22:09:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Mr_White：U-Boot tags传递是否正确？kernel machine的配置是否正确？\r\n就算kernel配置为使用device tree，一样可以通过旧的方式加载（从DTS读取不成功的话），因此你不用太在意是否使能device tree功能。\r\n另外，“Flattened Device Tree support”是强制选中的，说明有Kconfig（如arch相关的）主动选择了这个配置（select USE_OF），你可以去kernel中查一下。"
+ },
+ {
+  "id": "768",
+  "parent": "0",
+  "date": "2014-11-26T15:36:36+08:00",
+  "author": "pingchangxin",
+  "site": "",
+  "text": "写的太好了，我又一个疑问，以前版本上在一些i2c/spi注册一个设备的时候，有一些board_info的注册，例如spi_register_board_info，把每个spi_board_info挂在全局链表变量board_list上，并且遍历已经在系统中注册了的控制器，匹配上相应的控制器并取得它们的spi_master结构指针，最终也会通过spi_new_device函数添加SPI设备，现在用device tree是怎么完成这个操作的呢？谢谢！"
+ },
+ {
+  "id": "769",
+  "parent": "768",
+  "date": "2014-11-26T22:28:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@pingchangxin：board info和device tree之间没有任何关系的，device tree只是描述SPI/I2C platform相关的信息（寄存器映射、中断等等），而board info，还是需要在board的初始化代码中提供。\r\n\r\n可参考如下表述（Documentation/devicetree/bindings/spi/spi-bus.txt）：\r\nHowever, the binding does not attempt to define the specific method for assigning chip select numbers.  Since SPI chip select configuration is flexible and non-standardized, it is left out of this binding with the assumption that board specific platform code will be used to manage chip selects."
+ },
+ {
+  "id": "831",
+  "parent": "0",
+  "date": "2014-12-04T23:57:14+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "Dts 里面有一个比较难懂的地方就是range \r\n社区标准的每个节点都有range 但是大部分range都是空的因为 那个节点的地址就是cpu的视角\r\n但是当这个节点的父节点是一个external bus\r\n的话 就肯能要用range了因为挂在external bus上面的设备的寄存器地址可能通过cpu不能直接访问，只能通过bus的domain来解析。这样的话，也必须得自己写一个标准的bus driver来解析bus上的各个节点。\r\n因为如果你讲这个bus上的各个节点的地址直接ioremap成虚拟地址，那他们很这个bus 就不会有直接的关系。\r\n楼主 我说的没错吧？虽然有点啰嗦 哈哈"
+ },
+ {
+  "id": "835",
+  "parent": "831",
+  "date": "2014-12-05T12:20:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：我以前没有留意ranges这个属性，我特地又重新看看了ranges属性的定义。\r\nranges属性定义了bus节点的地址空间和bus节点的父节点的地址空间的映射关系。例如：\r\nCPU ------- pci A－－－－－－pci B－－－－pci device\r\n\r\nPCI B这个节点是一个桥设备，它是PCI A总线上的一个device，同时又延展出了一个PCI总线。对于PCI B，其父节点就是PCI A。对于PCI B这个节点，我们可以定义ranges属性，将PCI B的总线地址映射到PCI A的总线地址上去"
+ },
+ {
+  "id": "836",
+  "parent": "835",
+  "date": "2014-12-05T12:39:15+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：我最近debug就发现了一个问题，如果比如PCI B这个总线drvier没有注册，那么在PCI B总线上的device是不会probe的。另外如果是PCI这种公共的总线还好，要是一款新品有一个自己特定的总线，那么写起来还是比较麻烦的。要自己写一个bus的driver"
+ },
+ {
+  "id": "837",
+  "parent": "836",
+  "date": "2014-12-05T12:53:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：如果parent没有正常初始化，下面的各个child device是不肯能正确初始化的，毕竟对child device的访问是需要通过parent的。总线驱动还是比较复杂的，还好我们只需要理解就OK了。"
+ },
+ {
+  "id": "838",
+  "parent": "837",
+  "date": "2014-12-05T14:13:40+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：ok i see"
+ },
+ {
+  "id": "1216",
+  "parent": "0",
+  "date": "2015-02-25T10:22:15+08:00",
+  "author": "足球男孩",
+  "site": "",
+  "text": "您好，我现在用S5PV210系列开发板用设备树移植3.18.2最新的内核，内核也可以识别\r\n内核运行到void __init setup_arch(char **cmdline_p)这函数，能够正常识别设备树，但是在运行unflatten_device_tree()  ----》\t__unflatten_device_tree(initial_boot_params, &of_allnodes,\r\n\t\t\t\tearly_init_dt_alloc_memory_arch); --》  static void * unflatten_dt_node(void *blob,\r\n\t\t\t\tvoid *mem,\r\n\t\t\t\tint *poffset,\r\n\t\t\t\tstruct device_node *dad,\r\n\t\t\t\tstruct device_node ***allnextpp,\r\n\t\t\t\tunsigned long fpsize)\r\n这是解析扁平树的函数，但是在unflatten_dt_node（）函数就卡死了，是不是递归卡死了，还是什么问题呢？"
+ },
+ {
+  "id": "1219",
+  "parent": "1216",
+  "date": "2015-02-25T19:05:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@足球男孩：加几行打印，就能找到为什么卡死了。"
+ },
+ {
+  "id": "1221",
+  "parent": "1219",
+  "date": "2015-02-25T19:13:33+08:00",
+  "author": "足球男孩",
+  "site": "",
+  "text": "@wowo：请问你研究过unflatten_dt_node（）这个函数么？ 这个函数里的一段代码：if (allnextpp) {\r\n\t\t*prev_pp = NULL;\r\n\t\tnp->name = of_get_property(np, \"name\", NULL);\r\n\t\tnp->type = of_get_property(np, \"device_type\", NULL);\r\n\r\n\t\tif (!np->name)\r\n\t\t\tnp->name = \"<NULL>\";\r\n\t\tif (!np->type)\r\n\t\t\tnp->type = \"<NULL>\";\r\n\t}\r\n其中在np->name = of_get_property(np, \"name\", NULL);这个函数里卡死了！\r\n然后一直跟进函数，发现就在这个函数卡死：static struct property *__of_find_property(const struct device_node *np,\r\n\t\t\t\t\t   const char *name, int *lenp)\r\n{\r\n\tstruct property *pp;\r\n\r\n\tif (!np)\r\n\t\treturn NULL;\r\n\r\n\tfor (pp = np->properties; pp; pp = pp->next) {\r\n\t\tif (of_prop_cmp(pp->name, name) == 0) {\r\n\t\t\tif (lenp)\r\n\t\t\t\t*lenp = pp->length;\r\n\t\t\tbreak;\r\n\t\t}\r\n\t}\r\n\r\n\treturn pp;\r\n}\r\n根据打印输出显示，卡死在这句of_prop_cmp(pp->name, name) == 0，，这句其实就是调用strcmp()函数一直比较，可是却无端地卡死了，我一直找不到问题。\r\n是不是解析扁平树一直递归，导致栈满溢出？ 还是另有原因，期待你的帮助。谢谢"
+ },
+ {
+  "id": "1222",
+  "parent": "1221",
+  "date": "2015-02-25T19:34:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@足球男孩：\"卡死在这句of_prop_cmp(pp->name, name) == 0\",能确定是停在这里不动了？还是在for里面死循环？\r\n由于执行cmp的时候，调用了raw_spin_lock_irqsave，就算是死循环，也看不到打印。\r\n如果是直接不动了，会不会是DDR的问题？降频试试？\r\n如果是死循环，就要查查np->properties，是不是被意外覆盖了？\r\n如果怀疑栈满，把堆栈打出来看看。"
+ },
+ {
+  "id": "1223",
+  "parent": "1222",
+  "date": "2015-02-25T19:38:24+08:00",
+  "author": "足球男孩",
+  "site": "",
+  "text": "@wowo：就是卡住不动了，我不知道如何打印堆栈， 你说的这些ddr，降频 这些我不知道该如何操作了，请问可以再给点提示么？"
+ },
+ {
+  "id": "1224",
+  "parent": "1223",
+  "date": "2015-02-25T19:57:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@足球男孩：我觉得问题出在strcmp上的概率大一些，of_prop_cmp调用前，能不能打印那两个名字？\r\n至于堆栈信息，内核有一个dump_stack函数，不过输出比较多。最好是自己用汇编获得栈指针（SP）并打印出来。\r\n如果是规律的死在一个位置，DDR的可能性不是很大。"
+ },
+ {
+  "id": "1225",
+  "parent": "1224",
+  "date": "2015-02-25T19:58:59+08:00",
+  "author": "足球男孩",
+  "site": "",
+  "text": "@wowo：enen，谢谢，"
+ },
+ {
+  "id": "1236",
+  "parent": "0",
+  "date": "2015-02-27T23:22:41+08:00",
+  "author": "yin262",
+  "site": "",
+  "text": "老师你好，我最近刚接触device tree，看了你的文章以后受益很多。\r\n同时有些问题想请教一下，我在看linux/Documentation/devicetree/bindings/arm/cpus.txt文档的时候发现如下描述：\r\n- reg:\t\tproperty matching the CPU MPIDR[23:0] register bits\r\n\t\treg[31:24] bits must be set to 0\r\n这里的MPIDR应该是一个寄存器，但是我之前从来没有听说过ARM CPU中存在这样的寄存器，请问MPIDR的作用是什么呢？或者从哪里可以找到相关的资料了解呢？"
+ },
+ {
+  "id": "1237",
+  "parent": "1236",
+  "date": "2015-02-28T10:19:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yin262：可以参考下面的解释：http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0388e/CIHEBGFG.html"
+ },
+ {
+  "id": "1363",
+  "parent": "0",
+  "date": "2015-03-20T19:20:07+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "接触linux快两年，却还是在入门中，看到博主接触5年就有如此深度，真心佩服！\r\n设备树三篇博文看完，再结合我板子上内核的打印信息，总算能理解大概了，非常感谢博文。\r\n请问博主：Device tree（二）中的基本概念的内容，是哪里找到的？"
+ },
+ {
+  "id": "1366",
+  "parent": "1363",
+  "date": "2015-03-21T23:24:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：我估计你搞错了，我不是wowo同学，那位帅哥接触linux有5、6年了，我大概有15年了，不过这和接触linux有多久没有关系，device tree是一个比较新的内容。其实很多文档我自己重新阅读都觉得很不理想，这三篇device tree的文档很粗糙，需要打磨，不过没太有时间去这么做。\r\n学习linux的过程比较辛苦，尤其是前几年，熬过2~3年，整个世界都会不一样了......加油\r\n\r\n所有的资料都是来自网络，不过我有看英文资料的习惯，当前阶段下，英文是掌握技术的利器，没有之一"
+ },
+ {
+  "id": "1376",
+  "parent": "1366",
+  "date": "2015-03-23T15:19:11+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：15年，真是很长很长的时间了。谢谢前辈鼓励，希望2-3年后会茅塞顿开，呵呵\r\n\r\n前辈说的看英文资料，是有固定专门网站，还是零散google搜索后的文章？\r\n\r\n再次感谢。"
+ },
+ {
+  "id": "1386",
+  "parent": "1376",
+  "date": "2015-03-23T23:25:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：其实google的资料并不多，我主要参考资料如下：\r\n1、内核代码以及内核文档\r\n2、Power_ePAPR_APPROVED_v1.1.pdf。我在文章中已经提及这份文档了。"
+ },
+ {
+  "id": "1388",
+  "parent": "1386",
+  "date": "2015-03-24T08:47:00+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：谢谢，我去看看文档！"
+ },
+ {
+  "id": "1696",
+  "parent": "0",
+  "date": "2015-05-04T16:32:40+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "问一个简单的问题。。。。。。。trampoline code是什么意思 。。。。。\r\n困扰了我很久了。。根本翻译不出来阿。难道是蹦床代码吗，，求指教，这个单词是在看device tree的 文档时碰见的  原句是 ：\r\nIf your platform uses a real implementation of Open Firmware or an implementation compatible with the Open Firmware client interface, those properties will be created by the trampoline code in the kernel's prom_init() file."
+ },
+ {
+  "id": "1697",
+  "parent": "1696",
+  "date": "2015-05-04T16:54:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@printk：从维基上帮您抄回来，不翻译了：\r\nTrampolines (sometimes referred to as indirect jump vectors) are memory locations holding addresses pointing to interrupt service routines, I/O routines, etc. Execution jumps into the trampoline and then immediately jumps out, or bounces, hence the term trampoline.\r\n\r\nhttp://en.wikipedia.org/wiki/Trampoline_(computing)"
+ },
+ {
+  "id": "1699",
+  "parent": "0",
+  "date": "2015-05-04T21:16:43+08:00",
+  "author": "zlf",
+  "site": "",
+  "text": "绝对好文章，多谢楼主分享知识的精神真是大赞！\r\n\r\n心情急切等待 Device Tree （四）GPIO controller的处理"
+ },
+ {
+  "id": "1700",
+  "parent": "1699",
+  "date": "2015-05-04T21:35:52+08:00",
+  "author": "zlf",
+  "site": "",
+  "text": "@zlf：找到了在这里！\r\n/gpio_subsystem/io-port-control.html"
+ },
+ {
+  "id": "1714",
+  "parent": "0",
+  "date": "2015-05-05T15:07:38+08:00",
+  "author": "蒸汽机车",
+  "site": "",
+  "text": "我用的是高通平台。\r\n\r\n我刚看第一遍，有点困惑，dtb是bootloader阶段准备，那dtb的来源会是哪里，bootloader并没有找到描述文件，只有kernel源码里有。\r\n\r\n又看了一遍，结合源码看，bootloader阶段去加载分区boot(kernel + ramdisk + device tree)，ramdisk后面就是device tree,在这里得到dtb；\r\n\r\ndtb的应该是在编译boot镜像时候生成的吧，写到flash去；bootloader阶段读取flash再把dtb传给kernel。可以这样理解吗？"
+ },
+ {
+  "id": "1719",
+  "parent": "1714",
+  "date": "2015-05-05T23:37:11+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@蒸汽机车：你的问题可以在Device Tree（二）：基本概念中的前言得到答案。"
+ },
+ {
+  "id": "1722",
+  "parent": "1719",
+  "date": "2015-05-06T09:28:54+08:00",
+  "author": "蒸汽机车",
+  "site": "",
+  "text": "@linuxer：嗯，看了（二），过程和理解一样，我表述不太好。\r\n没有引入设备树是这样准备硬件资源的在arch/arm/mach-xxx下准备 platform_device, i2c_board_info。\r\n引入Device Tree不是也是类似在arch/arm/boot/dts/下准备硬件资源，只是换了一种写法。这样linus不是也得维护这些代码。\r\n谢谢~~"
+ },
+ {
+  "id": "1730",
+  "parent": "1722",
+  "date": "2015-05-07T00:13:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@蒸汽机车：arch/arm/boot/dts/目录中的文件不是kernel image的中一部分，而没有引入设备树之前，硬件资源是以静态表格的形式hard code在kernel中，是kernel image的一部分。\r\n\r\n在引入Device Tree之后，linus维护是固定不变的device tree代码，而不是arch/arm/boot/dts/目录中的文件，那些是传递给kernel的参数而已。"
+ },
+ {
+  "id": "1735",
+  "parent": "1730",
+  "date": "2015-05-07T10:14:20+08:00",
+  "author": "蒸汽机车",
+  "site": "",
+  "text": "@linuxer：boot.img包括kernel,ramdisk,device tree三部分,device tree不在kernel image内，和楼主说的一样。以下的代码可以印证。\r\nint boot_linux_from_mmc(void)\r\n{\r\n\tindex = partition_get_index(\"boot\");\r\n\tptn = partition_get_offset(index);\t\t\t\t\t\t\t \r\n\timagesize_actual = (page_size + kernel_actual + ramdisk_actual + dt_actual);\t\t\t\t\t\t\t\t\t\t\t\t\t\t\r\n\tmmc_read(ptn, (void *)image_addr, imagesize_actual)；\t\t\t\t\t\t\t\t\t\r\n\tboot_linux(....);\r\n\treturn 0;\r\n}\r\n谢谢楼主。"
+ },
+ {
+  "id": "1736",
+  "parent": "1730",
+  "date": "2015-05-07T10:18:56+08:00",
+  "author": "蒸汽机车",
+  "site": "",
+  "text": "@linuxer：之前把boot和kernel镜像两个混淆了，以为是一样的"
+ },
+ {
+  "id": "1739",
+  "parent": "769",
+  "date": "2015-05-07T17:32:20+08:00",
+  "author": "study",
+  "site": "",
+  "text": "@wowo：@wowo\r\n\r\n在您的第一篇文章中提到：\r\n“ 5、ARM SOC board specific的代码被移除，由Device Tree机制来负责传递硬件拓扑和硬件资源信息。 ”这一句话，既然Device Tree可以传递硬件资源，那么就不需要spi_board_info, i2c_board_info信息了，是吗？ 这点有点疑惑。"
+ },
+ {
+  "id": "1742",
+  "parent": "1739",
+  "date": "2015-05-08T09:07:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@study：我们可以从两个角度看这个问题：\r\n1. device tree的本质。\r\n没错，device tree的目的是抽象、描述硬件，但是，抽象、描述硬件并不是最终目标。最终目标是：“通过修改device tree，方便的支持不同的平台、版型，从而不需要重新编译kernel”。\r\n要实现这个最终目标，device tree所描述的内容要具备哪些基本条件？共性！回想一下device tree的基本内容：属性=值。因此所谓的共性，就是要有相同的属性，通过修改属性值，达到支持不同平台、版型的目的，例如reg、irq、gpio、reset、power gate等等。\r\n\r\n2. device tree的层次结构。\r\n这里的层次，基本上和总线拓扑的层次是一致的。越顶层，“共性”的可能性越大；越底层，则越小。因此对kernel的原生实现来说，就不可能事无巨细的定义每一层的device tree内容。但这不代表我们不能使用device tree（对应您问题中的一段表述），具体参考下面描述。\r\n我们以SPI为例，kernel framework能抽象出来哪些共同的属性放到device tree里面呢？参考“Documentation/devicetree/bindings/spi/spi-bus.txt”，是不多的。\r\nkernel无法假设具体的SPI BUS的更为细致的特性（就是那些在spi_board_info中描述的内容），因而无法提供标准的device tree 属性值，它能做的，就是定义一个数据结构，告诉各个spi bus driver（你自己提供、自己使用哦）。\r\n那么问题来了，可不可以把spi_board_info的内容也放到DTS中？当然可以，我们可以在spi节点下定义一个子节点，放入board info的一些内容，然后在probe中，解析出来，放到spi_board_info中。但要记住，这个子节点，只对某一特定平台有效。"
+ },
+ {
+  "id": "1744",
+  "parent": "1742",
+  "date": "2015-05-08T12:55:43+08:00",
+  "author": "study",
+  "site": "",
+  "text": "@wowo：谢谢您的解惑."
+ },
+ {
+  "id": "1763",
+  "parent": "0",
+  "date": "2015-05-12T11:50:34+08:00",
+  "author": "odriver",
+  "site": "",
+  "text": "楼主您好！感谢您的分享。请问dtb的反编译命令是什么？"
+ },
+ {
+  "id": "1764",
+  "parent": "1763",
+  "date": "2015-05-12T13:19:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@odriver：DTS的编译和反编译命令都是dtc，通过-I和-O命令，可以在几种格式之间转换，如：\r\ndtc -I [dts,dtb,fs] -O [dts,dtb,asm] input_file\r\n对反编译来说，就是\r\ndtc -I dtb -O dts xxx.dtb\r\n具体可参考dtc -h"
+ },
+ {
+  "id": "1765",
+  "parent": "1764",
+  "date": "2015-05-12T13:54:15+08:00",
+  "author": "odriver",
+  "site": "",
+  "text": "@wowo：谢谢前辈，这里简直就是linux内核驱动的学习圣地呀！"
+ },
+ {
+  "id": "1766",
+  "parent": "1765",
+  "date": "2015-05-12T15:46:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@odriver：不用客气，欢迎常来。"
+ },
+ {
+  "id": "1797",
+  "parent": "0",
+  "date": "2015-05-14T22:48:20+08:00",
+  "author": "~零~",
+  "site": "",
+  "text": "博主，dst与dtsi之间有着包含关系，想请问下kernel是怎么确定第一个dst文件的名字的呢。"
+ },
+ {
+  "id": "1799",
+  "parent": "1797",
+  "date": "2015-05-14T23:12:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@~零~：dts文件描述了target board的硬件拓扑，是程序员自己需要创建的，只不过，很多target board的硬件资源是相同的（例如使用同样的ARM SOC），因此可以抽象出来dtsi文件，可以让不同的target board的dts文件可以include dtsi，从而减少重复定义。\r\n\r\nkernel不需要确定dts文件，bootloader会把编译好的dtb文件传递给kernel的"
+ },
+ {
+  "id": "1800",
+  "parent": "1799",
+  "date": "2015-05-14T23:16:50+08:00",
+  "author": "~零~",
+  "site": "",
+  "text": "@linuxer：假如说我想将原来的dts与dtsi重新命名并保留原来的文件，怎么样kernel使用到我新命名的文件呢"
+ },
+ {
+  "id": "1882",
+  "parent": "0",
+  "date": "2015-05-27T14:57:40+08:00",
+  "author": "xiaopohaibebo",
+  "site": "",
+  "text": "你好，我咋arc/arm目录下有发现比较设备树和段中的 compatible 代码，但是在arch/arm64的 setup。c文件里完全没有 做arm下的setup。c函数中的匹配。想请教哈 为啥arm和arm64的 匹配设备代码 部分是不同的，那arm64如何做板级匹配呢？"
+ },
+ {
+  "id": "1883",
+  "parent": "1882",
+  "date": "2015-05-27T16:51:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@xiaopohaibebo：你可否更细致的描述你的问题？例如可以贴上一些代码来进行具体说明，我不是很了解你想要问的问题"
+ },
+ {
+  "id": "1895",
+  "parent": "1883",
+  "date": "2015-05-28T15:34:54+08:00",
+  "author": "@ linuxer",
+  "site": "",
+  "text": "@linuxer：这是 arm64的\r\nstatic void __init setup_machine_fdt(phys_addr_t dt_phys)\r\n{\r\n\tif (!dt_phys || !early_init_dt_scan(phys_to_virt(dt_phys))) {\r\n\t\tearly_print(\"\\n\"\r\n\t\t\t\"Error: invalid device tree blob at physical address 0x%p (virtual address 0x%p)\\n\"\r\n\t\t\t\"The dtb must be 8-byte aligned and passed in the first 512MB of memory\\n\"\r\n\t\t\t\"\\nPlease check your bootloader.\\n\",\r\n\t\t\tdt_phys, phys_to_virt(dt_phys));\r\n\r\n\t\twhile (true)\r\n\t\t\tcpu_relax();\r\n\t}\r\n\r\n\tmachine_name = of_flat_dt_get_machine_name();\r\n\tif (machine_name)\r\n\t\tpr_info(\"Machine: %s\\n\", machine_name);\r\n}\r\n下面是arm的\r\nconst struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys)\r\n{\r\n\tstruct boot_param_header *devtree;\r\n\tconst struct machine_desc *mdesc, *mdesc_best = NULL;\r\n\tunsigned int score, mdesc_score = ~1;\r\n\tunsigned long dt_root;\r\n\tconst char *model;\r\n\r\n#ifdef CONFIG_ARCH_MULTIPLATFORM\r\n\tDT_MACHINE_START(GENERIC_DT, \"Generic DT based system\")\r\n\tMACHINE_END\r\n\r\n\tmdesc_best = &__mach_desc_GENERIC_DT;\r\n#endif\r\n\r\n\tif (!dt_phys)\r\n\t\treturn NULL;\r\n\r\n\tdevtree = phys_to_virt(dt_phys);\r\n\r\n\t/* check device tree validity */\r\n\tif (be32_to_cpu(devtree->magic) != OF_DT_HEADER)\r\n\t\treturn NULL;\r\n\r\n\t/* Search the mdescs for the 'best' compatible value match */\r\n\tinitial_boot_params = devtree;\r\n\tdt_root = of_get_flat_dt_root();\r\n\tfor_each_machine_desc(mdesc) {\r\n\t\tscore = of_flat_dt_match(dt_root, mdesc->dt_compat);\r\n\t\tif (score > 0 && score < mdesc_score) {\r\n\t\t\tmdesc_best = mdesc;\r\n\t\t\tmdesc_score = score;\r\n\t\t}\r\n\t}\r\n   ............\r\n}\r\nsetup_machine_fdt函数完全不一样啊"
+ },
+ {
+  "id": "1896",
+  "parent": "0",
+  "date": "2015-05-28T16:20:25+08:00",
+  "author": "tuyer",
+  "site": "",
+  "text": "@wowo:\r\n现在的高通平台是生成多个DTB文件, 然后再用一个dtbtool将其整合成一个dt.img文件放在 boot.img中,\r\n我想问一下有没有办法 将dt.img反汇编成一个dtb文件 或将多个dtb文件合成一个有效的dtb文件? 谢谢"
+ },
+ {
+  "id": "1897",
+  "parent": "1896",
+  "date": "2015-05-28T18:57:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tuyer：这里有dtbtool的源码，你可以看一下，写一个代码去解它。或者去谷歌搜索一些，应该有人给出了解包的工具。"
+ },
+ {
+  "id": "1899",
+  "parent": "1897",
+  "date": "2015-05-29T15:03:32+08:00",
+  "author": "tuyer",
+  "site": "",
+  "text": "@wowo：@wowo\r\nthanks wowo. http://download.csdn.net/detail/benjaminwan/8610887 可以下载这个工具."
+ },
+ {
+  "id": "1975",
+  "parent": "0",
+  "date": "2015-06-10T23:19:27+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "看了关于devicetree的博文后，有些疑问想请教：\r\n1）传递进来的dtb被内核解析为device_node链表；那内核又是在哪里把他们转变成device呢？\r\n2）而且按照由根到叶的启动顺序，必须是先有总线，然后才能在总线上注册设备，那dts有反应总线的吗？对于arm中常用的platform，在dts文件中没有看到platform的关键字。"
+ },
+ {
+  "id": "1976",
+  "parent": "1975",
+  "date": "2015-06-10T23:40:36+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：1）在machine初始化那一小节中有描述的（of_platform_populate），你再仔细看看。\r\n2）对于其他平台我不是很熟悉，我这里只是描述ARM平台的内容。对于ARM，device tree描述的device node被加入platform bus或者是amba-bus。"
+ },
+ {
+  "id": "1985",
+  "parent": "1976",
+  "date": "2015-06-11T11:07:41+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：也就是说，arm dts中的设备，除了cpu、memory、chosen、interrupt节点，全部都默认挂入platform总线？"
+ },
+ {
+  "id": "1986",
+  "parent": "1985",
+  "date": "2015-06-11T15:26:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@callme_friend：是的，DTS只描述platform device（AMBA除外）。这是基于这样的考虑：其它bus上的device，其bus应该具备动态枚举设备的能力。只有platform device，才一开机就存在，需要靠device tree来描述。"
+ },
+ {
+  "id": "2370",
+  "parent": "0",
+  "date": "2015-07-29T23:56:16+08:00",
+  "author": "rabbiteve",
+  "site": "",
+  "text": "看了三遍，每看一次都有新的收获。我现在碰到到dts解析出错：\r\n[    0.000000] Invalid tag cc233e80 in flat device tree!\r\n[    0.000000] Weird tag at end of node: cc233e80\r\n[    0.000000] Weird tag at end of node: cc233e80\r\n[    0.000000] Weird tag at end of node: cc233e80\r\n[    0.000000] Weird tag at end of node: cc233e80\r\n[    0.000000] Weird tag at end of node: cc233e80\r\n[    0.000000] Weird tag at end of node: cc233e80\r\n[    0.000000] Weird tag at end of tree: cc233e80\r\n可是编译和反编译dts文件都没有问题。这种情况可能会是什么原因？或者应该怎么去查这种问题？\r\n\r\n有时删掉一些无关的注释，还 会导致内核起不来。\r\n\r\n谢谢！"
+ },
+ {
+  "id": "2372",
+  "parent": "2370",
+  "date": "2015-07-30T08:38:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@rabbiteve：建议检查一下传递DTB的内存，大小是否足够，是否有异常，是否被其它软件覆盖。"
+ },
+ {
+  "id": "2376",
+  "parent": "2372",
+  "date": "2015-07-30T11:10:34+08:00",
+  "author": "rabbiteve",
+  "site": "",
+  "text": "@wowo：非常感谢， 我跟下内核最开始的启动代码，看看是否DTB区域被其他软件覆盖。目前我是将DTB放在zImage后面，再打uImage的头部。"
+ },
+ {
+  "id": "2377",
+  "parent": "2372",
+  "date": "2015-07-30T12:27:42+08:00",
+  "author": "rabbiteve",
+  "site": "",
+  "text": "@wowo：正如你说的，确实是DTB被BSS段覆盖了。\r\ncat arch/arm/boot/zImage arch/arm/boot/dts/dra7-evm.dtb > zImage.dtb\r\n./mkimage -A arm -O linux -C none  -T kernel -a 0x80008000 -e 0x80008000 -n 'linux.dra7-evm.ByCxh' -d zImage.dtb uImage.dra7-evm.dtb\r\n\r\n然而arch/arm/boot/compressed/：\r\n 58   _edata = .;\r\n 59 \r\n 60   . = ALIGN(8);\r\n 61   __bss_start = .;\r\n\r\n我在__bss_start前面预留段空间给DTB，就正常了：\r\n 61   . += 0x20000; /* reserved for dtb */\r\n 62   __bss_start = .;\r\n\r\n非常感谢！"
+ },
+ {
+  "id": "2451",
+  "parent": "1766",
+  "date": "2015-08-12T10:20:11+08:00",
+  "author": "tastier",
+  "site": "",
+  "text": "@wowo：wowo大神，请问反编译出来的dts文件可以直接用来生成dtb文件吗？"
+ },
+ {
+  "id": "2454",
+  "parent": "2451",
+  "date": "2015-08-12T11:31:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tastier：可以，命令反过来就可以了。"
+ },
+ {
+  "id": "2456",
+  "parent": "2454",
+  "date": "2015-08-12T14:53:59+08:00",
+  "author": "tastier",
+  "site": "",
+  "text": "@wowo：一些参考标签在反编译的DTS文件中显示为数字，这个没有影响吗？"
+ },
+ {
+  "id": "2457",
+  "parent": "0",
+  "date": "2015-08-12T18:24:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tastier\r\n一些参考标签在反编译的DTS文件中显示为数字，这个没有影响吗？\r\n============\r\n没有影响，数字是那些名字的一个句柄而已。"
+ },
+ {
+  "id": "2679",
+  "parent": "0",
+  "date": "2015-09-23T17:01:54+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "博主，关于device_node结构中的以下几个成员： sibling  next  allnext\r\n请问他们之间有什么区别？\r\n\tstruct\tdevice_node *sibling;\r\n\tstruct\tdevice_node *next;\t/* next device of same type */\r\n\tstruct\tdevice_node *allnext;\t/* next in list of all nodes */\r\n有没有重复的意思？"
+ },
+ {
+  "id": "2680",
+  "parent": "2679",
+  "date": "2015-09-23T19:22:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：device tree node是树状结构，属于一个parent的device node通过sibling形成一个单向链表。\r\n本来next是链接同一个device type的node。例如同属于cpu type或者memory type的node会通过next进行链接，在遍历属于同一种device type的node的时候需要。\r\n除了child<--->parent这样的树状的拓扑结构，所有的device还链接成一个单向链表of_allnodes，allnext就是链接入那个链表的节点。\r\n\r\n\r\nnext和allnext的确是有点重复，用child<--->parent的结构来保存系统中的所有的device node的拓扑就足够了，因此，新的内核已经删除了next和allnext。"
+ },
+ {
+  "id": "2681",
+  "parent": "2680",
+  "date": "2015-09-23T22:20:12+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：cpu0和cpu1都属于cpu下的子节点；且又是同一类型。\r\n那cpu0和cpu1之间，岂不是既有next也有sibling连接？"
+ },
+ {
+  "id": "2682",
+  "parent": "2681",
+  "date": "2015-09-23T23:50:19+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：是的，不过新的内核中只有sibling连接了"
+ },
+ {
+  "id": "2683",
+  "parent": "2682",
+  "date": "2015-09-24T08:30:02+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：suoga！\r\n谢谢"
+ },
+ {
+  "id": "3059",
+  "parent": "0",
+  "date": "2015-11-16T15:32:15+08:00",
+  "author": "marx",
+  "site": "",
+  "text": "请教下，arm linux 在启动过程中有没什么针对设备树的debug手段？ 我记得以前在玩 powerpc 时，内核在启动时会有一个开关可以控制是否将加载的设备树打印出来；想问下， 在arm 下面，有无类似的调试开关？"
+ },
+ {
+  "id": "3060",
+  "parent": "3059",
+  "date": "2015-11-16T16:38:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@marx：不是启动过程是否可以？例如/proc/device-tree/？"
+ },
+ {
+  "id": "3195",
+  "parent": "0",
+  "date": "2015-12-05T22:07:17+08:00",
+  "author": "lutianqian",
+  "site": "",
+  "text": "看了楼主的三篇文章，对设备树有更深刻的理解。不过本人还在学习中。还望楼主有空的时候能不能讲一些，设备树最终演化为平台设备端的时候，它的那些属性是plat_device下的res或者dev.platform_data，他们对应关系如何的呢？"
+ },
+ {
+  "id": "3204",
+  "parent": "0",
+  "date": "2015-12-09T15:55:06+08:00",
+  "author": "南山南",
+  "site": "",
+  "text": "能否请教一个问题：\r\n在dts文件中指定了中断:\r\nqcom,mdss_mdp@1a00000{\r\n interrupts = <0x0 0x48 0x0>\r\n.....\r\n}\r\n\r\n\r\n在代码中使用res = platform_get_resource(ofdev,IORESORCE_IRQ,0).\r\n得到的res->start和dts中的不一样(0x48)。\r\n中间有什么转换步骤么？\r\n\r\n感谢"
+ },
+ {
+  "id": "3213",
+  "parent": "3204",
+  "date": "2015-12-10T09:04:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@南山南：这要看你使用的平台的IRQ domain是否提供了translation机制，具体可参考irq_create_of_mapping(kernel/irq/irqdomain.c)：\r\n        /* If domain has no translation, then we assume interrupt line */       \r\n        if (domain->ops->xlate == NULL)                                         \r\n                hwirq = intspec[0];                                             \r\n        else {                                                                  \r\n                if (domain->ops->xlate(domain, controller, intspec, intsize,    \r\n                                     &hwirq, &type))                            \r\n                        return 0;                                               \r\n        }\r\n有关“domain->ops->xlate”，可参考“/irq_subsystem/irq-domain.html”。"
+ },
+ {
+  "id": "3214",
+  "parent": "3195",
+  "date": "2015-12-10T09:09:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lutianqian：可以参考如下的过程：\r\nof_platform_bus_create-->of_platform_device_create_pdata-->of_device_alloc-->of_address_to_resource\r\n本文有提到，你可以结合文档和代码，自己理解一下。"
+ },
+ {
+  "id": "3266",
+  "parent": "1986",
+  "date": "2015-12-22T10:49:01+08:00",
+  "author": "jinxin",
+  "site": "http://www.linux2web.net",
+  "text": "@wowo：请问那像一些i2c, spi设备呢？也是会挂在platform bus下么?\r\n这好象不合适把"
+ },
+ {
+  "id": "3268",
+  "parent": "3266",
+  "date": "2015-12-22T11:05:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jinxin：这些设备当然是挂在i2c或者spi bus下，然后枚举是由i2c bus的driver负责。"
+ },
+ {
+  "id": "3363",
+  "parent": "0",
+  "date": "2016-01-08T10:46:47+08:00",
+  "author": "爱萝莉",
+  "site": "",
+  "text": "楼主您好： 文章中所说的 \r\n   reg属性的值是address，size数组，那么如何来取出一个个的address/size呢？由于memory node一定是root node的child，因此dt_root_addr_cells（root node的#address-cells属性值）和dt_root_size_cells（root node的#size-cells属性值）之和就是address，size数组的entry size。 \r\n   有些问题不明白\r\n   1.root节点下面的address-cell  size-cell 是32位的整形数，dt_root_addr_cells + dt_root_size_cells =?\r\n这里的和食指32位整形数最大值之和？"
+ },
+ {
+  "id": "3364",
+  "parent": "3363",
+  "date": "2016-01-08T15:45:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@爱萝莉：reg属性的内容是一个数组，如下：\r\n地址A， size A\r\n地址B， size B\r\n地址C， size C\r\n......\r\n\r\n因此，即系reg属性最重要的是要知道（地址X ＋size X）的数据长度，这个长度是由dt_root_addr_cells + dt_root_size_cells定义的。"
+ },
+ {
+  "id": "3365",
+  "parent": "0",
+  "date": "2016-01-08T17:31:05+08:00",
+  "author": "内核初学者",
+  "site": "",
+  "text": "看了楼主的博客知识增长了许多，首先表示感谢，同时请教一个问题，我一直困扰着：设备树文件传给内核，内核要读取dtob文件，然后解析，解析的第一步是匹配平台的compatible,也就是说只有内核里有的平台才能支持，如果这一款CPU平台linux内核没有是不支持的吗？还有就是如何匹配呢？内核支持的平台列表在哪里呢？是如何生成列表的呢？找了一天都没找到，求楼主支持答疑，谢谢！"
+ },
+ {
+  "id": "3368",
+  "parent": "3365",
+  "date": "2016-01-09T00:09:18+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@内核初学者：也就是说只有内核里有的平台才能支持，如果这一款CPU平台linux内核没有是不支持的吗？\r\n-------------------------\r\n目前内核支持了很多的硬件平台，如果你工作的硬件平台内核不支持的话，那么需要自己撰写相关的代码来支持\r\n\r\n还有就是如何匹配呢？内核支持的平台列表在哪里呢？是如何生成列表的呢？\r\n------------------------\r\n在setup_machine_fdt--->of_flat_dt_match_machine函数中进行匹配。\r\nof_flat_dt_match_machine是在machine描述符的列表中scan，找到最合适的那个machine描述符。我们首先看如何组成machine描述符的列表。和传统的方法类似，也是静态定义的。DT_MACHINE_START和MACHINE_END用来定义一个machine描述符。编译的时候，compiler会把这些machine descriptor放到一个特殊的段中（.arch.info.init），形成machine描述符的列表"
+ },
+ {
+  "id": "3375",
+  "parent": "0",
+  "date": "2016-01-11T11:09:01+08:00",
+  "author": "xinyuandexin",
+  "site": "",
+  "text": "请问一下，我如果自己设计的板子，要做设备树添加，内核里是不是要静态写如下类似的代码呢？\r\n#ifdef CONFIG_SOC_AM33XX\r\nstatic const char *const am33xx_boards_compat[] __initconst = {\r\n\t\"ti,am33xx\",\r\n\tNULL,\r\n};\r\n\r\nDT_MACHINE_START(AM33XX_DT, \"Generic AM33XX (Flattened Device Tree)\")\r\n\t.reserve\t= omap_reserve,\r\n\t.map_io\t\t= am33xx_map_io,\r\n\t.init_early\t= am33xx_init_early,\r\n\t.init_machine\t= omap_generic_init,\r\n\t.init_late\t= am33xx_init_late,\r\n\t.init_time\t= omap3_gptimer_timer_init,\r\n\t.dt_compat\t= am33xx_boards_compat,\r\n\t.restart\t= am33xx_restart,\r\nMACHINE_END\r\n#endif"
+ },
+ {
+  "id": "3377",
+  "parent": "3375",
+  "date": "2016-01-11T18:59:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@xinyuandexin：增加这部分内容是必须的"
+ },
+ {
+  "id": "3415",
+  "parent": "0",
+  "date": "2016-01-19T10:44:01+08:00",
+  "author": "爱萝莉",
+  "site": "",
+  "text": "楼主你好：\r\n        我有一个疑惑在函数of_platform_bus_create( )->for_each_child_of_node() 一个device node可能是一个桥设备，因此要重复调用of_platform_bus_create来把所有的device node处理掉\r\n         我的理解是:比如SOC/I2C    i2c下面还挂着N个设备，for_each_child_of_node() 一个一个创建这几个设备节点是吗？"
+ },
+ {
+  "id": "3419",
+  "parent": "3415",
+  "date": "2016-01-19T13:08:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@爱萝莉：of_platform_bus_create只负责创建platform bus下的设备（正如其名），其它bus下的设备（如I2C、SPI等），则由对应bus的driver core（如I2C core）负责创建。"
+ },
+ {
+  "id": "3420",
+  "parent": "3419",
+  "date": "2016-01-19T15:29:03+08:00",
+  "author": "爱萝莉",
+  "site": "",
+  "text": "@wowo：嗯嗯，打印log看了下 of_platform_bus_create创建的设备全是/soc下面的节点。其他如chosen节点没有子节点就不会调用了。^_^"
+ },
+ {
+  "id": "3609",
+  "parent": "0",
+  "date": "2016-03-08T18:07:11+08:00",
+  "author": "爱萝莉",
+  "site": "",
+  "text": "楼主你好：\r\n         Documentation/arm/Booting.txt中\r\nThe device tree blob (dtb) must be no bigger than 2 megabytes in size and placed at a 2-megabyte boundary within the first 512 megabytes from the start of the kernel image\r\n        android/kernel/Documentation/zh_CN/arm/Booting\r\nbootloader 必须传递一个系统内存的位置和最小值，以及根文件系统位置。dtb 必须置于内核自解压不会覆盖的内存区。建议将其放置于 RAM 的头 16KiB中。\r\n可不可以这样理解,bootloader把dtb加载到RAM的前512M字节区域，但是又不能在Zimage解压的范围内？"
+ },
+ {
+  "id": "3613",
+  "parent": "3609",
+  "date": "2016-03-08T19:10:02+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@爱萝莉：根据上面的英文描述，对dtb的要求如下：\r\n1、不能大于2MB\r\n2、首地址必须要对齐在2MB上\r\n3、如果kernel的首地址是A，那么dtb必须位于（A，A＋512MB） 的地址范围内。"
+ },
+ {
+  "id": "3619",
+  "parent": "3609",
+  "date": "2016-03-09T10:01:44+08:00",
+  "author": "爱萝莉",
+  "site": "",
+  "text": "@爱萝莉：hello 楼主：还有一个问题不明白\r\n           /kernel/arch/arm64/head.S\r\n/*\r\n\t * Map the FDT blob (maximum 2MB; must be within 512MB of\r\n\t * PHYS_OFFSET).\r\n\t */\r\n\tmov\tx3, x21\t\t\t\t// FDT phys address\r\n\tand\tx3, x3, #~((1 << 21) - 1)\t// 2MB aligned\r\n\tmov\tx6, #PAGE_OFFSET\r\n\tsub\tx5, x3, x24\t\t\t// subtract PHYS_OFFSET\r\n\ttst\tx5, #~((1 << 29) - 1)\t\t// within 512MB?\r\n\tcsel\tx21, xzr, x21, ne\t\t// zero the FDT pointer\r\n\tb.ne\t1f\r\n\tadd\tx5, x5, x6\t\t\t// __va(FDT blob)\r\n\tadd\tx6, x5, #1 << 21\t\t// 2MB for the FDT blob\r\n这里就判断内存分配给FDT的内存是否大于2M吧，然后我看了dt.img 大概有9M左右。这个怎么解释呢。？"
+ },
+ {
+  "id": "3638",
+  "parent": "0",
+  "date": "2016-03-10T10:19:15+08:00",
+  "author": "摩斯电码",
+  "site": "",
+  "text": "你好，我发现在函数of_platform_bus_create中并不一定对所有的device node都进行遍历，比如像下面一个设备树：\r\n\r\n\ti2c-gpio-0 {\r\n\t\tcompatible = \"i2c-gpio\";\r\n\t\tgpios = <0x3e 0x2 0x0 0x3e 0x3 0x0>;\r\n\t\ti2c-gpio,delay-us = <0x2>;\r\n\t\t#address-cells = <0x1>;\r\n\t\t#size-cells = <0x0>;\r\n\t\tstatus = \"okay\";\r\n\r\n\t\tmma7660@4c {\r\n\t\t\tcompatible = \"freescale,mma7660\";\r\n\t\t\treg = <0x4c>;\r\n\t\t\tinterrupt-parent = <0x3f>;\r\n\t\t\tinterrupts = <0x1 0x2>;\r\n\t\t\tpoll_interval = <0x64>;\r\n\t\t\tinput_fuzz = <0x4>;\r\n\t\t\tinput_flat = <0x4>;\r\n\t\t\tstatus = \"okay\";\r\n\t\t};\r\n\t};\r\n\r\n其中i2c-gpio-0这个device node确实是在of_platform_bus_create的时候被注册为了platform_device，但是mma7660@4c这个设备节点并没有被of_platform_bus_create遍历到，它是在注册i2c_adapter的时候，会遍历这个adapter对应的device node的child device node（目的是注册i2c_client），此时才会处理mma7660这个device node。\r\n\r\n不知道你有没有知道注意到在一般在调用of_platform_bus_create的时候会传递一个参数:\r\n\r\nof_platform_populate(NULL, of_default_bus_match_table, NULL, NULL)\r\n\r\n其中of_default_bus_match_table的定义如下：\r\n\r\nconst struct of_device_id of_default_bus_match_table[] = {\r\n\t{ .compatible = \"simple-bus\", },\r\n\t{ .compatible = \"simple-mfd\", },\r\n#ifdef config_arm_amba\r\n\t{ .compatible = \"arm,amba-bus\", },\r\n#endif /* config_arm_amba */\r\n\t{} /* empty terminated list */\r\n};\r\n\r\n意思是如果某个device node的compatible属性跟上面数组中定义的match，那么这个device node的child device node才会被注册为platform_device。\r\n\r\n在函数of_platform_bus_create中有下面几句：\r\n\r\n\tdev = of_platform_device_create_pdata(bus, bus_id, platform_data, parent);\r\n\tif (!dev || !of_match_node(matches, bus))\r\n\t\treturn 0;\r\n\r\n\tfor_each_child_of_node(bus, child) {\r\n\t\tpr_debug(\"   create child: %s\\n\", child->full_name);\r\n\t\trc = of_platform_bus_create(child, matches, lookup, &dev->dev, strict);\r\n\t\tif (rc) {\r\n\t\t\tof_node_put(child);\r\n\t\t\tbreak;\r\n\t\t}\r\n\t}\r\n\r\n\r\n其中如果of_platform_device_create_pdata成功执行，然后会调动of_match_node，如果match的话，在会再次递归这个device node的下的child device node，如果不match，就直接返回了，不再遍历其下的child device node了。"
+ },
+ {
+  "id": "3642",
+  "parent": "3638",
+  "date": "2016-03-10T15:58:00+08:00",
+  "author": "云",
+  "site": "",
+  "text": "@摩斯电码：私以为再去遍历i2c下的child device node没什么意义。因为mma7660着个设备属于i2c bus上的设备,没必要再放到platform_bus上了。"
+ },
+ {
+  "id": "3643",
+  "parent": "3638",
+  "date": "2016-03-10T18:02:56+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@摩斯电码：多谢您的提醒，的确是如此。对于支持热拔插的总线（例如USB），其实不需要体现在dts中，其对应的device数据结构（例如struct usb_device）会在设备插入的时候自行分配。而那些不能支持热拔插的总线，挂入其上的device需要在dts中体现并在总线设备初始化的时候进行实例化（就是分配一个xxx_device的数据结构并注册到设备模型）。在所有不支持hotplug的总线中，platform是一个特殊的总线，没有实际的bus设备对应，因此在machine init中调用of_platform_populate处理。"
+ },
+ {
+  "id": "3718",
+  "parent": "0",
+  "date": "2016-03-23T21:10:15+08:00",
+  "author": "imjacob",
+  "site": "",
+  "text": "你好，请教下， 我的板子如果是sd卡或者emmc这种，那怎么用device tree来分区呢？我网上查了很久，只有查到对nand，nor这些raw的存储设备分区的方法(就是用partition)。但sd之类找不到，谢谢！"
+ },
+ {
+  "id": "3719",
+  "parent": "3718",
+  "date": "2016-03-24T09:28:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@imjacob：在kernel driver中，只有MTD driver才会关注分区的概念，在新时代（eMMC）没有关注的必要。NAND和eMMC的简单区别如下：\r\n        奇葩文件系统（yaffs等）----------->MTD---->NAND/NOR controller---->NAND/NOR\r\n        普通文件系统（FAT、EXT4等）---->MMC---->eMMC controller---------->NAND\r\n分区（partition）是一个软件概念，理应由文件系统负责抽象和处理，那么问题来了，为什么MTD driver（注意，是driver哦）需要关注分区的概念？这是现存Linux系统中MTD、NAND等有关实现的一个不友好的地方。\r\n然后，eMMC出现了，NAND有关坏块/均衡有关的实现，统一做到eMMC片子里面了，Linux kernel以及之上的文件系统，都happy了，就没有必要在kernel中关注分区这个事情了。"
+ },
+ {
+  "id": "3720",
+  "parent": "3718",
+  "date": "2016-03-24T09:57:05+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@imjacob：如果你的板子是SD或者eMMC的话，目前条件下，内核是不支持通过device tree来传递分区信息的，为什么呢？因为协议已经支持分区了，如果driver在面对一个SD或者eMMC设备的时候，能够通过命令从硬件获取分区信息，基本我认为也就不需要参数传递分区信息了。"
+ },
+ {
+  "id": "3723",
+  "parent": "3720",
+  "date": "2016-03-24T10:37:28+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@郭健：你也可以考虑把eMMC当成一个普通的磁盘，这样，在磁盘上建立分区表（例如MBR或者GPT什么的），也就不需要device tree来传递参数了。"
+ },
+ {
+  "id": "3726",
+  "parent": "3723",
+  "date": "2016-03-25T14:06:20+08:00",
+  "author": "imjacob",
+  "site": "",
+  "text": "@郭健：@郭健 @wowo,\r\n恩。很感谢大家的回复，收益良多。我又理解了一下，mtd的分区和   sd（及emmc，磁盘）的分区是不一样的，前者 特定于linux的实现，用了什么mtd_partition等结构来维护，而后者是有标准的，什么MBR上面的4个主分区这些概念。是这样吗?"
+ },
+ {
+  "id": "3750",
+  "parent": "3719",
+  "date": "2016-03-29T21:37:11+08:00",
+  "author": "imjacob",
+  "site": "",
+  "text": "@wowo：恩。很感谢大家的回复，收益良多。我又理解了一下，mtd的分区和   sd（及emmc，磁盘）的分区是不一样的，前者 特定于linux的实现，用了什么mtd_partition等结构来维护，而后者是有标准的，什么MBR上面的4个主分区这些概念。是这样吗?"
+ },
+ {
+  "id": "3751",
+  "parent": "3726",
+  "date": "2016-03-30T13:47:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@imjacob：差不多是这个意思，不过“什么MBR上面的4个主分区这些概念”不太准确，这4个主分区，是物理上的分区概念（出厂就确定了），而我们平时所示的分区，大多是软件层面（FS的角度）的逻辑概念。"
+ },
+ {
+  "id": "3754",
+  "parent": "3751",
+  "date": "2016-03-30T20:11:49+08:00",
+  "author": "imjacob",
+  "site": "",
+  "text": "@wowo：恩。谢谢！ 我查了一下，为什么现在的硬盘，sd卡，u盘只能分为4个主分区。这个可能和历史有关。历史上，当然，硬盘的容量不大。所以保留了第一个扇区为引导扇区，就是MBR。作为引导，其实还不止引导，还放入了一些其他信息，例如分区的信息。当初留给的是64个字节。而每个主分区呢，要16个字节，所以只能4个主分区了。  这个虽然现在硬盘什么大的吓死人了，但是还是保留了下来。\r\n再次感谢！"
+ },
+ {
+  "id": "3757",
+  "parent": "3754",
+  "date": "2016-03-30T22:14:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@imjacob：确实如此，也多谢你的分享~~~"
+ },
+ {
+  "id": "3938",
+  "parent": "0",
+  "date": "2016-05-15T11:58:10+08:00",
+  "author": "snake",
+  "site": "",
+  "text": "请教一个问题, 文中说:\r\n\"我们知道，对于s3c2416的interrupt controller而言，其#interrupt-cells的属性值是4，定义为。每个域的解释如下\"\r\n请问每个域的解释如何得知的? 是从文档还是代码里面? 能说的稍微详细些吗,谢谢!"
+ },
+ {
+  "id": "3940",
+  "parent": "3938",
+  "date": "2016-05-16T09:19:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@snake：DTS的东西，一般都放在Documentation/devicetree/bindings/目录中了，例如：\r\nDocumentation/devicetree/bindings/interrupt-controller/samsung,s3c24xx-irq.txt"
+ },
+ {
+  "id": "3941",
+  "parent": "3940",
+  "date": "2016-05-16T23:16:58+08:00",
+  "author": "snake",
+  "site": "",
+  "text": "@wowo：@wowo: 谢谢, s3c24xx的明白了, 那比如mtk,qualcom平台的#interrupt-cells的各个属性含义怎么看呢?  比如mtk的gic, #interrupt-cells = <3>; 这3个属性含义如何看呢? \r\nDocumentation/devicetree/bindings 下面好像没有说明吧, 麻烦请指教下, 谢谢!"
+ },
+ {
+  "id": "3942",
+  "parent": "3941",
+  "date": "2016-05-17T09:04:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@snake：如果没有说明，就去看一下source code吧。\r\n在linux kernel的世界里，source code是万能魔法棒，什么问题都能回答:-)"
+ },
+ {
+  "id": "3947",
+  "parent": "3942",
+  "date": "2016-05-18T22:54:04+08:00",
+  "author": "snake",
+  "site": "",
+  "text": "@wowo：好的,谢谢 ^_^"
+ },
+ {
+  "id": "4129",
+  "parent": "0",
+  "date": "2016-06-21T22:39:11+08:00",
+  "author": "js_wawayu",
+  "site": "",
+  "text": "请教一下boot cpu是不是可以有多个？"
+ },
+ {
+  "id": "4130",
+  "parent": "4129",
+  "date": "2016-06-22T09:11:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@js_wawayu：应该不能吧？"
+ },
+ {
+  "id": "4135",
+  "parent": "0",
+  "date": "2016-06-22T19:58:15+08:00",
+  "author": "simonzhang",
+  "site": "",
+  "text": "感谢郭同学获益良多"
+ },
+ {
+  "id": "4136",
+  "parent": "4135",
+  "date": "2016-06-23T09:08:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@simonzhang：太客气了，Simon同学，有空也多多贡献，多多分享啊，要不你脑袋里面的知识要发霉了，哈哈"
+ },
+ {
+  "id": "4149",
+  "parent": "0",
+  "date": "2016-06-24T16:45:05+08:00",
+  "author": "borman",
+  "site": "",
+  "text": "楼主，有一事不明，我在of_platform_bus_create中并没有找到与创建platform device时设备的操作方法的初始化，还是这里只是对设备节点的初始化，并没有设备的具体操作?"
+ },
+ {
+  "id": "4150",
+  "parent": "4149",
+  "date": "2016-06-24T17:02:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@borman：不太明白你的意思，这个接口负责根据DTS，创建对应的device，并将其添加到kernel中：\r\nof_platform_bus_create\r\n\tof_platform_device_create_pdata\r\n\t\tof_device_add\r\n\t\t\tdevice_add\r\ndevice被添加进kernel之后，就按照设备模型，进行正常的probe操作。"
+ },
+ {
+  "id": "4151",
+  "parent": "4150",
+  "date": "2016-06-24T17:52:01+08:00",
+  "author": "borman",
+  "site": "",
+  "text": "@wowo：搞混了，那么向系统中添加了这些dts中设备，它们的驱动是何时注册呢，我是想说这个的"
+ },
+ {
+  "id": "4152",
+  "parent": "4151",
+  "date": "2016-06-24T19:06:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@borman：在各自驱动模块的初始化函数中注册驱动啊"
+ },
+ {
+  "id": "4190",
+  "parent": "0",
+  "date": "2016-07-04T23:22:59+08:00",
+  "author": "大头元",
+  "site": "",
+  "text": "楼主你好：\r\n很多驱动程序的probe函数中都会先去调用dev_get_platdata(&pdev->dev)获取platform_data，我想知道在设备树的条件下，platform_data是怎么来的啊？它跟of_device_id中的.data有关吗，但我发现.data并没赋值（如果有关的话）。"
+ },
+ {
+  "id": "4191",
+  "parent": "4190",
+  "date": "2016-07-05T08:58:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@大头元：没有关系。\r\nplatform_data是driver调用dev_set_platdata自行设置的。\r\n你可以去kenerl里面看看例子，看看别人怎么用的。"
+ },
+ {
+  "id": "4192",
+  "parent": "4191",
+  "date": "2016-07-05T10:22:19+08:00",
+  "author": "大头元",
+  "site": "",
+  "text": "@wowo：多谢楼主，我用的是3.14内核，没找到dev_set_platdata定义。而且我看的栗子直接就在probe函数中使用了dev_get_platdata，probe是匹配后第一个调用的函数，估计是在某个地方赋值好了吧。platform_data是提前在内核中写好的还是用设备树转化而来的啊？"
+ },
+ {
+  "id": "4193",
+  "parent": "4192",
+  "date": "2016-07-05T13:05:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@大头元：抱歉，我看成了dev_set_drvdata可。\r\n这个指针，要么直接赋值：\r\npdev->dev.platform_data = pdata;\r\n要么调用platform_device_add_data，和device tree没有关系。"
+ },
+ {
+  "id": "4195",
+  "parent": "4193",
+  "date": "2016-07-06T08:53:31+08:00",
+  "author": "大头元",
+  "site": "",
+  "text": "@wowo：ok,多谢答疑解惑~"
+ },
+ {
+  "id": "4332",
+  "parent": "0",
+  "date": "2016-07-28T16:28:58+08:00",
+  "author": "jey",
+  "site": "",
+  "text": "Hi,wowo:\r\n现在项目中遇到一个问题，下面是相关的log：\r\n_kernel_ring_buffer\r\n[    0.000000] Initializing cgroup subsys cpu\r\n[    0.000000] Initializing cgroup subsys cpuacct\r\n[    0.000000] Linux version 3.10.73-ge5fb304-dirty (caojianye@compiler191) (gcc\r\n[    0.000000] CPU: AArch64 Processor [410fd034] revision 4\r\n[    0.000000]\r\n[    0.000000] Error: invalid device tree blob at physical address 0x00000000122\r\n[    0.000000] The dtb must be 8-byte aligned and passed in the first 512MB of m\r\n[    0.000000]\r\n[    0.000000] Please check your bootloader.\r\n现象是在内核中增加两行打印后内核就不能启动，从log分析是dtb被踩，lk中能正常解析dtb，说明是在内核出事话的时候踩到了dtb，请教一下：\r\n1.内核初始化的哪个阶段可能踩到dtb呢？\r\n2.我的想法是在lk中把dtb的加载地址往后面挪一些，但是如果内核在进一步增大的话还是会有问题，并不能彻底解决，能不能通过修改内核代码彻底解决这种问题呢？"
+ },
+ {
+  "id": "4337",
+  "parent": "4332",
+  "date": "2016-07-28T18:28:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jey：bootloader会通过命令行参数告诉kernel，当前可用的memory空间是多少。只要这个空间和dtb所占的空间不重叠，就不会有问题。"
+ },
+ {
+  "id": "4707",
+  "parent": "0",
+  "date": "2016-10-14T09:52:06+08:00",
+  "author": "麦兜要努力",
+  "site": "",
+  "text": "楼主您好：\r\n   刚开始接触Linux driver,目前在学习dw dma的部分。无意中发现了楼主的文章，看了关于device tree和platform相关的部分，解决了一些platform_device和platorm_driver的疑惑，不过还是有些问题卡住了，想请教一下：\r\n   在引入device tree之前要静态定义platform_device struct,注册device，然后定义platform_driver struct,注册driver，进行match,执行probe。引入device tree之后，最终通过of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL)系统生成platform_device并注册到系统中。就我目前看的dw dma部分，一开始subsys_initcall(dw_init)->dw_init->platform_driver_register(&dw_driver),看到：\r\nstatic struct platform_driver dw_driver = {\r\n\t.probe\t\t= dw_probe,\r\n\t.remove\t\t= dw_remove,\r\n\t.shutdown       = dw_shutdown,\r\n\t.driver = {\r\n\t\t.name\t= DRV_NAME,\r\n\t\t.pm\t= &dw_dev_pm_ops,\r\n\t\t.of_match_table = of_match_ptr(dw_dma_of_id_table),\r\n\t\t.acpi_match_table = ACPI_PTR(dw_dma_acpi_id_table),\r\n\t},\r\n};\r\n\r\n#define DRV_NAME\t\"dw_dmac\"\r\n#ifdef CONFIG_OF\r\nstatic const struct of_device_id dw_dma_of_id_table[] = {\r\n\t{ .compatible = \"snps,dma-spear1340\" },\r\n\t{}\r\n};\r\nMODULE_DEVICE_TABLE(of, dw_dma_of_id_table);\r\n#endif\r\n根据这个snps,dma-spear1340，找到spear13xx.dtsi文件。\r\n可以在dts里面看到：\r\nahb {\r\n\t\t#address-cells = <1>;\r\n\t\t#size-cells = <1>;\r\n\t\tcompatible = \"simple-bus\";\r\n\t\tranges = <0x50000000 0x50000000 0x10000000\r\n\t\t\t  0x80000000 0x80000000 0x20000000\r\n\t\t\t  0xb0000000 0xb0000000 0x22000000\r\n\t\t\t  0xd8000000 0xd8000000 0x01000000\r\n\t\t\t  0xe0000000 0xe0000000 0x10000000>;\r\n\r\n\t\tsdhci@b3000000 {\r\n\t\t\tcompatible = \"st,sdhci-spear\";\r\n\t\t\treg = <0xb3000000 0x100>;\r\n\t\t\tinterrupts = <0 28 0x4>;\r\n\t\t\tstatus = \"disabled\";\r\n\t\t};\r\n\r\n\t\tcf@b2800000 {\r\n\t\t\tcompatible = \"arasan,cf-spear1340\";\r\n\t\t\treg = <0xb2800000 0x1000>;\r\n\t\t\tinterrupts = <0 29 0x4>;\r\n\t\t\tstatus = \"disabled\";\r\n\t\t\tdmas = <&dwdma0 0 0 0 0>;\r\n\t\t\tdma-names = \"data\";\r\n\t\t};\r\n\r\n\t\tdwdma0: dma@ea800000 {\r\n\t\t\tcompatible = \"snps,dma-spear1340\";\r\n\t\t\treg = <0xea800000 0x1000>;\r\n\t\t\tinterrupts = <0 19 0x4>;\r\n\t\t\tstatus = \"disabled\";\r\n\r\n\t\t\tdma-channels = <8>;\r\n\t\t\t#dma-cells = <3>;\r\n\t\t\tdma-requests = <32>;\r\n\t\t\tchan_allocation_order = <1>;\r\n\t\t\tchan_priority = <1>;\r\n\t\t\tblock_size = <0xfff>;\r\n\t\t\tdma-masters = <2>;\r\n\t\t\tdata_width = <3 3 0 0>;\r\n\t\t};\r\n\r\n\t\tdma@eb000000 {\r\n\t\t\tcompatible = \"snps,dma-spear1340\";\r\n\t\t\treg = <0xeb000000 0x1000>;\r\n\t\t\tinterrupts = <0 59 0x4>;\r\n\t\t\tstatus = \"disabled\";\r\n\r\n\t\t\tdma-requests = <32>;\r\n\t\t\tdma-channels = <8>;\r\n\t\t\tdma-masters = <2>;\r\n\t\t\t#dma-cells = <3>;\r\n\t\t\tchan_allocation_order = <1>;\r\n\t\t\tchan_priority = <1>;\r\n\t\t\tblock_size = <0xfff>;\r\n\t\t\tdata_width = <3 3 0 0>;\r\n\t\t};\r\n.....\r\n\r\n疑问：\r\n在spear1340c.里面看到：\r\nstatic void __init spear1340_dt_init(void)\r\n{\r\n\tof_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);\r\n\tplatform_device_register_simple(\"spear-cpufreq\", -1, NULL, 0);\r\n}\r\n\r\nstatic const char * const spear1340_dt_board_compat[] = {\r\n\t\"st,spear1340\",\r\n\t\"st,spear1340-evb\",\r\n\tNULL,\r\n};\r\n\r\nDT_MACHINE_START(SPEAR1340_DT, \"ST SPEAr1340 SoC with Flattened Device Tree\")\r\n\t.smp\t\t=\tsmp_ops(spear13xx_smp_ops),\r\n\t.map_io\t\t=\tspear13xx_map_io,\r\n\t.init_time\t=\tspear13xx_timer_init,\r\n\t.init_machine\t=\tspear1340_dt_init,\r\n\t.restart\t=\tspear_restart,\r\n\t.dt_compat\t=\tspear1340_dt_board_compat,\r\nMACHINE_END\r\n   那这边有调用of_platform_populate，那dma node是在platform bus下面的，应该是有被创建了platform_device了吧?但是我根据 .name = \"dw_dmac\",我又找到了关于dw_dmac0_device的静态定义：\r\n\r\nstatic struct dw_dma_platform_data dw_dmac0_data = {\r\n\t.nr_channels\t= 3,\r\n\t.block_size\t= 4095U,\r\n\t.nr_masters\t= 2,\r\n\t.data_width\t= { 2, 2, 0, 0 },\r\n};\r\n\r\nstatic struct resource dw_dmac0_resource[] = {\r\n\tPBMEM(0xff200000),\r\n\tIRQ(2),\r\n};\r\nDEFINE_DEV_DATA(dw_dmac, 0);\r\nDEV_CLK(hclk, dw_dmac0, hsb, 10);\r\n\r\n\r\n#define DEFINE_DEV_DATA(_name, _id)\t\t\t\t\\\r\nstatic u64 _name##_id##_dma_mask = DMA_BIT_MASK(32);\t\t\\\r\nstatic struct platform_device _name##_id##_device = {\t\t\\\r\n\t.name\t\t= #_name,\t\t\t\t\\\r\n\t.id\t\t= _id,\t\t\t\t\t\\\r\n\t.dev\t\t= {\t\t\t\t\t\\\r\n\t\t.dma_mask = &_name##_id##_dma_mask,\t\t\\\r\n\t\t.platform_data\t= &_name##_id##_data,\t\t\\\r\n\t\t.coherent_dma_mask = DMA_BIT_MASK(32),\t\t\\\r\n\t},\t\t\t\t\t\t\t\\\r\n\t.resource\t= _name##_id##_resource,\t\t\\\r\n\t.num_resources\t= ARRAY_SIZE(_name##_id##_resource),\t\\\r\n}\r\n以及dw_dmac0_device注册：\r\nstatic int __init system_device_init(void)\r\n{\r\n\tplatform_device_register(&at32_pm0_device);\r\n\tplatform_device_register(&at32_intc0_device);\r\n\tplatform_device_register(&at32ap700x_rtc0_device);\r\n\tplatform_device_register(&at32_wdt0_device);\r\n\tplatform_device_register(&at32_eic0_device);\r\n\tplatform_device_register(&smc0_device);\r\n\tplatform_device_register(&pdc_device);\r\n\tplatform_device_register(&dw_dmac0_device);\r\n\r\n\tplatform_device_register(&at32_tcb0_device);\r\n\tplatform_device_register(&at32_tcb1_device);\r\n\r\n\tplatform_device_register(&pio0_device);\r\n\tplatform_device_register(&pio1_device);\r\n\tplatform_device_register(&pio2_device);\r\n\tplatform_device_register(&pio3_device);\r\n\tplatform_device_register(&pio4_device);\r\n\r\n\treturn 0;\r\n}\r\n那究竟这个platform_device，究竟是在of_platform_populate里面去创建和注册的，通过snps,dma-spear1340去匹配？还是说在platform_device_register(&dw_dmac0_device)这边静态定义并被注册，通过name dw_dmac去匹配？为什么会既存在于dts里面，又静态去定义呢，会不会冲突呢？而且有两个同样compatible string的dma，只是address不同，那应该是根据设备号id去区分，在静态定义的时候可以设置为0和1，但是在of_platform_populate里面的of_device_add,初始值是-1，那有两个同样的设备，这个id它会做什么样的变化呢？\r\n\r\n希望能得到楼主的解答，感谢！"
+ },
+ {
+  "id": "4708",
+  "parent": "4707",
+  "date": "2016-10-14T11:43:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@麦兜要努力：我觉得，代码是为了兼容OF enable（DTS场景）和disable（传统的mach场景）两种使用方式，不会共存。\r\n你可以按照这个思路，查找一下代码，找到支持或者驳斥这个观点的证据（重点关注CONFIG_OF等和device tree有关的配置项）。"
+ },
+ {
+  "id": "4719",
+  "parent": "0",
+  "date": "2016-10-17T11:02:43+08:00",
+  "author": "lucky",
+  "site": "",
+  "text": "wowo你好：\r\n请教一个问题：\r\n/* 扫描DTB中的memory node，并把相关信息保存在meminfo中，全局变量meminfo保存了系统内存相关的信息。*/ \r\nof_scan_flat_dt(early_init_dt_scan_memory, NULL);\r\nearly_init_dt_scan_memory\r\n    early_init_dt_add_memory_arch\r\n\tarm_add_memory\r\n            初始化meminfo.bank[meminfo.nr_banks];\r\n                        \r\n这个是扫描DTS里面定义的系统所有的物理内存信息吗？"
+ },
+ {
+  "id": "4721",
+  "parent": "4719",
+  "date": "2016-10-17T13:52:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lucky：总的来说，是的。不过更细节一些内容，Linuxer同学正在写内存初始化有关的内容，随后应该有一篇基于x project的实战性的文档，应该可以回答你的问题。"
+ },
+ {
+  "id": "4733",
+  "parent": "4719",
+  "date": "2016-10-18T09:10:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lucky：可以参考/memory_management/mm-init-1.html这份文档，这里讲了内核如何形成物理内存的布局信息。\r\nBTW，现在应该已经不使用meminfo来保存内存的信息，在初始化阶段，都使用memblock来保存物理内存信息。"
+ },
+ {
+  "id": "4734",
+  "parent": "4733",
+  "date": "2016-10-18T09:18:06+08:00",
+  "author": "lucky",
+  "site": "",
+  "text": "@linuxer：多谢linuxer，接下来细细品味，^_^"
+ },
+ {
+  "id": "5127",
+  "parent": "0",
+  "date": "2017-01-11T10:49:54+08:00",
+  "author": "helloworld",
+  "site": "",
+  "text": "请教wowo，编译的内核中有很多IRQCHIP_DECLARE定义的of_device_id结构体，对于interrupt controller的匹配，of_irq_init会去遍历所有的of_device_id结构体吗？\r\n这里的匹配是根据dts的interrupt-controller节点和of_device_id的compatible属性进行匹配的吗？我看了很久好像没有看到，能指点下具体在哪里吗？"
+ },
+ {
+  "id": "5129",
+  "parent": "5127",
+  "date": "2017-01-11T11:45:06+08:00",
+  "author": "helloworld",
+  "site": "",
+  "text": "@helloworld：是我太粗心了，已经找到了，原来是在__of_match_node对matches轮询匹配root interrupt controller."
+ },
+ {
+  "id": "5684",
+  "parent": "0",
+  "date": "2017-06-16T18:01:40+08:00",
+  "author": "yellow",
+  "site": "",
+  "text": "@wowo： 请教下，我打log发现，扫描device tree添加device的时候，并不是所有node都会注册成设备的，除了soc,已经下一层的soc/***/，就是说只会注册device tree根节点已经第二层节点，请问对吗，代码从哪里体现出来呢？\r\n\r\n<3>[    2.032465]  [4:      swapper/0:    1]  create bus: /soc\r\n<3>[    2.038388]  [4:      swapper/0:    1]  create child: /soc/sec_hw_param\r\n<3>[    2.043990]  [4:      swapper/0:    1]  create child: /soc/qcom,smp2p-modem@17911008\r\n<3>[    2.052261]  [4:      swapper/0:    1]  create child: /soc/qcom,smp2p-adsp@17911008\r\n....."
+ },
+ {
+  "id": "5691",
+  "parent": "5684",
+  "date": "2017-06-19T09:00:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yellow：是的，你可以往下翻翻之前的留言，其中有同学讨论过这个事情：\r\n/device_model/dt-code-analysis.html\r\n（搜索simple-bus这个关键字）"
+ },
+ {
+  "id": "5940",
+  "parent": "0",
+  "date": "2017-08-22T20:01:02+08:00",
+  "author": "yellow",
+  "site": "",
+  "text": "@wowo:\r\n我结合代码重新看了这篇文章，有个地方想不明白：\r\nphandle 这个属性值，根据什么初始化产生的呢？（我的理解是每个节点都有这个属性，因为其他节点需要引用）\r\n比如 interrupt-map = <0 0 0 0 &intc 0 0 405 0> ，这个&intc，从代码看是根据它的phandle，来找到intc所在的节点\r\n但从dtsi上，intc这个节点没看到有定义 “phandle”\"linux,phandle\"的属性。那么intc这个节点的phandle从哪里产生的？\r\n\r\n劳烦解答一下，谢谢。"
+ },
+ {
+  "id": "5944",
+  "parent": "5940",
+  "date": "2017-08-24T09:40:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@yellow：phandle是编译器（dtc）自行添加的，具体你可以去扒扒dtc的source code。"
+ },
+ {
+  "id": "5948",
+  "parent": "5944",
+  "date": "2017-08-24T18:38:01+08:00",
+  "author": "yellow",
+  "site": "",
+  "text": "@wowo：谢谢。。看您的文章越读越觉得受益匪浅~"
+ },
+ {
+  "id": "6482",
+  "parent": "0",
+  "date": "2018-01-17T16:17:41+08:00",
+  "author": "小明",
+  "site": "",
+  "text": "wowo大神你好，看你的文章受益匪浅，真的是用嵌入式工程师的思维讲解，很容易理解接受。\r\n最近遇到个问题，我想在用户空间获取并解析整个设备树，来获取一些配置信息。但用户空间改怎么获取呢？有现成的方案吗？谢谢"
+ },
+ {
+  "id": "6705",
+  "parent": "0",
+  "date": "2018-04-26T19:04:10+08:00",
+  "author": "勾越",
+  "site": "",
+  "text": "1、您好，我没在内核中找到全局变量struct device_node *of_allnodes（就是指向设备树的global list）啊？system.map也找了，也还是没有。"
+ },
+ {
+  "id": "6706",
+  "parent": "0",
+  "date": "2018-04-26T19:08:25+08:00",
+  "author": "勾越",
+  "site": "",
+  "text": "1、您好，文中的：全局变量struct device_node *of_allnodes就是指向设备树的global list \r\n我在内核里面没有找到啊？？？我在system.map里面也找了。"
+ },
+ {
+  "id": "6707",
+  "parent": "6706",
+  "date": "2018-04-26T19:14:18+08:00",
+  "author": "hello",
+  "site": "",
+  "text": "@勾越：文章中有这样一句话\r\n注：本文中的linux kernel使用的是3.14版本。 \r\n可能不同的内核版本会有不同"
+ },
+ {
+  "id": "6708",
+  "parent": "6707",
+  "date": "2018-04-26T19:25:17+08:00",
+  "author": "勾越",
+  "site": "",
+  "text": "@hello：您好，我的是kernel4.1版本，请问有什么方法去找到我这个global list的全局指针变量呢？"
+ },
+ {
+  "id": "7010",
+  "parent": "6482",
+  "date": "2018-11-01T14:59:01+08:00",
+  "author": "maze",
+  "site": "",
+  "text": "@小明：这个应该是有的/proc下面是有一个device tree的东西吧。不过印象是通过defconfig配置出来的选项"
+ },
+ {
+  "id": "7146",
+  "parent": "6482",
+  "date": "2019-01-22T11:22:32+08:00",
+  "author": "mikhail",
+  "site": "",
+  "text": "@小明：kernel_path/drivers/of/Kconfig\r\n\r\nconfig PROC_DEVICETREE       \r\n\r\n重新编译内核，系统就会生成文件 /proc/device-tree"
+ },
+ {
+  "id": "7852",
+  "parent": "0",
+  "date": "2020-01-19T17:50:04+08:00",
+  "author": "Warren",
+  "site": "",
+  "text": "补充一点：i2c和spi有点特殊，i2c和spi有主从设备之分，并且有自己的总线i2c bus和spi bus。挂载在platform bus下的只是i2c和spi的controller设备（即master），以iMX的i2c举例，在执行of_platform_populate()时创建的platform device只代表了I2C controller，在注册platform_driver(如i2c_imx_driver)时会执行platform_driver的probe函数，即i2c_imx_probe()，probe函数会分配一个i2c_adapter作为i2c controller的抽象设备挂接在i2c bus上。同时该probe函数会遍历该i2c controller设备树节点下的所有i2c子节点，创建i2c_client设备并将i2c_client->adapter指向这个i2c_adapter。随后在i2c client加入i2c bus时或者i2c client的驱动i2c_driver加入i2c bus时，会匹配i2c_client与i2c_driver，匹配成功会执行i2c_driver的probe函数来初始化i2c_client。i2c_client通过adapter指针指向自己的i2c_adapter，i2c_adapter实现i2c协议传输的方法。上层应用在使用i2c_client的字符设备时最终通过该指针来操作i2c_adapter发出正确的时序和数据。"
+ },
+ {
+  "id": "7854",
+  "parent": "7852",
+  "date": "2020-01-20T09:08:31+08:00",
+  "author": "Warren",
+  "site": "",
+  "text": "@Warren：回错地方了,本来是想回复这个兄弟的，无奈回复中出现了敏感词(sla-ve),改了敏感词后被重置到首页了：\r\njinxin\r\n2015-12-22 10:49\r\n@wowo：请问那像一些i2c, spi设备呢？也是会挂在platform bus下么?\r\n这好象不合适把"
+ },
+ {
+  "id": "7933",
+  "parent": "6708",
+  "date": "2020-03-30T09:38:10+08:00",
+  "author": "jake",
+  "site": "",
+  "text": "@勾越：你找找&of_root"
+ },
+ {
+  "id": "8085",
+  "parent": "0",
+  "date": "2020-08-06T19:19:08+08:00",
+  "author": "一一",
+  "site": "",
+  "text": "hi，wowo大神，想请教一下\r\ncpus node的中对compatible = \"arm,cortex-a7\"是如何处理的\r\n我大致追了一下源码：\r\nrest_init-->kernel_init-->smp_prepare_cpus-->init_cpu_topology-->parse_dt_topology中有一段\r\n\r\n\t\tfor (cpu_eff = table_efficiency; cpu_eff->compatible; cpu_eff++)\r\n\t\t\tif (of_device_is_compatible(cn, cpu_eff->compatible))\r\n\t\t\t\tbreak;\r\n\r\nstatic const struct cpu_efficiency table_efficiency[] = {\r\n\t{\"arm,cortex-a15\", 3891},\r\n\t{\"arm,cortex-a7\",  2048},\r\n\t{NULL, },\r\n};\r\n\r\n但是table_efficiency只有a15和a7 没看见a9等其他型号，所以不知道我找的是不是正确，以上是32位arm。\r\n64位arm分析半天，好像都没有看见比较compatible属性。"
+ },
+ {
+  "id": "8182",
+  "parent": "0",
+  "date": "2021-01-08T16:13:25+08:00",
+  "author": "在渊",
+  "site": "",
+  "text": "wowo大佬，请教一下。设备总线驱动模型中，在总线创建时会注册设备，如文中platform总线从device_node遍历后会有device_add()动作，那为啥在驱动中，我们往往也还有注册class，注册device的动作。驱动中的device往往用于和用户态交互，这里是否就是为了这个原因创建，这里的设备如何和设备模型统一起来。"
+ },
+ {
+  "id": "8798",
+  "parent": "0",
+  "date": "2023-07-21T17:27:07+08:00",
+  "author": "aha",
+  "site": "",
+  "text": "从arm64的setup_arch来看，arm64架构不需要做platform匹配，只检查了root节点是否有model或者compatible。也就是说不同的arm64的soc都是无差异的setup arch过程，不需要实现struct machine_desc结构体中各种回调。这是因为arm64的soc真的不需要，还是这种差别化分散到其他驱动？"
+ }
+]

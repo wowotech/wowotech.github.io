@@ -1,0 +1,242 @@
+[
+ {
+  "id": "5195",
+  "parent": "0",
+  "date": "2017-02-05T09:35:04+08:00",
+  "author": "tiny-laker",
+  "site": "",
+  "text": "先顶后看好习惯"
+ },
+ {
+  "id": "5196",
+  "parent": "0",
+  "date": "2017-02-05T17:00:15+08:00",
+  "author": "codingbelief",
+  "site": "",
+  "text": "“（3）mm为空的话，说明B进程是内核线程，这时候，只能借用A进程当前正在使用的那个地址空间” 这个有点不理解的地方，内核线程是在什么场景下会用到用户线程的地址空间么？ \r\n\r\n简单看代码的话，这个“借用”貌似只是做了一个传递的动作，最终达到的效果是延迟了备份最后切出去的用户线程 context 的操作，如果没有切换其他用户进程又切回来了，就省了不少事。"
+ },
+ {
+  "id": "5198",
+  "parent": "5196",
+  "date": "2017-02-06T10:19:11+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@codingbelief：我们假设场景是这样的：普通进程A切换到内核线程B。这种场景下需要切换进程空间吗？\r\n\r\n当然不用，A进程的4G地址空间中（32位ARM为例），3～4G那一段就是对应的内核地址空间，B内核线程没有userspace，没有自己的0～3G那段地址空间，而3～4G那一段的地址空间是和A进程完全一样的，因此，在这样的场景中，不需要切换mm，不需要切换MMU中指向各个level的translation tables的那个基址寄存器（例如X86处理器就是cr3寄存器，ARM64就是TTBRx_EL1）。B线程借用A进程的地址空间，借用的也只是3～4G那一段的页表，对于进程自己特定的0～3G那段地址空间，B是不会访问的。\r\n\r\n这种情况下，我们称B线程借用了A进程的地址空间，在B的上下文中，基址寄存器指向A进程的pgd，而那一段保存A进程页表的memory是不属于B进程，因此，我们称之为“借用”。当然，借用不仅仅是“传递”那个动作，最重要的是“增加引用计数”这个动作，这个动作可以确保在B线程借用的过程中，A进程的mm struct是不会被释放的。当然，对于A--->B--->A这样的场景，的确是省事了，而在A--->B--->C（c是普通进程，和A不同地址空间）这样的场景，的确是推迟了实际的地址空间的切换动作。"
+ },
+ {
+  "id": "5199",
+  "parent": "5198",
+  "date": "2017-02-06T16:46:34+08:00",
+  "author": "codingbelief",
+  "site": "",
+  "text": "@linuxer：在 ARM64 中，用户进程的 mm->pgd 最终是写入到 TTBR0_EL1，应该可以说该 mm 只涉及了用户空间的虚拟地址。内核空间的虚拟地址的 pgd 应该是 swapper_pg_dir，在内核初始化的时候写入到 TTBR1_EL1，在进程切换过程中是不会改变的，所以内核线程没有“用”到 mm 里面的 pgd。\r\n如果内核线程不会去访问用户空间的话，应该就是不需要“用”到用户进程的 mm。（不知道内核线程有没有场景会去访问用户空间，个人觉得内核线程访问用户空间不是很合理，假定是没有这类场景的。）\r\n\r\n“增加引用计数”这个动作，我认为是为了保证“传递”的有效性而进行的。mm 会随着用户进程创建的时候被创建，创建之后，由于用户进程的引用，mm 的引用计数应该加1了，在用户进程切出切去时，由于 mm 被内核进程引用，因此 mm 的引用计数再加1。如果用户进程在切出去后，没有被 kill 掉，那么 mm 的引用计数至少等于 2。如果用户进程切出去后，又被 kill 掉了，引用计数就保证了此时 mm 不会立刻被释放 （因为“传递”还没有完成），等待内核线程再次切出去后，mm 才会被释放。\r\n\r\n所以，我觉得 “增加引用计数” 可能只是措施，并不是目的。在 ARM64 里，内核线程可能是“暂存”或者“传递” mm，而不是“借用”。"
+ },
+ {
+  "id": "5200",
+  "parent": "5198",
+  "date": "2017-02-06T17:54:38+08:00",
+  "author": "codingbelief",
+  "site": "",
+  "text": "@linuxer：X -> A -> B 场景中, X A 为用户进程，B 为内核进程，在这种切换场景下，A -> B 时，没有实际进行 mm 切换，是不是可以说切换到 B 时，B 所在的地址空间实际是属于 X 的？\r\n\r\n（ 只是觉得“借用”可能会有点疑惑，别怪我在抠字眼，~ ~ )"
+ },
+ {
+  "id": "5201",
+  "parent": "5199",
+  "date": "2017-02-06T18:11:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@codingbelief：的确，在ARM64中，由于分别有TTBR0_EL1 TTBR1_EL1分别指向user和kernel address space，这导致在进程切换中，不需要切换TTBR1_EL1的值，只需要切换TTBR0_EL1的值即可。这时候，如果普通进程A切换到内核线程B，那么B线程的确是不需要“借用”A的mm struct中的pgd，因为对于ARM64而言，mm struct中的pgd表示就是userspace的地址空间。\r\n\r\n然而，linux kernel是支持很多cpu arch的，ARM、X86等处理器都不是这么玩的。因此才会有内核线程“借用”进程地址空间一说，因为大部分的cpu arch都需要“借用”，当然，对于ARM64而言，它根本不需要active mm这样的概念。"
+ },
+ {
+  "id": "5202",
+  "parent": "5200",
+  "date": "2017-02-06T18:14:36+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@codingbelief：这时候B所在的地址空间应该是属于A的吧，A是普通用户进程啊"
+ },
+ {
+  "id": "5203",
+  "parent": "5200",
+  "date": "2017-02-06T18:17:04+08:00",
+  "author": "codingbelief",
+  "site": "",
+  "text": "@codingbelief：囧，这里犯迷糊了，B 所在的地址空间实际是属于 A 的，应该是 A 的 mm 没有被切换出去，所以 B 还是复用 A 的 mm。"
+ },
+ {
+  "id": "5204",
+  "parent": "5203",
+  "date": "2017-02-06T18:50:09+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@codingbelief：吃饭归来，就“借用”再说一句吧，呵呵～～～\r\n虽然在ARM64上，内核线程不借用mm，但是在ARM、x86上还是需要“借用”，之所以使用这个词是因为内核线程的的确确是使用了其他进程的页表。\r\n\r\n还是使用普通进程A切换到内核线程B这个场景，B线程当然只会访问内核空间的地址了，访问其他进程userspace是非法的。\r\n\r\nB线程访问内核空间的地址的时候，无论是取指还是数据操作，都需要进行地址翻译（地址属于内核空间），因此需要找到当前cpu上的那个Translation table base address寄存器，这时候，该寄存器的地址被设定为A进程mm的pgd，因此，在B线程执行，进行地址翻译的时候，顺着Translation table base address寄存器来到了A进程的页表区域，将内核空间的虚拟地址翻译成对应的物理地址。\r\n\r\n因为B线程的确是使用了属于A进程的东西（页表），所以我使用了“借用”这个词。"
+ },
+ {
+  "id": "5205",
+  "parent": "5204",
+  "date": "2017-02-06T20:13:24+08:00",
+  "author": "codingbelief",
+  "site": "",
+  "text": "@linuxer：arm 和 x86 的内核虚拟地址的页表应该是只有一个独立实例，然后其他所用户进程在他们的页表中，将内核虚拟地址对应的一级页表条目指向内核页表，是这样实现的么？"
+ },
+ {
+  "id": "5206",
+  "parent": "5205",
+  "date": "2017-02-06T23:44:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@codingbelief：在arm 和 x86的情况下，进程地址空间应该包括：\r\n1、一个pgd，每一个entry指向一个pud。\r\n2、若干个pud，每一个entry指向一个pmd\r\n3、若干个pmd，每一个entry指向一个pte\r\n4、若干个pte，每一个entry指向一个page frame\r\n\r\n\r\n就kernel space地址空间而言，系统中所有的进程、内核线程都有自己独立的pgd，但是大家会共享PUD、PMD、PTE。\r\n\r\n为什么pgd不能共享呢？因为pgd中的部分entry是for kernel space的，部分entry是for userspace的，虽然各个进程（线程）的kernel space的pgd entry是相同的，但是user space各不相同，因此不能共享。\r\n\r\n“页表”这个术语我一般指PGD/PUD/PMD/PTD，对于ARM，就是各个level的Translation tables。你说“arm 和 x86 的内核虚拟地址的页表应该是只有一个独立实例”，我大概明白你的意思，不过不是非常的准确。"
+ },
+ {
+  "id": "6215",
+  "parent": "0",
+  "date": "2017-11-18T05:50:07+08:00",
+  "author": "fanzhang",
+  "site": "",
+  "text": "借助其他进程内存描述符的东风，内核线程B欢快的运行，然而，快乐总是短暂的，也许是B自愿的，也许是强迫的，调度器最终会剥夺B的执行，切入C进程。也就是说，B内核线程调用switch_to（执行了AAA段代码），自己挂起，C粉墨登场，执行BBB段的代码。\r\n\r\nsorry , question\r\n这里最后完成switch_to后面BBB部分 的还是B线程 跟C没有关系"
+ },
+ {
+  "id": "6216",
+  "parent": "0",
+  "date": "2017-11-18T05:51:21+08:00",
+  "author": "fanzhang",
+  "site": "",
+  "text": "借助其他进程内存描述符的东风，内核线程B欢快的运行，然而，快乐总是短暂的，也许是B自愿的，也许是强迫的，调度器最终会剥夺B的执行，切入C进程。也就是说，B内核线程调用switch_to（执行了AAA段代码），自己挂起，C粉墨登场，执行BBB段的代码。\r\n\r\nsorry ,question here\r\n\r\n这里最后完成switch_to后面BBB部分 的还是B线程 跟C没有关系"
+ },
+ {
+  "id": "6229",
+  "parent": "0",
+  "date": "2017-11-21T17:41:37+08:00",
+  "author": "navadoo",
+  "site": "",
+  "text": "请教一下，在很多平台上(包括arm/arm64/x86)，enter_lazy_tlb都是空函数，这个怎么理解。"
+ },
+ {
+  "id": "7976",
+  "parent": "0",
+  "date": "2020-05-06T12:37:28+08:00",
+  "author": "bill",
+  "site": "",
+  "text": "请问一下switch_to之后获取到last有啥用啊"
+ },
+ {
+  "id": "7982",
+  "parent": "7976",
+  "date": "2020-05-07T17:39:21+08:00",
+  "author": "bill",
+  "site": "",
+  "text": "@bill：知道了，finish_task_switch要用"
+ },
+ {
+  "id": "8163",
+  "parent": "0",
+  "date": "2020-12-21T09:55:46+08:00",
+  "author": "jack",
+  "site": "",
+  "text": "请教一下，进程切换的时候为什么要在rq数据结构中引入prev_mm，\r\n为什么在切换之前现将prev->active_mm保存到rq->prev_mm？\r\n在finish_task_switch()函数中也是可以获取到prev->active_mm，\r\n在此函数中再将prev进程与借用的地址空间断开会引发问题吗？"
+ },
+ {
+  "id": "8167",
+  "parent": "0",
+  "date": "2020-12-24T18:58:31+08:00",
+  "author": "qielan",
+  "site": "",
+  "text": "@linuxer 线程是调度的单位，为什么大家在说的时候都只是说进程的调度，这只是一种口头习惯还是有一些差别"
+ },
+ {
+  "id": "8169",
+  "parent": "6216",
+  "date": "2020-12-29T16:16:43+08:00",
+  "author": "walentine",
+  "site": "",
+  "text": "@fanzhang：我也认为有这个问题：A->B后，A先执行switch_to之前的AAA部分代码，切换到B后，自然是B来执行swtich_to后的BBB部分代码，为何B欢快执行后，再走调度切换流程B->C后，要用C来释放借用的A的mm_struct？B和C都是同样的被调度方，B为何不执行finish_task_switch来释放A的mm_struct？"
+ },
+ {
+  "id": "8172",
+  "parent": "6229",
+  "date": "2021-01-04T14:09:21+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@navadoo：arm/arm64等将内核空间和用户空间 通过不同页表基地址 隔离开来的架构，由于内核是所有task共享的，其实在切换内核线程时 是不需要要切换内核空间的页表基地址(ttbr1_el1)，所以enter_lazy_tlb可以是空函数。\r\n但如果在arm中enable了SW_TTBR0_PAN（privilege access non，禁止kernel访问用户空间，如需访问使用copy_from/to_user来先disable PAN，访问后再enable），update_saved_ttbr0其实就是将用户空间基地址ttrb0_el1设成zero page（在访问user address时都是得到0）。\r\nstatic inline void\r\nenter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)\r\n{\r\n        /*\r\n         * We don't actually care about the ttbr0 mapping, so point it at the\r\n         * zero page.\r\n         */\r\n        update_saved_ttbr0(tsk, &init_mm);\r\n}"
+ },
+ {
+  "id": "8173",
+  "parent": "8169",
+  "date": "2021-01-04T16:30:50+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@walentine：\"这里最后完成switch_to后面BBB部分 的还是B线程\"，这句话没有问题。\r\n但是在 \"用户线程A->kernel线程B->用户线程C\" 这样的例子中，B会mmgrab(A->active_mm)，因为B没有用户地址空间 不需要更新mm，所以B在执行finish_task_switch时并不会mmdrop(A->active_mm);\r\nB切换到C后，如果C是内核线程处理非常简单（C->active_mm = B->active_mm，即A->active_mm），但是如果是用户线程，C在执行finish_task_switch时就会mmdrop(A->active_mm)（说明A没有其它task借用了可以自己玩耍），然后更新C的mm到ttbr0_el1."
+ },
+ {
+  "id": "8174",
+  "parent": "8173",
+  "date": "2021-01-04T16:47:03+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@bsp：也可以得出，在这样的例子中：用户线程A->kernel线程B->kernel线程C/D/E/F->用户线程G，只有最后一个用户线程在执行finish_task_switch时才会mmdrop(A->active_mm)并跟新mm，其它内核线程都是在沿用第一个用户线程的active_mm。由此看来，内核线程的切换loading还是比较轻的。"
+ },
+ {
+  "id": "8175",
+  "parent": "5204",
+  "date": "2021-01-04T16:48:11+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@linuxer：ttbr1_el1 Is the page table base register in kernel space , Use when accessing kernel space address , All processes share , No need to switch.\r\nkernel threads之间的切换是不需要切换ttrb1_el1的"
+ },
+ {
+  "id": "8176",
+  "parent": "8175",
+  "date": "2021-01-04T17:04:32+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@bsp：如果为了模拟PAN是需要切换ttbr1的，看来PAN对进程切换的latency影响不小啊。"
+ },
+ {
+  "id": "8321",
+  "parent": "5195",
+  "date": "2021-09-23T11:58:52+08:00",
+  "author": "demowang",
+  "site": "",
+  "text": "@tiny-laker：请教进程的ASID存入ttbr1_el1后，ttbr1_el1如何做内核寻址"
+ },
+ {
+  "id": "8322",
+  "parent": "0",
+  "date": "2021-09-23T11:59:51+08:00",
+  "author": "demowang",
+  "site": "",
+  "text": "请教进程的ASID存入ttbr1_el1后，ttbr1_el1如何做内核寻址"
+ },
+ {
+  "id": "8334",
+  "parent": "8163",
+  "date": "2021-10-14T21:26:54+08:00",
+  "author": "leon",
+  "site": "",
+  "text": "@jack：我的理解是:在finish_task_switch里面获取到的prev已经和上面的prev不是同一个了"
+ },
+ {
+  "id": "8335",
+  "parent": "8334",
+  "date": "2021-10-15T16:49:15+08:00",
+  "author": "伊斯科明",
+  "site": "",
+  "text": "@leon：看了@jack的问题，我也有这个疑问。@leon 的说法感觉解释不通啊，因为C进程执行到finish_task_switch后，此时的prev指的就是B进程，这时候确实可以通过prev->active_mm来释放吧"
+ },
+ {
+  "id": "8761",
+  "parent": "0",
+  "date": "2023-03-29T17:35:56+08:00",
+  "author": "leo",
+  "site": "",
+  "text": "如果切入的是普通进程，那么这时候进程的地址空间已经切换了，也就是说在A--->B进程的过程中，进程本身尚未切换，而进程的地址空间已经切换到了B进程了。这样会不会造成问题呢?还好，呵呵，这时候代码执行在kernel space，A和B进程的kernel space都是一样一样的啊，即便是切了进程地址空间，不过内核空间实际上保持不变的。\r\n 对这块不是很理解，地址空间的切换 主要围绕哪些地址做了切换了呢？  而且，为什么A进程和B进程的内核地址空间是一样的呢？"
+ },
+ {
+  "id": "8920",
+  "parent": "0",
+  "date": "2024-08-08T13:59:14+08:00",
+  "author": "十七",
+  "site": "",
+  "text": "内核空间的映射在系统启动时就已经设定好，并且在所有进程的页表中这部分映射是相同的。"
+ }
+]

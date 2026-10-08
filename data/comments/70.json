@@ -1,0 +1,802 @@
+[
+ {
+  "id": "267",
+  "parent": "0",
+  "date": "2014-08-04T19:36:36+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "先顶后看"
+ },
+ {
+  "id": "268",
+  "parent": "0",
+  "date": "2014-08-05T19:59:24+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "hi linuxer 不得不佩服您的每一篇文章都能把一个系统讲的如此的透彻，读您的文章简直就是享受啊。希望您能坚持啊，我的Linux学习可就全靠你了啊。哈哈哈哈\r\n有一个地方要更正一下\r\n（中断控制器可以级联，但是我猜测只有root interrupt controller才能分发中断给CPU），\r\n您可以看下您gic文章里面的那副gic的block图，会看到有个名字叫b的器件，b Optional input and bypass multiplexer，这里可以设置irq fiq的bypass，所以并不是只有root interrupt controller才能发中断给cpu"
+ },
+ {
+  "id": "269",
+  "parent": "268",
+  "date": "2014-08-06T13:00:38+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：多谢！多谢！之所以建立蜗窝科技这个网站就是希望能够享受技术带来的愉悦感，这一点有点类似看电影，我特别喜欢动作片中的慢动作，清清楚楚的看到每一个细节。\r\n\r\n你提出的问题我们可以进一步探讨：假设我们要设计一个非常复杂的系统，系统中有8个CPU，有2000个外设中断要处理，这时候你如何设计系统中的interrupt controller？如果使用GIC的话，我们需要两个GIC（一个GIC最多支持1024个中断源），一个是root GIC，另外一个是secondary GIC。这时候，把cpu都连接到root GIC的irq（或者FIQ）上是一个比较简单的设计，这时候secondary GIC的PPI和SGI都是没有用的了。当然，你也可以让每个GIC分别连接4个CPU core，但这样，在中断处理方面看起来就体现不出8核的威力了。"
+ },
+ {
+  "id": "270",
+  "parent": "0",
+  "date": "2014-08-06T15:46:06+08:00",
+  "author": "动漫资讯",
+  "site": "http://cc.yikehome.com/",
+  "text": "这些东西好像看不懂，也只能来看看"
+ },
+ {
+  "id": "271",
+  "parent": "0",
+  "date": "2014-08-06T15:46:28+08:00",
+  "author": "动漫资讯",
+  "site": "http://cc.yikehome.com/",
+  "text": "这些东西好像看不懂，也只能来看看，我怎么就评论失败了呢"
+ },
+ {
+  "id": "272",
+  "parent": "269",
+  "date": "2014-08-06T19:33:41+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：哈哈，正常的应该是你的这个思路。我只是说，有另一种的实现方式，by the way \r\n从中断处理无论是返回用户空间还是返回内核空间，都是可能会发生抢占的。了解这些对了解系统的运作很有好处，不知道这些内容你打算怎么讲，个人意见我感觉在这里可以稍微讲一下preempt_count跟need_resched. anyway,还是以您的规划为主。\r\n==================================================================\r\n每一篇文章，都是一部好电影:)"
+ },
+ {
+  "id": "273",
+  "parent": "272",
+  "date": "2014-08-07T08:52:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：本来想提一提preemptive kernel的概念，写了一小段，不过还是删除了。preemptive的概念是进程调度相关的，还是留给以后吧。本月还是focus在中断处理上吧，希望本月可以把中断子系统讲清楚就OK了"
+ },
+ {
+  "id": "274",
+  "parent": "273",
+  "date": "2014-08-07T09:42:52+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：ok，ok。那我就静候佳作了，哈哈哈。"
+ },
+ {
+  "id": "283",
+  "parent": "0",
+  "date": "2014-08-12T12:56:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "修改了ARM硬件对保存PC值的描述，原来的描述是错误的。"
+ },
+ {
+  "id": "286",
+  "parent": "283",
+  "date": "2014-08-12T18:58:32+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：刚找了本书翻了翻，确实是pc+12我之前也是一直以为是+8。"
+ },
+ {
+  "id": "287",
+  "parent": "286",
+  "date": "2014-08-12T19:35:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：发生中断的那一刻PC的确是＋8的，但是，中断处理不可能立刻进行，要等到发生中断的那一刻的指令被执行完毕，这时候，PC在＋8的基础上又＋4，因此total是＋12了，我之前搞错了"
+ },
+ {
+  "id": "288",
+  "parent": "0",
+  "date": "2014-08-13T10:12:21+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "博主准备以3.14的内核来分析各个模块啊，非常非常的感谢，现在市场上3.8内核以后的书籍我都找不到，学习起来只能靠自己摸索，但是基础比价薄弱，学起来很慢。希望博主早日出书。"
+ },
+ {
+  "id": "289",
+  "parent": "0",
+  "date": "2014-08-13T10:37:13+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "hi linuxer 我一直有个疑惑，就是linux 中断的顶半部是在哪里结束的。你下面几章讲到中断顶半部与低版本的时候，可不可以讲一下。顶半部是在中断返回的时候结束的吗？比如__irq_svc 是在\tsvc_exit r5, irq = 1\t\t\t@ return from exception 是在这里结束的吗？"
+ },
+ {
+  "id": "290",
+  "parent": "288",
+  "date": "2014-08-13T12:17:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：多谢鼓励。\r\n目前linux kernel的学习曲线越来越陡峭，一个对内核有热情的新人在面对linux kernel的时候经常是开始豪情万丈，最后绝望的放弃了。我们希望可以帮助到这些人。如果有机会出书当然好，不过现在还是埋头耕耘吧～～～\r\n\r\n目前的文档都是以3.14内核为基础，如果出书，肯定是用最新的内核了。"
+ },
+ {
+  "id": "291",
+  "parent": "289",
+  "date": "2014-08-13T12:21:14+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：恩，这篇文章其实有点虎头蛇尾，呵呵～～～看来我要重新修改一下关于中断退出这一个章节的描述了。目前的描述比较简陋，后续再增加一些图片和描述性文字好了。"
+ },
+ {
+  "id": "292",
+  "parent": "291",
+  "date": "2014-08-13T13:57:53+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：我以为底半部的东西你会在后面讲呢，因为你后面应该会讲到申请中断，那么内核新添加的线程化irq，还有其他之前的底半部的策略，你应该都会一并来说明吧，tasklet，workqueue，softirq等等。"
+ },
+ {
+  "id": "293",
+  "parent": "292",
+  "date": "2014-08-13T16:01:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：本来想在这份文档简单的描述一下bottom half的概念，不过还是算了，还是专门出文档描述吧。这次主要补充了内核栈的描述。OK，我们回到你具体的问题，你问是否top half是否是在 svc_exit处结束了（对于发生在内核态的中断）。我只能说，如果没有中断嵌套，那么top half的确是在 svc_exit处结束了，但是如果A中断处理中发生了B中断的嵌套，那么在执行svc_exit的时候回到了A中断的top half"
+ },
+ {
+  "id": "295",
+  "parent": "293",
+  "date": "2014-08-13T17:01:02+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：我想了解，在中断的处理过程中，在哪一个点，是开中断的，也就是哪一点可以允许中断嵌套。不知道楼主有没有研究过。"
+ },
+ {
+  "id": "299",
+  "parent": "295",
+  "date": "2014-08-13T19:48:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：我想你问的是interrupt handler是否开中断的问题，旧的内核是这么看待这个问题的：真实的世界中有slow handler和fast handle，在request irq的时候，对于fast handler，需要传递IRQF_DISABLED的参数，确保其中断处理过程中是关闭中断的。在我们实际的系统中，一般很少用这个flag，只有tick的中断使用了这个flag，也就意味着整个tick中断handler都是关闭中断的。这种情况下，interrupt handler是不会嵌套的。\r\n我们再看看slow handler，如果A中断是slow handler，那么在处理A中断的时候，其handler是全程开中断的，除了它自己类型的中断不会嵌套（在handler中会mask本IRQ number对应的中断），其他的中断都可以随时打断slow handler的执行。\r\n\r\n在新的内核中，比如3.14，事情发生了变化。我们可以思考一下，为何要有slow handler？每一个handler不都是应该迅速执行完毕，返回中断现场吗？此外，slow handler导致中断嵌套加深，对内核栈也是考验。因此，新的内核中在interrupt handler中是全程关闭中断的\r\n上面说的都是top half，更细致的内容还是我还是写成文档好了"
+ },
+ {
+  "id": "302",
+  "parent": "299",
+  "date": "2014-08-13T20:16:45+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：ok,好的 好的，不过感觉中断这一块还得有好几篇文章才能形成一个体系。而且感觉我们这个坛子人气越来越高了。哈哈，恭喜：）"
+ },
+ {
+  "id": "335",
+  "parent": "299",
+  "date": "2014-08-21T19:01:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：除了它自己类型的中断不会嵌套（在handler中会mask本IRQ number对应的中断），其他的中断都可以随时打断slow handler的执行。 \r\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝\r\n抱歉，我要更正上面的话。要删除（）中的那些表述，可能会误导大家。"
+ },
+ {
+  "id": "402",
+  "parent": "0",
+  "date": "2014-09-03T17:25:24+08:00",
+  "author": "maotou",
+  "site": "",
+  "text": "linuxer前辈,非常感谢您的回答,以后我会尽量说清楚自己的疑问. 在对于cpu响应中断前的工作中,主要有中断注册,然后再调用中断的入口函数do_asm_irq(),最后这个函数调用do_handler()函数,来完成这个中断的处理.是谁来调用do_asm_irq()呢,是设备本身么?在设备探测到中断时,其在软件层面的数据流向是怎样的呢?"
+ },
+ {
+  "id": "403",
+  "parent": "402",
+  "date": "2014-09-03T19:05:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@maotou：硬件触发中断－－>exception table中的vector_irq向量－－－>根据当时的CPU mode进入__irq_usr或者__irq_svc函数－－－> irq_handler －－－> arch_irq_handler_default －－－> asm_do_IRQ\r\n\r\n上面就是调用asm_do_IRQ的过程"
+ },
+ {
+  "id": "405",
+  "parent": "403",
+  "date": "2014-09-04T14:50:56+08:00",
+  "author": "maotou",
+  "site": "",
+  "text": "@linuxer：非常感谢您的指导,发现已慢慢理清思路,一点点在啃了.  现在有个新的问题想请教前辈:系统在启动的过程中会对中断描述符进行初始化,但对其成员变量不做任何赋值,在驱动程序的初始化时会注册中断服务例程,但是我看他还是没有将其chip变量设为与gic有关的.中断描述符中中断控制器的设置在什么地方呢?"
+ },
+ {
+  "id": "406",
+  "parent": "405",
+  "date": "2014-09-05T00:19:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@maotou：我重新写了一个gic driver的文档，你看看是否能回答你的问题（我觉得我写的挺清楚，不过还是需要广大人名群众检验一下），顺便帮我review一下。"
+ },
+ {
+  "id": "559",
+  "parent": "287",
+  "date": "2014-10-23T18:58:54+08:00",
+  "author": "song20",
+  "site": "",
+  "text": "@linuxer：最后为什么是减4是因为硬件会我们减去4，是这样吗linuxer？"
+ },
+ {
+  "id": "562",
+  "parent": "559",
+  "date": "2014-10-23T19:43:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@song20：发生中断的时候去读PC寄存器的值的时候，PC已经是“发生中断的那条指令地址＋12”，对于中断异常而言，我们当然是返回到“发生中断的那条指令地址＋4”，也就是中断发生时候的下一条指令。\r\n你可以看到，实际的PC值需要减去8才是我们期望的，因此：\r\nARM硬件－4\r\n软件－4\r\n通过上面两个操作，最终使得中断返回现场的时候PC恢复成“发生中断的那条指令地址＋4”"
+ },
+ {
+  "id": "600",
+  "parent": "0",
+  "date": "2014-11-02T01:53:50+08:00",
+  "author": "Zhedawo",
+  "site": "",
+  "text": "@linuxer 你好，我想问一下在整个中断处理流程(从中断触发到返回到被抢占点)，哪些地方中断是打开？谢谢了"
+ },
+ {
+  "id": "601",
+  "parent": "600",
+  "date": "2014-11-02T23:04:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Zhedawo：一开始，硬件就关闭的中断，在整个high level irq handler（interrupt flow control，主要是和interrupt controller交互）的过程中，中断也是关闭的。在进入具体的irq handler之前（各个driver用request_irq或者request_threaded_irq申请的），中断也是关闭的。\r\n由于各个driver的具体的irq handler是各个驱动工程师撰写的，其是否打开中断是linux kernel的中断子系统无法掌握的，但是，毫无疑问，kernel是要求（至少3.14的kernel）在driver的irq handler中是关闭中断的。\r\n在interrupt handler执行完毕后，进入bottom half的处理，在bottom half的处理过程中，当然是打开中断的。在进行bottom half处理之前，代码会记住当前中断的flag，执行完bottom half的代码之后，代码会恢复中断状态。一般而言，bottom half之前，中断是关闭的（除非在具体的interrupt handler中打开了中断），因此执行完bootom half，恢复中断状态也就是关闭了中断，直到返回中断现场。\r\n\r\n我印象如此，明天再浏览一下代码，确认一下。"
+ },
+ {
+  "id": "603",
+  "parent": "601",
+  "date": "2014-11-02T23:23:32+08:00",
+  "author": "Zhedawo",
+  "site": "",
+  "text": "@linuxer：@linuxer, 谢谢你的回复，解决了我的疑惑。"
+ },
+ {
+  "id": "753",
+  "parent": "0",
+  "date": "2014-11-19T16:37:04+08:00",
+  "author": "zuoertu",
+  "site": "",
+  "text": "你好，在保存中断现场的时候也就是进入usr_entry这个中，  这句没看懂“mov    r6, #-1－－－－orig_r0的值” 为什么 把-1 存到r6中， -1 会是orig_r0的值， orig_r0的值不是保存到了svc mode下的R3中吗？？？求解 -1 为啥是orig_r0"
+ },
+ {
+  "id": "754",
+  "parent": "753",
+  "date": "2014-11-20T17:54:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zuoertu：不论如何，在内核栈上的frame如下：\r\nARM_r0\r\nARM_r1\r\nARM_r2\r\nARM_r3\r\nARM_r4\r\nARM_r5\r\nARM_r6\r\nARM_r7\r\nARM_r8\r\nARM_r9\r\nARM_r10\r\nARM_fp\r\nARM_ip\r\nARM_sp \r\nARM_lr\r\nARM_pc\r\nARM_cpsr\r\nARM_ORIG_r0\r\n的确，所谓original r0就是发生中断那一刻的r0值，按理说，ARM_r0和ARM_ORIG_r0都应该是用户空间的那个r0。\r\n但是为何中断将-1保存到了ARM_ORIG_r0位置呢？理解这个问题需要跳脱中断处理这个主题，我们来看ARM的系统调用。对于系统调用，它和中断处理虽然都是cpu异常处理范畴，但是一个明显的不同是系统调用需要传递参数，返回结果。如果进行这样的参数传递呢？对于ARM，当然是寄存器了，特别是返回结果，保存在了r0中。对于ARM，r0～r7是各种cpu mode都相同的，用于传递参数还是很方便的。因此，进入系统调用的时候，在内核栈上保存了发生系统调用现场的所有寄存器，一方面保存了hardware context，另外一方面，也就是获取了系统调用的参数。返回的时候，将返回值放到r0就OK了。\r\n根据上面的描述，r0有两个作用，传递参数，返回结果。当把系统调用的结果放到r0的时候，通过r0传递的参数值就被覆盖了。本来，这也没有什么，但是有些场合是需要需要这两个值的：\r\n1、ptrace\r\n2、system call restart\r\n正因为如此，硬件上下文的寄存器中r0有两份，ARM_r0是传递的参数，并复制一份到ARM_ORIG_r0，当系统调用返回的时候，ARM_r0是系统调用的返回值。\r\n\r\n我们再回到中断这个主题，其实在中断处理过程中，没有使用ARM_ORIG_r0这个值，但是，为了防止system call restart，可以赋值为非系统调用号的值（例如-1）。"
+ },
+ {
+  "id": "784",
+  "parent": "754",
+  "date": "2014-12-02T14:05:56+08:00",
+  "author": "zuoertu",
+  "site": "",
+  "text": "@linuxer：很意外博主答复我的疑惑，非常感谢博主。"
+ },
+ {
+  "id": "1175",
+  "parent": "0",
+  "date": "2015-02-05T15:53:22+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "Hi 博主。为什么irq真正的处理函数要在svc mode下进行？  \r\n因为现在是我自己实现的fiq，发现fiq的handler都是在 fiq mode下的(通过 trace32 查看cpsr，这点很确信）。这样就发现一些问题：\r\n1、访问 preempt_count不正确\r\n2、直接写preempt_count或其他thread_info会导致内核崩溃\r\n3、tasklet_schedule不能正确使用\r\n我个人认为是不能在fiq mode下访问 kernel api的问题，请帮忙分析一下！谢谢。。"
+ },
+ {
+  "id": "1180",
+  "parent": "1175",
+  "date": "2015-02-06T14:50:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ayeu0425：抱歉这么晚回答，最近实在是太忙了....\r\n你问了两个问题，实际上答案是一个，看起来问题都是和中断相关，实际上更多的是进程相关的问题。\r\nlinux kernel在设计进程的时候主要区分两种状态，user space和kernel space。也就是说，无论什么情况，一个进程要么是在user space运行，要么是在kernel space运行。而在kernel space运行则意味着stack切换到内核栈上来。只有在内核栈上，才会有thread info，才会有task struct，才会有preempt_count这些概念，你应该知道的，8K（也有可能是4K，和内核配置相关）的内核栈的底部是保存了该进程（或者线程）thread info数据结构。\r\n了解了上面的知识后，我们就知道了，当进程在运行的时候，可能会遇到未定义的指令，可以产生异常（系统调用），可能产生IRQ中断，可能会取数据异常，但是无论如何，最后都回归到该task的内核态中，所谓task的内核态对应就是processor的svc mode。\r\n\r\n当然，你可以可以选择为task定义一个irq space，不过你需要为每一个task都分配irq stack，还要想办法去访问该task的thread info、task struct等数据结构。这样设计没有什么好处当然被linux kernel的维护者抛弃了。\r\n\r\nOK，正面回答你的问题，preempt_count是struct thread_info的一个成员，访问preempt_count是基于访问thread_info的，而访问thread_info是通过内核栈（svc mode）的栈指针SP_svc进行的，如果发生FIQ的时候，processor处于FIQ mode，那么其sp（更准确的说是SP_fiq）指向哪里？要知道，SP_fiq和SP_svc是不同的。"
+ },
+ {
+  "id": "1190",
+  "parent": "1180",
+  "date": "2015-02-09T15:09:25+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "@linuxer：谢谢博主的热心回答！解析真的很透彻，我花了快一个星期才找出来的问题，博主三两句话就解释的如此清楚。最近做这个网卡的fiq总是时不时来查阅下博主的文章。\r\n现在已经放弃了在fiq中call tasklet的任何东西，在想另一种方案： 大概就是用软件去触发一个硬中断，比如用软件去置位一个中断的标志位，进而产生一个硬件中断。还想问下博主， arm的gic支持这种方法吗？   会不会还和平台有关？ 我现在用的是飞思卡尔的imx6q."
+ },
+ {
+  "id": "1192",
+  "parent": "1190",
+  "date": "2015-02-09T16:43:53+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "@ayeu0425：再补充一下，并不确定这个方法可行，只是听bsp部门的大牛这样提了一下，说他以前用过，但很久没有试过了。"
+ },
+ {
+  "id": "1194",
+  "parent": "1190",
+  "date": "2015-02-09T23:39:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@ayeu0425：从CPU设计者的角度看，ARM处理器的FIQ似乎看起来对应X86的NMI中断，实际上它们的设计目标还是有差别的。PC的NMI中断被设计出来主要用于debug、诊断或者watch dog这样的特殊用途场景。而ARM的FIQ主要用于那些有快速响应要求的外设。为此，ARM cpu的设计者还有一些特别的设计：\r\n1、更多的该mode下的寄存器。除了lr和sp之外，R8~R12也是特有的。这时候，如果仅仅使用FIQ mode下的寄存器而不访问R0~R7的话，进出该mode都不需要保存现场和回复现场的动作，节约了cpu指令。\r\n2、FIQ vector处于vector table的最后一项，其他的异常向量都需要一个跳转指令，但是FIQ handler可以直接是handler而不需要跳转指令\r\n\r\n然而，来到linux这个场景，事情又变得不一样了。linux本身没有支持ARM处理器的这个特性，毕竟不是每一个CPU都实现了类似ARM这样快速中断的机制。因此，在linux中，FIQ的使用更像是NMI的中断。因此，在linux kernel中实现FIQ本来的设计目标：快速中断，还是比较困难的。\r\n\r\n对于FIQ在linux kernel中的使用，我的观点是这样的：不要用于一般的外设功能。如果系统的确有对某个中断的快速响应的要求，建议使用IRQ，辅以interrupt thread这样的特性还是可以达到很好的效果的。\r\n\r\n另外，你说的那个方案我没有听说过，我觉得GIC似乎不支持这种特性。"
+ },
+ {
+  "id": "1195",
+  "parent": "1194",
+  "date": "2015-02-10T09:39:12+08:00",
+  "author": "ayeu0425",
+  "site": "",
+  "text": "@linuxer：谢谢博主的解答，你绝对是我见过的最热心和最有耐心的博主，没有之一。我会认真的考虑你的建议。多谢多谢！"
+ },
+ {
+  "id": "1322",
+  "parent": "1195",
+  "date": "2015-03-10T21:23:11+08:00",
+  "author": "RobinHsiang",
+  "site": "",
+  "text": "@ayeu0425：Linuxer和Wowo太好了。现在论坛人气越来越高了。\r\n估计里面也有不少我这样的菜鸟，在这里面学习，关键是遇到疑难问题可以问两位博主，两位博主还帮忙耐心解答~~~\r\n\r\n呵呵，希望两位博主能收徒弟，将来发扬光大成立一大门派，两位也成为一代宗师啊~~~"
+ },
+ {
+  "id": "1324",
+  "parent": "1322",
+  "date": "2015-03-11T09:15:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@RobinHsiang：不敢当，RobinHsiang同学过奖了，我们只是中国众多普通的软件工程师中的两个，希望可以分享、整理自己的一些技术心得而建立了这样一个网站，如果能够给广大人民群众一些帮助当然更好。希望常来，大家一起讨论技术。"
+ },
+ {
+  "id": "2109",
+  "parent": "0",
+  "date": "2015-07-01T17:43:07+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer\r\n    我在看高通的64位代码，在64位的secondary_start_kernel函数中并没有看到调用cpu_init做irq und和abt的栈初始化，是不是64位相比32位的这方面有了变化？"
+ },
+ {
+  "id": "2110",
+  "parent": "2109",
+  "date": "2015-07-01T18:32:26+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@passerby：armv8好像不是用 irq und abt svc这些模式了，而是使用了el0 el1等表示特权等级，感觉向X86靠拢了。"
+ },
+ {
+  "id": "2113",
+  "parent": "2110",
+  "date": "2015-07-01T19:41:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：ARMv8的异常模式已经很不一样了，忘掉之前的吧……"
+ },
+ {
+  "id": "2114",
+  "parent": "2113",
+  "date": "2015-07-01T21:02:39+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：linuxer有空的时候可以分析下armv8的异常向量表建立过程吗?刚看了他分析32位的时候的情况，但是现在armv8有了很大变化，汇编指令也变了很多。坐等大神授道解惑。"
+ },
+ {
+  "id": "2115",
+  "parent": "2114",
+  "date": "2015-07-02T00:08:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：好的，我马上就有时间了，可以考虑一下这个主题"
+ },
+ {
+  "id": "2181",
+  "parent": "0",
+  "date": "2015-07-09T11:27:41+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer，中断发生在内核时会有 blne    svc_preempt进行进程切换，那么在用户时为什么没有看到相应的代码？原来看到内核抢占发生时机是schedule显示调用和中断返回时，而用户抢占发生在系统调用返回和中断返回时。那么这里怎么没有看到用户抢占的发生时机呢？"
+ },
+ {
+  "id": "2182",
+  "parent": "2181",
+  "date": "2015-07-09T12:15:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：在bne    work_pending 这里"
+ },
+ {
+  "id": "2183",
+  "parent": "2182",
+  "date": "2015-07-09T12:54:20+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：谢谢，真的在这里。"
+ },
+ {
+  "id": "2188",
+  "parent": "601",
+  "date": "2015-07-09T17:23:47+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：这里的关闭中断，关闭是这个source的中断还是说整个local CPU的中断关闭？如果是local cpu中断关闭，那么就是不是没有了中断嵌套？"
+ },
+ {
+  "id": "2190",
+  "parent": "2188",
+  "date": "2015-07-09T19:30:51+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：旧的内核区分fast interrupt handler和slow interrupt handler，因此存在中断嵌套的现象。对于新的内核，所有的handler都是fast interrupt handler，都是关闭本cpu的全局中断的，因此，也就没有中断嵌套的概念了"
+ },
+ {
+  "id": "3475",
+  "parent": "0",
+  "date": "2016-01-29T17:59:52+08:00",
+  "author": "Andy",
+  "site": "",
+  "text": "博主,这条汇编有些没看明白：THUMB( adr    r0, 1f            )－－－－根据当前PC值，获取lable 1的地址 ；能否讲解一下呢，主要有些不明白的地方时怎么将1f的地址赋值给r0，就获取了lable 1的地址？"
+ },
+ {
+  "id": "3476",
+  "parent": "3475",
+  "date": "2016-01-29T18:02:01+08:00",
+  "author": "Andy",
+  "site": "",
+  "text": "@Andy：这个1f是不是就是下面的\r\n1: \r\n    .endm\r\n这里这个label 1的地址？如果是，1f中的f是什么意思？"
+ },
+ {
+  "id": "3478",
+  "parent": "3476",
+  "date": "2016-01-29T21:37:50+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@Andy：f表示forward，1f表示前面的“1”这个lable\r\nb表示backword，1b表示后面的“1”这个lable"
+ },
+ {
+  "id": "3479",
+  "parent": "3475",
+  "date": "2016-01-29T21:44:45+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@Andy：adr是获取1f这个符号的运行时地址，我们知道adr这条指令和1f这个符号之间的offset是固定的，实际上这里的r0实际上就等于PC + offset，从而获取了lable 1的运行时地址。如果还是不明白，可以看看ARM手册，那里说的更清楚的"
+ },
+ {
+  "id": "3482",
+  "parent": "3478",
+  "date": "2016-02-01T10:29:12+08:00",
+  "author": "Andy",
+  "site": "",
+  "text": "@郭健：之前没怎么看过汇编，明白了。感谢~~"
+ },
+ {
+  "id": "3532",
+  "parent": "0",
+  "date": "2016-02-25T21:56:25+08:00",
+  "author": "harryxp",
+  "site": "",
+  "text": "__vectors_start: \r\n    W(b)    vector_rst \r\n    W(b)    vector_und \r\n    W(ldr)    pc, __vectors_start + 0x1000 \r\n    W(b)    vector_pabt \r\n    W(b)    vector_dabt \r\n    W(b)    vector_addrexcptn \r\n    W(b)    vector_irq ---------------------------IRQ Vector \r\n    W(b)    vector_fiq\r\n\r\n博主，linux2.6上述代码后面有加stubs_offset，这个值与early_trap_init函数的0x200有关，现在变成0x10000，而且stubs_offset没有定义，是怎么回事呢？希望能帮解答下！"
+ },
+ {
+  "id": "3533",
+  "parent": "3532",
+  "date": "2016-02-26T11:11:44+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@harryxp：现在申请了2个page来做异常向量表，0x1000就是4096bytes就是一个4k的页。而没有用stubs_offset，应该是在编译脚本中指定了的吧\r\n__vectors_start = .;\r\n    .vectors 0 : AT(__vectors_start) {\r\n        *(.vectors)\r\n    }   \r\n    . = __vectors_start + SIZEOF(.vectors);\r\n    __vectors_end = .;\r\n\r\n    __stubs_start = .;\r\n    .stubs 0x1000 : AT(__stubs_start) {\r\n        *(.stubs)\r\n    }\r\n\t. = __stubs_start + SIZEOF(.stubs);\r\n    __stubs_end = .;"
+ },
+ {
+  "id": "3537",
+  "parent": "3533",
+  "date": "2016-02-26T11:44:28+08:00",
+  "author": "harryxp",
+  "site": "",
+  "text": "@passerby：是的，这里指定了，谢谢。"
+ },
+ {
+  "id": "3759",
+  "parent": "0",
+  "date": "2016-03-30T22:37:11+08:00",
+  "author": "jyzxlsw@126.com",
+  "site": "",
+  "text": "博主，请教一个问题，在中断后，irq模式向svc模式跳转时，觉得THUMB( ldr    lr, [r0, lr, lsl #2]  )已经完成地址计算了，应该跳转的地址已经在lr了里面了，为啥后面还要用pc再去计算一次ARM(    ldr    lr, [pc, lr, lsl #2]    ) 呢？\r\n这个地方看的不是很明白，顺便再问已经异常向量表的W（b）,b我知道是跳转，W（）是什么意思？望博主指点一下。\r\n\r\nand    lr, lr, #0x0f－－－lr保存了发生IRQ时候的CPSR，通过and操作，可以获取CPSR.M[3:0]的值\r\n                            这时候，如果中断发生在用户空间，lr=0，如果是内核空间，lr=3 \r\nTHUMB( adr    r0, 1f            )－－－－根据当前PC值，获取lable 1的地址 \r\nTHUMB( ldr    lr, [r0, lr, lsl #2]  )－lr根据当前mode，要么是__irq_usr的地址 ，要么是__irq_svc的地址 \r\n    mov    r0, sp－－－－－－将irq mode的stack point通过r0传递给即将跳转的函数 \r\nARM(    ldr    lr, [pc, lr, lsl #2]    )－－－根据mode，给lr赋值，__irq_usr或者__irq_svc \r\n    movs    pc, lr            @ branch to handler in SVC mode－－－－－（4） \r\nENDPROC(vector_\\name)"
+ },
+ {
+  "id": "3768",
+  "parent": "3759",
+  "date": "2016-04-01T14:58:12+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@jyzxlsw@126.com：这是为了兼容ARM和THUMB两种处理器状态，代码如下：\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n#ifdef CONFIG_THUMB2_KERNEL\r\n\r\n#if __GNUC__ < 4\r\n#error Thumb-2 kernel requires gcc >= 4\r\n#endif\r\n\r\n/* The CPSR bit describing the instruction set (Thumb) */\r\n#define PSR_ISETSTATE\tPSR_T_BIT\r\n\r\n#define ARM(x...)\r\n#define THUMB(x...)\tx\r\n#ifdef __ASSEMBLY__\r\n#define W(instr)\tinstr.w\r\n#define BSYM(sym)\tsym + 1\r\n#else\r\n#define WASM(instr)\t#instr \".w\"\r\n#endif\r\n\r\n#else\t/* !CONFIG_THUMB2_KERNEL */\r\n\r\n/* The CPSR bit describing the instruction set (ARM) */\r\n#define PSR_ISETSTATE\t0\r\n\r\n#define ARM(x...)\tx\r\n#define THUMB(x...)\r\n#ifdef __ASSEMBLY__\r\n#define W(instr)\tinstr\r\n#define BSYM(sym)\tsym\r\n#else\r\n#define WASM(instr)\t#instr\r\n#endif\r\n\r\n#endif\t/* CONFIG_THUMB2_KERNEL */\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\nARM()和THUMB()中的指令只会执行其一。"
+ },
+ {
+  "id": "3786",
+  "parent": "2190",
+  "date": "2016-04-05T16:00:44+08:00",
+  "author": "david",
+  "site": "",
+  "text": "@linuxer：@linuxer 我的理解是进入IRQ mode是CPSR.I已经被设置为1， 知道中断处理完恢复现场是才会将之前中断的CPSR值恢复，整个过程中IRQ已经被CPSR禁止了，ARM 也就不会再响应其他的 IRQ中断了。对吧？"
+ },
+ {
+  "id": "3787",
+  "parent": "3786",
+  "date": "2016-04-05T17:59:43+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@david：的确，当发生中断的时候，硬件会帮忙设定CPSR.I的值，从而disable了该CPU的local interrupt，并且将现场保存在了内核栈上，返回的时候，会恢复现场。但是，这并不意味着整个期间ARM cpu不会再响应其他的中断，一个简单的例子是：中断的下半部难道不是开中断的吗？"
+ },
+ {
+  "id": "3792",
+  "parent": "3787",
+  "date": "2016-04-06T14:11:00+08:00",
+  "author": "david",
+  "site": "",
+  "text": "@hello_world：@hello_world，看了代码，__do_softirq里面会enable local irq.也就是说中断的下半部分是可以被硬中断抢占的，以网卡驱动为例的话，假设t0发生硬中断，GIC将这个irq分给cpu0执行，cpu0做了简单处理然后执行softirq.在enable_local_irq之后，有可能网卡t1又发生硬件中断，而此时softirq还没有执行完，而且这个hardirq又被分配给了cpu0,导致cpu0的software irq被抢占，等到t1中断简单处理之后，cpu0会按顺序呢完成softirq的执行。这个应该是有可能的一个flow吧。"
+ },
+ {
+  "id": "3798",
+  "parent": "3787",
+  "date": "2016-04-06T16:20:20+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@hello_world：@david\r\n是的，软中断执行过程中是可以被硬中断打断的。硬中断里面一般会通过raise_softirq_ir设置对应的软中断bit，硬中断执行后再回来，会接着继续执行软中断的流程。软中断执行完成后，会再检测相应的软中断bit，如果有效（软中断流程被打断了），会再执行一遍软中断流程。\r\n至于能够执行多少遍，MAX_SOFTIRQ_RESTART这个经验值定义为10."
+ },
+ {
+  "id": "3813",
+  "parent": "0",
+  "date": "2016-04-08T10:05:38+08:00",
+  "author": "david",
+  "site": "",
+  "text": "@bsp,谢谢，smp情况下的中断还是各种flow还是比较多啊，中断线source N 触发硬中断，在source N 的GIC EOI被操作之前，即使source N硬件产生中断时间，GIC N不会assert irq给任何cpu core的吧。 看了high level handler函数handle_fasteoi_irq（）\r\n470         if (desc->istate & IRQS_ONESHOT)\r\n471                 mask_irq(desc);\r\n472\r\n473         preflow_handler(desc);\r\n474         handle_irq_event(desc);\r\n475\r\n476         if (desc->istate & IRQS_ONESHOT)\r\n477                 cond_unmask_irq(desc);\r\n478\r\n479 out_eoi:\r\n480         desc->irq_data.chip->irq_eoi(&desc->irq_data);\r\n\r\n只有IRQS_ONESHOT情况下才会mask 中断source,我的问题是在EOI之前，同一中断source的外设又有中断产生的话GIC还会assert 中断并分配给CPU吗？如果分配的话，就有可能分配到正在处理中断的CPU了？"
+ },
+ {
+  "id": "3819",
+  "parent": "3813",
+  "date": "2016-04-11T10:50:37+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@david：1、硬中断到达CPU时，cpu硬件会关闭local-irq（CPSR_I置1）、更新LR、设置PC到相应异常向量，然后才会进入entry-armv.S中的汇编代码中。除非代码将本地中断打开，否则硬中断流程中不会响应其它任何中断的（3.10内核）。\r\n\r\n2、GIC的中断状态：\r\nInactive，中断尚未激活或挂起；\r\nPending，中断已经由硬件或者软件产生，正等待目标CPU处理；\r\nActive，CPU已经应答（Acknowledge）来自GIC的中断，该中断正在被CPU处理但尚未完成；\r\nActive&Pending，CPU正在处理该中断，此时GIC又收到来自该中断源的中断；\r\n\r\n第四种是你说的情况，CPU处理中断过程中（本地中断关闭，禁止中断抢占）、同一中断又产生时，GIC会分配其给相应CPU，只不过CPU要等到 本中断处理完成 才会处理下一个中断。\r\n\r\ncpu-core和GIC，是SOC上的两个独立的不同单元。\r\n\r\n3、有的关注实时性的定制内核，在处理硬中断时 会将本地中断打开、允许中断抢占；这时只有高优先级中断到来时、才会打断本中断流程，中断嵌套次数也有控制（一般3次）。\r\n硬中断流程被打断时，cpu处理完高优先级的中断后 又返回到这个原来本打断的地方 继续原来的硬中断流程。\r\n这个第3点不用关注哈，仅作了解。"
+ },
+ {
+  "id": "3820",
+  "parent": "1190",
+  "date": "2016-04-11T10:58:36+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@ayeu0425：1、arm的GIC一般是GIC一般支持，软件操作GIC的对应寄存器来 使能对应中断的pending位；\r\n2、针对FIQ下 不能调用相应变量，可以从FIQ模式下切换到SVC模式，再去调用。这点可参考google的glue-fiq，其作用是用于记录系统 咬狗时的临终遗言。"
+ },
+ {
+  "id": "3822",
+  "parent": "0",
+  "date": "2016-04-14T10:53:13+08:00",
+  "author": "Harm",
+  "site": "",
+  "text": "楼主对ARM很熟悉啊 赞一个"
+ },
+ {
+  "id": "3823",
+  "parent": "0",
+  "date": "2016-04-14T10:54:00+08:00",
+  "author": "Harm",
+  "site": "",
+  "text": "有个问题请教下：如果把HCR.IMO bit置为1去拦截特殊的中断，当中断发生时，cpu就会进入HYP mode，在hyp irq hanlder里面需要怎么做才能把其余（非特殊）的中断交还给kerenl处理?"
+ },
+ {
+  "id": "3826",
+  "parent": "3819",
+  "date": "2016-04-14T14:34:26+08:00",
+  "author": "david",
+  "site": "",
+  "text": "@bsp：@bsp.看了一下GIC spec. 比较清楚了，GIC不会把正在active/active and pending的 IRQ在signal给任何的CPU的。所以同一个irq在GIC这边也只能串行的分配给CPU的。\r\nA CPU interface never signals to the connected processor any interrupt that is active and pending. It only\r\nsignals interrupts that are pending and have sufficient priority:\r\n• For PPIs and SGIs, the active status of particular interrupt ID is banked between CPU interfaces. This\r\nmeans that if a particular interrupt ID is active or active and pending on a CPU interface, then no\r\ninterrupt with that same ID is signaled on that CPU interface.\r\n• For SPIs, the active status of an interrupt is common to all CPU interfaces. This means that if an\r\ninterrupt is active or active and pending on one CPU interface then it is not signaled on any CPU\r\ninterface."
+ },
+ {
+  "id": "3966",
+  "parent": "0",
+  "date": "2016-05-23T18:30:58+08:00",
+  "author": "xie1230",
+  "site": "",
+  "text": "有一个地方不理解的是，中断控制器不管怎么级联，最终是CPU接收到了中断信号，这个应该是属于硬件中断，获取到的也应该是HW ID，cpu进入中断模式，然后又进入SVC模式，可是一直不解的是，接下来怎么获取到的相应的irq num了？\r\n这个转换过程是在哪里做的，是直接把转换后的irq num作为寄存器参数传入的吗？还是在handle_arch_irq里面才开始做的转换？具体是怎么的转换的呢"
+ },
+ {
+  "id": "3967",
+  "parent": "3966",
+  "date": "2016-05-23T23:19:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@xie1230：建议看看/irq_subsystem/irq-domain.html，这份文档描述了从HW interrupt ID到IRQ number之间的转换过程。"
+ },
+ {
+  "id": "3986",
+  "parent": "0",
+  "date": "2016-05-26T17:20:58+08:00",
+  "author": "borman",
+  "site": "",
+  "text": "有一个疑问，在bottom half执行的过程中是开中断的，如果这个过程中又发生了外设中断，那么之前那个中断的现场怎么恢复"
+ },
+ {
+  "id": "3987",
+  "parent": "3986",
+  "date": "2016-05-26T23:01:05+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@borman：当调用bottom half的时候，上一次中断的上下文（我们称之A中断）保存在了内核栈上，如果这个过程中又发生了外设中断（我们称之B中断），那么该中断的上下文依然保存在内核栈上，当B中断的handler处理完毕的时候，首先返回B中断的现场，也就是返回了被B中断打断执行的bottom half的现场，恢复其执行，当bottom half执行完毕，从内核栈恢复A中断的现场。"
+ },
+ {
+  "id": "4616",
+  "parent": "0",
+  "date": "2016-09-27T16:21:11+08:00",
+  "author": "qkhhyga_2016",
+  "site": "",
+  "text": "Hi,wowo\r\n   想请问一下，如果cpu处于休眠状态，被外部中断唤醒后，是在何时跳到异常向量表的IRQ向量的？如果等CPUINIT 之后再跳转，那是否可认为中断控制器有pending的功能？谢谢！"
+ },
+ {
+  "id": "4620",
+  "parent": "4616",
+  "date": "2016-09-27T19:19:36+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@qkhhyga_2016：系统唤醒之后是处于关中断状态的，因此，中断处理一定会先等待resume处理到了一个合适的点，然后打开中断，这时候，pengding的中断立刻被按照正常的中断流程处理，完成之后，继续resume的过程。"
+ },
+ {
+  "id": "4623",
+  "parent": "4620",
+  "date": "2016-09-28T10:44:46+08:00",
+  "author": "qkhhyga_2016",
+  "site": "",
+  "text": "@linuxer：还有个问题请教一下，gicc_iar 寄存器的低9位是否自动清位的？我的意思是当cpu去读这个寄存器时，读完后自动清位？\r\n\r\n因为我在gic代码里看到如下逻辑\r\nstatic void __exception_irq_entry gic_handle_irq(struct pt_regs *regs)\r\n{\r\n...\r\n\r\n\tdo {\r\n\t\tirqstat = readl_relaxed(cpu_base + GIC_CPU_INTACK);\r\n\t\tirqnr = irqstat & GICC_IAR_INT_ID_MASK;\r\n\r\n\t\tif (likely(irqnr > 15 && irqnr < 1021)) {\r\n\t\t\thandle_domain_irq(gic->domain, irqnr, regs);\r\n\t\t\tcontinue;\r\n\t\t}\r\n\t...\r\n\t\tbreak;\r\n\t} while (1);"
+ },
+ {
+  "id": "4625",
+  "parent": "4623",
+  "date": "2016-09-28T11:23:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@qkhhyga_2016：呵呵～～我推荐你去GIC的文档中自己去找答案，GIC datasheet中往往可以获得对各个寄存器的详细解释。"
+ },
+ {
+  "id": "4680",
+  "parent": "3967",
+  "date": "2016-10-10T09:22:46+08:00",
+  "author": "lamaboy",
+  "site": "",
+  "text": "@linuxer：下面的代码看看就明白了\r\nset_handle_irq(gic_handle_irq);\r\n\r\nstatic void __exception_irq_entry gic_handle_irq(struct pt_regs *regs)\r\n{\r\n\tu32 irqstat, irqnr;\r\n\tstruct gic_chip_data *gic = &gic_data[0];\r\n\tvoid __iomem *cpu_base = gic_data_cpu_base(gic);\r\n\r\n\tdo {\r\n\t\tirqstat = readl_relaxed(cpu_base + GIC_CPU_INTACK);\r\n\t\tirqnr = irqstat & GICC_IAR_INT_ID_MASK;\r\n\r\n\t\tif (likely(irqnr > 15 && irqnr < 1020)) {\r\n\t\t\tif (static_key_true(&supports_deactivate))\r\n\t\t\t\twritel_relaxed(irqstat, cpu_base + GIC_CPU_EOI);\r\n\t\t\thandle_domain_irq(gic->domain, irqnr, regs);\r\n\t\t\tcontinue;\r\n\t\t}\r\n\t\tif (irqnr < 16) {\r\n\t\t\twritel_relaxed(irqstat, cpu_base + GIC_CPU_EOI);\r\n\t\t\tif (static_key_true(&supports_deactivate))\r\n\t\t\t\twritel_relaxed(irqstat, cpu_base + GIC_CPU_DEACTIVATE);\r\n#ifdef CONFIG_SMP\r\n\t\t\thandle_IPI(irqnr, regs);\r\n#endif\r\n\t\t\tcontinue;\r\n\t\t}\r\n\t\tbreak;\r\n\t} while (1);\r\n}"
+ },
+ {
+  "id": "4936",
+  "parent": "0",
+  "date": "2016-11-30T11:22:51+08:00",
+  "author": "star",
+  "site": "",
+  "text": "Hi 博主，\r\n我最近在看 svc handler，有一个问题不明白，用户模式进入 svc 模式的过程中，为什么需要保存 用户模式下的 sp 和lr，按照文档上的描述，用户模式下的 sp 和 lr 是banked 应该不需要保存才对。"
+ },
+ {
+  "id": "4938",
+  "parent": "4936",
+  "date": "2016-11-30T15:12:18+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@star：进程A在欢快的运行，发生了中断，陷入内核，完成处理之后，如果中断返回是回到进程A继续执行，那么你说的逻辑是通的，但是，中断返回一定是返回进程A的现场吗？"
+ },
+ {
+  "id": "5708",
+  "parent": "0",
+  "date": "2017-06-20T11:03:50+08:00",
+  "author": "Jialing Fu",
+  "site": "",
+  "text": "关于中断返回时PC的恢复问题，这个是一个硬件设计向前兼容软件设计的结果。\r\n\r\n一开始ARM的设计比较简单，只有3级流水线：取指，译码，执行。所以一条指令结束时，CPU已经预先读取了两条指令，中断跳转是一条指令执行结束时，这样PC = address + 4（Thumb，一条指令2Byte） 或 + 8。所以中断返回时，PC值需回退一条指令。\r\n\r\n后续ARM增加了更多流水线级数，但为了软件设计的方便和向前兼容，ARM硬件做了一定的支持：就是软件还是可以把PC值回退一条指令即可。不然软件要根据不同流水线级数做不同的处理，就太复杂了。"
+ },
+ {
+  "id": "5959",
+  "parent": "0",
+  "date": "2017-08-30T16:07:02+08:00",
+  "author": "randyqiu",
+  "site": "",
+  "text": "请教一个问题：“SVC模式的stack准备”中，比如在用户态陷入内核态，使用的svc stack应该就是各task自己的kernel stack（2 page frame size）吧？此时的sp_svc是如何切换到各task的kernel stack中的呢?"
+ },
+ {
+  "id": "5988",
+  "parent": "5959",
+  "date": "2017-09-05T17:07:15+08:00",
+  "author": "randyqiu",
+  "site": "",
+  "text": "@randyqiu：好吧，我知道了，arm维护了几个sp寄存器，内核态比如spL1，用户态spL0，当task调度时会把当前task的sp指针放到spL1中，这样从用户态陷入内核态时只需要直接用spL1即可"
+ },
+ {
+  "id": "6457",
+  "parent": "0",
+  "date": "2018-01-06T01:59:30+08:00",
+  "author": "风露",
+  "site": "",
+  "text": "蜗窝大神，求教一个问题：\r\n进入IRQ mode后，中断会被自动禁掉，正常情况下，什么时候会再开启中断？"
+ },
+ {
+  "id": "6622",
+  "parent": "0",
+  "date": "2018-03-26T12:40:26+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "在arm64的do_signal()中，如果系统调用需要restart，则要修改PC值。\r\n但是这里restart_addr = continue_addr - (compat_thumb_mode(regs) ? 2 : 4); 依然与arm32一样\r\n按道理应该是-4或者-8才对呢"
+ },
+ {
+  "id": "6846",
+  "parent": "0",
+  "date": "2018-07-13T17:41:37+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "大侠，求教一个问题：我用perf top分析一个arm-linux进程，结果top symbols如下：\r\n 4.27%  [vectors]             [.] 0x00000fc4                      \r\n 3.84%  [kernel]              [k] _raw_spin_unlock_irqrestore     \r\n 2.30%  [kernel]              [k] _raw_spin_unlock_irq            \r\n 1.94%  libc-2.20.so          [.] 0x0007c35c                      \r\n 1.91%  [vectors]             [.] 0x00000fd8                      \r\n 1.56%  libGLESv2.so.1.9.6.0  [.] 0x0003a5e0                      \r\n 1.34%  libGLESv2.so.1.9.6.0  [.] 0x0003a5cc                      \r\n\r\n其中，第一行 [vectors] 这行尤其显得奇怪，这行有可能是代表irq handlers吗？我看到_raw_spin_unlock_irqrestore 占比很重，系统中应该是interrupt-heavy，但perf profile是基于PMU，ARM平台PMU应该还不是不可屏蔽中断，不太可能可以落到irq handlers内才对。\r\n\r\n疑惑不已，求教。"
+ },
+ {
+  "id": "6866",
+  "parent": "0",
+  "date": "2018-08-04T11:27:19+08:00",
+  "author": "太空的树懒",
+  "site": "",
+  "text": "蜗窝大侠,你好，请问一下：\r\n 保存中断现场那一段里有一句： \r\n “一旦进入SVC mode，ARM处理器看到的寄存器已经发生变化，这里的sp已经变成了sp_svc了。因此，后续的压栈操作都是压入了发生中断那一刻的进程的（或者内核线程）内核栈（svc mode栈）” 这一句里怎么能看出来 sp_svc 指向的是 发生中断时的那个进程的内核栈呢"
+ },
+ {
+  "id": "6991",
+  "parent": "0",
+  "date": "2018-10-18T15:21:36+08:00",
+  "author": "zgq",
+  "site": "",
+  "text": "中断发生在user mode下的退出过程:\r\nadd    sp, sp, #S_FRAME_SIZE - S_PC－－－－现场已经恢复，移动svc mode的sp到原来的位置 \r\n--看了下代码，这个是thumb2指令集下恢复SP的代码，\r\n--ARM指令集恢复SP的代码为：\r\nadd\tsp, sp, #\\offset + S_FRAME_SIZE"
+ },
+ {
+  "id": "7020",
+  "parent": "6846",
+  "date": "2018-11-08T17:57:42+08:00",
+  "author": "Physh",
+  "site": "",
+  "text": "@Physh：研究了下，已经理清这个东西，希望有助后者：\r\n\r\n4.27%  [vectors]             [.] 0x00000fc4                       \r\n3.84%  [kernel]              [k] _raw_spin_unlock_irqrestore     \r\n2.30%  [kernel]              [k] _raw_spin_unlock_irq             \r\n1.94%  libc-2.20.so          [.] 0x0007c35c                       \r\n1.91%  [vectors]             [.] 0x00000fd8                       \r\n1.56%  libGLESv2.so.1.9.6.0  [.] 0x0003a5e0                       \r\n1.34%  libGLESv2.so.1.9.6.0  [.] 0x0003a5cc      \r\n\r\n上文中，4.27%  [vectors]             [.] 0x00000fc4 确实表明这个地址位于进程空间，是[verctors]中偏移量为0x00000fc4的func，这个地方是用户kuser_helper，一般是用来实现原子操作等用户空间无法实现需要内核提供帮助实现的函数，在本例中0x00000fc4 是kuser_cmpxchg64。"
+ },
+ {
+  "id": "7111",
+  "parent": "0",
+  "date": "2018-12-27T21:52:39+08:00",
+  "author": "andreaji",
+  "site": "",
+  "text": "```\r\n .macro    svc_entry, stack_hole=0 \r\n    sub    sp, sp, #(S_FRAME_SIZE + \\stack_hole - 4)－－－－sp指向struct pt_regs中r1的位置 \r\n    stmia    sp, {r1 - r12} －－－－－－寄存器入栈。\r\n\r\n    ldmia    r0, {r3 - r5} \r\n    add    r7, sp, #S_SP - 4 －－－－－－r7指向struct pt_regs中r12的位置 \r\n    mov    r6, #-1 －－－－－－－－－－orig r0设为-1 \r\n    add    r2, sp, #(S_FRAME_SIZE + \\stack_hole - 4)－－－－r2是发现中断那一刻stack的现场 \r\n    str    r3, [sp, #-4]! －－－－保存r0，注意有一个！，sp会加上4，这时候sp就指向栈顶的r0位置了\r\n\r\n    mov    r3, lr －－－－保存svc mode的lr到r3 \r\n    stmia    r7, {r2 - r6} －－－－－－－－－压栈，在栈上形成形成struct pt_regs \r\n    .endm\r\n```\r\n-------------------------------------------------------------------------------\r\nlinuxer 您好，我认为这里的 `add    r7, sp, #S_SP - 4` 应该是让 r7 指向 ARM_sp 。如果是指向 ARM_r12 , 应该是 add r7, offsetof(ARM_r11) 即可。 这里之所以是 add r7, offsetof(ARM_SP)-4 ,我个人理解是因为此前 sp_svc 指向 ARM_r1 , 在此基础上 + offsetof(ARM_SP) 会让 r7 指向到 ARM_lr ,所以需要 -4 以修复偏差。请您看看我的理解对否。"
+ },
+ {
+  "id": "7474",
+  "parent": "4938",
+  "date": "2019-06-17T00:33:18+08:00",
+  "author": "star",
+  "site": "",
+  "text": "@linuxer：理解了，最近重新看中断异常，竟然看到之前留过言。"
+ },
+ {
+  "id": "7582",
+  "parent": "0",
+  "date": "2019-08-09T17:44:38+08:00",
+  "author": "fengeryi",
+  "site": "",
+  "text": "能讲这么清楚真的太难得了，非常感谢"
+ },
+ {
+  "id": "8082",
+  "parent": "293",
+  "date": "2020-08-05T11:12:22+08:00",
+  "author": "每天一小步",
+  "site": "",
+  "text": "@linuxer：我有些不同意见：\r\n顶半部应该在irq_exit里面某个特定时刻就结束了，请看下面的调用关系。在svc_exit之前可能有一段时间在处理底半部。\r\n\r\n659  int __handle_domain_irq(struct irq_domain *domain, unsigned int hwirq,\r\n660  \t\t\tbool lookup, struct pt_regs *regs){\r\n...\r\n     \tgeneric_handle_irq(irq);\r\n\t\t...\r\n\t\tirq_exit();    //<=================\r\n...\r\n}\r\n\r\n\r\n403  void irq_exit(void)\r\n404  {\r\n...\r\n410  \taccount_irq_exit_time(current);\r\n411  \tpreempt_count_sub(HARDIRQ_OFFSET);  // <=============\r\n412  \tif (!in_interrupt() && local_softirq_pending())\r\n413  \t\tinvoke_softirq(); //<==================\r\n...\r\n}\r\n\r\n\r\n356  static inline void invoke_softirq(void)\r\n357  {\r\n...\r\n    __do_softirq();\r\n\t...\r\n}\r\n\r\n245  asmlinkage __visible void __softirq_entry __do_softirq(void)\r\n246  {\r\n...\r\n272  \tlocal_irq_enable();\r\n...\r\n276  \twhile ((softirq_bit = ffs(pending))) {\r\n...\r\n              //处理软中断\r\n...\r\n}\r\n...\r\n}"
+ },
+ {
+  "id": "8083",
+  "parent": "8082",
+  "date": "2020-08-05T11:18:39+08:00",
+  "author": "每天一小步",
+  "site": "",
+  "text": "@每天一小步：245  asmlinkage __visible void __softirq_entry __do_softirq(void) \r\n246  { \r\n... \r\n272      local_irq_enable(); //这里打开cpu本地中断，窃以为这里就算是结束顶半部处理了"
+ },
+ {
+  "id": "8138",
+  "parent": "0",
+  "date": "2020-11-16T03:57:55+08:00",
+  "author": "Uchiha.tan",
+  "site": "",
+  "text": "“3、mask IRQ exception。也就是设定CPSR.I = 1”\r\n这里有错误吧？这个位设为1，就表示禁止了中断，那之后的中断岂不是就没法进行了？硬件应该没设定CPSR.I = 1"
+ },
+ {
+  "id": "8609",
+  "parent": "6866",
+  "date": "2022-04-29T14:16:02+08:00",
+  "author": "明天",
+  "site": "",
+  "text": "@太空的树懒：讲的很清楚了  （4）很多异常处理的代码返回的时候都是使用了stack相关的操作，这里没有。“movs    pc, lr ”指令除了字面上意思（把lr的值付给pc），还有一个隐含的操作（movs中‘s’的含义）：把SPSR copy到CPSR，从而实现了模式的切换。 模式的切换是靠修改cpsr寄存器实现的"
+ },
+ {
+  "id": "8616",
+  "parent": "0",
+  "date": "2022-05-18T17:09:52+08:00",
+  "author": "明天",
+  "site": "",
+  "text": "有两种情况会恢复：1退出中断的时候，因为会恢复cpsr寄存器；2、软中断soft_irq中会打开中断"
+ },
+ {
+  "id": "8722",
+  "parent": "0",
+  "date": "2022-12-14T14:59:49+08:00",
+  "author": "ecjtusbs",
+  "site": "http://ecjtusbs",
+  "text": "2022年12月14日\r\n读了好几遍，每次感觉受益匪浅！\r\n前人栽树后人乘凉。感谢前辈的无私分享。"
+ }
+]

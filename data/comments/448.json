@@ -1,0 +1,346 @@
+[
+ {
+  "id": "7000",
+  "parent": "0",
+  "date": "2018-10-23T22:38:54+08:00",
+  "author": "dzxg",
+  "site": "",
+  "text": "楼主，您好\r\n在  update_min_vruntime(struct cfs_rq *cfs_rq) 函数中的  cfs_rq->min_vruntime = max_vruntime(cfs_rq->min_vruntime, vruntime);  里有没有可能出现 vruntime 比 cfs_rq->min_vruntime 小的情况？"
+ },
+ {
+  "id": "7001",
+  "parent": "7000",
+  "date": "2018-10-24T23:21:16+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@dzxg：是可能出现vruntime 比 cfs_rq->min_vruntime 小的情况。例如，sleep进程唤醒的时候，会有一个时间补偿。但是，我们必须保证min_vruntime单调递增，所以才使用max_vruntime()选择。"
+ },
+ {
+  "id": "7016",
+  "parent": "0",
+  "date": "2018-11-05T11:13:17+08:00",
+  "author": "志在四方",
+  "site": "",
+  "text": "非常不错！"
+ },
+ {
+  "id": "7070",
+  "parent": "0",
+  "date": "2018-12-05T19:55:02+08:00",
+  "author": "Linux菜鸟",
+  "site": "",
+  "text": "大神，请教个小问题。Scheduler_tick是每个时钟中断执行一次么？如果是的话，调度频率会不会太低啊？\r\n如果真是时钟中断触发scheduler_tick的话，那是不是代表调度行为更多的不是scheduler_tick触发的？"
+ },
+ {
+  "id": "7072",
+  "parent": "7070",
+  "date": "2018-12-06T17:39:21+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@Linux菜鸟：Scheduler_tick是每个时钟中断执行一次么？\r\n是的。\r\n\r\n如果是的话，调度频率会不会太低啊？ \r\n如果采用周期性定时器的话，现在的内核一般是100-1000HZ。假设是1000HZ，那么就是1ms检查一次是否需要抢占。如果继续增大HZ的值，虽然实时性更好了，但是也是不明智的。因为那样会导致大量的时间都浪费在中断及上下文切换。系统的吞吐率就会下降。\r\n\r\n如果真是时钟中断触发scheduler_tick的话，那是不是代表调度行为更多的不是scheduler_tick触发的？\r\n是的，时钟中断调用scheduler_tick()。除了中断可以触发调度外，进程主动调用schedule()或者资源未到位导致sleep也会触发调度。当然了，时钟中断是推动系统调度的主要因素。"
+ },
+ {
+  "id": "7159",
+  "parent": "0",
+  "date": "2019-01-28T12:07:49+08:00",
+  "author": "小鸟",
+  "site": "",
+  "text": "有个问题哈  cfs定义\r\n调度延迟为0.75ms * 当前运行进程数 ？ 如果是系统时钟100hz，那不是10ms才来一次时钟中断，那么调度延迟是怎么保证的呢？还是说这个依赖其他调度点？"
+ },
+ {
+  "id": "7161",
+  "parent": "7159",
+  "date": "2019-01-28T17:07:39+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@小鸟：所以无法保证喽。\r\n\r\n在多核系统上，sysctl_sched_latency 和 sysctl_sched_min_granularity 的值默认会比6ms 和 0.75ms大。计算公式如下：\r\n\r\nsysctl_sched_latency = 6ms * (1 + ilog(ncpus))\r\nsysctl_sched_min_granularity = 0.75ms * (1 + ilog(ncpus))\r\n\r\nncpus：CPU数量\r\n\r\n因此，多核系统上会更容易保证调度延迟。"
+ },
+ {
+  "id": "7285",
+  "parent": "0",
+  "date": "2019-03-15T07:34:23+08:00",
+  "author": "null",
+  "site": "",
+  "text": "dequeue_entity的时候，有个疑问，对于组调度，会从task se向上遍历，把tse和gse都从红黑树移除，那么如果gse被移除了，他的cfsrq上面的其他任务岂不是没法得到调度了，除非这个group有新的任务入队？在此把gse入队"
+ },
+ {
+  "id": "7307",
+  "parent": "7285",
+  "date": "2019-03-16T20:27:46+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@null：可以往后看下组调度的分析文章。"
+ },
+ {
+  "id": "7318",
+  "parent": "7307",
+  "date": "2019-03-18T09:49:28+08:00",
+  "author": "null",
+  "site": "",
+  "text": "@smcdef：嗯，确实漏看了代码。\r\ndequeue_task_fair里面，有一个判断if(cfs_rq->load.weight)，如果这个gse只有一个tse那么这个gse会出队，否则就break了。"
+ },
+ {
+  "id": "7334",
+  "parent": "0",
+  "date": "2019-03-26T23:24:44+08:00",
+  "author": "Scott",
+  "site": "",
+  "text": "上文在分析check_preempt_tick()函数时，函数讲解里的第7点：“这里把虚拟时间和实际时间比较，看起来很奇怪。感觉就像是bug一样，然后经过查看提交记录，作者的意图是：希望权重小的任务更容易被抢占。”我对此描述有点疑问想请教：为何说是把虚拟时间和实际时间比较? “delta”是虚拟时间之差值。但“ideal_runtime”是sched_slice()计算的结果，在代码里，sched_slice()也是将slice经过权重计算才返回的，不知您文章里的实际时间是否说的是“ideal_runtime”，如果是，为何认为是实际时间?我的观点是经过权重计算后，应该算是虚拟时间。"
+ },
+ {
+  "id": "7343",
+  "parent": "0",
+  "date": "2019-04-04T10:53:48+08:00",
+  "author": "Lambert",
+  "site": "http://l2h.site",
+  "text": "非常实用"
+ },
+ {
+  "id": "7356",
+  "parent": "0",
+  "date": "2019-04-17T16:30:31+08:00",
+  "author": "markened",
+  "site": "",
+  "text": "if (curr) {\r\n\t\tupdate_curr(cfs_rq);                 /* 2 */\r\n\t\tse->vruntime = curr->vruntime;       /* 3 */\r\n\t}\r\n对于一个新创建的process，虚拟运行时间初始化为当前process的虚拟运行时间。\r\n\r\n而在后来的place_entity函数中\r\n\t/* ensure we never gain time by being placed backwards. */\r\n\tse->vruntime = max_vruntime(se->vruntime, vruntime);    /* 3 */\r\n最后对于虚拟运行时间比较了初始值，和当前就绪队列的最小值加上惩罚值。取两者最大。\r\n那就可以这样理解，新创建的process的vruntime不能小于当前运行process的vruntime。\r\n这样做的目的是为什么？"
+ },
+ {
+  "id": "7362",
+  "parent": "7356",
+  "date": "2019-04-18T23:05:00+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@markened：max_vruntime()作用其实就像是注释描述的那样，我们只能向前走，不能向后看。因此一个entity的vruntime必须单调递增。\r\n\r\n针对你说的问题，为什么新创建的进程的vruntime不能比min_vruntime小。原因是我们希望对新创建的进程进行惩罚，不至于使其刚被创建就很快被执行。这样可以防止用户进程通过创建大量子进程来恶意占用CPU运行。"
+ },
+ {
+  "id": "7380",
+  "parent": "7362",
+  "date": "2019-04-29T10:22:29+08:00",
+  "author": "markened",
+  "site": "",
+  "text": "@smcdef：谢谢！能不能告知你是如何能解读这些代码背后的原因，能否告诉下学习的方法？万分感谢！！！"
+ },
+ {
+  "id": "7384",
+  "parent": "7380",
+  "date": "2019-04-29T16:13:34+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@markened：Google、博客以及最重要的git log"
+ },
+ {
+  "id": "7544",
+  "parent": "0",
+  "date": "2019-07-22T09:56:55+08:00",
+  "author": "菜鸟1111",
+  "site": "",
+  "text": "假设要插入a的vruntime是101，b的vruntime是100，那么entity_before()函数返回0。现在假设a的vruntime溢出了，vruntime是5（我们期望是2^64 + 5，但是很遗憾溢出结果是5），b的vruntime即将溢出，vruntime的值是2^64 - 2。那么调度实体a的vruntime无论是5还是2^64 + 5，entity_before()函数都会返回0\r\n\r\na = 5 ,b = 2^64 - 2,a - b = 5 - 2^64 +2 = 7 - 2^64 = 负数\r\n那么 entity_before应该返回 1才是，为什么会返回0尼，能否帮忙解答一下此疑问？"
+ },
+ {
+  "id": "7609",
+  "parent": "7544",
+  "date": "2019-08-21T20:00:02+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@菜鸟1111：这个是 C语言的语法特性，你可以使用 gcc 写个代码验证一下。"
+ },
+ {
+  "id": "7651",
+  "parent": "7334",
+  "date": "2019-09-16T16:09:40+08:00",
+  "author": "Terry",
+  "site": "",
+  "text": "@Scott：sched_slice这个时间是根据curr的weight与cfs_rq的weight之间的比例计算出的值，表示一个调度周期中curr理想情况下应该占用的“实际时间”。这个时间并不是“虚拟时间”，它对应的“虚拟时间”可以用sched_vslice这个函数来计算。"
+ },
+ {
+  "id": "7683",
+  "parent": "0",
+  "date": "2019-10-05T14:56:09+08:00",
+  "author": "karas",
+  "site": "",
+  "text": "楼主，你好，在put_prev_entity()函数中，prev->on_rq不为0时，会重新将prev入队。那么如果prev->on_rq为0的情况下，会将prev放置到哪？我自己的想法是放置到等待队列，等待调度，但是看了pick_next_task_fair的上下文也没有找到类似的操作，应该不至于把prev给丢弃了。请楼主抽空帮忙解惑下，“prev在放弃cpu控制权，调用put_prev_entity后会被放置到什么地方？之后又怎么被重新调度？”谢谢"
+ },
+ {
+  "id": "7714",
+  "parent": "0",
+  "date": "2019-10-26T21:56:49+08:00",
+  "author": "湫",
+  "site": "",
+  "text": "一个进程连续fork了四个子进程，按照文中的理论，这四个子进程的虚拟运行时间应该是单调递增的。也就是说第一个子进程应该最先执行。可实验结果却是第一个子进程最后执行？有人知道这是为什么吗？（内核版本4.4）"
+ },
+ {
+  "id": "7766",
+  "parent": "0",
+  "date": "2019-11-27T21:21:51+08:00",
+  "author": "不懂就问",
+  "site": "",
+  "text": "大神，请教一个问题，\r\ntask_fork_fair函数里 cfs_rq->curr为什么会是NULL呢，当前current进程正在fork，其所在cfs_rq的curr变量应该就是current的entity实体啊？ if判断是不是多余的呢？"
+ },
+ {
+  "id": "8047",
+  "parent": "7683",
+  "date": "2020-07-06T14:39:58+08:00",
+  "author": "zxq",
+  "site": "",
+  "text": "@karas：我理解这里作者是以主动让出cpu  schedule来讲解的进程切换，一般内核在等待某个事件发生时，会先将当前进程加入到等待队列，然后调用schedule主动让出cpu，等到想要的事件产生时会唤醒进程，这个时候会将进程重新放置到就绪队列等待调度。wake_up->__wake_up_common->default_wake_function->try_to_wake_up->ttwu_queue->ttwu_do_activate->activate_task->enqueue_task。但是对于进程因运行时间耗尽而引起的调度应该会直接将进程插入到就绪队列。"
+ },
+ {
+  "id": "8061",
+  "parent": "0",
+  "date": "2020-07-22T17:32:14+08:00",
+  "author": "wangxingxing",
+  "site": "",
+  "text": "您好，关于周期性调度，如果cfs判断需要立马抢占，只是调用resched_curr去设置抢占标志TIF_NEED_RESCHED，请问真正的进程切换发生在什么时候呢？"
+ },
+ {
+  "id": "8063",
+  "parent": "8061",
+  "date": "2020-07-23T13:32:24+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@wangxingxing：看看内核__schedule函数上面的注释"
+ },
+ {
+  "id": "8064",
+  "parent": "8063",
+  "date": "2020-07-23T14:53:09+08:00",
+  "author": "wangxingxing",
+  "site": "",
+  "text": "@smcdef：系统时钟中断返回的路径上会去检查TIF_NEED_RESCHED，如果有设置这个flag就会立马调用shedule进行抢占吗？如果是能否用源码show一下ARM的具体流程。另外如果是这样的流程，那么如何保证中断结束后调用schedule的时候就能把当前运行的进程切换掉？（是否有可能这个时候的schedule选出的新进程还是当前运行的进程？还是说scheduler_tick判断要切的进程在中断返回调用shedule的时候一定不会被选为下一个新进程？）"
+ },
+ {
+  "id": "8095",
+  "parent": "0",
+  "date": "2020-08-13T14:17:22+08:00",
+  "author": "新手",
+  "site": "",
+  "text": "请教一下，在update_min_vruntime中\tif (curr) {\r\n\t\tif (curr->on_rq)\r\n\t\t\tvruntime = curr->vruntime;\r\n\t\telse\r\n\t\t\tcurr = NULL;\r\ncurr代表当前正在运行的调度实体，已经在运行，就肯定从rb tree上摘下来了，那on_rq就应该一定是0，为什么还要判断它是不是1呢"
+ },
+ {
+  "id": "8143",
+  "parent": "7544",
+  "date": "2020-11-23T16:44:07+08:00",
+  "author": "h1shao",
+  "site": "",
+  "text": "@菜鸟1111：这里运算的时候是无符号数，7 - 2^64二进制展开: \r\n0b 0000...0111 - 0b 1111...1111 = 0b 000...1000, \r\n然后将这个值0b 000...1000强转为有符号数，这个数当然是正数了。"
+ },
+ {
+  "id": "8144",
+  "parent": "7609",
+  "date": "2020-11-23T16:50:09+08:00",
+  "author": "h1shao",
+  "site": "",
+  "text": "@smcdef：这个entity_before()是存在溢出的情况的，但是实际在cfs中应该是跑不出来这种情况。\r\n举例： 两个数A和B，未溢出时，A < B, 当A 溢出，B没溢出后，我们期待的是A - B < 0是false。但是，如果后面只有A持续增长，B不增长或少增长。如果某个时刻，A的低63为的数据大于B的低63位数据，这个时候，A - B > 0。\r\n所以，这个函数不会有溢出问题的前提是，溢出的数据的低63位不能出现大于未溢出数据的低63位。"
+ },
+ {
+  "id": "8223",
+  "parent": "0",
+  "date": "2021-04-23T23:28:32+08:00",
+  "author": "bang",
+  "site": "",
+  "text": "提一个小的严谨性问题哈，“新创建的进程惩罚的时间是多少”小节中的“例如，就绪队列权重是3072，当前调度实体se权重是1024，调度周期是6ms，那么调度实体应该得到的时间是6*1024/3072=2ms。”\r\n->对于新创建的进程se->on_rq=0，则vruntime的理论值应该为6*1024/3072*((2^32-1)/(2^32))=1999999ns"
+ },
+ {
+  "id": "8339",
+  "parent": "0",
+  "date": "2021-10-21T19:21:38+08:00",
+  "author": "esc",
+  "site": "",
+  "text": "check_preempt_tick()里面第7点解释delta > ideal_runtime我觉得写的不是很深入，没提为什么这里要有这么一个判断。\r\n\r\n根据提交的历史记录，4，5，6，7都在同一次代码提交中(commit f685ceaca)，且这段代码在4的上面有一段注释：\r\n\r\n\t/*\r\n\t * Ensure that a task that missed wakeup preemption by a\r\n\t * narrow margin doesn't have to wait for a full slice.\r\n\t * This also mitigates buddy induced latencies under load.\r\n\t */\r\n\r\n看描述，目的是为了降低从睡眠中被唤醒进程的延迟。睡眠进程被唤醒的时候或许并不满足抢占当前进程的条件，但后续如果让当前进程跑完一整个slice会导致延迟高，因此加了第7点的判断。\r\n\r\n至于为什么是delta和ideal_time的比较，我的想法如下：\r\n\r\n假设在最普通场景下，nice都为0，没有睡眠和唤醒的情况，有两个进程，分别是A和B，A的vruntime较低，V_a < V_b，调度器先选择了A执行，那么check_preempt_tick()的时候，delta一定小于ideal_time，否则，因为delta_exec > delta，函数在前面就已经返回了。\r\n\r\nnice都为0时，如果存在被唤醒的进程，那么被唤醒进程的vruntime会很小，如果这个vruntime比当前执行进程开始执行的时候对应的vruntime都要小，那么满足delta > ideal_time，代表的是相对于被唤醒的进程，当前进程已经运行了ideal_time，所以要发生抢占。至于用slice而不是vslice，就是为了让优先级低的更容易被抢占。"
+ },
+ {
+  "id": "8369",
+  "parent": "8047",
+  "date": "2021-11-11T15:20:05+08:00",
+  "author": "fei ye",
+  "site": "",
+  "text": "@zxq：你的理解非常正确。"
+ },
+ {
+  "id": "8396",
+  "parent": "0",
+  "date": "2021-12-07T16:58:22+08:00",
+  "author": "modernoom",
+  "site": "",
+  "text": "我想问一下为什么主动休眠的进程不需要减去最小虚拟时间？它在被唤醒的时候不是有可能被调度到其他CPU吗"
+ },
+ {
+  "id": "8397",
+  "parent": "8396",
+  "date": "2021-12-08T06:55:38+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@modernoom：因为主动休眠的进程减去最小虚拟时间没有意义，下次被唤醒的时候，会被挂入某个cpu runqueue，而对于睡眠一段时间的线程而言，为了补偿它，其vruntime的基准就是其挂入的cfs rq的min vruntime减去一个补偿值，不需要过去的vruntime信息。"
+ },
+ {
+  "id": "8401",
+  "parent": "8397",
+  "date": "2021-12-09T21:22:19+08:00",
+  "author": "modernoom",
+  "site": "",
+  "text": "@linuxer：上面的源码中，唤醒的进程并不是直接设置成min vruntime减去一个补偿值。而是和该调度实体的虚拟运行时间两个取最大值。那么如果进程休眠后被唤醒调度到一个虚拟时间比较小的CPU上，结果进程的虚拟时间比该CPU的min vruntime减去一个补偿值的值大，那么会取较大者，不是会导致唤醒进程无法及时得到调度吗？"
+ },
+ {
+  "id": "8402",
+  "parent": "8397",
+  "date": "2021-12-09T21:26:15+08:00",
+  "author": "modernoom",
+  "site": "",
+  "text": "@linuxer：或者说，这其实也是CFS的一种公平的体现。就算你从休眠中唤醒，但你本身运行了很长时间了，所以就算不会及时调度也没关系"
+ },
+ {
+  "id": "8420",
+  "parent": "8402",
+  "date": "2021-12-14T07:18:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@modernoom：同意你的观点，但是我觉得这里处理的还是有问题的（不同cfs上的min vruntime是不同步的），如果我来写，我可能考虑这么做：\r\n1、sleep之前，记录其vruntime和cfs minvruntime之间的delta\r\n2、记录sleep的时间长度，如果长时间的阻塞，那么其vruntime的就是其挂入的cfs rq的min vruntime减去一个补偿值\r\n3、如果短时间的阻塞，那么其vruntime应该是基于当前cfs minvruntime惩罚（delta-sleep time）。"
+ },
+ {
+  "id": "8454",
+  "parent": "8339",
+  "date": "2021-12-31T11:41:29+08:00",
+  "author": "mmz",
+  "site": "",
+  "text": "@esc：可以参考下这个链接的讨论：\r\nhttp://lkml.iu.edu/hypermail/linux/kernel/1009.1/02198.html"
+ },
+ {
+  "id": "8455",
+  "parent": "8454",
+  "date": "2021-12-31T16:40:27+08:00",
+  "author": "mmz",
+  "site": "",
+  "text": "@mmz：还有这个\r\nhttp://lkml.iu.edu/hypermail/linux/kernel/1104.0/02256.html"
+ },
+ {
+  "id": "8471",
+  "parent": "0",
+  "date": "2022-01-04T17:49:48+08:00",
+  "author": "honor",
+  "site": "",
+  "text": "static void update_curr(struct cfs_rq *cfs_rq)函数中：看描述               \r\ndelta_exec计算本次更新虚拟时间距离上次更新虚拟时间的差值。  \r\n\r\n这个是wall time吧？"
+ },
+ {
+  "id": "8630",
+  "parent": "8420",
+  "date": "2022-06-16T11:23:51+08:00",
+  "author": "jarvis",
+  "site": "",
+  "text": "@linuxer：我看wakeup task的代码，如果任务原先的cpu和当前选择的select cpu不同的话，会走到migrate_task_rq_fair，其会做se->vruntime -= min_vruntime，即会减去任务原先所在cpu的min_vruntime；这就相当于是在唤醒的时候减去min_vruntime，而不是在deactivate_task的时候减去min_vruntime；\r\n但这应该也算是按照你们所说的vruntime delta的想法去做的，还是我哪里理解的不对？"
+ },
+ {
+  "id": "8897",
+  "parent": "0",
+  "date": "2024-05-05T21:47:45+08:00",
+  "author": "abcde",
+  "site": "",
+  "text": "我想“Linux菜鸟”的本意应该是 “当某个se的slice > sysctl_sched_min_granularity \r\n && < tick”时，如果此se用完了自己的slice，但，中断时间却又尚未到达，那么，就没有机制让此se停下来，所以，se实际执行时间，不就超出自己应得的slice了吗？\r\n\r\n这个问题的答案，我觉得应该是：\r\n当切换到se执行时，同时设置了定时器，定时器会保证se的slice用完之后立即触发下一次调度。即：\r\nhttp://github.com/torvalds/linux/blob/v4.18/kernel/sched/fair.c#L7011\r\n\r\n\tif (hrtick_enabled(rq))\r\n\t\thrtick_start_fair(rq, p);"
+ },
+ {
+  "id": "8933",
+  "parent": "8095",
+  "date": "2024-09-27T15:59:46+08:00",
+  "author": "jqdeng",
+  "site": "",
+  "text": "@新手：curr的确是从rb tree拿下来了，但是on_rq还是1，如果curr->on_rq=0,则说明curr即将进入睡眠或者迁移状态了，你可以去看一下__schedule中deactivate_task处的注释。"
+ }
+]

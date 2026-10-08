@@ -1,0 +1,154 @@
+[
+ {
+  "id": "1545",
+  "parent": "0",
+  "date": "2015-04-22T11:50:20+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "kernel中现在大多用do_gettimeofday来打时间戳。\r\n\r\n写kernel这部分原代码的人好懒阿，微妙接口直接调纳秒/1000。。。"
+ },
+ {
+  "id": "1550",
+  "parent": "1545",
+  "date": "2015-04-22T12:50:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@printk：我觉得也可以叫做模块复用，反正ns版本的已经实现了，复用不就OK了吗？^_^"
+ },
+ {
+  "id": "2504",
+  "parent": "0",
+  "date": "2015-08-29T00:14:59+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "你好，我想问下有没有rtc时钟的定时器呢？？"
+ },
+ {
+  "id": "2506",
+  "parent": "2504",
+  "date": "2015-08-30T07:04:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：rtc时钟的定时器？什么意思呢？"
+ },
+ {
+  "id": "3873",
+  "parent": "0",
+  "date": "2016-04-28T17:25:21+08:00",
+  "author": "hyh",
+  "site": "",
+  "text": "关于 timezone ,我决定这个在上章的讲解里面有误,我做手机平台,\r\n我们由需要是这样的:\r\n保持dmesg 和 adb logcat 抓出的log时间要统一,这样可以快速定位问题.\r\n\r\n\r\n所以在printk中我加入了   __gettimeofday64() 和 system_tz 来保持dmesg 的时间和上层一致."
+ },
+ {
+  "id": "3874",
+  "parent": "3873",
+  "date": "2016-04-29T09:39:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@hyh：关于这个问题，我是这么思考的：\r\n1、你说了一个应用场景，在这个场景下，内核和应用都使用了地理概念上的时间，因此涉及到GMT时间，时区，夏时制等问题。\r\n2、内核真的需要知道自己在哪一个时区吗？是否使用夏时制吗？不能有一个绝对的时间起点吗？对于一个系统而言，需要定义一个epoch，所有的时间表示都是基于这个基准点的（无论是内核还是AP），对于linux而言，采用了和unix epoch一样的时间点：1970年1月1日0点0分0秒（UTC）。注意UTC时间标准和地理位置无关。\r\n3、当然，计算机系统始终是为人服务的，而人类习惯了地理概念上的时间。怎么办？上层AP可以自己将内核提供的的UTC时间转换成用户喜欢的任何时间，但是对于内核，使用UTC时间就OK了。\r\n\r\n回到你的问题场景中，我不太了解adb logcat，应该是安卓相关的东西，但是，能否让adb logcat的time也使用UTC标准呢？这样内核和AP不就保持一致了吗？"
+ },
+ {
+  "id": "4429",
+  "parent": "0",
+  "date": "2016-08-20T16:40:53+08:00",
+  "author": "Asker",
+  "site": "",
+  "text": "Hi Linuxer,\r\n请教下, 您上边讲的\"sleep系统调用是基于CLOCK_REALTIME\",那么一个Process在调用sleep期间(sleep时间还没有到), 如果此时用户有人为设定时间(墙上时间), 那么会影响sleep的返回对吗?"
+ },
+ {
+  "id": "4434",
+  "parent": "4429",
+  "date": "2016-08-22T18:47:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Asker：从POSIX标准的角度来看，sleep以及nanosleep都是基于realtime的（不是实时系统的那个realtime，指的就是墙上时钟wall clock），因此，我在文章才说它们是基于CLOCK_REALTIME，不过POSIX标准也规定，当用户修改wall clock的时候，不能影响sleep以及nanosleep的行为，也就是说，如果一个Process在调用sleep期间(sleep时间还没有到), 如果此时用户有人为设定时间(墙上时间), 那么不会影响sleep的返回的。\r\n\r\nPOSIX是标准，具体还是看实现。对于GNU/linux而言，sleep和nanosleep在具体实现的时候都是基于CLOCK_MONOTONIC的，但是，不管如何，sleep或者nanosleep的行为是一样的，那就是：修改墙上时间不能影响sleep（nanosleep）的行为。"
+ },
+ {
+  "id": "5273",
+  "parent": "0",
+  "date": "2017-03-01T09:29:45+08:00",
+  "author": "chen_chuang",
+  "site": "",
+  "text": "Hi,郭大神\r\n我在https://www.ibm.com/developerworks/cn/linux/l-cn-timers/ 网站上学习POSIX timer的时候发现有一句话不理解：需要注意的是，POSIX timer ［ 2 ］接口只在进程环境下才有意义 (fork(2) 和 exec(2) 也需要特殊对待 )，并不适合多线程环境。什么叫只在进程环境下有意义，不适合多线程？POSIX不就是线程库吗？蜗窝的网站对于POSIX timer的应用将的也不是特别的详细(应该是俺水平太low了),能否在应用方面指点一二。"
+ },
+ {
+  "id": "5275",
+  "parent": "5273",
+  "date": "2017-03-01T11:37:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@chen_chuang：首先要明确的是：POSIX不是线程库，是一个标准，我们常使用的线程库pthread其实就是符合posix标准的线程库。\r\n另外，作者说：“POSIX timer ［ 2 ］接口只在进程环境下才有意义”，我的理解是说POSIX timer是一个进程级别的资源，为进程内的所有线程所共享，posix timer是per-process的，正是因为没有per-thread POSIX timer的概念，因此才说在进程环境下有意义。\r\n\r\n当然，我反对posix timer不适合多线程环境的说法，在multi-thread编程中，使用POSIX timer 接口也不会有问题，要不怎么会有SIGEV_THREAD这个flag呢？"
+ },
+ {
+  "id": "5562",
+  "parent": "0",
+  "date": "2017-05-17T13:36:20+08:00",
+  "author": "江南书生",
+  "site": "http://no",
+  "text": "老板，你好！\r\nCLOCK_REALTIME这个是代表的硬件RTC么?如果我的硬件不提供RTC，怎么办啊？\r\n1.硬件RTC必须要提供么？\r\n2.如果不提供，是不是很多函数没法使用了？\r\n3.还是我理解错了CLOCK_REALTIME呢？"
+ },
+ {
+  "id": "5566",
+  "parent": "5562",
+  "date": "2017-05-17T15:08:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@江南书生：Q：CLOCK_REALTIME这个是代表的硬件RTC么?\r\nA：不是\r\n\r\nQ：硬件RTC必须要提供么？\r\nA：最好提供，但也不是必须。但是如果你的系统不提供RTC，那么在关机或者suspend的时候，系统时间无法计算，从而导致时间连续性的问题。\r\n\r\nQ：如果不提供，是不是很多函数没法使用了？ \r\nA：不会，如果不关机，不suspend，系统一切都正常。如果有关机或者suspend的动作，也没有什么太大关系，只不过时间不准确了而已，看看你的场景是否容忍这个issue。"
+ },
+ {
+  "id": "6887",
+  "parent": "0",
+  "date": "2018-08-15T11:19:00+08:00",
+  "author": "zhangyx",
+  "site": "",
+  "text": "1、使用timer_create (CLOCK_MONOTONIC,.)创建10ms定时器，信号通知的方式触发通知\r\n2、应用里通过sigwait来等待信号的到来，期间调用timer_getoverrun来获取overrun\r\n3、现象是发现有overrun，但是看内核的send_sigqueue函数加打印如下\r\nret = 0;\r\n   7     if (unlikely(!list_empty(&q->list))) {\r\n   6         /*\r\n   5          * If an SI_TIMER entry is already queue just increment\r\n   4          * the overrun count.\r\n   3          */\r\n   2         BUG_ON(q->info.si_code != SI_TIMER);\r\n   1         BUG_ON(1);\r\n             printk(KERN_ERR \"%s overrun\\n\", __func__);\r\n   1         q->info.si_overrun++;\r\n   2         goto out;\r\n   3     }\r\n发现没有触发BUG_ON ，也没有打印\r\n，这里的overrun 跟timer_getoverrun的返回的overrun 不是一个含义吗？\r\ntimer_getoverrun 返回非0值，是不是表示有定时器到期信号丢失了？\r\n\r\n内核是uclinux ,内核版本2.6.33 cpu是cortex-m3\r\n\r\n期待大神的解答，谢谢！"
+ },
+ {
+  "id": "6890",
+  "parent": "6887",
+  "date": "2018-08-15T19:23:48+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zhangyx：static enum hrtimer_restart posix_timer_fn(struct hrtimer *timer)\r\n{\r\n\r\n\tif (posix_timer_event(timr, si_private)) {\r\n\r\n**********************\r\n\t\t\ttimr->it_overrun += (unsigned int)\r\n\t\t\t\thrtimer_forward(timer, now,\r\n\t\t\t\t\t\ttimr->it.real.interval);\r\n******************\r\n\t\t\tret = HRTIMER_RESTART;\r\n\t\t\t++timr->it_requeue_pending;\r\n\t\t}\r\n\t}\r\n\r\n\tunlock_timer(timr, flags);\r\n\treturn ret;\r\n}\r\n你试着跟踪一下上面的timr->it_overrun的值"
+ },
+ {
+  "id": "6891",
+  "parent": "6887",
+  "date": "2018-08-15T19:32:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zhangyx：static void schedule_next_timer(struct k_itimer *timr)\r\n{\r\n\tstruct hrtimer *timer = &timr->it.real.timer;\r\n\r\n\tif (timr->it.real.interval.tv64 == 0)\r\n\t\treturn;\r\n*******************\r\n\ttimr->it_overrun += (unsigned int) hrtimer_forward(timer,\r\n\t\t\t\t\t\ttimer->base->get_time(),\r\n\t\t\t\t\t\ttimr->it.real.interval);\r\n\r\n\ttimr->it_overrun_last = timr->it_overrun;\r\n*******************\r\n\ttimr->it_overrun = -1;\r\n\t++timr->it_requeue_pending;\r\n\thrtimer_restart(timer);\r\n}\r\n也请跟踪一下上面的函数，实际上调用timer_getoverrun获取的是timr->it_overrun_last的值。"
+ },
+ {
+  "id": "6892",
+  "parent": "6887",
+  "date": "2018-08-16T08:59:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zhangyx：timer_getoverrun函数返回0，表示该POSIX interval timer没有overrun，大于0表示产生了overrun。例如一个POSIX timer每10ms触发一次，如果在10ms到期后发送了信号并递交到进程，那么说明没有overrun。如果在10ms到期后发送了信号，但是，由于种种原因，该信号在30ms后才递交到进程（即执行signal handler），那么你可以通过timer_getoverrun函数获取该POSIX timer的overrun的次数为2。\r\nSiginfo中的si_overrun表示该信号的overrun次数\r\ntimer_getoverrun函数返回是POSIX timer的overrun次数\r\n这两个overrun是不一样的。Siginfo中的si_overrun统计的是整个信号生命周期的overrun次数，包括signal generation到signal delivery。你在send_sigqueue函数中看到info.si_overrun++那是因为信号重复挂入signal pending list而造成的overrun。\r\ntimer_getoverrun函数返回是timer视角下的overrun，即interval timer已经触发，按理说应该及时rearm才能产生固定时间间隔的timer事件。对于POSIX timer，触发后发送信号，当完成signal delivery才会rearm timer。然而，信号可能pending很久，例如：\r\n1、\t信号只会被递交给正在运行的进程，如果进程阻塞，那么信号不会被递交。\r\n2、\t信号可能被阻塞\r\n3、\t响应信号（执行signal handler）的时候，往往会block该类型的signal\r\n正因为如此，一个10ms的POSIX interval timer，在触发后会立刻产生信号，然而这个信号可能在30ms递交到进程（signal delivery），在这时候rearm timer已经完了，中间overrun了2次。\r\n因此，timer_getoverrun函数返回非0值并不表示信号丢失，只是表示signal generation到signal delivery的时间太长，超过了POSIX timer的interval time。"
+ },
+ {
+  "id": "6894",
+  "parent": "6892",
+  "date": "2018-08-16T11:04:13+08:00",
+  "author": "zhangyx",
+  "site": "",
+  "text": "@linuxer：首先多谢您答复！\r\n1，如果我没有注册signal handler ，只是用sigwait来等待信号的发生，是不是意味着\r\nsigwait 返回后，信号就不阻塞了。\r\n2、信号只提交给正在运行的进程，而信号要得到处理，进程必须要在运行，是不是意味着，不可能出现信号重复挂入队列的情况，也就不存在信号丢失。"
+ },
+ {
+  "id": "6897",
+  "parent": "6894",
+  "date": "2018-08-16T19:13:04+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zhangyx：问题一：不会。sigwait仅仅是用来等待信号的，如果调用该函数的时候，指定的signal是pending的，那么该信号会从pending list中摘下，并直接返回。如果没有指定的pending的信号，那么该函数阻塞当前进程。这个函数不进行任何阻塞信号的操作。\r\n问题二：在古老版本的unix中会存在信号丢失，linux中应该不存在信号丢失的问题。你在send_sigqueue函数增加了打印，已经确认了信号没有重复挂入pending list。我相信你的问题还是处在信号递交到进程的时间太长了。"
+ },
+ {
+  "id": "8180",
+  "parent": "6897",
+  "date": "2021-01-07T11:51:18+08:00",
+  "author": "小丁",
+  "site": "",
+  "text": "@linuxer：你好，想请教一个问题哈。你在这里提到“我相信你的问题还是处在信号递交到进程的时间太长了。”，针对这种情况，应该如何解决呢？有没有办法让这个过程快速完成，无阻塞呢？比如提高进程优先级？定时器优先级等？非常期待你的答复，谢谢！"
+ }
+]

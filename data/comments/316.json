@@ -1,0 +1,66 @@
+[
+ {
+  "id": "4158",
+  "parent": "0",
+  "date": "2016-06-30T11:11:12+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "uboot也带device tree，真是神奇啊。有空研究下"
+ },
+ {
+  "id": "4159",
+  "parent": "4158",
+  "date": "2016-06-30T11:21:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@callme_friend：是的，boot中的device tree，和kernel一模一样，因此二者完全可以共用一份dts（dtb）文件。"
+ },
+ {
+  "id": "5546",
+  "parent": "0",
+  "date": "2017-05-13T23:36:44+08:00",
+  "author": "matchchen",
+  "site": "",
+  "text": "粗略看了一下，有个疑问：\r\nCONFIG_FIT 为什么是必须的配置项，这个不是控制是否支持FIT uImage的吗，\r\n如果要支持device tree，必须的配置项是否应该是CONFIG_OF_LIBFDT？"
+ },
+ {
+  "id": "5548",
+  "parent": "5546",
+  "date": "2017-05-15T10:39:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@matchchen：CONFIG_FIT是为了支持FIT uImage（确实不是必须的）。\r\nCONFIG_OF_LIBFDT只有在需要用到dts解析的API的时候，才需要配置，开始的时候可以先不配。"
+ },
+ {
+  "id": "6123",
+  "parent": "0",
+  "date": "2017-10-19T17:28:35+08:00",
+  "author": "wim",
+  "site": "",
+  "text": "请问uboot怎么配置和内核共用dtb文件呢？本来内核目录已经有一份dtb文件了，uboot是否支持直接指定该dtb文件的内存地址？"
+ },
+ {
+  "id": "6125",
+  "parent": "6123",
+  "date": "2017-10-20T09:14:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wim：一般情况下，uboot和kernel的dtb文件是不共用的（可以是同一份，但也会有两个copy）。\r\n另外从解耦合的角度看，它们两个也不应该使用相同的dts文件，因为各自的配置需求不同。uboot也好，kernel也好，都应该是自包含、自依赖的。"
+ },
+ {
+  "id": "6127",
+  "parent": "6125",
+  "date": "2017-10-20T11:01:15+08:00",
+  "author": "wim",
+  "site": "",
+  "text": "@wowo：谢谢wowo的解答，这样理解也是很有道理。\r\n我考虑的是对于arm soc，boot和kernel看到的设备其实是一样的，而且本来boot就会去修改kernel的dtb（cmdline、ram/initramfs start&sizee），并传递给kernel，分成两份有点重复。\r\n我自己对这个问题的进展：\r\n如果定义了CONFIG_OF_SEPARATE，uboot会去编译CONFIG_DEFAULT_DEVICE_TREE，倒是可以把这个路径指向内核的dts文件，就是目录跨得有点多；\r\n另外还有一个CONFIG_OF_BOARD选项，可以在代码里去指定dtb文件内存地址，不过搜索了uboot目录，几乎没有厂家用这个选项。\r\n当然也听说uboot解析和修改dtb文件效率并不高，分成一大一小不知道会不会更快一些了。"
+ },
+ {
+  "id": "6128",
+  "parent": "6127",
+  "date": "2017-10-20T13:30:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wim：虽然设备是一样的，但是uboot和kernel需要关注的可能不一样。很多kernel中需要用到的设备，uboot压根不关心。\r\n另外，很多时候uboot或者kernel，要能否单独编译、运行，因为可能有各种组合状态，例如UEFI+kernel、Uboot+xxx、等等，如果你要搅在一起，就麻烦了。\r\n思考点不一样，得出的结论就不一样，很显然，几乎没有厂家按照你的方法去做，就是一个证据。\r\n最后，和效率的关系不是很大……"
+ }
+]

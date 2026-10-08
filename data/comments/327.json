@@ -1,0 +1,18 @@
+[
+ {
+  "id": "6920",
+  "parent": "0",
+  "date": "2018-08-31T13:45:23+08:00",
+  "author": "nzg",
+  "site": "",
+  "text": "您好，请教一下linux中提到的dirty page和wirteback具体代表什么意思呢？\r\ndirty page是说页内容改变了，但是没有被回写，这个回写是从TLB写回内存吗？和disk有什么关系呢？\r\n谢谢"
+ },
+ {
+  "id": "9183",
+  "parent": "0",
+  "date": "2026-03-06T14:23:19+08:00",
+  "author": "凌云行者",
+  "site": "",
+  "text": "有点串台了，TLB是在cpu上的东西，负责缓存虚拟地址映射物理地址的；TLB flush是invalidate这些cache。本文说的是内存中的dirty page更新到磁盘中"
+ }
+]

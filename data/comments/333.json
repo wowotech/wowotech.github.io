@@ -1,0 +1,74 @@
+[
+ {
+  "id": "4847",
+  "parent": "0",
+  "date": "2016-11-06T11:21:25+08:00",
+  "author": "andyshrk",
+  "site": "",
+  "text": "linuxer 您好，\r\n我去内核里面搜了下，ARM32的FIXADDR_START是从0xffc00000开始的，从一些内核的启动log上也可以看到 fixmap  : 0xffc00000 - 0xfff00000   (3072 kB)，但是在ARM32下面有一个DEBUG_LL的功能，\r\n我看下面很多平台定义的对应DEBUG_UART_VIRT（即DEBUG串口对应的虚拟地址）却不在这个fixmap的范围内，而且我手边的某些平台，我尝试去修改这个虚拟地址（kernel hacking里面打开low level debug选项，和early printk选项，然后在command line里面加入earlyprintk参数），我发现有些值可以用，有些值却无会导致串口没有任何输出。不知道他这个是按照什么规则去映射的。\r\n另外，在比较低版本内核里面，很多platform相关的代码都会通过medsc->map_io接口调用iotable_init接口对很多外设去做静态映射（即使现在最想的linux 4.9内核，在devicemaps_init函数中也还保留了对这个接口的兼容），我也一直没搞明白，他这个静态映射的虚拟地址是根据什么规则去定下来的。\r\n不知道博主对这方面有没有研究。"
+ },
+ {
+  "id": "4851",
+  "parent": "4847",
+  "date": "2016-11-08T09:23:11+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@andyshrk：我对ARM32的代码反而没有那么熟悉，呵呵～～不过基本原理是不会变的，在打开MMU之前，可以直接操作UART的物理地址，在打开MMU之后，一定要进行map，然后操作UART的虚拟地址来访问串口。当然，具体的流程可以自己看看代码，我就偷一下懒了，哈哈\r\n\r\nmachine中的map_io接口应该是对io地址空间进行映射。在过去，倾向在这里完成所有io空间的映射，而现在的内核，把这些io空间的映射放到了各个驱动模块中。当然，现在的机制会合理一些，毕竟谁的资源谁管理嘛。"
+ },
+ {
+  "id": "5046",
+  "parent": "0",
+  "date": "2016-12-21T17:36:20+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "这段时间一直跟着Linuxer学习mmu管理，再次读完本节，发表下我对于fixmap的理解或是读书笔记，请linuxer指正。\r\n在内核初始化阶段，内核仅仅映射kernel image & identify map 两个地方的虚拟地址空间。固定映射所需的页表都静态定义在kernel image中，因此可以方便的时行访问，这样可很轻松的映射一些虚拟地址。但是这是对虚拟地址的限制的，虚拟地址不能太大，其所需的PGD描述符应该可以在一个全局的PGD页表中找到，因为全局的页表仅使用一个页来保存,所以fixed map的虚拟地址应该限制在一定范围内。fixed map映射所需要的页表按文章所述应该是静态的存在kernel image bss段.\r\n\r\n以上是个人浅显的理解，不知是否正确，请Linuxer指正。\r\n\r\n另，对于fixed map映射所需要的页表，及其定义能否简单讲解下？谢谢！"
+ },
+ {
+  "id": "5047",
+  "parent": "5046",
+  "date": "2016-12-21T17:38:17+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@electrlife：对于fixed map感觉arm 32中似乎没有使用，至少fdt的映射我没有找到相关的信息？不知是否这样？"
+ },
+ {
+  "id": "5085",
+  "parent": "5047",
+  "date": "2017-01-04T08:56:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：我看手上linux-4.0.5的代码，arm 32也是可以使用fixmap的。"
+ },
+ {
+  "id": "5256",
+  "parent": "0",
+  "date": "2017-02-27T10:42:24+08:00",
+  "author": "timor",
+  "site": "",
+  "text": "有些虚拟地址在编译（compile-time）的时候就固定下来了，而这些虚拟地址对应的物理地址不是固定的，是在kernel启动过程中被确定的.\r\n\r\n---虚拟地址编译的时候就固定下来了,这就话怎么理解？  是在哪里设置的，还是？ \r\n---还有“反正建立kernel image所需要的PGD/PUD/PMD页表都已经静态分配了” 是在什么时候静态分配的。 谢谢。"
+ },
+ {
+  "id": "5266",
+  "parent": "5256",
+  "date": "2017-02-27T19:12:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@timor：---虚拟地址编译的时候就固定下来了,这就话怎么理解？  是在哪里设置的，还是？ \r\n＝＝＝＝＝＝＝＝＝＝＝＝\r\n我们一dtb为例子来说吧：当完成内核编译之后，dtb的虚拟地址是确定的，不存在动态分配的问题，这个固定的虚拟地址就是__fix_to_virt(FIX_FDT)\r\n\r\n---还有“反正建立kernel image所需要的PGD/PUD/PMD页表都已经静态分配了” 是在什么时候静态分配的。\r\n＝＝＝＝＝＝＝＝＝＝＝＝\r\n请参考内核的链接脚本，如下：\r\n......\r\n\tBSS_SECTION(0, 0, 0)\r\n\r\n\t. = ALIGN(PAGE_SIZE);\r\n\tidmap_pg_dir = .;\r\n\t. += IDMAP_DIR_SIZE;\r\n\tswapper_pg_dir = .;\r\n\t. += SWAPPER_DIR_SIZE;\r\n\r\n\t_end = .;\r\n......"
+ },
+ {
+  "id": "6416",
+  "parent": "0",
+  "date": "2017-12-25T09:19:57+08:00",
+  "author": "crystal736",
+  "site": "",
+  "text": "你好：\r\n   有一个问题，在发生tlb miss的时候，会进行tlb充填工作，但是tlb充填时候会通过pgd和虚拟地址找到页表项，但是如果此时页表还没有被分配，是不是会发生page fault？此时的page fault流程是什么呢？"
+ },
+ {
+  "id": "8154",
+  "parent": "6416",
+  "date": "2020-12-11T21:41:51+08:00",
+  "author": "加西亚将军",
+  "site": "",
+  "text": "@crystal736：arm64会发生转换表错误的异常，发生缺页异常分配各级页表的页，然后填充页表项，处理完毕，重新执行发生页错误的指令。"
+ }
+]

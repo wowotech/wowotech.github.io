@@ -1,0 +1,362 @@
+[
+ {
+  "id": "1429",
+  "parent": "0",
+  "date": "2015-03-27T09:20:43+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "赞赞赞！赞完再看！"
+ },
+ {
+  "id": "1485",
+  "parent": "0",
+  "date": "2015-04-09T17:40:28+08:00",
+  "author": "netoohui",
+  "site": "",
+  "text": "同意楼上"
+ },
+ {
+  "id": "1631",
+  "parent": "0",
+  "date": "2015-04-29T11:31:25+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "请教一个问题：\r\n     假设在旧的linux上面，HZ＝100，也就是10ms为周期产生timer irq，那么系统中所有的软件timer的精度只能够到10ms的级别，系统产生timer irq的频率就是一秒有100次。\r\n     换成新的架构，有no hz，tickless的模式，假设系统支持了高精度timer，但是为了调度器考虑，仍然产生了一个hz＝100的hrtimer。 在系统正常运行过程中，假设一段时间内一直有工作的进程在运行，轮不到idle进程运行，那么这段时间内，系统中每秒钟产生100次hrtimer，为调度器使用，另外还会有一些精度更高的比如ns级别的hrtimer也会产生irq，所以对比旧的架构来看，新的架构下面如果系统负荷大的时候，timer中断反而会更多。\r\n     假设系统空闲，变成了idle模式，那么旧的架构下面，如果cpuidle的级别不够深，会每秒被timer irq唤醒100次，几乎就是不能idle。而新的tickless架构下面，在idle之前把sched timer停掉了，因此idle过程中除非有其它hrtimer到期，否则不会被调度器使用的timer唤醒。\r\n请问理解是否正确？谢谢。"
+ },
+ {
+  "id": "1633",
+  "parent": "1631",
+  "date": "2015-04-29T12:26:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：所以对比旧的架构来看，新的架构下面如果系统负荷大的时候，timer中断反而会更多。 \r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n的确，新的内核架构下，timer的中断会更多，但对于高性能的CPU而言，增加的中断次数可以忽略不计的。在旧的架构下，由于不支持高精度timer，因此，原本散布在各个ns时间点上的timer事件都并入到一个10ms的timer 中断event上来，因此中断次数当然比较少。\r\n\r\n请问理解是否正确？\r\n－－－－－－－－－－－－－－\r\n理解基本正确，除了“cpuidle的级别不够深”这句话。在多核架构下，timer硬件往往build in在cpu core上，因此，当cpu进入的idle级别比较深的时候，有可能local timer也进入inactive状态，这导致该硬件timer无法触发timer到期的中断事件。而实际上，cpu idle状态的时候需要硬件timer处于working状态。\r\n这里使用新旧架构有些模糊，更准确的描述是：在有tick的内核中，每个cpu core上的swapper进程在被调度到的时候都会控制本cpu core进入idle状态，无论cpuidle的级别深或者不深，cpu都会每秒被timer irq唤醒100次。当然，如果cpu core定义了多种idle状态并且在较深的状态的时候导致local timer进入inactive状态，这时候，需要其他的手段来解决（tick broadcast framework）timer唤醒问题"
+ },
+ {
+  "id": "1639",
+  "parent": "0",
+  "date": "2015-04-29T14:10:54+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "非常清晰的解答，让我对idle的理解又深了一层，请问cpu local timer在哪种idle情况下会停，在哪种idle模式下仍然运行，这个描述是不是在ARM ARM里面？之前没有仔细读过timer相关的章节，回头要好好研究一下，否则自己的SOC做出来都不知道怎么用。。。  如果有其它参考文档请告知。\r\n再次感谢你的回答。"
+ },
+ {
+  "id": "1650",
+  "parent": "1639",
+  "date": "2015-04-30T00:24:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：cpu idle framework是一个挺复杂的framework，有兴趣可以参考wowo同学的4篇文档，讲的比较清楚。具体如何设计一个SOC的C state（idle state）是和具体的CPU实现相关，ARM并没有规定。"
+ },
+ {
+  "id": "1675",
+  "parent": "1633",
+  "date": "2015-05-03T13:29:09+08:00",
+  "author": "quote",
+  "site": "",
+  "text": "@linuxer：这里的答案和本章内容之间充满着矛盾？\r\n  在内核切换到tickless之后，仍然会创建一个sched timer。如果系统接下来进入了idle模式，这个sched timer在文章介绍是会被停止的，既然停止了这个周期性的timer，那么假设系统在1分钟之内都没有其它timer到期，系统1分钟都不退出idle？\r\nidle线程被执行到的那个瞬间，代表所有其它线程都主动放弃了CPU，都在等待某种信号？是否有可能其它线程只是运行时间过长，被调度器剥夺了CPU资源，从而轮到idle线程暂时运行一下？在我看来，系统中所有的线程，不管它的优先级有多低，也不管高优先级的线程有多霸道一直占着CPU不放，调度器始终会保障低优先级的线程有机会运行一小会的，是吗？如果这种情况存在，那么idle把sched timer彻底停止显然是不合适的，必须有一个全局timer来broadcasting？\r\n   总之文中的那句话“sched timer会被停掉，因此，周期性的HW timer不会再来，这时候将cpu从idle中唤醒的只能是和实际上系统中的hrtimer中的那个最近的超期时间有关” 以及回答里的这句话“无论cpuidle的级别深或者不深，cpu都会每秒被timer irq唤醒100次” 是有矛盾的。"
+ },
+ {
+  "id": "1679",
+  "parent": "1675",
+  "date": "2015-05-03T21:56:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@quote：在内核切换到tickless之后，仍然会创建一个sched timer。如果系统接下来进入了idle模式，这个sched timer在文章介绍是会被停止的，既然停止了这个周期性的timer，那么假设系统在1分钟之内都没有其它timer到期，系统1分钟都不退出idle？ \r\n-----------------------------------------------------\r\n如果也没有其他中断触发的情况下（例如用户按下按键、以太网收到数据），那么是的，系统1分钟都不退出idle\r\n\r\nidle线程被执行到的那个瞬间，代表所有其它线程都主动放弃了CPU，都在等待某种信号？\r\n------------------------------------------------------------\r\n是的。当然我理解你这里说的“信号”包括：等待signal、阻塞在I/O上、等待timer到期等等\r\n\r\n是否有可能其它线程只是运行时间过长，被调度器剥夺了CPU资源，从而轮到idle线程暂时运行一下？\r\n-----------------------------------------------\r\n不会，idle进程不参与时间片的运算，只要有进程是runnable的（更准确的说法是对于n个cpu core的系统，只要有n个进程是runnable的），idle是不可能运行到的。\r\n\r\n在我看来，系统中所有的线程，不管它的优先级有多低，也不管高优先级的线程有多霸道一直占着CPU不放，调度器始终会保障低优先级的线程有机会运行一小会的，是吗？\r\n---------------------------------------------------------\r\n不是，对于实时进程，只要它是可执行状态，那么normal进程是不会有机会执行到的。调度算法不是一两句可以将清楚的，我就不赘述了。\r\n\r\n总之文中的那句话“sched timer会被停掉，因此，周期性的HW timer不会再来，这时候将cpu从idle中唤醒的只能是和实际上系统中的hrtimer中的那个最近的超期时间有关” 以及回答里的这句话“无论cpuidle的级别深或者不深，cpu都会每秒被timer irq唤醒100次” 是有矛盾的。\r\n------------------------------------------------------------\r\n我的原文是这样的：在有tick的内核中，每个cpu core上的swapper进程在被调度到的时候都会控制本cpu core进入idle状态，无论cpuidle的级别深或者不深，cpu都会每秒被timer irq唤醒100次。\r\n我这里强调的是“在有tick的内核中”，也就是说没有配置NO HZ的情况。\r\n对于dynamic tick，当没有执行idle进程的时候，其tick的情况和传统的周期性tick内核行为是一致的，而调度到idle进程执行的时候，会停掉sched timer，从而禁止了周期性tick的到来"
+ },
+ {
+  "id": "1818",
+  "parent": "0",
+  "date": "2015-05-16T09:04:58+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "请教几个问题：\r\n在目前的嵌入式linux里面，特别是手机，基本都用到了tickless，并且支持hrtimer。请问这个必要性在哪里？\r\n假设一个平台只支持periodic的timer，不支持oneshot的timer，那么是否意味着它不能使用tickless，也不能使用hrtimer，请问对这样的平台来说，有什么劣势，或者说有什么具体的驱动和应用程序会不能运行？\r\n对于hrtimer，假设底层硬件支持了，并且软件里面也用上了，但是由于硬件的原因导致它不准，至少到不了ns级别的准确度，请问会发生什么不良后果？有什么具体的驱动和应用程序是依赖于ns级别的hrtimer的吗？"
+ },
+ {
+  "id": "1822",
+  "parent": "1818",
+  "date": "2015-05-18T09:22:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：在目前的嵌入式linux里面，特别是手机，基本都用到了tickless，并且支持hrtimer。请问这个必要性在哪里？\r\n------------------------------------\r\ntickless可以降低功耗（不需要处理不必要的tick中断），对嵌入式平台应该还是可以带来不错的performance\r\nhrtimer主要和real time应用相关\r\n\r\n假设一个平台只支持periodic的timer，不支持oneshot的timer，那么是否意味着它不能使用tickless，也不能使用hrtimer\r\n－－－－－－－－－－－－－－－－－－－－－\r\n是的\r\n\r\n请问对这样的平台来说，有什么劣势，或者说有什么具体的驱动和应用程序会不能运行？\r\n－－－－－－－－－－－－－－－－－－－－－－\r\n不会影响程序和驱动的运行，当然指功能层面，性能就不保证了。\r\n\r\n\r\n对于hrtimer，假设底层硬件支持了，并且软件里面也用上了，但是由于硬件的原因导致它不准，至少到不了ns级别的准确度，请问会发生什么不良后果？有什么具体的驱动和应用程序是依赖于ns级别的hrtimer的吗？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n如果驱动软件需要控制几个ns的时序，那么多半需要HW来控制。我接触过一个RF信号处理的系统，对时间的精度要求很高，因此HW提供了一个特别的器件，这个器件是可编程的，一旦触发执行，所有对时间要求高的那个执行序列由那个硬件控制器按照之前驱动软件已经编好的程序来控制硬件动作。"
+ },
+ {
+  "id": "1823",
+  "parent": "1822",
+  "date": "2015-05-18T09:51:57+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：所以即使不能支持hrtimer，wifi，bt，hdmi，display，audio，微信，浏览器，这些常用的驱动程序和应用程序应该都可以运行良好？有没有特定的场景，由于hrtimer不支持导致它们运行的性能会下降？\r\nlinux的hrtimer是不是为了服务器级别的驱动和应用程序创建的？"
+ },
+ {
+  "id": "1828",
+  "parent": "1823",
+  "date": "2015-05-18T11:26:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：从timer的角度看应用程序和驱动，其实只是有两种，一种是有real time需求的，一种是没有。没有hrtimer的支持，那么timer的精度受限于tick。\r\n假设hz=100，也就是说tick的精度是10ms，无论是驱动（调用timer接口）还是应用程序（posix clock and timer接口），设定10ms以下的精度，例如2ms，那么实际上这个timer由于精度不够，不可能在2ms秒后触发，而是在10ms后触发。如果支持hrtimer，那么2ms后即可以触发，并启动处理过程，当然，对于用户空间的程序还存在调度问题，这是另外一个话题了。\r\n\r\n我觉得hrtimer是不是为了服务器级别的驱动和应用程序无关，只是和real time application相关，而这样的应用是不分服务器或者嵌入式平台的"
+ },
+ {
+  "id": "1862",
+  "parent": "0",
+  "date": "2015-05-25T15:13:04+08:00",
+  "author": "Jacky",
+  "site": "",
+  "text": "在CFS scheduler 中periodic 的tick 也是需要的么？"
+ },
+ {
+  "id": "1863",
+  "parent": "1862",
+  "date": "2015-05-26T09:02:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Jacky：CFS scheduler当然需要周期性tick。无论哪种调度器，只要考虑时间因素（该进程的timeslice），并且以tick为单位统计进程的时间信息，那么它就需要周期性的tick。"
+ },
+ {
+  "id": "2477",
+  "parent": "0",
+  "date": "2015-08-19T16:06:30+08:00",
+  "author": "huangzhongmin",
+  "site": "",
+  "text": "楼主，请教个问题，有空的话帮忙解答下,非常感谢：\r\nHrtimer在系统睡眠的时候能唤醒系统么，如果可以，那么用RTC模块的定时器的作用是什么，好像没必要（除了关机定时）？"
+ },
+ {
+  "id": "2479",
+  "parent": "2477",
+  "date": "2015-08-19T16:13:07+08:00",
+  "author": "huangzhongmin",
+  "site": "",
+  "text": "@huangzhongmin：我看Android实现闹钟是这样的：\r\n1.系统唤醒情况下用hrtimer定时器\r\n2.suspend的时候把最近的到期时间写到RTC HW上去，时间到了唤醒系统\r\n如果hrtimer可以唤醒系统，好像第2步骤就没意义了\r\n\r\n谢谢。"
+ },
+ {
+  "id": "2497",
+  "parent": "1863",
+  "date": "2015-08-27T21:27:20+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@linuxer：那CFS还是和时间片轮转法一样在每个tick检查进程切换（检查进程时间片是否超时）？还是直接通过虚拟运行时间对于的实际运行时间直接设定hrtimer，在理论的虚拟时间运行完后再从rq中寻找下个运行进程？"
+ },
+ {
+  "id": "2500",
+  "parent": "2477",
+  "date": "2015-08-28T09:30:31+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@huangzhongmin：抱歉，漏掉您的问题了，有的时候评论滚动太快的时候就会错过一些问题。\r\n\r\nHrtimer在系统睡眠的时候能唤醒系统么？\r\n－－－－－－－－－－－－－－－－－－－－－\r\n一般而言是不可以的，主要看hrtimer基于的那个clockevent device的power domain，大部分的系统设计都会在系统睡眠的时候都是会关闭（或者让其进入低功耗状态）大部分的硬件block（包括构建hrtimer对应的HW timer），而保留很小一部分的HW block（主要是RTC以及一些做为wakeup source的IO）处于工作状态。\r\n\r\nRTC模块的定时器的作用是什么？\r\n－－－－－－－－－－－－－－－－－－－－\r\n我想你问的是alarm timer，alarm timer是基于RTC的，所有基于RTC的定时器在系统关机（或者叫做睡眠）仍然是可以正常触发，唤醒系统"
+ },
+ {
+  "id": "2501",
+  "parent": "2497",
+  "date": "2015-08-28T09:31:18+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@passerby：这个问题我需要看调度器代码之后再回答你。"
+ },
+ {
+  "id": "2530",
+  "parent": "2497",
+  "date": "2015-09-05T15:58:51+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@passerby：CFS 没有时间片的概念，scheduler不会事先分配时间片给task，时间系统对CFS的功能就是计时用。至于何时切换task，是看“相互追赶的速度”，为了不让速度慢的task被rq的虚拟时间被碾压死，task必须被执行"
+ },
+ {
+  "id": "3032",
+  "parent": "0",
+  "date": "2015-11-11T18:11:11+08:00",
+  "author": "sched_fork",
+  "site": "",
+  "text": "看懂代码不算什么，把学到的东西用简单的语言描述出来才是真正的高手。\r\n我也偶尔有写一些博文的想法，但是总是各样的原因（工作忙，要学习英语等等）没有写下一些笔记。\r\n向博主致敬"
+ },
+ {
+  "id": "3035",
+  "parent": "3032",
+  "date": "2015-11-12T10:00:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@sched_fork：非常同意您的看法，脑袋中的东西来的快去的也快（我自己写的文章半年之后再看都觉得非常的陌生，当然，仔细阅读一遍之后还是能很快回到大脑中），因此最好还是深思熟虑之后，整理形成文档。而且，由于对事物的理解是螺旋式上升的，因此，好的文档往往是不断的修改，打磨才能发出智慧的光芒。"
+ },
+ {
+  "id": "4040",
+  "parent": "0",
+  "date": "2016-06-03T09:58:54+08:00",
+  "author": "xie1230",
+  "site": "",
+  "text": "@linuxer 请问一下时间子系统中的alarmtimer和driver下的rtc目录，两者采用的框架不同，这两者都是驱动rtc硬件的吗？两者有什么区别？分别在什么情况下使用呢？"
+ },
+ {
+  "id": "4044",
+  "parent": "4040",
+  "date": "2016-06-06T09:10:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@xie1230：比较alarmtimer和rtc其实不太适合，因为alarmtimer底层就是调用rtc的接口，也就是说alarmtimer是基于rtc的。如果要比较，我觉得hrtimer比较适合和alarmtimer比较。这两个模块都是向内核的其他模块提供timer的服务，当然，除了内核模块，应用程序也有类似的需求，因此内核又通过POSIX接口向用户空间提供了各种clock和timer服务。\r\n\r\n从功能角度看，这两种timer完全类似，除了电源管理方面的特性。对于hrtimer而言，当系统进入电源管理状态的时候，hrtimer是不会触发的，而alarmtimer不会收到系统电源管理状态的影响。一个典型的关于alarmtimer的应用就是：关机闹钟。"
+ },
+ {
+  "id": "4104",
+  "parent": "0",
+  "date": "2016-06-17T11:10:58+08:00",
+  "author": "zcjfish",
+  "site": "",
+  "text": "请问下楼主， 高精度timer为何一定要使用oneshot mode呢？"
+ },
+ {
+  "id": "4105",
+  "parent": "4104",
+  "date": "2016-06-17T11:24:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zcjfish：可以反过来想想，如果用周期性timer实现高精度，要怎么做？结果会怎样？"
+ },
+ {
+  "id": "5632",
+  "parent": "4105",
+  "date": "2017-06-07T10:07:10+08:00",
+  "author": "江南书生",
+  "site": "http://no",
+  "text": "@wowo：老板，你好!\r\n    请问，\"高精度\"的意思是什么呀？多少频率才算高精度呢？"
+ },
+ {
+  "id": "6404",
+  "parent": "0",
+  "date": "2017-12-21T13:32:33+08:00",
+  "author": "barry-shang",
+  "site": "",
+  "text": "@wowo 我在看在idle函数中停掉周期时钟时，选择下一个醒来的定时器时间，这段注释我有点不是很懂，注释说如果处于高精度模式，则只把时间轮中的定时器考虑进入进入，但高分辨录定时器就不用考虑在内吗？\r\n\t\t/*\r\n\t\t * Get the next pending timer. If high resolution\r\n\t\t * timers are enabled this only takes the timer wheel\r\n\t\t * timers into account. If high resolution timers are\r\n\t\t * disabled this also looks at the next expiring\r\n\t\t * hrtimer.\r\n\t\t */\r\n\t\tnext_tmr = get_next_timer_interrupt(basejiff, basemono);"
+ },
+ {
+  "id": "6407",
+  "parent": "6404",
+  "date": "2017-12-22T16:31:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@barry-shang：哈哈，这个问题又一次被提出来了，很有趣，看来很多人卡在这里。\r\n我在/timer_subsystem/clock-id-in-linux.html这个文章的下面有详尽的解释，可以参考一下。"
+ },
+ {
+  "id": "6414",
+  "parent": "6407",
+  "date": "2017-12-23T11:49:32+08:00",
+  "author": "barry-shang",
+  "site": "",
+  "text": "@linuxer：@wowo 看懂了，多谢！"
+ },
+ {
+  "id": "6506",
+  "parent": "2500",
+  "date": "2018-01-28T11:35:25+08:00",
+  "author": "allan",
+  "site": "",
+  "text": "@linuxer：linuxer，您好：\r\n   刚看了你这里的答复，有个疑问，如果hrtimer无法唤醒系统，那么系统进入睡眠很长时间的话，这些hrtimer都已经超时了，不就不能准确定时了吗？\r\n\r\n谢谢"
+ },
+ {
+  "id": "6508",
+  "parent": "6506",
+  "date": "2018-01-29T19:12:20+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@allan：如果你的定时器需要在系统suspend唤醒系统，那么hrtime也许并不适合，你可以考虑使用alarmtimer。"
+ },
+ {
+  "id": "6509",
+  "parent": "6508",
+  "date": "2018-01-29T19:56:37+08:00",
+  "author": "allan",
+  "site": "",
+  "text": "@linuxer：多谢回复：\r\n其实我不理解为什么hrtimer不能唤醒系统。。系统suspend不会把最近的hrtimer设置到底HW timer模块吗(clock event device)，为什么不能唤醒系统..."
+ },
+ {
+  "id": "6514",
+  "parent": "6509",
+  "date": "2018-01-30T09:06:06+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@allan：其实这和整个系统的电源管理相关，一般而言，当系统进入suspend的时候，绝大多数系统中的HW block都进入off状态，不能工作了，只有一小块“电源管理模块”能够存活，这个小模块仅仅能响应很少的HW 信号，唤醒系统。一般而言，clock event device所在的domain都不属于这个“电源管理模块”，因此clock event device一般都不能唤醒系统。"
+ },
+ {
+  "id": "6519",
+  "parent": "0",
+  "date": "2018-01-31T20:08:24+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "您好，linuxer \r\n请教个问题： 在tickless的回调函数里面 (tick_nohz_handler)\r\n下面第一行把周期的hrtimer重新挂人红黑树可以理解，但为什么第二行这里要重新设置 tick event，不是多余吗？另外这里怎么能保证现在设置的sched_timer是最近要触发的这个hrtimer，这样不会把已经在 clock event device的 event覆盖吗\r\n1\thrtimer_forward(&ts->sched_timer, now, tick_period);\r\n2\ttick_program_event(hrtimer_get_expires(&ts->sched_timer), 1);\r\n\r\n谢谢"
+ },
+ {
+  "id": "6521",
+  "parent": "6519",
+  "date": "2018-01-31T20:36:22+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "@hzm：应该是我对整个流程还没理解清楚，hrtimer_interrupt具体是怎么调用到的呢，tick device的回调函数没调用到它，从代码看好像也不是在timer中断调用到的"
+ },
+ {
+  "id": "6522",
+  "parent": "6521",
+  "date": "2018-01-31T21:12:51+08:00",
+  "author": "hzm",
+  "site": "",
+  "text": "@hzm：明白了， tick_nohz_handler和hrtimer_interrupt只会取一个，一般取后者.。代码还是要看详细^^"
+ },
+ {
+  "id": "6590",
+  "parent": "0",
+  "date": "2018-03-05T12:06:58+08:00",
+  "author": "冬瓜哥",
+  "site": "",
+  "text": "能否请教一下，如果使用one-shot模式+sched_timer，在update_wall_time的时候，会不会导致wall time走时不准，比如有两个hrtimer，分别为500ns，800ns，500ns中断到来之后，handler的代码自身运行时间假设花费了100ns，但是handler并没有将这100ns算进去，而是继续programm next event （800-500），将300ns写入硬件定时器，下一次又会出现这种情况，那么随着时间推移，wall time就会变得越来越慢，而这种误差应该是不可忽略的。这是否是个问题？如果是，怎么解决的？多谢多谢！！"
+ },
+ {
+  "id": "6591",
+  "parent": "0",
+  "date": "2018-03-05T13:04:41+08:00",
+  "author": "冬瓜哥",
+  "site": "",
+  "text": "能否再请教另一个问题。多谢！如果使用了hrtimer，同时没有使用noHZ，那么此时必须将外部硬件的周期配置为非常低吧，也就是中断频率会非常高，系统卡死。所以是不是可以有一个不成文结论：启用了hrtimer，就必须使用noHZ？多谢！！"
+ },
+ {
+  "id": "6592",
+  "parent": "0",
+  "date": "2018-03-05T13:37:23+08:00",
+  "author": "冬瓜哥",
+  "site": "",
+  "text": "再请教一个问题，多谢！对于x86 cpu，当apic local timer被setup_APIC_timer( )调用了clock_event_register_device( )注册了tick device之后，之前的hpet或者pit初始化时被注册的tick dev就会被disable（mode被设置成UNUSED）。但是为何在很多系统上，cat /proc/interrupts，依然会发现irq0，也就是timer中断，依然会被不断产生，似乎并没有被disable？同时LOC 中断也在产生。多谢！"
+ },
+ {
+  "id": "6593",
+  "parent": "0",
+  "date": "2018-03-05T13:39:20+08:00",
+  "author": "冬瓜哥",
+  "site": "",
+  "text": "能否再请教一个问题。如果设置了nohz模式，那么当注册一个tick device之后，按理说应该将其设置为one-shot模式。但是我在tick_setup_deivce( )的下游，并没有发现任何代码来判断类似ifdef CONFIG_NO_HZ，然后决定是否将其设置为one shot模式。能否赐教一二？多谢！"
+ },
+ {
+  "id": "6595",
+  "parent": "6593",
+  "date": "2018-03-06T09:51:01+08:00",
+  "author": "冬瓜哥",
+  "site": "",
+  "text": "@冬瓜哥：又看了一下代码。找到位置了，抱歉打扰。在tick_nohz_switch_to_nohz里。多谢。"
+ },
+ {
+  "id": "6597",
+  "parent": "0",
+  "date": "2018-03-06T14:57:54+08:00",
+  "author": "冬瓜哥",
+  "site": "",
+  "text": "再请教一下，多谢！tick_handle_periodic和tick_nohz_handler做的事情好像是基本相同，前者也可以适用于one shot模式时reprogramm硬件寄存器，但是为何要分立出这两个handler，百思不得其解。多谢！"
+ },
+ {
+  "id": "7685",
+  "parent": "0",
+  "date": "2019-10-06T19:52:29+08:00",
+  "author": "wowo的小迷弟",
+  "site": "",
+  "text": "同问：多少频率算是高精度时钟"
+ },
+ {
+  "id": "8670",
+  "parent": "0",
+  "date": "2022-08-25T17:37:57+08:00",
+  "author": "影",
+  "site": "",
+  "text": "有没有办法在申请高精度定时器时，将该定时器绑定到特定的CPU核上？"
+ }
+]

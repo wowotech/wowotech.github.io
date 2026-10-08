@@ -1,0 +1,21 @@
+{{ $t := htmlEscape .c.text }}
+{{/* normalize_links.py 已把评论里指向原站的绝对地址改成站内路径，这里把站内 .html 路径
+    渲染成可点链接，再把外站 http(s) 地址变成链接。
+    前置字符用「排除 URL 字符」判断：中文正文里路径通常紧跟汉字且没有空格，
+    同时这样不会误命中外链 href 里已有的路径。顺序上先相对后绝对，避免嵌套链接。 */}}
+{{ $t = replaceRE `(^|[^A-Za-z0-9_\-./:%=&?#"'<>=])(/(?:[A-Za-z0-9_\-]+/)*[A-Za-z0-9_\-]+\.html)` `${1}<a href="${2}">${2}</a>` $t }}
+{{ $t = replaceRE `(https?://[^\s<>"]+)` `<a href="$1" rel="nofollow noopener">$1</a>` $t }}
+<li class="comment" id="c{{ .c.id }}">
+  <p class="comment-head">
+    <strong>{{ .c.author }}</strong>
+    {{ with .c.site }}<a class="comment-site" href="{{ . }}" rel="nofollow noopener">主页</a>{{ end }}
+    <time datetime="{{ .c.date }}">{{ substr .c.date 0 10 }}</time>
+  </p>
+  <div class="comment-body">{{ $t | safeHTML }}</div>
+  {{ $kids := where $.all "parent" .c.id }}
+  {{ with $kids }}
+  <ul class="comment-children">
+    {{ range . }}{{ partial "comment.html" (dict "c" . "all" $.all) }}{{ end }}
+  </ul>
+  {{ end }}
+</li>

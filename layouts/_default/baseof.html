@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+{{ partial "head.html" . }}
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="site-title" href="/">{{ site.Title }}</a>
+    <nav class="site-nav">
+      {{ range (index hugo.Data.site "nav") }}
+        <a href="{{ .url }}">{{ .name }}</a>
+      {{ end }}
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+{{ block "main" . }}{{ end }}
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>{{ site.Params.description }}</p>
+    <p class="muted">
+      本站为原 www.wowotech.net 的静态存档，发布于 {{ now.Year }}。
+      {{ with site.Params.repoURL }}源码与数据：<a href="{{ . }}">{{ . }}</a> · {{ end }}
+      <a href="/archive/">全站数据存档</a>
+    </p>
+  </div>
+</footer>
+</body>
+</html>

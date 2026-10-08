@@ -1,0 +1,250 @@
+[
+ {
+  "id": "1290",
+  "parent": "0",
+  "date": "2015-03-04T19:49:55+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "struct clock_event_device中的broadcast这个callback函数是和clock event广播有关。在per CPU 的local timer硬件无法正常运作的时候，需要一个独立于各个CPU的timer硬件来作为broadcast clock event device。在这种情况下，它可以将clock event广播到所有的CPU core，以此推动各个CPU core上的tick device的运作\r\n\r\n1：这个broadcase clock event 是register_persistent_clock 这里的那个persistent的 clock吗？\r\n2：这个broadcase clock event 跟setup_sched_clock 这个schedule 的clock 有什么关系呢？\r\n3：这个broadcase clock event 对精度有要求吗？"
+ },
+ {
+  "id": "1299",
+  "parent": "1290",
+  "date": "2015-03-05T22:44:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：目前我只能先回答你第一个问题：\r\n这个broadcase clock event 是register_persistent_clock 这里的那个persistent的 clock吗？ \r\n--------------------------------------\r\n不是，persistent clock是独立于CPU的一个clock，当SOC进入低功耗状态，很可能global timer和per cpu timer都已经停止工作了，这时候唯一能以来的就是RTC的计时了，因此，register_persistent_clock 多半是指的RTC的那个clock\r\n\r\n另外两个我需要再阅读一下代码，过几天再回答你吧。"
+ },
+ {
+  "id": "1301",
+  "parent": "1299",
+  "date": "2015-03-06T10:26:54+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：遇到一款比较特殊的芯片\r\npersistent clock 他不用RTC，而是用的一个开机之后就不会掉电的timer，进入低功耗也照样工作。我看了一下，这个persistent clock 就是用clocksource_mmio_init 初始化的一个clocksource。\r\n\r\n至于不用RTC,我的猜测，因为他的RTC是在PMIC上面，AP跟PMIC通信有delay，这个不掉点的timer就在AP这边，直接通过寄存器访问，速度快。"
+ },
+ {
+  "id": "1305",
+  "parent": "1301",
+  "date": "2015-03-06T11:32:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：奇葩总会有的，呵呵～～～对于大部分的SOC，timer都是build in在SOC上，而且随着SOC进入sleep状态而被关闭。anyway，persistent clock应该是和系统设计有关的，具体问题具体分析。"
+ },
+ {
+  "id": "1352",
+  "parent": "1301",
+  "date": "2015-03-18T15:50:02+08:00",
+  "author": "~零~",
+  "site": "",
+  "text": "@tigger：是高通的芯片吧"
+ },
+ {
+  "id": "1353",
+  "parent": "1352",
+  "date": "2015-03-18T16:53:56+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@~零~：haha，你猜！"
+ },
+ {
+  "id": "1439",
+  "parent": "1353",
+  "date": "2015-03-29T13:27:26+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@tigger：我猜不是，我在代码中看到高通也是用RTC"
+ },
+ {
+  "id": "1440",
+  "parent": "1439",
+  "date": "2015-03-29T14:18:31+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@passerby：高通的芯片架构是我现在接触的几款芯片中感觉最好的。当然我详细了解的也没有几颗。不像有些家，芯片有bug，全靠软件擦屁股^ _ ^"
+ },
+ {
+  "id": "1449",
+  "parent": "0",
+  "date": "2015-04-01T11:04:33+08:00",
+  "author": "tianhello",
+  "site": "",
+  "text": "你好，关于时间精度的问题我想问一下。如果要写一个timer的驱动，那么在这个驱动程序中，timer的精度大小是在驱动程序里自己定义的吗？这个精度是随便写一个数还是和其他的什么元素相关？\r\n希望您能抽空帮小菜鸟解决一下疑问。"
+ },
+ {
+  "id": "1460",
+  "parent": "1449",
+  "date": "2015-04-01T19:15:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tianhello：timer的精度大小是在驱动程序里自己定义的吗？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－\r\n你所说的timer的精度是指clock event device结构中的那个rating吗？"
+ },
+ {
+  "id": "1463",
+  "parent": "1460",
+  "date": "2015-04-01T21:38:24+08:00",
+  "author": "tianhello",
+  "site": "",
+  "text": "@linuxer：对，就是clock event device那个结构体的精度，我看的linux版本是3.10版的。"
+ },
+ {
+  "id": "1464",
+  "parent": "1463",
+  "date": "2015-04-01T23:15:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tianhello：rating是描述clock source的精度的，毫无疑问，一个输入频率是20MHz的counter精度一定是大于10ms一个cycle的counter。关于rating，内核代码的注释已经足够了，如下：\r\n\r\n        1-99: Unfit for real use\r\n            Only available for bootup and testing purposes.\r\n        100-199: Base level usability.\r\n            Functional for real use, but not desired.\r\n        200-299: Good.\r\n            A correct and usable clocksource.\r\n        300-399: Desired.\r\n            A reasonably fast and accurate clocksource.\r\n        400-499: Perfect\r\n            The ideal clocksource. A must-use where  available. \r\n\r\nrating当然不能随便写一个，还是要和该timer的精度关联起来。"
+ },
+ {
+  "id": "1468",
+  "parent": "1464",
+  "date": "2015-04-02T10:01:54+08:00",
+  "author": "tianhello",
+  "site": "",
+  "text": "@linuxer：这个意思是说，一个由20MHz时钟驱动的时钟源，它的精度是50ns，所以它的精度大于10ms的时钟源。\r\n内核代码注释我有看，但是不明白这里的1-99,100-199这些数字是怎么来的，它是由频率算出来的吗？\r\n比如说频率为20MHz，那么它的精度就是10，这里的10是在1-99这个范围里的吗？"
+ },
+ {
+  "id": "1476",
+  "parent": "1468",
+  "date": "2015-04-02T23:19:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tianhello：好像也没有直接的关系，不过系统中的HW timer也不会太多，可以根据具体情况具体分配rating。"
+ },
+ {
+  "id": "1478",
+  "parent": "1476",
+  "date": "2015-04-04T00:57:18+08:00",
+  "author": "tianhello",
+  "site": "",
+  "text": "@linuxer：好的，thank you"
+ },
+ {
+  "id": "2594",
+  "parent": "0",
+  "date": "2015-09-16T18:18:50+08:00",
+  "author": "andyshrk",
+  "site": "",
+  "text": "请教下，max_delta_ticks min_delta_ticks这两个值是怎么确定的？\r\n对于32bit的timer来说，按我的理解，最新可以设置的值就是1，最大可以设置的值是0xffffffff\r\n可是，我看到好多驱动里面都是设置的是最小0xf，最大0xffffffff\r\n这个是什么原因呢？"
+ },
+ {
+  "id": "2596",
+  "parent": "2594",
+  "date": "2015-09-17T09:14:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@andyshrk：max_delta_ticks很好理解，系统的HW timer是32个bit的话，最大就是0xffffffff，按理说，硬件timer的最小精度是1，min_delta_ticks应该是1，但是，如果设定为1的话，表示系统可以分辨的时间精度非常高。我们举一个例子：对于clock input是13M的HW timer，一个cycle就是1/13M ＝ 77ns，如果min_delta_ticks设定是1，说明系统可以分辨大约80ns的time slice。系统中如果有两个hrtimer，trigger的时间相隔100ns，那么系统会为这两个hrtimer产生两次中断，分别在不同的时间点产生clock event，并调用hrtimer的callback函数。时间精度高当然好，但是从而带来的负作用就是产生的event事件比较多，从而影响了系统的性能。如果min_delta_ticks提高到0xf，时间的精度（是指clockevent trigger event的时间精度）变成1.2ms，也就是意味着超期时间比较近的hrtimer可以一并处理（clockevent只trigger一次），较少的trigger疑问较少的中断次数以及较少代码执行，CPU节省出来可以做更多的事情。"
+ },
+ {
+  "id": "3254",
+  "parent": "0",
+  "date": "2015-12-17T10:04:28+08:00",
+  "author": "bubble",
+  "site": "",
+  "text": "void clockevents_register_device(struct clock_event_device *dev) \r\n { \r\n      ......\r\n    list_add(&dev->list, &clockevent_devices); －－－－加入clock event设备全局列表 \r\n    tick_check_new_device(dev); －－－－－－－－－－－－－－－－－－－－－－－（3） \r\n    clockevents_notify_released(); －－－－－－－－－－－－－－－－－－－－－－（4） \r\n\r\n } \r\n根据描述(4)在clockevents_notify_released函数中，会将old clock event device重新挂入clockevent_devices，并调用tick_check_new_device函数。\r\n我的疑问是：为什么在这个注册函数里面，要clockevent_released链表中的clockevent都调用tick_check_new_device函数？按理来说clockevent_released链表中的clockevent应该是在优先匹配的时候被比下去了的。"
+ },
+ {
+  "id": "3257",
+  "parent": "3254",
+  "date": "2015-12-17T21:40:10+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@bubble：clockevents_lock保护了clockevent_devices和clockevents_released这两个链表之间clockevent device的插入，摘下等操作，但是不会阻止对clock_event_device这个数据结构中各个成员的修改，也许在上面步骤（3）中切换clock event device之后，以及在从clockevents_released摘下设备，插入到clockevent_devices之间，很多事情发生了，因此，再次调用tick_check_new_device。"
+ },
+ {
+  "id": "3262",
+  "parent": "3257",
+  "date": "2015-12-21T10:21:13+08:00",
+  "author": "bubble",
+  "site": "",
+  "text": "@linuxer：哦，这样啊！\r\n不好意思答复的比较晚，谢谢！(*^__^*)"
+ },
+ {
+  "id": "3769",
+  "parent": "2596",
+  "date": "2016-04-01T15:54:22+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@linuxer：1.2ms ->1.2us，^_^"
+ },
+ {
+  "id": "3770",
+  "parent": "1468",
+  "date": "2016-04-01T15:58:35+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@tianhello：rating其实是个经验值，不经和timer的频率有关，还和timer的属性有关。cpu-local-timer（PPI中断）的rating要比SPI的timer高，而且频率越高rating也会高。"
+ },
+ {
+  "id": "3771",
+  "parent": "1353",
+  "date": "2016-04-01T16:01:25+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@tigger：你是再说海思的芯片全是bug吗？呵呵"
+ },
+ {
+  "id": "3773",
+  "parent": "3769",
+  "date": "2016-04-01T17:36:29+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@bsp：笔误了，多谢指正，^_^"
+ },
+ {
+  "id": "3817",
+  "parent": "3257",
+  "date": "2016-04-09T17:54:38+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "@linuxer：那如果再次调用tick_check_new_device 又发生了修改，那么不是陷入无休止的循环往复了？"
+ },
+ {
+  "id": "4393",
+  "parent": "3254",
+  "date": "2016-08-13T11:53:18+08:00",
+  "author": "fenghusthu",
+  "site": "",
+  "text": "@bubble：有可能其他cpu摘下的clock_event_device在这个cpu还可以再抢救一下"
+ },
+ {
+  "id": "6895",
+  "parent": "0",
+  "date": "2018-08-16T11:34:44+08:00",
+  "author": "薛文旺",
+  "site": "",
+  "text": "“ 3、配置并注册clock event device\r\n         是上面两个接口函数的综合体，这里不再详细描述。 ”是指哪个函数？"
+ },
+ {
+  "id": "6898",
+  "parent": "6895",
+  "date": "2018-08-16T19:16:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@薛文旺：clockevents_config和clockevents_register_device"
+ },
+ {
+  "id": "6900",
+  "parent": "6898",
+  "date": "2018-08-17T17:25:00+08:00",
+  "author": "薛文旺",
+  "site": "",
+  "text": "@linuxer：最后说明一下哪个函数是这两个的综合体"
+ },
+ {
+  "id": "6901",
+  "parent": "6900",
+  "date": "2018-08-20T09:39:36+08:00",
+  "author": "hahaha",
+  "site": "",
+  "text": "@薛文旺：函数名是：clockevents_config_and_register"
+ },
+ {
+  "id": "6954",
+  "parent": "0",
+  "date": "2018-09-14T14:38:18+08:00",
+  "author": "tao",
+  "site": "",
+  "text": "请问smp中多个核，一个核进入了wfi，spi中断会导致这个核唤醒么，local timer需要是ppi中断吗，对于这块有点理不清，看目前在用的板子几个timer都是spi中断，这样怎么让各个核的tick相互独立，wfi的时候不会被其他核的tick唤醒。。"
+ }
+]

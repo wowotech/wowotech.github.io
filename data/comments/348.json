@@ -1,0 +1,66 @@
+[
+ {
+  "id": "6183",
+  "parent": "0",
+  "date": "2017-11-08T10:38:50+08:00",
+  "author": "肤了个浅",
+  "site": "",
+  "text": "去掉DEBUG这个宏之后，dev_dbg这个函数还会编译进去吗？"
+ },
+ {
+  "id": "6187",
+  "parent": "6183",
+  "date": "2017-11-09T18:19:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@肤了个浅：不会了，你可以去看代码:-)"
+ },
+ {
+  "id": "7407",
+  "parent": "0",
+  "date": "2019-05-10T19:46:25+08:00",
+  "author": "L",
+  "site": "",
+  "text": "我在linux的顶层Makefile中\r\nKBUILD_CFLAGS 后添加 -DDEBUG\r\n由于linux里面的c文件有很多定义了DEBUG，编译时会报重复定义DEBUG的错误，怎么比较好的解决呢，谢谢"
+ },
+ {
+  "id": "7449",
+  "parent": "7407",
+  "date": "2019-05-31T13:39:59+08:00",
+  "author": "gongcm",
+  "site": "",
+  "text": "@L：直接在顶层makefile中 加上 KCFLAGS += -DDEBUG"
+ },
+ {
+  "id": "7526",
+  "parent": "7449",
+  "date": "2019-07-10T10:17:38+08:00",
+  "author": "uxer",
+  "site": "",
+  "text": "@gongcm：在kernel/Makefile中，加入KCFLAGS += -DDEBUG，还是会报错，重复定义DEBUG"
+ },
+ {
+  "id": "7537",
+  "parent": "0",
+  "date": "2019-07-17T21:42:33+08:00",
+  "author": "Jere",
+  "site": "",
+  "text": "@wowo，您好，\r\n\r\n我在在kernel/Makefile中，加入KCFLAGS += -DDEBUG，然后make编译出zImage，烧到板子里，启动会停在starting kernel就没任何打印了，不加KCFLAGS += -DDEBUG的zImage可以正常启动。您有没有遇到这种情况？\r\n谢谢"
+ },
+ {
+  "id": "7573",
+  "parent": "7537",
+  "date": "2019-08-07T11:28:04+08:00",
+  "author": "大鱼",
+  "site": "",
+  "text": "@Jere：打印太多了？"
+ },
+ {
+  "id": "7642",
+  "parent": "7526",
+  "date": "2019-09-03T17:52:03+08:00",
+  "author": "EP",
+  "site": "",
+  "text": "@uxer：KBUILD_CFLAGS   += -w\r\n但一般打印太多，开机卡死，最好不要在顶层的Makefile中添加"
+ }
+]

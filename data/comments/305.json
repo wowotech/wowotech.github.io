@@ -1,0 +1,370 @@
+[
+ {
+  "id": "4050",
+  "parent": "0",
+  "date": "2016-06-07T15:35:00+08:00",
+  "author": "饭吃到一半",
+  "site": "",
+  "text": "想请教问题三枚：\r\n1). Classic BT是不是只用Public地址？\r\n2). BLE地址和Classic BT地址是同一个Public地址吗？\r\n3). 如果一个BLE设备（Peripheral）和一个手机连接（Central），如果手机自己的地址用的是Random地址，BLE设备（Peripheral）如何才能获取到手机的Public地址呢？（通过地址解析？）"
+ },
+ {
+  "id": "4051",
+  "parent": "4050",
+  "date": "2016-06-07T15:42:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@饭吃到一半：1). Classic BT是不是只用Public地址？\r\n\t是的。\r\n2). BLE地址和Classic BT地址是同一个Public地址吗？ \r\n\t你可能指的是双模设备。从物理的角度看，BLE和Classic BT没有任何关系，因此，这个地址可以是同一个，也可以不同，都没有关系。\r\n3). 如果一个BLE设备（Peripheral）和一个手机连接（Central），如果手机自己的地址用的是Random地址，BLE设备（Peripheral）如何才能获取到手机的Public地址呢？（通过地址解析？）\r\n\t这种情况下，BLE设备得不到手机的Public地址。"
+ },
+ {
+  "id": "4052",
+  "parent": "4051",
+  "date": "2016-06-07T15:56:32+08:00",
+  "author": "饭吃到一半",
+  "site": "",
+  "text": "@wowo：了解，多谢解答。还有一个问题想请教：\r\n4). BLE Controller 是否支持厂商自定义Profile呢？比如：想定义几个私有的Characteristic（非GATT标准Character）进行通信。貌似HCI中没有这样的接口，这样是不是私有Profile只能做在底层Firmware里面了？"
+ },
+ {
+  "id": "4053",
+  "parent": "4052",
+  "date": "2016-06-07T16:06:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@饭吃到一半：你可以参考这篇文章：/bluetooth/ble_stack_overview.html\r\nATT和GATT是在host端，HCI之上。因此可以随便添加，和Controller没有关系。"
+ },
+ {
+  "id": "4283",
+  "parent": "0",
+  "date": "2016-07-19T11:47:27+08:00",
+  "author": "zhihua.tao",
+  "site": "",
+  "text": "这是我见过的对蓝牙地址这块解析最清晰明了的文档，狠狠的给个赞！！！！"
+ },
+ {
+  "id": "4287",
+  "parent": "4283",
+  "date": "2016-07-19T21:44:37+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zhihua.tao：多谢鼓励~"
+ },
+ {
+  "id": "4291",
+  "parent": "0",
+  "date": "2016-07-20T15:27:16+08:00",
+  "author": "wjnforever",
+  "site": "",
+  "text": "有个问题请教一下\r\n4）Resolvable private address不能单独使用，因此需要使用该类型的地址的话，设备要同时具备Public Device Address或者Static Device Address中的一种。\r\n\r\n是否指的是初次连接，本地设备保存对方的Public Device Address或者Static Device Address以及IRK，\r\n之后按照IRK解析，但使用的还是之前保存的Public Device Address或者Static Device Address？\r\n\r\n另外看Resolving List中保存的结构是这样：\r\nLocal IRK | Peer IRK | Peer Device Identity Address | Address Type\r\n这四个字段是如何具体使用的呢"
+ },
+ {
+  "id": "4293",
+  "parent": "4291",
+  "date": "2016-07-21T08:55:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wjnforever：Public Device Address或者Static Device Address的存在目的，不是为了“首次通信”，而是为了作为一个“Identity Address”。\r\n对于地址解析过程来说，保存Local IRK和Peer IRK。而Peer IPK会有多个（因为有对个Peer），总要识别某一个IPK属于哪一个设备，怎么识别呢？Identity Address。\r\n这个解释了“Local IRK | Peer IRK | Peer Device Identity Address | Address Type”的含义：\r\n本地的IPK、对端的IPK、对端的地址、对端的地址类型（Public or Static）。"
+ },
+ {
+  "id": "4294",
+  "parent": "4293",
+  "date": "2016-07-21T10:38:01+08:00",
+  "author": "wjnforever",
+  "site": "",
+  "text": "@wowo：多谢解释！\r\n\r\n还有点不明白。假设A为主设备，B为从设备，在A没有获得B的IRK之前，应该无法解析B的Resolvable private address？这样的话，A和B的首次连接，使用的就是这个Peer Device Identity Address（Public Device Address或者Static Device Address）吗？建立连接后，B再将IRK发送给A，A把这个IRK和B使用的地址作为Peer Device Identity Address保存在列表中以备下次解析？\r\n\r\n另外为何A的Resolving List中需要保存Local IRK，意思是A也将这个Local IRK发送给了B，同时使用了Resolvable private address与B通信？两设备使用Resolvable private address必须是对称的吗？"
+ },
+ {
+  "id": "4295",
+  "parent": "4294",
+  "date": "2016-07-21T11:44:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wjnforever：对的，在发生任何通信之前，如果需要进行地址解析操作，本机需要知道对端的IRK。至于怎么知道的，手段有多种，例如一个厂家的产品，约定好，等等。\r\n至于为什么要保存本地IRK，可能你有点混淆了：\r\nIRK是Host给Controller的，因此这里的保存，只是Controller保存（放在Controller自己的ram中），以便后续使用（很多加密、解析操作是Controller自动完成的）。"
+ },
+ {
+  "id": "4296",
+  "parent": "4295",
+  "date": "2016-07-21T12:02:33+08:00",
+  "author": "wjnforever",
+  "site": "",
+  "text": "@wowo：哦，我的意思是指Resolving List中Local IRK 和 Peer IRK 的区别，Peer IRK是对端发来的IRK，用于解析对方的地址；Local IRK指的是解析本设备Resolvable private address的IRK吗？"
+ },
+ {
+  "id": "4297",
+  "parent": "4296",
+  "date": "2016-07-21T12:06:14+08:00",
+  "author": "wjnforever",
+  "site": "",
+  "text": "@wjnforever：嗯，好像协议后面有解释Local | Peer IRK，我先看一下"
+ },
+ {
+  "id": "5322",
+  "parent": "4051",
+  "date": "2017-03-15T21:14:19+08:00",
+  "author": "天狼无星",
+  "site": "",
+  "text": "@wowo：如果是初次连接, 还没有配对, 彼此都没有对方的IRK, 那么在使能地址解析功能的情况下, 是否是只能使用身份地址或者不可解析的私有地址才能建立起连接呢?"
+ },
+ {
+  "id": "5324",
+  "parent": "5322",
+  "date": "2017-03-16T08:46:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@天狼无星：没错。如果不知道对方的IRK，要么不加密，要么没法通信。"
+ },
+ {
+  "id": "5400",
+  "parent": "0",
+  "date": "2017-03-31T15:48:35+08:00",
+  "author": "Snowywind",
+  "site": "",
+  "text": "有几点不明白,能否请教一下:\r\n1.一个开启了Resolvable private address的设备,用手机去配对,能直接配对完成,然后断掉,再去连刚刚配对的设备,则无法成功,必须要删除原有的配对信息重新搜索到新的广播再配对才行;\r\n--不明白的地方:手机根本不知道设备的IRK,为何能连上? 蓝牙地址改变后,原先的配对信息会失效?\r\n2.每一次关闭并重新开启广播,广播的地址都会变化,这个地址必须是底层随机产生的吗?"
+ },
+ {
+  "id": "5402",
+  "parent": "5400",
+  "date": "2017-03-31T17:03:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Snowywind：1-1：你可以参考本站的文章：“蓝牙协议分析(9)_BLE安全机制之LL Privacy”，Resolvable address需要配合privacy机制，才能过滤非法连接。\r\n1-2：配对信息需要依据地址生成（或者识别），因此地址改变后，配对信息会失效。\r\n2. 随机地址是controller产生的，Host可以决定是否使用随机地址。"
+ },
+ {
+  "id": "5409",
+  "parent": "5402",
+  "date": "2017-04-01T10:34:15+08:00",
+  "author": "Snowywind",
+  "site": "",
+  "text": "@wowo：感谢回复.\r\n1-1:我再测一下\r\n1-2:也就是说,一旦断开连接,设备的地址改变后,手机需要重新与设备配对才能正常连接,就相当于重新与一个新设备配对?\r\n2:就是说蓝牙底层产生随机地址,那能不能由应用层指定我要的随机地址呢?比如指定地址为0x11223344556600"
+ },
+ {
+  "id": "5410",
+  "parent": "5409",
+  "date": "2017-04-01T10:47:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Snowywind：可以思考一下：如果设备地址已经改变，手机怎么知道现在这个设备就是之前那个设备呢？\r\n随机地址不能指定，不然就不叫随机地址了（直接用public地址就行了）。"
+ },
+ {
+  "id": "5411",
+  "parent": "5410",
+  "date": "2017-04-01T11:01:47+08:00",
+  "author": "Snowywind",
+  "site": "",
+  "text": "@wowo：可能是我之前的理解有误,之前是理解为设备产生一个随机地址A(01+random+hash),然后底层会再加密,将地址A加密成B.\r\n----------\r\n其实应该是系统直接会用A进行广播,然后手机会对A进行hash校验,如果成功,才会继续往下执行?不知道理解是否正确?"
+ },
+ {
+  "id": "5414",
+  "parent": "5411",
+  "date": "2017-04-01T16:42:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Snowywind：是的，就是这样的。"
+ },
+ {
+  "id": "5416",
+  "parent": "5414",
+  "date": "2017-04-01T16:47:51+08:00",
+  "author": "Snowywind",
+  "site": "",
+  "text": "@wowo：多谢."
+ },
+ {
+  "id": "5792",
+  "parent": "0",
+  "date": "2017-07-11T10:18:20+08:00",
+  "author": "蓝牙新人",
+  "site": "",
+  "text": "@wowo, public 地址，一般怎么存储到芯片里的？"
+ },
+ {
+  "id": "5796",
+  "parent": "5792",
+  "date": "2017-07-12T08:45:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@蓝牙新人：这个随意性比较大，要看蓝牙模组的组合方式，有些是固化在controller里面，host无法修改；有些是放在host的外部存储器中，启动controller的时候通过hci命令告诉controller。"
+ },
+ {
+  "id": "5808",
+  "parent": "5796",
+  "date": "2017-07-14T14:17:04+08:00",
+  "author": "蓝牙新人",
+  "site": "",
+  "text": "@wowo：感谢wowo,后面我查了些资料，如果有公有地址的，一般是固化在flash里的。因为每片的地址不同，这里应该涉及芯片生产的烧录技术，网上查说有些专门的厂家可以做这个。不知道wowo了解过这个没:)"
+ },
+ {
+  "id": "5809",
+  "parent": "5808",
+  "date": "2017-07-14T14:20:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@蓝牙新人：不同厂家的做法不一样，要有针对性的讨论。\r\nPS:有些情况下，厂家会留一个自定义的HCI指令去设置地址，找到这个指令也可以修改。"
+ },
+ {
+  "id": "5834",
+  "parent": "0",
+  "date": "2017-07-22T11:56:13+08:00",
+  "author": "三九感冒灵",
+  "site": "",
+  "text": "感谢分享，希望楼主有时间可以写写classic BT 部分的东西，毕竟两者的差异还是比较大。"
+ },
+ {
+  "id": "5837",
+  "parent": "5834",
+  "date": "2017-07-24T09:04:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@三九感冒灵：多谢关注，有时间的话可以试试，不过经典蓝牙的复杂度和ble不是一个数量级的，不太好写。真的需要了解的话，最好的资料还是那一个厚厚的core spec。"
+ },
+ {
+  "id": "6469",
+  "parent": "0",
+  "date": "2018-01-15T16:40:30+08:00",
+  "author": "chenchuangchn",
+  "site": "",
+  "text": "wowo大神：\r\n1.文中提到的IPK是什么意思啊，24bits是随机数和IRK经过hash运算得到的hash值？\r\n2.“以T_GAP(private_addr_int)为周期”更新的是随机数吗。\r\n3. 大神有没有计划写写关于bluez上层的东西，比如gatt的通信，音频的连接与通信等。"
+ },
+ {
+  "id": "6478",
+  "parent": "6469",
+  "date": "2018-01-16T09:42:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@chenchuangchn：抱歉啊，IPK是写错了，应该是IRK；\r\n更新的是地址哦；\r\n暂时没有时间写啊~~"
+ },
+ {
+  "id": "6621",
+  "parent": "0",
+  "date": "2018-03-25T15:39:43+08:00",
+  "author": "小怂包",
+  "site": "",
+  "text": "想问问：\r\n1.如果设备地址已经改变，手机怎么知道现在这个设备就是之前那个设备呢？ \r\n2.如果有人恶意攻击中心设备，派了很多的BLE来连接它，那么如果没有保护措施，中心设备不是很快就挂掉了？"
+ },
+ {
+  "id": "6767",
+  "parent": "0",
+  "date": "2018-05-29T15:22:42+08:00",
+  "author": "mkseven32",
+  "site": "",
+  "text": "如果是随机产生的， 那会不会出现 地址冲突的现象？ 出现了如何解决冲突？"
+ },
+ {
+  "id": "6769",
+  "parent": "6621",
+  "date": "2018-05-30T10:34:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@小怂包：地址如果已经改变，手机就不知道这个设备是不是之前那个了；\r\n这种时候，中心设备要用其它机制过滤非法设备地址。"
+ },
+ {
+  "id": "6770",
+  "parent": "6767",
+  "date": "2018-05-30T10:36:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@mkseven32：从概率上来看，确实有地址冲突的可能，不过概率太低了，基本不可能碰到。所以蓝牙现在并没有定义怎么解决这种冲突。"
+ },
+ {
+  "id": "6773",
+  "parent": "6770",
+  "date": "2018-05-30T13:40:00+08:00",
+  "author": "mkseven32",
+  "site": "",
+  "text": "@wowo：嗯，谢谢博主回复！ 可能目前ble 的设备还不多，如果向后大规模使用时，我觉得发生的概率应该是比较大的！"
+ },
+ {
+  "id": "6805",
+  "parent": "6773",
+  "date": "2018-06-15T13:53:50+08:00",
+  "author": "春春1028",
+  "site": "http://none",
+  "text": "@mkseven32：我认为蓝牙的通信距离限制了一定区域的设备数量，所以即使是大规模使用地址冲突的概率也会很小"
+ },
+ {
+  "id": "6908",
+  "parent": "0",
+  "date": "2018-08-24T08:31:43+08:00",
+  "author": "David",
+  "site": "",
+  "text": "想問一下如host 是resolvable private address，已和設備機配對完成\r\n如設備想做direct connecteable advertisement? 是否可以？\r\n如果可以，那我應用甚麼address 來做？ 是否應用第一次連接時的random address 來做direct advertisement?\r\n謝謝！"
+ },
+ {
+  "id": "6909",
+  "parent": "6908",
+  "date": "2018-08-24T10:10:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@David：广播的时候，无论是什么类型的广播，都包括local或remote两种地址，这两种地址都可以是private地址或random地址（以及是否加密，可参考/bluetooth/ble_broadcast.html的介绍），具体的原理，是类似的。如果是local地址，则用local的ipk加密，或者，用remote的ipk加密。只要对方能够正确解密即可。"
+ },
+ {
+  "id": "6910",
+  "parent": "6909",
+  "date": "2018-08-24T12:52:08+08:00",
+  "author": "David",
+  "site": "",
+  "text": "@wowo：謝謝回覆! 在direct advertisement中,\r\n我的advertiser address 是固定的, type是public type.\r\n在第1次連接時會得到Host 的random address, 在回連時會得到Host 的Public Identity Address. (可能是... API 的問題..)\r\n\r\n在15分鐘內, 我把random address放在Initiator Address 中, 是可以回連\r\n但過了一段時間，便不能了..\r\n我試過放public identity address 在initiator address中也是不成..\r\n\r\n所以好奇direct advertising 是否可以在host 是resolvable private address下使用, 或是只可以用15分鐘?"
+ },
+ {
+  "id": "6911",
+  "parent": "6910",
+  "date": "2018-08-24T16:16:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@David：这说明host的random address是定时在改变的。"
+ },
+ {
+  "id": "7108",
+  "parent": "0",
+  "date": "2018-12-26T11:26:37+08:00",
+  "author": "星星",
+  "site": "",
+  "text": "咨询一下，最近在做测试时发现有几款手机，跟BLE HID设备连接OK之后，然后在两端同时删除配对信息，发现此款手机还会发起重连（抓包发现，感觉是个手机bug），只是重连失败（log提示），但是手机上看不出变化，此时设备是public地址，但是若是把设备改成random地址，手机就不会发起重连，会有什么区别吗"
+ },
+ {
+  "id": "7640",
+  "parent": "6910",
+  "date": "2019-09-02T11:37:41+08:00",
+  "author": "虎妞",
+  "site": "",
+  "text": "@David：Note that directed advertising will only be used when the Central has a random static address type (address is static and does not change). If the Central has a resolvable address (address changes over time), undirected advertising with whitelist is used instead.\r\n这是nordic一个键盘的文档中摘下来的一段话。可能可以回复你的问题。"
+ },
+ {
+  "id": "7690",
+  "parent": "0",
+  "date": "2019-10-10T16:12:04+08:00",
+  "author": "yibin cai",
+  "site": "",
+  "text": "很好的总结。\r\n\r\n存在则合理，哈哈，\r\nNon-resolvable private address 该地址类型，可在以下情景中应用：\r\n\r\n某公司在城市的各个商铺里布置了 beacon 设备，然后自己的 app 会识别 beacon 设备广播数据里已经加密过的内容，来判断已扫描到的设备所在的位置\r\n\r\n此时有竞争对手公司，想要直接利用这个公司布置的 beacon 设备，若 beacon 设备上有可识别的唯一标识（如 public address），则他们可以比较简单的识别该标识，和位置配对保存，组成数据库。便可直接利用该公司的已有布置\r\n\r\n此时，beacon 设备上不能存在一个唯一标识，于是 Non-resolvable private address 便应用于此场景"
+ },
+ {
+  "id": "8049",
+  "parent": "0",
+  "date": "2020-07-09T14:21:48+08:00",
+  "author": "cafp",
+  "site": "",
+  "text": "Resolvable private address比较有用，它通过一个随机数和一个称作identity resolving key (IRK) 的密码生成，因此只能被拥有相同IRK的设备扫描到，可以防止被未知设备扫描和追踪.-----------通过实验表明地址为Resolvable private address设备是可以，被任何一部没有其IRK的手机扫描到，并且连接的！"
+ },
+ {
+  "id": "8050",
+  "parent": "0",
+  "date": "2020-07-09T14:23:36+08:00",
+  "author": "cafp",
+  "site": "",
+  "text": "Resolvable private address比较有用，它通过一个随机数和一个称作identity resolving key (IRK) 的密码生成，因此只能被拥有相同IRK的设备扫描到，可以防止被未知设备扫描和追踪---------实验表明广播地址为Resolvable private address的设备是可以被任何一部无其IRK的手机扫描跟连接到的。"
+ },
+ {
+  "id": "8113",
+  "parent": "0",
+  "date": "2020-09-16T14:01:39+08:00",
+  "author": "helen",
+  "site": "",
+  "text": "wowo的总结中有相关说明\r\n“如果地址解析不正确，本地设备向对方发送的所有的数据包（扫描请求、连接请求等），都不能被正确接收（因为目的地址不正确）。但有一个例外，如果本地设备直接关闭地址解析功能，还是能收到对方的广播包，因此，Resolvable private address并不能保护广播包的数据。如果有敏感信息，放到scan response packet中应该是一个不错的选择。”"
+ },
+ {
+  "id": "8611",
+  "parent": "6910",
+  "date": "2022-05-05T18:07:07+08:00",
+  "author": "eshin",
+  "site": "",
+  "text": "@David：您提问题的时间是2018年,这时候发布的规格书是4.2.这里只讨论device支持privacy mode的情况,应该是这样:\r\n1. initiator address只能是RPA(resolvable private address)地址.具体可见蓝牙核心协议core4.2及以上 [Vol 6, Part B]6.4节.具体内容:\r\nAn initiator that has been instructed by the Host to use Resolvable Private Addresses shall not respond to directed connectable advertising events that contain Public or Static addresses for the initiator address, (InitA field).\r\n\r\n2. 而对于device不支持privacy mode的情况,可能是如@虎妞所回复.具体还要看规格分析下.我见过部分鼠标这种情况下,发的是direct广播,initiator address刚好也是静态地址."
+ }
+]

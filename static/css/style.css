@@ -1,0 +1,127 @@
+/* 蜗窝科技静态存档 —— 以长文阅读为主，克制、留白、无外部依赖 */
+:root {
+  --fg: #1c1c1e;
+  --fg-muted: #6b6f76;
+  --bg: #fdfdfc;
+  --accent: #8a5a2b;
+  --rule: #e6e4e0;
+  --code-bg: #f5f4f1;
+  --maxw: 46rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #e6e5e2;
+    --fg-muted: #9a9da3;
+    --bg: #16171a;
+    --accent: #d8a978;
+    --rule: #2c2e33;
+    --code-bg: #212327;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 17px/1.85 "Noto Serif SC", "Songti SC", "Source Han Serif SC", Georgia, "PingFang SC", "Microsoft YaHei", serif;
+}
+
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem; }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.muted { color: var(--fg-muted); }
+.small { font-size: 0.86rem; }
+
+/* 顶部 */
+.site-header {
+  border-bottom: 1px solid var(--rule);
+  padding: 1.1rem 0;
+  margin-bottom: 2.4rem;
+}
+.site-header .wrap { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; align-items: baseline; }
+.site-title { font-size: 1.15rem; font-weight: 700; color: var(--fg); letter-spacing: 0.02em; }
+.site-nav { font-size: 0.9rem; display: flex; flex-wrap: wrap; gap: 0.9rem; }
+.site-nav a { color: var(--fg-muted); }
+.site-nav a:hover { color: var(--accent); }
+
+/* 首页 */
+.intro { margin-bottom: 2.2rem; }
+.intro h1 { font-size: 1.7rem; margin: 0 0 0.5rem; }
+.intro p { margin: 0.3rem 0; }
+
+.post-list { list-style: none; padding: 0; margin: 0; }
+.post-list li {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.7rem;
+  align-items: baseline;
+}
+.post-list li a { font-size: 1.02rem; }
+.post-list .small { margin-left: auto; white-space: nowrap; }
+
+.pager { display: flex; justify-content: space-between; margin: 2rem 0; font-size: 0.95rem; }
+.pager .next { margin-left: auto; }
+
+/* 文章 */
+.post-header { margin-bottom: 1.8rem; }
+.post-header h1 { font-size: 1.75rem; line-height: 1.4; margin: 0 0 0.6rem; }
+.post-header .meta { margin: 0; font-size: 0.88rem; color: var(--fg-muted); }
+
+.post-body { font-size: 1.02rem; }
+.post-body h2 { font-size: 1.32rem; margin: 2.4rem 0 0.8rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--rule); }
+.post-body h3 { font-size: 1.14rem; margin: 1.9rem 0 0.6rem; }
+.post-body p { margin: 1em 0; }
+.post-body img { max-width: 100%; height: auto; display: block; margin: 1.4rem auto; }
+.post-body ul, .post-body ol { padding-left: 1.5rem; }
+.post-body li { margin: 0.35em 0; }
+.post-body blockquote {
+  margin: 1.2rem 0; padding: 0.2rem 1rem; border-left: 3px solid var(--rule); color: var(--fg-muted);
+}
+.post-body pre {
+  background: var(--code-bg); padding: 0.9rem 1rem; border-radius: 4px;
+  overflow-x: auto; font-size: 0.88rem; line-height: 1.6;
+}
+.post-body code { font-family: "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace; font-size: 0.9em; }
+.post-body code { background: var(--code-bg); padding: 0.1em 0.3em; border-radius: 3px; }
+.post-body pre code { background: none; padding: 0; }
+.post-body table { border-collapse: collapse; width: 100%; font-size: 0.94rem; }
+.post-body th, .post-body td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; }
+
+.tags { font-size: 0.85rem; color: var(--fg-muted); margin-top: 2rem; }
+.tag { display: inline-block; margin-right: 0.5rem; padding: 0.05rem 0.45rem; border: 1px solid var(--rule); border-radius: 3px; }
+
+/* 评论（冻结存档） */
+.comments { margin-top: 3.4rem; border-top: 1px solid var(--rule); padding-top: 1.4rem; }
+.comments h2 { font-size: 1.1rem; margin: 0 0 0.3rem; }
+.comment-list, .comment-children { list-style: none; padding: 0; margin: 0; }
+.comment-children { margin-left: 1.1rem; padding-left: 0.9rem; border-left: 2px solid var(--rule); }
+.comment { padding: 0.85rem 0; border-bottom: 1px solid var(--rule); }
+.comment-head { margin: 0 0 0.35rem; font-size: 0.86rem; color: var(--fg-muted); display: flex; gap: 0.6rem; align-items: baseline; }
+.comment-head strong { color: var(--fg); }
+.comment-head time { margin-left: auto; }
+.comment-body { font-size: 0.97rem; }
+.comment-body p { margin: 0.5em 0; }
+
+/* 论坛存档 */
+.forum .post, .post-body .post { margin: 0 0 1.4rem; }
+.post-body .post .meta { font-size: 0.85rem; color: var(--fg-muted); margin: 0 0 0.3rem; }
+.post-body .post { padding-bottom: 1rem; border-bottom: 1px solid var(--rule); }
+
+/* 页脚 */
+.site-footer { border-top: 1px solid var(--rule); margin-top: 4rem; padding: 1.4rem 0 2.4rem; font-size: 0.86rem; color: var(--fg-muted); }
+.site-footer p { margin: 0.3rem 0; }
+
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .post-list .small { margin-left: 0; }
+  .post-header h1 { font-size: 1.45rem; }
+}

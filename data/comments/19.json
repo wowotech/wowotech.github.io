@@ -1,0 +1,90 @@
+[
+ {
+  "id": "39",
+  "parent": "0",
+  "date": "2014-03-24T10:06:54+08:00",
+  "author": "linux_fans",
+  "site": "",
+  "text": "文章写的很好，读起来很有意思。\r\n提个小意见，Linux使用者对process credentials最直观的感受，应该都来自于/etc/passwd、/etc/shadow、file mode、chmod等用户空间的东西，如果在介绍机制时，事先告知和这些的联系，应该会更生动。"
+ },
+ {
+  "id": "40",
+  "parent": "39",
+  "date": "2014-03-26T12:28:05+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linux_fans：多谢您的建议，后续我会改进。"
+ },
+ {
+  "id": "43",
+  "parent": "0",
+  "date": "2014-03-31T16:26:05+08:00",
+  "author": "活动板房",
+  "site": "http://www.fsguozhan.com/",
+  "text": "两位大神 我是来膜拜的"
+ },
+ {
+  "id": "2543",
+  "parent": "0",
+  "date": "2015-09-07T11:28:17+08:00",
+  "author": "awakening",
+  "site": "",
+  "text": "建议添加参考资料."
+ },
+ {
+  "id": "2545",
+  "parent": "2543",
+  "date": "2015-09-07T18:17:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@awakening：多谢您的建议，后续的文章可以考虑加上这个章节"
+ },
+ {
+  "id": "4872",
+  "parent": "0",
+  "date": "2016-11-15T11:34:07+08:00",
+  "author": "madao",
+  "site": "",
+  "text": "好文章，真正清楚地讲了这几个id. 以前我看Unix系统编程的时候，一直不明白kernel为何要保存一个 suid/sgid，这篇文章着实解惑。谢谢"
+ },
+ {
+  "id": "4874",
+  "parent": "4872",
+  "date": "2016-11-16T09:09:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madao：my pleasure"
+ },
+ {
+  "id": "6529",
+  "parent": "0",
+  "date": "2018-02-05T14:00:54+08:00",
+  "author": "fear",
+  "site": "",
+  "text": "膜拜郭大侠。"
+ },
+ {
+  "id": "6768",
+  "parent": "0",
+  "date": "2018-05-30T10:01:19+08:00",
+  "author": "costanza",
+  "site": "http://costanzaledlow@blogspot.com",
+  "text": "非常幸运发现你的博客！继续打CALL支持下去！"
+ },
+ {
+  "id": "7600",
+  "parent": "0",
+  "date": "2019-08-20T16:10:07+08:00",
+  "author": "Naruto",
+  "site": "",
+  "text": "感谢博主"
+ },
+ {
+  "id": "8261",
+  "parent": "0",
+  "date": "2021-07-29T13:54:06+08:00",
+  "author": "Lasnitch",
+  "site": "",
+  "text": "非常好的文章，支持！"
+ }
+]

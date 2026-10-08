@@ -1,0 +1,98 @@
+[
+ {
+  "id": "5236",
+  "parent": "0",
+  "date": "2017-02-22T18:35:31+08:00",
+  "author": "Nick",
+  "site": "",
+  "text": "early_init_dt_scan_memory应该只会去扫dtsi里面的node吧，奇怪的是为啥dtsi里面有关memory node的都去掉了，bootcommandline里面mem@也去掉了，居然还能打印出扫到memory node的log...\r\n\r\nearly_init_dt_scan_memory\r\nmemory scan node memory, reg size 8, data: 0 7001 2000000 1000000,\r\n - 0 ,  1700000"
+ },
+ {
+  "id": "5239",
+  "parent": "5236",
+  "date": "2017-02-23T12:59:25+08:00",
+  "author": "云",
+  "site": "",
+  "text": "@Nick：可能的原因如下：\r\n1. “bootcommandline里面mem@也去掉了”， 你这里只修改了kernel的config中的cmdline， 对吧？\r\n2. 如果你使用u-boot来引导kernel, 那么在booti的过程中，u-boot会将环境变量bootargs中的mem=xxxM解析出来，并且写入dtb中。 故kernel初始化时还是能scan到这个memory node.\r\n\r\n因此， 要彻底去掉memory node,你还需要额外将bootargs中的memory信息去掉； 不过那样你的kernel估计都没法boot起来：）"
+ },
+ {
+  "id": "5258",
+  "parent": "5239",
+  "date": "2017-02-27T13:50:36+08:00",
+  "author": "Nick",
+  "site": "",
+  "text": "@云：@云，谢谢云的回复，我是将dtsi里面chosen的bootargs中的memory信息去掉的...然后发现还是有打印出扫到memory node的log... dtsi里面也没有任何memory node的信息了..."
+ },
+ {
+  "id": "5260",
+  "parent": "5258",
+  "date": "2017-02-27T14:34:43+08:00",
+  "author": "云",
+  "site": "",
+  "text": "@Nick：我指的是uboot的环境变量里面的bootargs. 你在uboot中pri看看bootargs中有木有mem=xxx。"
+ },
+ {
+  "id": "5262",
+  "parent": "5260",
+  "date": "2017-02-27T16:13:49+08:00",
+  "author": "Nick",
+  "site": "",
+  "text": "@云：addmisc=setenv bootargs ${bootargs}\r\n在uboot里面只搜到这个，没有找到mem=xxx,只有在dtsi里面有。"
+ },
+ {
+  "id": "5263",
+  "parent": "5262",
+  "date": "2017-02-27T16:15:02+08:00",
+  "author": "Nick",
+  "site": "",
+  "text": "@Nick：另外请教一下，这个early_init_dt_scan_memory 里面的log出来，\r\n\r\nmemory scan node memory, reg size 8, data: 0 7001 2000000 1000000,\r\nreg size怎么只有8，不是应该是32吗？"
+ },
+ {
+  "id": "5543",
+  "parent": "0",
+  "date": "2017-05-12T15:12:10+08:00",
+  "author": "zm",
+  "site": "",
+  "text": "int __init early_init_dt_scan_memory(unsigned long node, const char *uname, int depth, void *data) \r\n{\r\n    while ((endp - reg) >= (dt_root_addr_cells + dt_root_size_cells)) { \r\n        u64 base, size;\r\n        base = dt_mem_next_cell(dt_root_addr_cells, ®); \r\n        size = dt_mem_next_cell(dt_root_size_cells, ®); －－－－－－－－－－（4）\r\n        early_init_dt_add_memory_arch(base, size);－－－－－－－－－－－－－－（5） \r\n    }\r\n    return 0; \r\n}\r\n\r\n怎么感觉dt_root_addr_cells，应该是dt_root_addr_cells = sizeof(_u32) * dt_root_addr_cells，不然\r\nbase不等于reg[0], size 不等于reg[1]，能帮忙解释一下吗，谢谢？"
+ },
+ {
+  "id": "6241",
+  "parent": "5262",
+  "date": "2017-11-27T11:05:33+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@Nick：我做过实时dump dtb的工具，可以将 内存里最后形成的dtb 变成dts。\r\n从最终的dts看到 是有memory节点或者启动参数中有‘mem=***’的。\r\n原理如下：\r\n1, check the reserved memory in /sys/kernel/debug/memblock/reserved, find which range is dtb by: devmem $dtb_addr |grep EDFE0DD0, EDFE0DD0 is the dtb's magic number;\r\n2, dump the dtb memory into a tmp file by mapping /dev/mem;\r\n3, use dtc to convert the dtb to dts."
+ },
+ {
+  "id": "6245",
+  "parent": "6241",
+  "date": "2017-11-27T18:51:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bsp：多谢分享，非常帅的工具！！！"
+ },
+ {
+  "id": "6421",
+  "parent": "0",
+  "date": "2017-12-25T21:57:36+08:00",
+  "author": "wmzjzwlzs",
+  "site": "",
+  "text": "发现一个64位高通平台的一个现象，假设一个内核函数在system.map中的地址是A，在kernel中把这个函数地址打印出来是B，A和B理论上应该相等的吧，可是实际是每次重启B都会变化，但是A和B的低20位是相同的，为什么A和B不同"
+ },
+ {
+  "id": "6423",
+  "parent": "6421",
+  "date": "2017-12-26T21:59:41+08:00",
+  "author": "aaa",
+  "site": "",
+  "text": "@wmzjzwlzs：4.4内核吧，kaslr"
+ },
+ {
+  "id": "6424",
+  "parent": "6423",
+  "date": "2017-12-26T22:14:12+08:00",
+  "author": "wmzjzwlzs",
+  "site": "",
+  "text": "@aaa：是的，赞赞赞。\r\n你们好厉害，问了好多大神都不知道"
+ }
+]

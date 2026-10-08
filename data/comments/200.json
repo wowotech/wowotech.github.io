@@ -1,0 +1,162 @@
+[
+ {
+  "id": "2262",
+  "parent": "0",
+  "date": "2015-07-21T12:00:20+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "I'm back now"
+ },
+ {
+  "id": "2263",
+  "parent": "2262",
+  "date": "2015-07-21T12:19:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：又忙了一阵子啊？"
+ },
+ {
+  "id": "2264",
+  "parent": "2263",
+  "date": "2015-07-21T13:12:37+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@wowo：手头的事情少了一点点，抓紧时间补补课"
+ },
+ {
+  "id": "2815",
+  "parent": "0",
+  "date": "2015-10-22T11:18:17+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "wowo 何时开讲psci呀？"
+ },
+ {
+  "id": "3836",
+  "parent": "0",
+  "date": "2016-04-19T09:59:13+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "wowo,什么时候有PSCI的讲解啊?"
+ },
+ {
+  "id": "3839",
+  "parent": "3836",
+  "date": "2016-04-19T10:31:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zyq1228：抱歉，一直没有写PSCI的东西，等后面有时间，会结合ARM Trust Firmware讲。多谢关注~~"
+ },
+ {
+  "id": "3840",
+  "parent": "3839",
+  "date": "2016-04-19T11:21:49+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "@wowo：@wowo,好啊,ATF也我很感兴趣的东西,期待中"
+ },
+ {
+  "id": "3842",
+  "parent": "3840",
+  "date": "2016-04-19T14:23:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zyq1228：我不一定什么时候能写哦，要不你帮忙给大家写一下:-)"
+ },
+ {
+  "id": "3854",
+  "parent": "3842",
+  "date": "2016-04-25T13:24:12+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "@wowo：我还在学习中呢，希望看懂了之后可以写出和你一样好的东西"
+ },
+ {
+  "id": "3856",
+  "parent": "3854",
+  "date": "2016-04-25T21:23:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zyq1228：不碍事，大家都是边学边写~~"
+ },
+ {
+  "id": "3902",
+  "parent": "0",
+  "date": "2016-05-11T01:08:50+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "@wowo, 还有个问题请教一下哦。\r\n关于cpu_ops, 你的文中提到了spin_table和psci，不知道你有没有听过还有一个叫mcpm（Multi-cluster Power Management）？\r\nPSCI是arm定义的interface\r\nMCPM是linaro introduce过来的\r\n我的问题是\r\n1. MCPM应该出现在PSCI之前，那么arm为什么不用linaro的方案而要再提出一个PSCI呢？\r\n2. PSCI和MCPM之间有好坏之分么？\r\n3. 对于以后LPM的趋势是什么呢？会主要都是用PSCI么？因为在ATF里面只有PSCI相关的sample code。多谢"
+ },
+ {
+  "id": "3904",
+  "parent": "3902",
+  "date": "2016-05-11T09:47:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zyq1228：多谢zyq1228分享MCPM的有关信息，我之前没有关注过。我的理解如下（不一定正确）：\r\n从名字看，MCPM是为了解决multi-cluster（即ARM的big·Little架构）的电源管理。因此，从立意上看，或者说从high-level的角度看，MCPM不是一个有大局观的东西，只是为了解决一个特定的问题。\r\n而PSCI就不一样了，它的目标是提供一个通用的电源管理API，因此这个API里面可以包括当前的多核PM功能，也可以包括multi-cluster的东西，甚至可以包括后面的新花样。\r\n所以从这个角度看，我觉得PSCI具备通用性、具备进化的能力，所以ARM把它当作了一个位于OS下面的一个相对固化的东西（可以称作firmware）。\r\n而MCPM则无法获得同等地位，它只是linuxe　kernel中的一个软件模块而已。"
+ },
+ {
+  "id": "3919",
+  "parent": "3904",
+  "date": "2016-05-11T19:18:26+08:00",
+  "author": "zyq1228",
+  "site": "",
+  "text": "@wowo：多谢wowo的分享，很有参考性！"
+ },
+ {
+  "id": "4201",
+  "parent": "0",
+  "date": "2016-07-07T11:14:58+08:00",
+  "author": "lutingleo",
+  "site": "",
+  "text": "请问psci会跟硬件相关么？还是说随便一个ARM SMP都可以使用，比如Cortex-A17 双核"
+ },
+ {
+  "id": "4202",
+  "parent": "0",
+  "date": "2016-07-07T11:16:01+08:00",
+  "author": "lutingleo",
+  "site": "",
+  "text": "请问psci跟硬件相关么？Coretex-A17 双核能用吗？"
+ },
+ {
+  "id": "4207",
+  "parent": "4202",
+  "date": "2016-07-07T15:03:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lutingleo：理论上说，PSCI是一个Firmware，位于Hypervisor。能不能用，要看一下Coretex-A17的结构，以及CPU厂商有没有提供这个Firmware。"
+ },
+ {
+  "id": "4702",
+  "parent": "4207",
+  "date": "2016-10-13T15:42:56+08:00",
+  "author": "bigchris",
+  "site": "",
+  "text": "@wowo：PSCI是处于EL3，Secure monitor，Hypervisor在移动芯片上基本不会用到，据ARM说服务器上vmm会位于Hypervisor。"
+ },
+ {
+  "id": "4704",
+  "parent": "4702",
+  "date": "2016-10-13T18:10:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@bigchris：多谢提醒，学习了:-)"
+ },
+ {
+  "id": "6425",
+  "parent": "4201",
+  "date": "2017-12-27T13:50:49+08:00",
+  "author": "没完没了",
+  "site": "",
+  "text": "@lutingleo：psci的实现是在secure monitor里面的atf软件包里面，目前arm应该主要实现了V8架构相关的软件设计。 据说正在开发V7架构的"
+ },
+ {
+  "id": "7700",
+  "parent": "0",
+  "date": "2019-10-17T20:19:59+08:00",
+  "author": "伊斯科明",
+  "site": "",
+  "text": "大神什么时候讲一下PSCI的东西呢？"
+ }
+]

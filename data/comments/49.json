@@ -1,0 +1,346 @@
+[
+ {
+  "id": "212",
+  "parent": "0",
+  "date": "2014-06-17T16:57:39+08:00",
+  "author": "老汤",
+  "site": "http://www.bvbvbv.com/",
+  "text": "看了文章,根本看不懂,小白就是小白,很可怜"
+ },
+ {
+  "id": "224",
+  "parent": "0",
+  "date": "2014-07-02T09:49:00+08:00",
+  "author": "海",
+  "site": "",
+  "text": "先支持一下，看这个比看内核文档解气多了。\r\nhibernate在PC上用的应该比较多，手机上目前我看到的都是使用的sleep(STR).\r\n给楼主推荐一个链接，很早之前找hibernate资料时候看到的：http://www.slideshare.net/varunmahajan06/hibernation-linux-2629#\r\n可能翻墙才能看到。tuxonice是hibernate实现比较好的。hibernate我没有实际的开发过，只是看过网上的资料。\r\nwakeup_count的出现也替换了google提供的wakelock机制，不过最初我记得好像引入了两个计数，后来变成了一个。"
+ },
+ {
+  "id": "225",
+  "parent": "224",
+  "date": "2014-07-02T16:38:42+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@海：非常感谢您的支持、推荐的资料以及有关wakelock的指点。\r\n我们写的这些文章首要目的是把自己的思路厘清，在这之余，如果还能给他人一些启发，蜗蜗会深感欣慰。\r\n欢迎常来、多交流，再次表示感谢。"
+ },
+ {
+  "id": "923",
+  "parent": "0",
+  "date": "2014-12-23T11:06:32+08:00",
+  "author": "luocaizhu@huawei.com",
+  "site": "",
+  "text": "请教，系统待机后，如何实现wakeup驱动程序？"
+ },
+ {
+  "id": "924",
+  "parent": "923",
+  "date": "2014-12-23T11:29:44+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@luocaizhu@huawei.com：您是否可以再展开一下您的问题，例如：\r\n“系统待机”指的是什么？是现在Android主流的STR？还是传统的cpuidle呢？\r\n“wakeup驱动程序”又是指什么呢？是指某一个需要wakeup系统的硬件模块的driver吗？"
+ },
+ {
+  "id": "925",
+  "parent": "924",
+  "date": "2014-12-23T14:48:38+08:00",
+  "author": "luocaizhu@huawei.com",
+  "site": "",
+  "text": "@wowo：恩，是STR，当不需要读写数据时，给磁盘下电，达到省电模式，但是suspend或standby后如何唤醒呢？"
+ },
+ {
+  "id": "926",
+  "parent": "925",
+  "date": "2014-12-23T15:19:53+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@luocaizhu@huawei.com：我们所讨论的驱动是磁盘（或者Flash等）驱动吗？如果是，磁盘操作都是主动操作，肯定不是唤醒源，因而不会主动唤醒系统。\r\n系统是由其它可产生唤醒时间的设备唤醒的，如按键，如网络数据包，等等。\r\n唤醒后，如果需要操作磁盘，可以主动给磁盘上电。\r\n不知道你想讨论的是不是这些呢？"
+ },
+ {
+  "id": "928",
+  "parent": "926",
+  "date": "2014-12-23T15:40:00+08:00",
+  "author": "luocaizhu@huawei.com",
+  "site": "",
+  "text": "@wowo：有些命令是不能用按键唤醒的吧，如suspend，唤醒后如何主动给磁盘上电呢？"
+ },
+ {
+  "id": "929",
+  "parent": "926",
+  "date": "2014-12-23T15:46:00+08:00",
+  "author": "luocaizhu@huawei.com",
+  "site": "",
+  "text": "@wowo：为了较好的用户体验，通常会保留某些重要设备的供电（如键盘），那样这些设备就可以唤醒系统，这里唤醒源的设置是在standby还是suspend命令下的设置？如何设置唤醒源呢？"
+ },
+ {
+  "id": "930",
+  "parent": "928",
+  "date": "2014-12-23T15:47:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@luocaizhu@huawei.com：这一来具体的suspend实现。确实有些可以，有些不可以。\r\n至于怎么主动上电，是具体的软件逻辑的事情了，因为此时系统已经唤醒，CPU控制权交给了软件，软件可以在任何需要的时候给磁盘上电，如resume时，如下次访问磁盘时，等等。这也依赖具体的软件设计。"
+ },
+ {
+  "id": "931",
+  "parent": "929",
+  "date": "2014-12-23T15:57:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@luocaizhu@huawei.com：无论是suspend还是standby，都会保留一些唤醒源，只是由于低功耗的状态不同，允许唤醒的设备也不同，因此唤醒源的也是有区别的。\r\n至于如何设置唤醒源，需要根据具体的软件环境（如kernel版本等）、硬件环境，并结合wakeup event framework来说明，这里一两句话估计无法说清的。"
+ },
+ {
+  "id": "932",
+  "parent": "930",
+  "date": "2014-12-23T16:02:05+08:00",
+  "author": "luocaizhu@huawei.com",
+  "site": "",
+  "text": "@wowo：磁盘下电，CPU不下电，下次访问磁盘时给磁盘上电，这要自己写驱动来实现吗？"
+ },
+ {
+  "id": "933",
+  "parent": "0",
+  "date": "2014-12-23T16:10:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "磁盘下电，CPU不下电，下次访问磁盘时给磁盘上电，这要自己写驱动来实现吗？\r\n-----------------------------------------------------------\r\n抱歉，这个问题的范围太大了~~~~~\r\n我不知道你的软硬件环境，不知道“磁盘驱动”具体指的是什么。因此没有办法回答的。"
+ },
+ {
+  "id": "1506",
+  "parent": "0",
+  "date": "2015-04-15T18:13:25+08:00",
+  "author": "Tekkaman Ninja",
+  "site": "",
+  "text": "正在学习您的文章，吹毛求疵一下，抱歉\r\n3.2.6 /sys/power/reserverd_size\r\n一面在STD的过程中丢失。 --> 以免 ？？"
+ },
+ {
+  "id": "1507",
+  "parent": "1506",
+  "date": "2015-04-15T18:24:08+08:00",
+  "author": "Tekkaman Ninja",
+  "site": "",
+  "text": "@Tekkaman Ninja：3.2.7 /sys/power/resume\r\n提供了一种在用空间手动的读取image并恢复系统的方法。 --> 用户空间？"
+ },
+ {
+  "id": "1640",
+  "parent": "931",
+  "date": "2015-04-29T17:53:21+08:00",
+  "author": "mryang",
+  "site": "",
+  "text": "@wowo：一般嵌入式芯片深度休眠的话，会关掉大部分的电，包括CPU CORE,IO，SOC的各个IP的电等，保留DDR CORE，wake up core ,bp core 电压等，关掉大部分CLOCK，这也和具体的IC 设计相关，SOC内部一般会有相应的module,深度休眠的话，一般通过power按键，或者来电唤醒，或者电压过低也会唤醒，这个时候设备基本停下了所有的工作，连CPU电都下了，磁盘上电，这个还用纠结吗，你给它电，给他clock，软件再调用resume，不就可以了，自己写驱动，哥们你想多了，驱动就是驱动，哪有你想的那么复杂，驱动如果负责这么多，那还要kernel core层干嘛"
+ },
+ {
+  "id": "2075",
+  "parent": "0",
+  "date": "2015-06-27T16:45:34+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "例如，当Wakeup event发生在“/sys/power/state”被写之后、内核执行freeze操作之前。\r\n---后面的解释还是基于\"用户空间程序在写入state切换状态之前，应先读取wakeup_count\" 对当前count和读取的count对比，可以理解是写state之前的一个检查/检测。\r\n但是，当wakeup interrupt真正是发生在写state之后，freeze之前怎，会出现什么情况呢？"
+ },
+ {
+  "id": "2076",
+  "parent": "0",
+  "date": "2015-06-28T16:21:36+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@蜗窝，\r\n 有个小问题，是关于内核空间和用户空间的。假设我在内核空间直接访问一个用户空间的地址（不通过copy_from_user等接口函数），并且该地址已经做了映射，这个时候访问这个地址会出错吗？如果出错，访问用户空间的错误是内核检测到的，还是MMU发现你访问的地址权限是用户空间地址而产生的错误。"
+ },
+ {
+  "id": "2077",
+  "parent": "2076",
+  "date": "2015-06-28T16:31:56+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@passerby：因为我看到对MMU对user mode的内存权限检测并没有只有user mode才能操作的模式，所以觉得MMU并不会限制SVC模式下对0~3G的空间进行访问。只是3~4G的空间设定为SVC读写或者只读，这样USER MODE就不能访问内核空间。但这样看起来，内核态其实可以直接访问0~3G的。只是因为直接访问户空间地址的不安全性，以及空间隔离的思想，才有专门的函数通过直接汇编或者用kmap的方式访问用户空间。我这样的想法是对的吗？"
+ },
+ {
+  "id": "2078",
+  "parent": "2075",
+  "date": "2015-06-29T08:59:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：因为用户进程和内核线程没有被freeze，中断也没有被关闭，因此该wakeup interrupt可以被正常处理。"
+ },
+ {
+  "id": "2079",
+  "parent": "2076",
+  "date": "2015-06-29T09:05:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：从我之前Linux driver开发的经验来说，内核代码是可以不通过copy_from_user而直接访问用户空间地址的，不会出错。\r\n但具体原因，我也没有深究过，因此也无法回答你。不过我觉得你的解释很合理，应该就是那个样子。"
+ },
+ {
+  "id": "2083",
+  "parent": "0",
+  "date": "2015-06-30T16:04:01+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "hi wowo：\r\n如果内核比对一致，则会暂时屏蔽wakeup event上报给用户空间，并返回write正确。\r\n----请问为什么要暂时wakeup event上报给用户空间？屏蔽的动作在哪儿实现的？什么时候解除？"
+ },
+ {
+  "id": "2085",
+  "parent": "2083",
+  "date": "2015-06-30T17:17:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：抱歉，这篇文章是先于“/pm_subsystem/wakeup_count.html”写的，这里表述有误。\r\n实际上，不会做任何多余的动作，只会记录write wkaeup_count成功时的event快照，后面继续suspend动作时，会检查是否和快照相符，如果不符，会终止suspend。\r\n我会修改这一段表述。多谢提醒~~~"
+ },
+ {
+  "id": "3832",
+  "parent": "0",
+  "date": "2016-04-18T20:10:49+08:00",
+  "author": "海贼王",
+  "site": "",
+  "text": "弱弱的问一下，支持power sleep功能的linux内核最低版本是多少？"
+ },
+ {
+  "id": "3835",
+  "parent": "3832",
+  "date": "2016-04-19T09:43:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@海贼王：这个问题还真难着我了，我也不知道，可以去网上查一下（不一定能查到）。"
+ },
+ {
+  "id": "4143",
+  "parent": "2079",
+  "date": "2016-06-23T16:21:20+08:00",
+  "author": "zcjfish",
+  "site": "",
+  "text": "@wowo：请教一个问题： 内核空间如何直接访问用户空间的memory呢？   是要把内核page table替换成用户进程的page table, 然后再去访问？"
+ },
+ {
+  "id": "4145",
+  "parent": "4143",
+  "date": "2016-06-23T21:30:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zcjfish：page table是不区分内核空间还是用户空间的，一般情况下，MMU会把4G的虚拟空间分为1G的内核空间和3G的用户空间。由于kernel实在SVC模式下，可以自由访问用户空间的memory。"
+ },
+ {
+  "id": "4234",
+  "parent": "0",
+  "date": "2016-07-12T11:39:36+08:00",
+  "author": "wolf",
+  "site": "",
+  "text": "问一下，怎么用命令行禁止系统进入待机，休眠呢?"
+ },
+ {
+  "id": "4238",
+  "parent": "4234",
+  "date": "2016-07-12T14:46:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wolf：你用的是什么系统呢？待机和休眠机制又是怎样的呢？"
+ },
+ {
+  "id": "4251",
+  "parent": "4234",
+  "date": "2016-07-14T09:38:51+08:00",
+  "author": "wolf",
+  "site": "",
+  "text": "@wolf：Linux linaro-ubuntu-desktop 3.12.0-xilinx-svn2713 #23 SMP PREEMPT Fri May 6 16:47:51 CST 2016 armv7l armv7l armv7l GNU/Linux\r\n这个是我用的linux版本，休眠机制我也不清楚，我是做应用层的，但是得把系统的待机和睡眠关掉。\r\n我现在遇到的问题是xset dpms 0 0 300，系统黑屏后长时间（一晚上）不操作，屏幕无法点亮。不知道什么原因"
+ },
+ {
+  "id": "4252",
+  "parent": "4238",
+  "date": "2016-07-14T09:50:48+08:00",
+  "author": "wolf",
+  "site": "",
+  "text": "@wowo：Linux linaro-ubuntu-desktop 3.12.0-xilinx-svn2713 #23 SMP PREEMPT Fri May 6 16:47:51 CST 2016 armv7l armv7l armv7l GNU/Linux \r\n这个是我用的linux版本，休眠机制我也不清楚，我是做应用层的，但是得把系统的待机和睡眠关掉。 \r\n我现在遇到的问题是xset dpms 0 0 300，系统黑屏后长时间（一晚上）不操作，屏幕无法点亮。不知道什么原因"
+ },
+ {
+  "id": "4253",
+  "parent": "0",
+  "date": "2016-07-14T09:51:28+08:00",
+  "author": "wolf",
+  "site": "",
+  "text": "Linux linaro-ubuntu-desktop 3.12.0-xilinx-svn2713 #23 SMP PREEMPT Fri May 6 16:47:51 CST 2016 armv7l armv7l armv7l GNU/Linux \r\n这个是我用的linux版本，休眠机制我也不清楚，我是做应用层的，但是得把系统的待机和睡眠关掉。 \r\n我现在遇到的问题是xset dpms 0 0 300，系统黑屏后长时间（一晚上）不操作，屏幕无法点亮。不知道什么原因"
+ },
+ {
+  "id": "4255",
+  "parent": "4253",
+  "date": "2016-07-14T10:10:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wolf：看看/sys/power下面都有什么东西：\r\nls /sys/power\r\n把它们的值cat出来看一下。\r\n\r\n不过Ubuntu的休眠，通常是电源管理进程自行处理的，不一定能通过命令行关掉。\r\n\r\n不知道休眠机制，靠猜的话，效率不高。"
+ },
+ {
+  "id": "4256",
+  "parent": "4255",
+  "date": "2016-07-14T13:38:56+08:00",
+  "author": "wolf",
+  "site": "",
+  "text": "@wowo：root@linaro-ubuntu-desktop:/sys/power# ls\r\npm_async  pm_freeze_timeout  state  wake_lock  wake_unlock  wakeup_count\r\nroot@linaro-ubuntu-desktop:/sys/power# cat pm_async \r\n1\r\nroot@linaro-ubuntu-desktop:/sys/power# cat pm_freeze_timeout \r\n20000\r\nroot@linaro-ubuntu-desktop:/sys/power# cat state\r\nfreeze mem\r\nroot@linaro-ubuntu-desktop:/sys/power# cat wake_lock \r\n\r\nroot@linaro-ubuntu-desktop:/sys/power# cat wake_unlock \r\n\r\nroot@linaro-ubuntu-desktop:/sys/power# cat wake\r\nwake_lock     wake_unlock   wakeup_count  \r\nroot@linaro-ubuntu-desktop:/sys/power# cat wakeup_count \r\n7021\r\nroot@linaro-ubuntu-desktop:/sys/power# \r\n这个是power下的文件，没有别的了，是不是可以向wake_lock里面写个字符串阻止休眠呢，我现在把通过xset dpms 0 0 0设置的，然后把屏幕背光设置为0，过一段时间再设置为50，设置成功，cat值为0，但是屏幕亮度还是为没有变化，和之前的0时一样，这个是因为系统进入休眠了吗？"
+ },
+ {
+  "id": "4258",
+  "parent": "4256",
+  "date": "2016-07-14T15:07:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wolf：系统是不是睡眠了，可以看日志确定。写wake_lock确实可以阻止系统休眠，你可以试试。"
+ },
+ {
+  "id": "5243",
+  "parent": "0",
+  "date": "2017-02-24T16:24:09+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "wowo，有个问题请教下哈，在手机休眠的时候按下powerkey，这会唤醒手机。代码上应该是：kernel继续从上次代码停止的地方开始执行，去执行退出suspend的操作，那上报按键的动作是在这时候去做吗？怎样确保退出suspend后不会立即又进去suspend？？（wakeup count的方式）"
+ },
+ {
+  "id": "5247",
+  "parent": "5243",
+  "date": "2017-02-24T22:31:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：powerkey的driver，需要在中断处理中拿一个锁。"
+ },
+ {
+  "id": "5252",
+  "parent": "5247",
+  "date": "2017-02-27T08:47:16+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@wowo：好的，谢谢wowo，这个锁是等到事件处理完了才释放吗？"
+ },
+ {
+  "id": "5253",
+  "parent": "5252",
+  "date": "2017-02-27T08:49:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：简单的话，可以用一个带timeout的锁。如果你能知道事件处理完了，也OK（例如，Application读取键值的时候，放掉）。"
+ },
+ {
+  "id": "5461",
+  "parent": "0",
+  "date": "2017-04-13T15:15:36+08:00",
+  "author": "js_wawayu",
+  "site": "",
+  "text": "为啥现在sys/power下面没有disk,resume节点？"
+ },
+ {
+  "id": "5467",
+  "parent": "5461",
+  "date": "2017-04-14T08:49:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@js_wawayu：这和你系统的配置有关。"
+ },
+ {
+  "id": "8062",
+  "parent": "0",
+  "date": "2020-07-23T07:17:59+08:00",
+  "author": "__fenghuo__",
+  "site": "",
+  "text": "@wowo 非常感谢wowo先生的技术分享。诚心向大神请教个问题： dev_pm_ops中的poweroff接口，按kernel文档中所述，其功能和suspend,freeze类似，在hibernate image create后被调用。在很多driver中，通常用同一个函数处理suspend, freeze, poweroff，并且会将device memory backup到main memory中。问题是：poweroff被调时，hibernate iamge已经创建了，此时做backup有何意义呢(一些GPU driver是这么玩的)？我怀疑是snapshot时用的，不太确定， 请大神指点迷津，不胜感激。"
+ },
+ {
+  "id": "8123",
+  "parent": "4145",
+  "date": "2020-10-13T09:56:54+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@wowo：实际上是区分的，arm上有ttbr0/ttbr1，分别给kernel和user做page table的基地址；linux会先把页表创建好，cpu访问虚拟地址时，mmu会自动通过页表翻译成物理地址，然后再通过页表的权限（rwx/usr/svc）确认能不能访问。\r\nkernel确实可以访问user space的虚拟地址，因为这段页表权限是open给kernel的，其实copy_from_user也是简单封装了一下，加了很多判断然后直接访问user space了。\r\n但是user就不能访问kernel space了，因为页表权限是限制user的，可以参考arm的手册。"
+ }
+]

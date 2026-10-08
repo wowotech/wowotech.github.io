@@ -1,0 +1,98 @@
+[
+ {
+  "id": "6154",
+  "parent": "0",
+  "date": "2017-10-31T16:02:48+08:00",
+  "author": "小亮",
+  "site": "",
+  "text": "page_link除了存放page地址+flag标记外，还可以存放sg地址+flag，参见接口sg_chain（）"
+ },
+ {
+  "id": "6252",
+  "parent": "6154",
+  "date": "2017-11-28T16:13:13+08:00",
+  "author": "小王",
+  "site": "",
+  "text": "@小亮：感谢作者的这篇文章，解答了我对scatterlist的疑惑!"
+ },
+ {
+  "id": "6486",
+  "parent": "0",
+  "date": "2018-01-18T16:51:34+08:00",
+  "author": "TGSP",
+  "site": "",
+  "text": "你好！咨询一下相关的问题，我现在在看USB storage驱动实现，里面用到了sg_miter_start()、sg_miter_skip()、sg_miter_next()、sg_miter_stop()代码实现，可否指点一下Mapping sg iterator是个什么样的结构逻辑么？"
+ },
+ {
+  "id": "6679",
+  "parent": "0",
+  "date": "2018-04-18T20:57:51+08:00",
+  "author": "1688",
+  "site": "",
+  "text": "讲得很透彻啊"
+ },
+ {
+  "id": "7199",
+  "parent": "0",
+  "date": "2019-02-21T20:46:56+08:00",
+  "author": "Peter",
+  "site": "",
+  "text": "是不是有了SG，DMA使用的前提不一定是连续的物理内存了。因为DMA可以通过scatterlist来访问不连续的物理内存"
+ },
+ {
+  "id": "7200",
+  "parent": "7199",
+  "date": "2019-02-22T21:32:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Peter：SG其实是一个软件概念，大多是给CPU（运行之上的软件）使用。\r\nDMA是否必须访问连续的物理内存，要看DMA的具体实现。"
+ },
+ {
+  "id": "7672",
+  "parent": "0",
+  "date": "2019-09-27T14:50:06+08:00",
+  "author": "code_搬运工",
+  "site": "",
+  "text": "dma_address，该内存块实际的起始地址（PA，相比page更接近我们人类的语言）。\r\n 这个表述是否有误？\r\n  我的理解是：\r\n  sg_phys(sg)    ---> 物理地址\r\n  sg_dma_address ---> 总线(DMA)地址  对应着dma_address"
+ },
+ {
+  "id": "8262",
+  "parent": "0",
+  "date": "2021-07-30T09:42:20+08:00",
+  "author": "一个网友",
+  "site": "",
+  "text": "想请教个问题， struct scatterlist指向的单位可以大于1个Page么，比如大页，512个Page，2M内容。"
+ },
+ {
+  "id": "8762",
+  "parent": "7672",
+  "date": "2023-03-30T12:49:25+08:00",
+  "author": "XuLiDown",
+  "site": "",
+  "text": "@code_搬运工：个人感觉这里的表述可能有点问题。sg_dma_address 代表的应该是内存块在总线地址空间中的基地址，dma_length 代表的则是内存块在总线地址空间中的长度"
+ },
+ {
+  "id": "9145",
+  "parent": "8262",
+  "date": "2025-02-25T16:38:39+08:00",
+  "author": "deven",
+  "site": "",
+  "text": "@一个网友：从数据结构定义就能知道肯定不支持大页"
+ },
+ {
+  "id": "9171",
+  "parent": "0",
+  "date": "2025-10-14T16:32:27+08:00",
+  "author": "牛逼666",
+  "site": "",
+  "text": "牛逼"
+ },
+ {
+  "id": "9180",
+  "parent": "0",
+  "date": "2026-03-04T20:28:28+08:00",
+  "author": "小石",
+  "site": "",
+  "text": "讲的很好，谢谢"
+ }
+]

@@ -1,0 +1,26 @@
+[
+ {
+  "id": "8735",
+  "parent": "0",
+  "date": "2023-02-01T13:11:43+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "ticket-based-spinlock有个重大问题：\r\n假如当CPU0获取了spinlock，而CPU1、CPU2、CPU3...在等锁，在CPU0 spin_unlock时通过sev/stlr唤醒其它所有所有CPU去check是否轮到自己；我们通过ticket可以知道lock->next是哪个CPU，其实只需要唤醒对应CPU上的task即可。\r\n于是qspinlock应运而生：\r\n1：当CPU0获取了spinlockA，而CPU1-->CPU2-->CPU3依次在等锁（lock->next是CPU1上的task）时，只需让CPU1自旋在spinlockA上（即qspinlock中的pending）、CPU2/CPU3自旋在percpu上的另外一把锁B（即qspinlock中的mcs锁），percpu的锁可以减少cache-boucing（具体怎么减 自行脑补）；\r\n2：当CPU0释放了spinlockA（armv8的stlr可以只唤醒对应地址上的waiter即CPU1，这点比armv7的sev好用），只会唤醒自旋在spinlockA上的CPU1，其它CPU则暂时不会被唤醒；\r\n3：同理CPU1获取了spinlockA，需要把把lock->next标记为CPU2，并让CPU2从自旋在percpu的spinlockB转换到spinlockA；即qspinlock中对应的mcs队列；\r\n4：同理CPU1释放了spinlockA，stlr（load-acquire/store-release）只会唤醒CPU2,；CPU2获取了spinlockA，把lock->next标记为CPU3，并让CPU3从自旋在percpu的spinlockB转换到spinlockA；即qspinlock中对应的mcs队列；\r\n依次往下，这便是qspinlock的中心思想吧。至于怎么设计和实现，我觉得有不同的方法。"
+ },
+ {
+  "id": "8794",
+  "parent": "0",
+  "date": "2023-07-11T10:12:13+08:00",
+  "author": "zxq",
+  "site": "",
+  "text": "3、Pending owner task\r\n\r\nval = queued_fetch_set_pending_acquire(lock);---------A\r\n\r\nif (unlikely(val & ~_Q_LOCKED_MASK)) {------------B\r\n\r\n if (!(val & _Q_PENDING_MASK))\r\n\r\n  clear_pending(lock);\r\n\r\n goto queue;\r\n\r\n}\r\n\r\n请教个问题，在这个地方，我们是判断的旧值的pending bit如果没有置位，就直接清楚了，特殊情况下如果在if判断条件成立后，我们被中断打断了（clear_pending被延后），其他核上也在尝试获取这个spin lock确实存在对pending bit置位的情况，那岂不是误清了pengding bit，而导致可能有两个wait自旋在locked域吗？\r\n是我哪里想的不对吗？有大神帮忙解答下吗"
+ },
+ {
+  "id": "8795",
+  "parent": "0",
+  "date": "2023-07-11T10:30:18+08:00",
+  "author": "zxq",
+  "site": "",
+  "text": "看的不够仔细，A处已经被我们自己设置了pending bit，clear之前别人没有机会再设置pending bit，也不存在误清被人设置的pending bit。"
+ }
+]

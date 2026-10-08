@@ -1,0 +1,274 @@
+[
+ {
+  "id": "510",
+  "parent": "0",
+  "date": "2014-10-10T16:19:41+08:00",
+  "author": "常山黄豆",
+  "site": "",
+  "text": "每看一篇，都有收获，让我在linux旅途中前进一步，我会继续。"
+ },
+ {
+  "id": "513",
+  "parent": "510",
+  "date": "2014-10-10T22:02:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@常山黄豆：多谢鼓励。很惭愧博客刚开不久，文章不多，对你的帮助有限。蜗窝也会继续。"
+ },
+ {
+  "id": "610",
+  "parent": "0",
+  "date": "2014-11-03T22:56:07+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "请教！ 关于subsystem\r\n\r\n自己理解不了subsystem有什么用处？ \r\n\r\n比如kernel里面在初始化时注册了类似下面这些subsystem：\r\nsubsys_system_register(&clocksource_subsys, NULL);\r\nsubsys_system_register(&cpu_subsys, cpu_root_attr_groups)\r\nsubsys_system_register(&memory_subsys, NULL)\r\n... 等等\r\n\r\n之后再基于上述注册的subsystem添加device、driver什么的。不明白这里的奥妙，难道只是单纯的提供给sysfs使用？"
+ },
+ {
+  "id": "612",
+  "parent": "610",
+  "date": "2014-11-04T10:21:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@puppypyb：从kernel的进化来看，它在慢慢淡化subsystem的概念，转而使用kset_create_and_add。kset代表kobject的组合，在文件系统中以目录的形式体现。\r\n有些kset是有意义的，如某个device、某个driver，但有些是没有意义的，如所有device的集合（/sys/devices目录）。\r\n所以，subsystem应该没有太多的奥妙，仅仅是分类而已，所以不用太纠结。"
+ },
+ {
+  "id": "613",
+  "parent": "0",
+  "date": "2014-11-04T12:37:23+08:00",
+  "author": "puppypyb",
+  "site": "",
+  "text": "wowo,感谢对我的回应。\r\nsubsystem应该是之前设备模型里面的一种逻辑上的概念，看到现在的API文档上所不再推荐使用subsys_system_register了，“Do not use this interface for anything new, it exists for compatibility with bad ideas only. New subsystems should use plain subsystems;”\r\n先不纠结了，以后有机会再留意吧～\r\n\r\n但关于bus我这里还有一个问题：bus也是一种设备吗？\r\n搜索了一下，有好些地方都提到了“总线也是一种设备”，但没有更具体的解释了，这种说法基本都源自下面：\r\nint __init platform_bus_init(void)\r\n{\r\n\tint error;\r\n\r\n\tearly_platform_cleanup();\r\n\r\n\terror = device_register(&platform_bus); //总线也是一种设备\r\n\tif (error)\r\n\t\treturn error;\r\n\terror =  bus_register(&platform_bus_type);\r\n\tif (error)\r\n\t\tdevice_unregister(&platform_bus);\r\n\treturn error;\r\n}\r\n\r\n但kernel中其他的总线似乎并没有先注册的动作。这里搞糊涂了，wowo赐教！"
+ },
+ {
+  "id": "617",
+  "parent": "613",
+  "date": "2014-11-04T18:45:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@puppypyb：不要说赐教，太见外，大家讨论技术，唯有讨论，才能更清晰。\r\n我觉得，准确的说，bus不一定非得是一个device。从struct bus_type结构中，可以看到佐证，因为里面没有嵌入struct device结构。\r\n从本质上说，bus是一个subsystem，所以才会在bus_register中调用kset_register向/sys/bus/下添加一个目录。\r\n至于要不要在注册bus_type时也注册一个device（例如platform bus），由bus controller的driver开发者决定。\r\nplatform bus之所以这么做，是因为它需要在/sys/devices/中创建platform目录，其它bus却没这么做。\r\n另外，有些bus controller本身就是一个物理设备，因此一定会对应一个struct device，但不一定非得和bus绑在一起。"
+ },
+ {
+  "id": "2828",
+  "parent": "0",
+  "date": "2015-10-25T09:50:49+08:00",
+  "author": "vedic",
+  "site": "",
+  "text": "Thanks a lot :)"
+ },
+ {
+  "id": "4307",
+  "parent": "0",
+  "date": "2016-07-25T08:39:31+08:00",
+  "author": "凌云",
+  "site": "",
+  "text": "能不能解释一下struct subsys_private结构中struct kset glue_dirs成员的意义？"
+ },
+ {
+  "id": "4308",
+  "parent": "4307",
+  "date": "2016-07-25T09:06:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@凌云：它主要在下面的场景使用：\r\ndevice_add的时候，如果这个device属于某一个class，同时它又是某一个device子设备，设备模型会利用glue_dirs，在parent device的目录下，创建一个名称为class、kset为glue_dirs的目录。\r\n根据内核的注释，这是为了解决namespace的冲突。再进一步，我就没有去理解了。\r\n另外，你可以写一个小的测试代码，创建一个这样的设备，看看最终的结果如何。这样可以加深理解。"
+ },
+ {
+  "id": "4309",
+  "parent": "4308",
+  "date": "2016-07-25T10:04:19+08:00",
+  "author": "凌云",
+  "site": "",
+  "text": "@wowo：恢复得真快，谢谢！"
+ },
+ {
+  "id": "4310",
+  "parent": "4309",
+  "date": "2016-07-25T10:05:05+08:00",
+  "author": "凌云",
+  "site": "",
+  "text": "@凌云：回复的真快，谢谢！"
+ },
+ {
+  "id": "4391",
+  "parent": "0",
+  "date": "2016-08-12T20:12:57+08:00",
+  "author": "狼花1997",
+  "site": "",
+  "text": "我想问一下sys/bus/spi/devices/spi1.0   这个spi1.0 是如何注册得来的啊"
+ },
+ {
+  "id": "4392",
+  "parent": "4391",
+  "date": "2016-08-12T21:58:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@狼花1997：大致的过程，是：spi_add_device-->device_add，具体可以拔拔spi的代码：\r\nhttps://github.com/wowotechX/linux/blob/x_integration/drivers/spi/spi.c\r\n刚好可以借助理解设备模型的概念~"
+ },
+ {
+  "id": "4462",
+  "parent": "0",
+  "date": "2016-08-28T21:57:48+08:00",
+  "author": "lucifer",
+  "site": "",
+  "text": "在3.12 内核上 看到subsys_interface  ，不过对于这个sif->add_dev(dev, sif); 还不明白什么用途\r\nvoid bus_probe_device(struct device *dev)\r\n {\r\n         struct bus_type *bus = dev->bus;\r\n         struct subsys_interface *sif;\r\n         int ret;\r\n \r\n         if (!bus)\r\n                 return;\r\n\r\n        if (bus->p->drivers_autoprobe) {\r\n                 ret = device_attach(dev);\r\n                 WARN_ON(ret < 0);\r\n         }\r\n \r\n        mutex_lock(&bus->p->mutex);\r\n         list_for_each_entry(sif, &bus->p->interfaces, node)\r\n                if (sif->add_dev)\r\n                        sif->add_dev(dev, sif);\r\n        mutex_unlock(&bus->p->mutex);\r\n }"
+ },
+ {
+  "id": "4463",
+  "parent": "4462",
+  "date": "2016-08-28T22:19:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lucifer：cpufreq framework中有add_dev的例子，这两篇文章特意提到了，你可以看一下：\r\n/pm_subsystem/cpufreq_overview.html\r\n/pm_subsystem/cpufreq_core.html"
+ },
+ {
+  "id": "4464",
+  "parent": "4463",
+  "date": "2016-08-28T23:16:36+08:00",
+  "author": "lucifer",
+  "site": "",
+  "text": "@wowo：非常谢谢wowo ~~ 我会去学习的。自己基础太差了。。。"
+ },
+ {
+  "id": "4711",
+  "parent": "0",
+  "date": "2016-10-14T16:46:47+08:00",
+  "author": "linuxxx",
+  "site": "",
+  "text": "想问下wowo,Linux设备模型这个系列代码分析是基于哪个内核版本"
+ },
+ {
+  "id": "4712",
+  "parent": "4711",
+  "date": "2016-10-14T17:24:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxxx：抱歉啊，当初觉得设备模型比较通用，就没有太在意版本，应该是3.10左右的。"
+ },
+ {
+  "id": "5108",
+  "parent": "0",
+  "date": "2017-01-06T10:59:46+08:00",
+  "author": "REGA",
+  "site": "",
+  "text": "hi wowo,在看code的时候\r\n\r\npriv->drivers_kset = kset_create_and_add(\"drivers\", NULL,\r\n\t\t\t\t\t\t &priv->subsys.kobj);\r\n这个/sys/bus/drivers对应的kset的kset_uevet_ops是NULL，之后driver注册的时候，bus_add_driver会把driver对应的kobject注册到/sys/bus/drivers下面？那这个kset_uevet_ops是NULL不会有影响吗？"
+ },
+ {
+  "id": "5109",
+  "parent": "5108",
+  "date": "2017-01-06T14:45:29+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@REGA：没有问题，uevent_ops不是必须的，它的功能为（可参考/device_model/kobject.html）：\r\nuevent_ops，该kset的uevent操作函数集。当任何Kobject需要上报uevent时，都要调用它所从属的kset的uevent_ops，添加环境变量，或者过滤event（kset可以决定哪些event可以上报）。因此，如果一个kobject不属于任何kset时，是不允许发送uevent的。"
+ },
+ {
+  "id": "5113",
+  "parent": "5109",
+  "date": "2017-01-09T09:58:43+08:00",
+  "author": "REGA",
+  "site": "",
+  "text": "@wowo：@wowo，那就是说在bus上挂某个driver的时候不需要uevent操作吗？还是说只要从属于kset就可以做uevent操作，只是有一些限制（无法添加环境变量，无法过滤event）？\r\n\r\n\r\n\r\n\tpriv->devices_kset = kset_create_and_add(\"devices\", NULL,\r\n\t\t\t\t\t\t &priv->subsys.kobj);\r\n\r\n而且/sys/bus/devices这个kset的uevent_ops也为null,我理解挂device的时候是需要uevent的？"
+ },
+ {
+  "id": "5115",
+  "parent": "5109",
+  "date": "2017-01-09T10:06:23+08:00",
+  "author": "REGA",
+  "site": "",
+  "text": "@wowo：我理解/sys/bus/devices应该是一个链接，device真正的object操作是对应在/sys/devices下的\r\n\r\ndevices_kset = kset_create_and_add(\"devices\", &device_uevent_ops, NULL);\r\n\r\n这个kset是有对应的uevent_ops的，但是driver对应的kobject，我只在bus_add_driver下找到，driver的注册不需要uevent操作吗？\r\n\r\n问题比较小白，请wowo赐教。。。"
+ },
+ {
+  "id": "5116",
+  "parent": "5113",
+  "date": "2017-01-09T10:19:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@REGA：你理解的是对的，device肯定是需要uevent的（因为device是操作的主题，可能会产生各种事件），但driver，还真不一定。另外我也没有看这么细，因此也不一定理解正确哈～～"
+ },
+ {
+  "id": "5131",
+  "parent": "5116",
+  "date": "2017-01-11T13:58:58+08:00",
+  "author": "REGA",
+  "site": "",
+  "text": "@wowo：@wowo:我看了code，在driver_register中bus_add_driver后会有kobject_uevent(&drv->p->kobj, KOBJ_ADD);\r\n但是这个driver所属的kset中的uevent_ops又为NULL，这个让我很费解"
+ },
+ {
+  "id": "5139",
+  "parent": "5131",
+  "date": "2017-01-12T13:43:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@REGA：uevent_ops的作用，是为了统一处理该kset下所有kobject上报的uevent，如果为NULL，意味着不再帮忙处理，driver上报的uevent，会原封不动的报上去。没有毛病吧？所以不费解的:-)"
+ },
+ {
+  "id": "5141",
+  "parent": "5139",
+  "date": "2017-01-13T09:35:50+08:00",
+  "author": "REGA",
+  "site": "",
+  "text": "@wowo：@wowo，感谢wowo的解答~"
+ },
+ {
+  "id": "5628",
+  "parent": "0",
+  "date": "2017-06-06T14:07:22+08:00",
+  "author": "小学生",
+  "site": "",
+  "text": "楼主，我想请问下PCI子系统的struct pci_bus 和 pci_bus_type（类型为struct bus_type） 是什么关系？两者分别用在哪些场景呢？\r\n我的理解是：我们在使用pci_read_config_byte()读取某个PCI设备的config space信息时，最终会调用到该pci device所在pci_bus的ops->read函数；但是在使用pci_get_device()来查找当前是否有对应vendorID,deviceID的pci device时，最终会调到bus_find_device()上，而该函数的第一个参数类型是struct bus_type，相当于是在pci_bus_type上查找是否有需要查找的pci device。感觉这两个地方不大对应啊？\r\n请楼主赐教"
+ },
+ {
+  "id": "5630",
+  "parent": "5628",
+  "date": "2017-06-06T16:49:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@小学生：不是很熟悉PCI，不过从逻辑上来说，pci_bus_types应该是是挂各种PCI控制器的bus，而struct pci_bus是每个PCI控制器抽象出来的bus，用来挂PCI设备。如下图（具体细节你要自己看看）：\r\n=========================pci_bus_type====================\r\n    +           +\r\n    |    \t|\r\n    |    \t|\r\n    +    \t+\r\npci driver pci device X--------struct pci_bus------------\r\n    \\            /                              |\r\n     \\          /                               |\r\n\tprobe                                   +\r\n\t\t                              devices"
+ },
+ {
+  "id": "7099",
+  "parent": "0",
+  "date": "2018-12-22T11:09:09+08:00",
+  "author": "h233",
+  "site": "",
+  "text": "@wowo:请教一下，搜索所在的bus，比对是否有同名的device_driver（或device），如果有并且该设备没有绑定Driver（注：这一点很重要，通过它，可以使同一个Driver，驱动相同名称的多个设备，后续在Platform设备的描述中会提及）则调用device_driver的probe接口。 \r\n\r\n我这边现在有2颗同样的IC，都是i2c设备，现在使用了这个机制，共用一套driver,之前访问它们都是通过各自的sys节点(尽管设备名称相同，但是i2c地址不同嘛，所以好区分），但是后来发现这样访问，数据若有变化时会有滞后的问题，所以想跟放在TP的中断线程里，和TP坐标一起上报上去。\r\n\r\n现在有个困难是，我发现如果用这种方式的话，我不知道如何取出各自的 i2c_client 变量，毕竟是同一套代码加载了两次而已。虽然我也明白模块之间尽量不要有耦合，或者说这种工作在用户空间做也许更好？但是我想在这个方向尝试一下，不知道有什么建议？谢谢"
+ },
+ {
+  "id": "7349",
+  "parent": "7099",
+  "date": "2019-04-12T14:11:04+08:00",
+  "author": "h233",
+  "site": "",
+  "text": "@h233：全局变量对于两个device而言是共享的同一个，只不过是probe加载了两次而已。\r\n只需要创建一个全局变量，在每次probe时进行记录，之后的驱动接口做好保护即可。"
+ },
+ {
+  "id": "7350",
+  "parent": "7349",
+  "date": "2019-04-14T11:42:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@h233：之前你的问题没有看到，就漏掉了，抱歉啊！好在你自己想到解决方法了，赞一个！！！"
+ },
+ {
+  "id": "7745",
+  "parent": "0",
+  "date": "2019-11-11T10:49:23+08:00",
+  "author": "huanglei104",
+  "site": "",
+  "text": "\"为了方便设备模型的实现，内核规定，系统中的每个设备都要连接在一个Bus上\" , 我想请问一下， 一个字符设备连接到的是哪个Bus呢？"
+ },
+ {
+  "id": "7877",
+  "parent": "0",
+  "date": "2020-02-13T17:58:23+08:00",
+  "author": "kernfs",
+  "site": "",
+  "text": "wowo，您好，请教个问题。本章讲到的bus_add_device函数，有个功能是创建链接，如下：\r\n“调用sysfs_create_link接口，将该device在sysfs中的目录，链接到该bus的devices目录下，例如：\r\n\r\nxxx# ls /sys/bus/spi/devices/spi1.0 -l                                                        \r\nlrwxrwxrwx root     root              2014-04-11 10:46 spi1.0 -> ../../../devices/platform/s3c64xx-spi.1/spi_master/spi1/spi1.0\r\n其中/sys/devices/…/spi1.0，为该device在sysfs中真正的位置，而为了方便管理，内核在该设备所在的bus的xxx_bus/devices目录中，创建了一个符号链接 ”\r\n此处有个疑问，就是从sys/devices/platform/s3c64xx-spi.1/spi_master/spi1/spi1.0是不是可以断定spi1属于platform device？从platform device的初始化流程来看，应该属于platform bus，那为什么创建链接的时候会放在/sys/bus/spi/devices下面呢，这个目录不应该是spi bus的目录吗？"
+ },
+ {
+  "id": "7887",
+  "parent": "7877",
+  "date": "2020-02-18T14:59:30+08:00",
+  "author": "kernfs",
+  "site": "",
+  "text": "@kernfs：该问题，重新整理了下code，基本明白spi和i2c设备的特殊性。\r\n引用其他人的回复：“i2c和spi有点特殊，i2c和spi有主从设备之分，并且有自己的总线i2c bus和spi bus。挂载在platform bus下的只是i2c和spi的controller设备（即master），以iMX的i2c举例，在执行of_platform_populate()时创建的platform device只代表了I2C controller，在注册platform_driver(如i2c_imx_driver)时会执行platform_driver的probe函数，即i2c_imx_probe()，probe函数会分配一个i2c_adapter作为i2c controller的抽象设备挂接在i2c bus上。同时该probe函数会遍历该i2c controller设备树节点下的所有i2c子节点，创建i2c_client设备并将i2c_client->adapter指向这个i2c_adapter。随后在i2c client加入i2c bus时或者i2c client的驱动i2c_driver加入i2c bus时，会匹配i2c_client与i2c_driver，匹配成功会执行i2c_driver的probe函数来初始化i2c_client。i2c_client通过adapter指针指向自己的i2c_adapter，i2c_adapter实现i2c协议传输的方法。上层应用在使用i2c_client的字符设备时最终通过该指针来操作i2c_adapter发出正确的时序和数据。”"
+ }
+]

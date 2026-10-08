@@ -1,0 +1,12 @@
+{{ $all := index hugo.Data.comments (string .Params.gid) }}
+{{ with $all }}
+<section id="comments" class="comments">
+  <h2>评论（{{ len . }} 条，只读存档）</h2>
+  <p class="muted small">{{ site.Params.commentsClosedNotice }}</p>
+  <ul class="comment-list">
+  {{ range where . "parent" "0" }}
+    {{ partial "comment.html" (dict "c" . "all" $all) }}
+  {{ end }}
+  </ul>
+</section>
+{{ end }}

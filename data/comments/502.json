@@ -1,0 +1,74 @@
+[
+ {
+  "id": "8584",
+  "parent": "0",
+  "date": "2022-04-07T19:31:09+08:00",
+  "author": "cutelinux",
+  "site": "",
+  "text": "逻辑清晰，通俗易懂，赞！"
+ },
+ {
+  "id": "8591",
+  "parent": "0",
+  "date": "2022-04-20T23:54:12+08:00",
+  "author": "zzz",
+  "site": "",
+  "text": "文章写的很赞！想问下作者调度和负载均衡这块代码是如何学进去的，因为调度并不像实际一个设备驱动或者其他模块代码那么容易上手和实践，这里如何和实践相结合呢。"
+ },
+ {
+  "id": "8592",
+  "parent": "8591",
+  "date": "2022-04-22T11:38:26+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zzz：的确如你所言，理论需要结合实际。不过，我目前的工作就是做内核优化的，所以不缺实践，哈哈^_^\r\n有兴趣来做内核优化实践的话可以联系我，微信是Linuxer-at-wowo"
+ },
+ {
+  "id": "8599",
+  "parent": "0",
+  "date": "2022-04-28T17:25:18+08:00",
+  "author": "abcdefg1324",
+  "site": "",
+  "text": "赞！实际移植才能理解深刻，这种尝试也挺有意义"
+ },
+ {
+  "id": "8623",
+  "parent": "0",
+  "date": "2022-06-01T20:17:21+08:00",
+  "author": "ctwillson",
+  "site": "",
+  "text": "之后有没有分享嵌入式设备的调度，比如 EAS WALT..."
+ },
+ {
+  "id": "8644",
+  "parent": "0",
+  "date": "2022-07-17T22:01:07+08:00",
+  "author": "donbear",
+  "site": "",
+  "text": "感谢分享，很精彩啊。\r\n\r\n有一个疑问希望能得到博主的解答。\r\n\r\n在通过 *sum 计算 *avg 的时候，为什么是除以几何级数的最大值？\r\n按照linux中源码注释以及各处看到的公式，这里貌似除1024就可以了？:(\r\n\r\nstatic __always_inline void\r\n___update_load_avg(struct sched_avg *sa, unsigned long load)\r\n{\r\n        u32 divider = get_pelt_divider(sa);\r\n\r\n        /*  \r\n         * Step 2: update *_avg.\r\n         */\r\n        sa->load_avg = div_u64(load * sa->load_sum, divider);\r\n        sa->runnable_avg = div_u64(sa->runnable_sum, divider);\r\n        WRITE_ONCE(sa->util_avg, sa->util_sum / divider);\r\n}\r\n\r\n看了博文这里的解释，还是一头雾水：在计算sum值的时候，runnable和running sum都是进行了scale操作（左移10bit），因此在计算avg的时候，直接除以序列最大值就OK了。通过get_pelt_divider可以获得PELT几何序列的最大值。\r\n\r\n博主能详细解答一下么？非常感谢。"
+ },
+ {
+  "id": "8652",
+  "parent": "8644",
+  "date": "2022-07-26T11:14:50+08:00",
+  "author": "Redsky",
+  "site": "",
+  "text": "@donbear：这个问题我是这么理解的，几何最大值，表征的是在衰减期间内，每一个us内se都处于running/runnable状态的sum，实际上也可以理解为某一时刻load在load sum计算中衰减到0的时间，也就是衰减周期的us数量。sum/time，计算出来的是avg。\r\n\r\n如果理解错了，请博主指正。"
+ },
+ {
+  "id": "8658",
+  "parent": "0",
+  "date": "2022-07-28T10:02:33+08:00",
+  "author": "donbear",
+  "site": "",
+  "text": "我想我明白了.\r\n\r\n*_avg 就是在 [1024us, 1024us, ...] 这个时间序列的对应指标统计的加权平均.\r\n*_avf 的分母完全是由它的数学定义推导而来的,其原始定义其实就是一个 Exponential Moving Average，分母的推导可以看http://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average.."
+ },
+ {
+  "id": "8729",
+  "parent": "8644",
+  "date": "2023-01-05T18:28:35+08:00",
+  "author": "learner",
+  "site": "",
+  "text": "@donbear：PELT虽然是按se计算的。但是因为pelt最终是用来衡量cpu超载、cpu负载均衡的，所以时间是从cpu的角度看待的，对于一个cpu来说，统计的都是几何级数最大值时间段内的负载，所以对于每个任务都要计算在这段时间内的负载。"
+ }
+]

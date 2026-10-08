@@ -1,0 +1,58 @@
+[
+ {
+  "id": "5759",
+  "parent": "0",
+  "date": "2017-06-29T16:47:36+08:00",
+  "author": "凤凰院胸针",
+  "site": "",
+  "text": "茅塞顿开！不知后续会不会还有GPIO subsystem的介绍？ 以及博主对入手ARMV8的开发板有什么推荐？"
+ },
+ {
+  "id": "5761",
+  "parent": "5759",
+  "date": "2017-06-29T18:33:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@凤凰院胸针：我会顺着站内“X Project”的过程去写，所以GPIO很快就会总结了:-)\r\n至于开发板，我研究的不多，你可以去网上看看～～"
+ },
+ {
+  "id": "5886",
+  "parent": "0",
+  "date": "2017-08-08T09:40:33+08:00",
+  "author": "随风律动",
+  "site": "",
+  "text": "对pinctrl的配置的描述很透彻呢！\r\n\r\n我这遇到个问题，将一个模块编成.ko insmod，设置的管脚复用等配置可以正常的运行；可是rmmod之后重新insmod该驱动，在配置管脚时，获取的map->data.configs.num_configs和map->data.configs.configs信息会有一定概率获取错误，查看对应地址，看到map参数会在重新insmod之后概率性被覆盖。\r\n\r\n不知道各位大大有没有什么想法和建议吗？"
+ },
+ {
+  "id": "5891",
+  "parent": "5886",
+  "date": "2017-08-08T14:00:59+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@随风律动：这些map信息都是在probe（insmod）的时候动态生成的，按理不会有问题，是不是相关的退出机制不完善（这个模块或者pinctrl driver），重点检查一下。\r\nPS：问题太细节了，估计也帮不到什么，见谅～～～"
+ },
+ {
+  "id": "6479",
+  "parent": "0",
+  "date": "2018-01-16T10:25:11+08:00",
+  "author": "好运气",
+  "site": "",
+  "text": "data，该map需要用到的数据项，是一个联合体，如果map的类型是PIN_MAP_TYPE_CONFIGS_GROUP，则为struct pinctrl_map_mux类型的变量...\r\n\r\n这个应该是个笔误，应该是：如果map的类型是PIN_MAP_TYPE_MUX_GROUP，则为struct pinctrl_map_mux类型的变量"
+ },
+ {
+  "id": "7468",
+  "parent": "0",
+  "date": "2019-06-12T13:59:49+08:00",
+  "author": "Waiwai",
+  "site": "",
+  "text": "你好，请教一个问题：\r\n文中提到 Pin configuration(对象是pin或者pin group）， 我想这个很好理解，有config_set, config_group_set等接口区分， 但Pin multiplexing(对象是pin或者pin group) 是如何体现的呢？"
+ },
+ {
+  "id": "8306",
+  "parent": "0",
+  "date": "2021-09-06T22:40:55+08:00",
+  "author": "果粒橙特仑苏",
+  "site": "",
+  "text": "感谢窝窝，醍醐灌顶！"
+ }
+]

@@ -1,0 +1,98 @@
+[
+ {
+  "id": "1987",
+  "parent": "0",
+  "date": "2015-06-13T11:43:22+08:00",
+  "author": "cy",
+  "site": "",
+  "text": "关于cpufrequency管理，我最近也在看，这里有一个系列讲解cpufrenquncy还不错：\r\nhttp://blog.csdn.net/droidphone/article/details/9532999"
+ },
+ {
+  "id": "1988",
+  "parent": "0",
+  "date": "2015-06-13T14:41:53+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "正好去年搞过cpufreq、cpuidle、clk等，这个貌似还没pinctrl抽象，哈哈"
+ },
+ {
+  "id": "1989",
+  "parent": "1987",
+  "date": "2015-06-13T21:10:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cy：多谢推荐~~~"
+ },
+ {
+  "id": "1990",
+  "parent": "1988",
+  "date": "2015-06-13T21:11:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@SleepDeXiang：确实如此，我觉得pinctrl在kernel这么子系统里面，算是比较抽象的了。从另一个角度看，pinctrl的设计可能不是很好（纯个人意见~~）……"
+ },
+ {
+  "id": "4284",
+  "parent": "0",
+  "date": "2016-07-19T15:10:13+08:00",
+  "author": "xyq07797",
+  "site": "",
+  "text": "wowo,请教一下，如果我们想针对不同的硬件（比如cpu），分配不同的opp，这该怎么实现呢？"
+ },
+ {
+  "id": "4286",
+  "parent": "4284",
+  "date": "2016-07-19T21:41:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xyq07797：不同的DTS配置不就行了吗？"
+ },
+ {
+  "id": "4288",
+  "parent": "4286",
+  "date": "2016-07-20T13:16:17+08:00",
+  "author": "xyq07797",
+  "site": "",
+  "text": "@wowo：你的意思是不同的DTS文件吧？但是比如大部分是一样的，就operating-points不一样呢？"
+ },
+ {
+  "id": "4289",
+  "parent": "4288",
+  "date": "2016-07-20T14:27:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xyq07797：这也没有关系，使用不同的dts（dtsi）区分就行了。"
+ },
+ {
+  "id": "4320",
+  "parent": "4289",
+  "date": "2016-07-26T17:07:54+08:00",
+  "author": "xyq07797",
+  "site": "",
+  "text": "@wowo：wowo,你有接触过kernel4.4的opp吗？"
+ },
+ {
+  "id": "4323",
+  "parent": "4320",
+  "date": "2016-07-26T18:50:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xyq07797：没有。说实话，我没有用过OPP，也没有看到过这方面的例子。"
+ },
+ {
+  "id": "8598",
+  "parent": "0",
+  "date": "2022-04-28T10:30:06+08:00",
+  "author": "jackzhous",
+  "site": "",
+  "text": "时间有点久，不知道博主还能不能回复我；初学者，有个疑问，按照大学学单片机时候的理解，电源管理这些待机、睡眠最终在硬件上的体现是往硬件提供的寄存器写值，或者往芯片某个引脚拉高、拉低电平，从而硬件就变为待机、睡眠等状态，是这样理解吗？如果是在kernel代码里面哪里有代码可以体现呢？"
+ },
+ {
+  "id": "8639",
+  "parent": "8598",
+  "date": "2022-07-04T17:59:08+08:00",
+  "author": "lamb",
+  "site": "",
+  "text": "@jackzhous：kernel待机、睡眠过程看这篇入门，系统睡眠的入口在这里\r\n/pm_subsystem/autosleep.html"
+ }
+]

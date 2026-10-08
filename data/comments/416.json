@@ -1,0 +1,58 @@
+[
+ {
+  "id": "6343",
+  "parent": "0",
+  "date": "2017-12-12T10:52:41+08:00",
+  "author": "jack",
+  "site": "",
+  "text": "针对case四：\r\n个人认为从2.5.4开始支持抢占，设计者在这里的抢占=”内核抢占“，因为之前的内核也没有“用户态抢占”一说。在用户态发生的中断返回时，不再检查是否支持“抢占”，只有发生在内核态的中断返回才检查preempt_count。而处于内核中的进程上下文显示的schedule()时，我认为是自己让出，并不算抢占吧。进程X不允许被抢占，就是不允许在内核中被其他因素调度出去，但是并不等于不允许自己主动放弃CPU吧。就好比一个进程的preempt_count一直为1，但并不影响它的运行。只是这个进程恢复到了”2.5.4内核“前的动作一样。可以理解为在早期的2.4版本上，为thread_info增加了preempt_count成员，且这个成员初始化为1，但本身内核又完全没加入抢占的feature。\r\n再者，case四中，如果schedule()前preepmt_count非0，即使不去”重新修改设置\"preempt_count： preempt_count_set(PREEMPT_DISABLED); 也没有影响吧。\r\n某个进程就是不想2.6内核的抢占，只想在2.4上呢？"
+ },
+ {
+  "id": "6371",
+  "parent": "6343",
+  "date": "2017-12-16T09:35:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@jack：其实你说得也也一些道理，以前的非抢占式内核时代，一旦进入内核态，也就是禁止了抢占，有一点类似整个内核态设定preempt_count总是等于1.\r\n\r\n在ARM平台上，preempt_count是per task的，所以：\r\n    preempt_disable\r\n    ……schedule……\r\n    preempt_enable\r\n的调用序列也无可厚非。我们假设schedule函数发生了A--》B任务的切换，那么上面的调用序列在执行B任务的时候，A task的preempt_count保持非0，似乎也没有什么影响，反正A任务下次调度回来会继续。然而，并非所有平台上，preempt_count都是per task的，有些平台，例如X86，preempt_count是per CPU的，你调用preempt_disable影响的是当前CPU的抢占状态，因此，上面的调用序列就存在问题了。因为B进程调度回来之后，CPU上的抢占被A进程disable了。\r\n也正是因为这个原因，在scheduler_debug中，当显示的修正preempt_count，以防止在per cpu preempt count的情况下，disable preempt会从一个task溢出到另外的一个task。"
+ },
+ {
+  "id": "6377",
+  "parent": "0",
+  "date": "2017-12-18T10:33:43+08:00",
+  "author": "linuxerer",
+  "site": "",
+  "text": "首先需要明确一点：从X进程切换到Y进程的时候，如果在X进程中关闭中断，然后切换到Y进程，如果中断不恢复的话，那么Y进程会一直执行，直到Y自己良心发现，让出CPU。这当然是不被允许的。因此，在调用schedule进行进程切换的时候，无论调用者是否关闭中断，在b点都会关闭中断（注意，这时候并没有记录之前的中断状态）。而在切入到Y进程之后，在c点都会显式的打开CPU中断。因此，上面的代码虽然不推荐，但是也不会对调度产生太大的影响。\r\n\r\nc点显示打开中断这点, \r\nif (likely(prev != next)) {\r\n\t\trq->nr_switches++;\r\n\t\trq->curr = next;\r\n\t\t++*switch_count;\r\n\r\n\t\ttrace_sched_switch(preempt, prev, next);\r\n\t\trq = context_switch(rq, prev, next); /* unlocks the rq */\r\n\t\tcpu = cpu_of(rq);\r\n\t} else {\r\n\t\tlockdep_unpin_lock(&rq->lock);\r\n\t\traw_spin_unlock_irq(&rq->lock);\r\n\t}\r\nc点不是每一次都会跑到吧?"
+ },
+ {
+  "id": "6382",
+  "parent": "6377",
+  "date": "2017-12-18T15:15:51+08:00",
+  "author": "linuxerer",
+  "site": "",
+  "text": "@linuxerer：找到了, 是在\r\ncontext_switch\r\n    finish_task_switch\r\n        finish_lock_switch\r\n            raw_spin_unlock_irq"
+ },
+ {
+  "id": "6975",
+  "parent": "0",
+  "date": "2018-10-10T17:35:20+08:00",
+  "author": "nzg",
+  "site": "",
+  "text": "hi 您好，这里有2个疑问：\r\n当唤醒的高优先级进程被调度到本CPU执行的时候，按理说这个高优先级进程应该立刻抢占当前进程，但是这个场景无法做到。\r\nQ：本CPU 的中断已经关闭，无法响应IPI 中断，如何能把这个唤醒的高优先级进程调度到本CPU 呢？\r\n\r\n在调用try_to_wake_up的时候会设定need resched flag并检查抢占，但是由于中断disable，因此不会立刻调用schedule，但是在step （3）的时候，由于没有检查抢占，这时候本应立刻抢占的高优先级进程会发生严重的调度延迟.....直到下一个抢占点到来。 \r\nQ：由于中断disable, 为何就不会立刻调用schedule? 是因为不响应IPI吗？如果调用try_to_wake_up之后，这里调用了preempt_disable->premmpt_enable, 这样就会触发schedule吧？\r\n\r\n谢谢"
+ },
+ {
+  "id": "7087",
+  "parent": "6975",
+  "date": "2018-12-16T01:06:28+08:00",
+  "author": "man8266",
+  "site": "",
+  "text": "@nzg：这里跟IPI有啥关系？"
+ },
+ {
+  "id": "7540",
+  "parent": "0",
+  "date": "2019-07-18T17:46:07+08:00",
+  "author": "大明白",
+  "site": "",
+  "text": "由于在切换过长设计runqueue队列的操作，因此需要spin lock来保护。不过在进程切换过程中，runqueue spin lock是不同进程来协同处理的。我们仍然以X进程切换到Y进程为例。在X进程中，在b点持锁并disable了本地中断，而spin lock的释放是在Y进程中完成的（c点），在释放spin lock的同时，也会打开cpu中断。\r\n\r\n==》spinlock的释放也是在同一进程中处理的，不会通过其他进程处理。X进程在b点持锁后，如果X会被切出当前cpu，那么在切出之前会unlock；如果X不会被切出当前cpu，那么X进程跑到c点自己去unlock。总之并不会和其他进程协同处理rq->lock。"
+ }
+]

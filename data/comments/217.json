@@ -1,0 +1,162 @@
+[
+ {
+  "id": "2913",
+  "parent": "0",
+  "date": "2015-10-31T11:15:20+08:00",
+  "author": "ushineme",
+  "site": "",
+  "text": "啊呀呀呀，要整理显示子系统了吗，我就是刚毕业在一个手机公司学习lcd的驱动，好期待！！"
+ },
+ {
+  "id": "2914",
+  "parent": "2913",
+  "date": "2015-10-31T12:13:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@ushineme：是在准备，不过还没有开始呢，最近事情比较多，就耽搁了。"
+ },
+ {
+  "id": "2917",
+  "parent": "2914",
+  "date": "2015-10-31T16:18:30+08:00",
+  "author": "ushineme",
+  "site": "",
+  "text": "@wowo：嗯嗯，知道啦，我会慢慢等的"
+ },
+ {
+  "id": "3286",
+  "parent": "0",
+  "date": "2015-12-24T17:30:35+08:00",
+  "author": "linux_emb",
+  "site": "",
+  "text": "麻雀虽小，五脏俱全。"
+ },
+ {
+  "id": "5209",
+  "parent": "0",
+  "date": "2017-02-08T08:52:00+08:00",
+  "author": "myway",
+  "site": "",
+  "text": "博主你好，我想问一下，PWM驱动是从哪里获取到GPIO信息的？"
+ },
+ {
+  "id": "5210",
+  "parent": "5209",
+  "date": "2017-02-08T09:59:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@myway：如果是标准的实现的话，当然是从pinctrl subsystem了，例如：\r\n/* arch\\arm\\boot\\dts\\imx23-evk.dts */ \r\npwm: pwm@80064000 { \r\n        pinctrl-names = \"default\"; \r\n        pinctrl-0 = <&pwm2_pins_a>; \r\n        status = \"okay\"; \r\n};\r\n只要把pinctrl配好，哪个pwm从哪个gpio出，就固定了。"
+ },
+ {
+  "id": "5245",
+  "parent": "0",
+  "date": "2017-02-24T18:52:44+08:00",
+  "author": "linux_rock",
+  "site": "",
+  "text": "楼主，你好。我在dts中加了一个pwm控制风扇\r\nfan: fan {\r\n                compatible = \"pwm-fan\";\r\n\t\tpwms = <&pwm1 0 25000>;\r\n\t\t//pwm-names = \"pwmfan\";\t\r\n\t};\r\n但驱动中用 devm_pwm_get 每次都获取不到pwm结构体指针，但背光那个却可以\r\n        pb->pwm = devm_pwm_get(pb->dev, NULL);\r\n\tif (IS_ERR(pb->pwm)) {\r\n\t\tdev_err(pb->dev, \"unable to request PWM, trying legacy API\\n\");\r\n\t\tret = PTR_ERR(pb->pwm);\r\n\t\tgoto err_gpio;\r\n\t}"
+ },
+ {
+  "id": "5249",
+  "parent": "5245",
+  "date": "2017-02-24T22:36:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linux_rock：跟一下代码吧，总能找到原因的:-)"
+ },
+ {
+  "id": "5626",
+  "parent": "5245",
+  "date": "2017-06-05T22:52:04+08:00",
+  "author": "MODULE_LICENSE",
+  "site": "",
+  "text": "@linux_rock：请问您找到问题的原因了么，我虽然没有碰到，但很好奇。"
+ },
+ {
+  "id": "5627",
+  "parent": "5626",
+  "date": "2017-06-06T10:12:24+08:00",
+  "author": "linux_rock",
+  "site": "",
+  "text": "@MODULE_LICENSE：&pwm1 {\r\n        status = \"okay\";\r\n};\r\n应该把pwm1打开的，一开始没有打开，所以获取不到pwm结构体指针"
+ },
+ {
+  "id": "5629",
+  "parent": "5627",
+  "date": "2017-06-06T16:00:24+08:00",
+  "author": "MODULE_LICENSE",
+  "site": "",
+  "text": "@linux_rock：非常感谢您的共享！"
+ },
+ {
+  "id": "6312",
+  "parent": "0",
+  "date": "2017-12-08T09:51:08+08:00",
+  "author": "houlic",
+  "site": "",
+  "text": "costumer和provider的区别是什么啊？？？"
+ },
+ {
+  "id": "6314",
+  "parent": "6312",
+  "date": "2017-12-08T10:07:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@houlic：你可以试试这个链接：http://fanyi.baidu.com，查一下这两个单词的区别。"
+ },
+ {
+  "id": "6317",
+  "parent": "6314",
+  "date": "2017-12-08T10:25:16+08:00",
+  "author": "houlic",
+  "site": "",
+  "text": "@wowo：provider是驱动的提供者，它在内核空间，提供一些config、enable之类的功能。costumer是驱动的使用者，它在用户空间，可以调用config、enable这些功能来设置pwm。这样理解对么？"
+ },
+ {
+  "id": "6323",
+  "parent": "6317",
+  "date": "2017-12-08T14:07:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@houlic：基本上是这个样子。不过呢，consumer不一定是在用户空间，也可能是另一个driver。"
+ },
+ {
+  "id": "6324",
+  "parent": "6323",
+  "date": "2017-12-08T14:36:42+08:00",
+  "author": "houlic",
+  "site": "",
+  "text": "@wowo：好的，谢谢！！！"
+ },
+ {
+  "id": "6391",
+  "parent": "0",
+  "date": "2017-12-20T16:04:06+08:00",
+  "author": "leon",
+  "site": "",
+  "text": "我用的是rk3288的板子，用PWM3 输入接入sharp的红外传感器，如何设置PWM是输入的呢？"
+ },
+ {
+  "id": "7336",
+  "parent": "0",
+  "date": "2019-03-29T16:45:42+08:00",
+  "author": "alisem",
+  "site": "",
+  "text": "pwm控制几个脉冲波形，如何传值进来"
+ },
+ {
+  "id": "7339",
+  "parent": "0",
+  "date": "2019-04-02T16:55:32+08:00",
+  "author": "小蚂蚁",
+  "site": "",
+  "text": "老板，你好，请问pwm_add之后，用户空间如果想配置PWM，怎么才能调用到相应的pwm_config函数呢？按正常的字符设备应该是open，然后ioctl，那么现在应该怎么调呢？"
+ },
+ {
+  "id": "7529",
+  "parent": "5210",
+  "date": "2019-07-12T14:54:30+08:00",
+  "author": "ll",
+  "site": "",
+  "text": "@wowo：那请问如果使用电源芯片上的mpp去输出pwm控制，该怎么配置dts呢，驱动中又是怎么获取的呢？"
+ }
+]

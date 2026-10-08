@@ -1,0 +1,50 @@
+[
+ {
+  "id": "2343",
+  "parent": "0",
+  "date": "2015-07-29T00:00:57+08:00",
+  "author": "snail",
+  "site": "",
+  "text": "这篇文章的发布时间，系统搞错了！"
+ },
+ {
+  "id": "2345",
+  "parent": "0",
+  "date": "2015-07-29T09:16:36+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "文章写的真心不错，很有调理。"
+ },
+ {
+  "id": "2827",
+  "parent": "0",
+  "date": "2015-10-24T14:13:14+08:00",
+  "author": "cuijier",
+  "site": "",
+  "text": "博主你好，我想问下，在调试android手机的过程中，是否也可以用\r\n#gdb vmlinux\r\n(gdb) b*(0xc0406081 + 0x1a)\r\n这个来定位 Trace 具体的位置？应该不行吧？"
+ },
+ {
+  "id": "2829",
+  "parent": "2827",
+  "date": "2015-10-25T14:40:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cuijier：如果只是调试kernel（vmlinux），是可以的。kernel是不区分Android还是其它系统的。"
+ },
+ {
+  "id": "3331",
+  "parent": "0",
+  "date": "2016-01-03T19:58:35+08:00",
+  "author": "simonzhang",
+  "site": "",
+  "text": "其实对0地址，或0+一个小的offset，在运行时无论读写应该都会exception的，因为这个地址是不在当前的virtual memory space里面。\r\n&((TYPE *)0)->MEMBER之所以不会有错误，其实是因为编译器会做出结构体内偏移的计算，这个值也就是一个常量。\r\n\r\ndo {} while(0)我的理解是为了保证宏展开时的安全性"
+ },
+ {
+  "id": "3332",
+  "parent": "3331",
+  "date": "2016-01-03T20:56:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@simonzhang：\"&((TYPE *)0)->MEMBER\"，这个应该是预编译时的计算出来的，不是运行时的事情，否则肯定会exception的。"
+ }
+]

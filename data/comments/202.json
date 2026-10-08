@@ -1,0 +1,82 @@
+[
+ {
+  "id": "4263",
+  "parent": "0",
+  "date": "2016-07-14T19:59:43+08:00",
+  "author": "mdong",
+  "site": "",
+  "text": "这篇文章:beautiful, nice and good. thanks."
+ },
+ {
+  "id": "4264",
+  "parent": "4263",
+  "date": "2016-07-14T21:41:31+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@mdong：多谢夸奖:-)"
+ },
+ {
+  "id": "4397",
+  "parent": "0",
+  "date": "2016-08-13T20:17:03+08:00",
+  "author": "lamaboy",
+  "site": "",
+  "text": "看了楼主的分享，感觉国内的对 Linux 理解会因你而上了个档次"
+ },
+ {
+  "id": "4398",
+  "parent": "4397",
+  "date": "2016-08-14T10:48:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@lamaboy：谢谢鼓励，大家一起努力～～"
+ },
+ {
+  "id": "6687",
+  "parent": "0",
+  "date": "2018-04-21T10:21:36+08:00",
+  "author": "jiffy",
+  "site": "",
+  "text": "@wowo 你好，请问下：发起频率改变的请求一定是应用层（如android层）触发的吗？"
+ },
+ {
+  "id": "6700",
+  "parent": "6687",
+  "date": "2018-04-25T20:25:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jiffy：是的，只有应用才知道该用什么样的策略调频。"
+ },
+ {
+  "id": "6972",
+  "parent": "0",
+  "date": "2018-10-09T20:09:01+08:00",
+  "author": "zgq",
+  "site": "",
+  "text": "cpufre 有可能调整到clock source的时钟吗?如果被调整到？会对系统时间有影响。这个内核有考虑到吗？"
+ },
+ {
+  "id": "7069",
+  "parent": "6972",
+  "date": "2018-12-05T17:15:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zgq：基本上不会，当然这和底层硬件相关，如果你设计的SOC上，cpu clock domain和HW counter的clock domain是同一个（或者是cpu clock domain的sub domain），那么调整CPU就会影响到clock source的时钟。当然，任何一个思维正常的IC公司都应该不会设计这样的SOC吧。"
+ },
+ {
+  "id": "7193",
+  "parent": "6700",
+  "date": "2019-02-20T11:01:47+08:00",
+  "author": "wanghyunqian",
+  "site": "",
+  "text": "@wowo：发起频率改变的请求不一定应用层吧？这需要根据调频的governor来决定吧！比如说在governor是ondemand的时候，改变频率是根据负载情况来改变频率的呀？"
+ },
+ {
+  "id": "7195",
+  "parent": "7193",
+  "date": "2019-02-20T21:16:39+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wanghyunqian：其实jiffy同学的问题和我的回答有点搭不上，给jiffy同学一个迟到道歉吧！！\r\n对jiffy的问题来说，你是对的，具体用什么频率，不一定都是应用层直接干预。\r\n但从根本上讲，用什么策略调频，只有应用才知道。"
+ }
+]

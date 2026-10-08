@@ -1,0 +1,58 @@
+[
+ {
+  "id": "7466",
+  "parent": "0",
+  "date": "2019-06-11T22:30:00+08:00",
+  "author": "ccc",
+  "site": "",
+  "text": "联想到一个例子 那分配工作当一个例子  把一项任务按照全组平均水平估算时间 例如6小时  全组有六个人 每个人按照这个换算关系领到1个小时任务 但是由于个人能力不同  实际工作时间也不同 和这个算法思想感觉很相似 保证公平性"
+ },
+ {
+  "id": "7467",
+  "parent": "0",
+  "date": "2019-06-11T22:34:05+08:00",
+  "author": "ccc",
+  "site": "",
+  "text": "想到一个例子 那分配工作当一个例子  把一项任务按照全组平均水平估算时间 例如6小时  全组有六个人 每个人按照这个换算关系领到1个小时任务 但是由于个人能力不同  实际工作时间也不同 和这个算法思想感觉很相似 保证公平性"
+ },
+ {
+  "id": "7703",
+  "parent": "0",
+  "date": "2019-10-18T09:25:57+08:00",
+  "author": "ryancat",
+  "site": "",
+  "text": "请问，每个tick到来时，当前进程的vruntime都会增加，那么在tick中断里面是何时触发调度的呢？\r\n1、每个tick都会检查当前进程在本调度周期内已经执行的时间是否达到了预期分配的总时间，达到就开始调度？\r\n2、每个tick都检查当前进程的vruntime是否是运行队列里面最小的，不是最小且已执行时间超过了sysctl_sched_min_granularity就开始调度？\r\n\r\n谢谢！"
+ },
+ {
+  "id": "8034",
+  "parent": "7703",
+  "date": "2020-06-23T17:39:03+08:00",
+  "author": "收信的加西亚",
+  "site": "",
+  "text": "@ryancat：1.首先tick中断是per_cpu的时钟中断，在tick中只是检查当前进程是否需要重新调度，如果满足重新调度条件设置TIF_NEED_RECHED标志，如运行的时间超过了理想的时间，或优先级更高的进程，等待最近的一个调度点到达才会触发调度（如：系统调用或者中断返回用户空间前夕，或者是重新开启内核抢占的时候（支持内核抢占）等）\r\n2.达到预期分配的总时间是设置TIF_NEED_RECHED标志，不会立马调度，会等待最近的调度点到来\r\n3.还需要比较当前调度实体的虚拟运行时间和cfs运行队列最小的调度实体的虚拟运行时间差值，只有差值大于当前调度实体的理想运行时间才设置重新调度标志。"
+ },
+ {
+  "id": "8664",
+  "parent": "0",
+  "date": "2022-08-08T02:38:36+08:00",
+  "author": "orangeboyye",
+  "site": "",
+  "text": "原文：“如果以NICE值为20计算的话，只需要8年左右时间”，应该是-20，少写个负号"
+ },
+ {
+  "id": "8717",
+  "parent": "0",
+  "date": "2022-12-10T11:08:23+08:00",
+  "author": "marvin263",
+  "site": "",
+  "text": "时间片太小，调度就会更为频繁。从v5.13起，加了个开关，确保最小执行时间为sysctl_sched_min_granularity的。\r\n\r\nhttp(s)://github.com/torvalds/linux/commit/0c2de3f054a59f15e01804b75a04355c48de628c\r\n\r\nThe current sched_slice() seems to have issues; there's two possible\r\nthings that could be improved:\r\n\r\n - the 'nr_running' used for __sched_period() is daft when cgroups are\r\n   considered. Using the RQ wide h_nr_running seems like a much more\r\n   consistent number.\r\n\r\n - (esp) cgroups can slice it real fine, which makes for easy\r\n   over-scheduling, ensure min_gran is what the name says.\r\n\r\n\r\nif (sched_feat(BASE_SLICE))\r\n\t\tslice = max(slice, (u64)sysctl_sched_min_granularity);"
+ },
+ {
+  "id": "8841",
+  "parent": "8717",
+  "date": "2023-11-01T10:53:57+08:00",
+  "author": "wasd",
+  "site": "",
+  "text": "@marvin263：那请问，如果是这样的话，那按照nr_running * sysctl_sched_min_granularity算出来的调度周期不是不准确了吗？因为nice值小的进程会运行超过sysctl_sched_min_granularity"
+ }
+]

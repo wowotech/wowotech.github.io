@@ -1,0 +1,194 @@
+[
+ {
+  "id": "1594",
+  "parent": "0",
+  "date": "2015-04-24T20:17:59+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "其实我感觉这篇文章写的很清晰啊，本来内核就是息息相关的，写文档的时候必须假设读者已经具备了读这篇文章的基本知识，要不然到时候就会缩手缩脚生怕将不明白，读者看不懂\r\n我感觉你只需要大胆的写，读者不明白的地方自然会提问\r\n我看的很爽呢～～～～"
+ },
+ {
+  "id": "1603",
+  "parent": "0",
+  "date": "2015-04-27T14:13:10+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "我有个疑问\r\n比如tegra，他们把他们的充电参数放到了哪里呢？\r\n没看到放到dts里面"
+ },
+ {
+  "id": "1604",
+  "parent": "0",
+  "date": "2015-04-27T14:26:50+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "hi wowo\r\n最开始一张图\r\nvdd与dcdc 这样描述是为什么？\r\n还有vdd 跟avdd 数字/模拟怎么理解呢？有什么不同呢？"
+ },
+ {
+  "id": "1605",
+  "parent": "0",
+  "date": "2015-04-27T14:30:06+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "为什么第一张图里面，他们用几个器件来提供regular，而不是合成一个呢？\r\n降压控制器（TI tps51632），该控制器输出名称为“vdd-cpu”\r\n是因为vdd-cpu需要特别稳定还是？不知道wowo思考过没有"
+ },
+ {
+  "id": "1606",
+  "parent": "1594",
+  "date": "2015-04-27T14:54:18+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@tigger：我觉得driver的分析文章，比较难的地方是“太容易进入细节”。一般driver framework的框架都挺简单、容易理解，但一到细节，又会觉得“好像懂了，好像又没懂”。所以我想尽量描述细致一点，但有时会越理越乱，功力不够啊。\r\n这也和大部分工程师在driver开发过程中遇到的困惑类似：我觉得我都懂了，但怎么就写不出来呢？话又说回来了，这也和具体的framework有关，好的抽象，就容易入手，不好的抽象，就比较困难。"
+ },
+ {
+  "id": "1607",
+  "parent": "1603",
+  "date": "2015-04-27T14:54:55+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@tigger：这和具体的版型有关，我们需要知道确切的版型，才能去找。总体来说，无外乎两个地方：DTS和代码中。另外Tegra的DTS文件很多，通过include包含起来了，可能你没有找到。"
+ },
+ {
+  "id": "1608",
+  "parent": "1604",
+  "date": "2015-04-27T14:55:16+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@tigger：这是我根据它的DTS抄出来的，我的理解是：\r\nVDD和DCDC，表示这两个电压，是由两类不同类型的regulator器件输出的，LDO和DC/DC。LDO噪声小，但输出效率低；DC/DC输出效率高，但噪声大。\r\n对于VDD和AVDD，是电路布线上的一种考虑，尽量将数字电路（CPU、MEM等）和模拟电路（Audio等）在电源域上隔离开（当然，不可能完全隔离，最终还是要共地），以减少干扰。"
+ },
+ {
+  "id": "1609",
+  "parent": "1608",
+  "date": "2015-04-27T15:30:04+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@蜗蜗：有道理"
+ },
+ {
+  "id": "1610",
+  "parent": "1605",
+  "date": "2015-04-27T15:40:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：这里面有几个考量：\r\n1. 可配置性。\r\n这个例子，是Tegra的一个开发板，所谓的开发板，需要满足不同类型的产品需求，这些产品所需的电源域的多少可能千差万别（对芯片厂而言，会经常遇到这样的问题）。因此需要可以灵活配置。\r\n2. 体积、功耗和发热。\r\n如果把所有的regulator都集成在一个片子中，会不会发热很严重？如果分开，会不会增大体积？等等。\r\n话又说回来，这只是一个开发板，如果使用这个片子做产品的时候，设计者可能会考虑不同的方案。\r\n3. 灵活的可控性。\r\n对vdd-cpu而言，我猜“更稳定”不是主要的考量因素，因为稳定很容易做到。反而需要重点考虑的是：每个模块的regulator调整，不会影响其它模块。一个模块一个regulator最好，但代价太大。退而求其次，重点照顾CPU吧。"
+ },
+ {
+  "id": "3421",
+  "parent": "0",
+  "date": "2016-01-19T17:55:19+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "hi wowo\r\n之前学习cpufreq了解是它主动获取cpu工作繁忙程度，实现动态调频。请问regulator如何知道设备是否在用或者是否suspend？"
+ },
+ {
+  "id": "3422",
+  "parent": "3421",
+  "date": "2016-01-19T18:37:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cracker：regulator只是一个工具，就像一把刀一样，无论让它砍谁，敌人、友军还是自己，它都执行。因此是否suspend，regulator不会关心，需要关心的是使用regulator的driver。\r\n至于regulator driver本身，只需要保证其启动顺序（包括resume顺序）在其它正常的driver之前即可。"
+ },
+ {
+  "id": "3431",
+  "parent": "0",
+  "date": "2016-01-21T18:37:59+08:00",
+  "author": "cracker",
+  "site": "",
+  "text": "hi wowo：\r\n  这两天看了retulator的文章，不知到下面我的理解是不是正确的：\r\n  1：regulator和cpufreq都可以动态调节电压，但cpu在内核中是特殊的设备，所以对于普通的设备提供regulator机制，而cpu提供了cpufreq机制；\r\n  2：regulator是linux的设备抽象，在注册regulator需要初始化真正的设备属性（regulator_config和regulator_desc），然后注册时将上面初始化的变量交给boss regulator_dev，并让boss和dev绑定；\r\n  3：设备使用与其绑定的regulator时，通过regulator_get函数获取regulator，然后执行regulator_ops的各种回调；\r\n  4：regulator_constraints（regulator_config）与cpufreq_policy;regulator_desc与regulator_driver在思想上是不是一样的呢？"
+ },
+ {
+  "id": "3432",
+  "parent": "3431",
+  "date": "2016-01-21T20:55:23+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cracker：不是这样的，regulator和cpufreq是两个事情，没有可比性，具体可参考这个图片：/content/uploadfile/201506/a4cf6b6a89f45ea76d69dcb9ea0738c720150613141951.gif"
+ },
+ {
+  "id": "3654",
+  "parent": "0",
+  "date": "2016-03-14T13:35:14+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "hi wowo\r\n    请问下是否知道voltage tolerance是什么意思呢？？"
+ },
+ {
+  "id": "3655",
+  "parent": "3654",
+  "date": "2016-03-14T14:00:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cym：我的理解是：\r\n假如系统中某个器件（例如CPU），要求一个1.8v的供电。但是，基于电压转换电路（通常是PMU）的特性，不可能输出一个精确的、误差为0的、1.8v的电压。\r\n于是PMU的设计者会问CPU的设计者，一定要1.8吗？多一点、少一点不行吗？\r\n通常情况下，考虑到电源系统设计的难度，器件都会打个折扣，允许输入电压有一定的误差，例如正负10%，这个就叫做voltage tolerance。\r\n如有不对的地方，还请高手指正。"
+ },
+ {
+  "id": "3656",
+  "parent": "3655",
+  "date": "2016-03-14T14:03:34+08:00",
+  "author": "cym",
+  "site": "",
+  "text": "@wowo：应该是这样的，多谢wowo大虾"
+ },
+ {
+  "id": "3676",
+  "parent": "3432",
+  "date": "2016-03-17T10:50:38+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：我理解cpufreq和requlator是分开的，但也有联系。不同的cpufreq的CPU的性能不同，cpufreq高的时候，功耗相应的就大，所以就需要requlator调高CPU电压，以保证CPU有足够的POWER稳定的运行。所以一般CPU都会有一个cpufreq和voltage的对应表，DVFS就是按照这个对应表来调节频率和这个频率对应的电压。不知道我这样理解的对不对？"
+ },
+ {
+  "id": "3680",
+  "parent": "3676",
+  "date": "2016-03-17T13:34:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：regulator framework只是一个调整电压的工具（无论是CPU的电压还是其它模块的电压），他和clock framework位于一个level。你和上面cracker同学说的都没有问题，但我整不明白的是：\r\n大家理解一个东西的时候，为什么要和其它东西缠绕在一起？\r\n例如理解regulator framework的时候，为什么会想到cpufreq？\r\n而理解cpufreq framework的时候，为什么这么纠结regulator和clock？把这二位当作一个工具就ok了，重点还是要看cpufreq framework的设计思想。"
+ },
+ {
+  "id": "5766",
+  "parent": "0",
+  "date": "2017-06-30T17:51:13+08:00",
+  "author": "xingxing.wang",
+  "site": "",
+  "text": "Hi Wowo:\r\n   您说的struct regulator_ops里面的所有回调由regulator core统一管控，能否讲解一下具体的实现方式，regulator core是主动调节还是被动调节的？感谢。"
+ },
+ {
+  "id": "5767",
+  "parent": "5766",
+  "date": "2017-07-03T08:40:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xingxing.wang：一般情况下都是被动调用（core不会自作主张），实现方式，你可以参考这篇文章（/pm_subsystem/regulator_framework_overview.html）然后对着代码看看（细节的东西，不是一句两句话能说明白的，见谅）。"
+ },
+ {
+  "id": "6079",
+  "parent": "0",
+  "date": "2017-09-27T17:44:28+08:00",
+  "author": "xyaw",
+  "site": "",
+  "text": "你好\r\n我想請教:\r\n1. \r\n/sys/class/regulator/regulator.14 # ls\r\n\r\ndevice         min_microvolts of_node   suspend_disk_state    type   \r\nmax_microvolts name           power     suspend_mem_state     uevent \r\nmicrovolts     num_users      subsystem suspend_standby_state \r\n\r\n我在此沒有看到regulator_ops (我想調整電壓 set_voltage_sel/ set_voltage)相關的東西\r\n請問要enable是regular定義時候要加什麼參數?"
+ },
+ {
+  "id": "6080",
+  "parent": "6079",
+  "date": "2017-09-27T18:49:24+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xyaw：實際上，regulator framework提供的sysfs api都是readonly的。\r\n這也很好理解：register framework的consumer大部分都是kernel space的其它driver，需要由usersapce軟體直接控制的可能性比較小。\r\n不過，可能小並不代表沒有可能，如果真有這樣的需求，也是有解決方法的：使用userspace consumer（drivers/regulator/userspace-consumer.c）。這其實是一個簡單的驅動程式，可以把需要由userspace軟體控制的regulator開放給userspace（可以簡單的enable、disable），kernel中有相應的例子，例如arch/arm/mach-pxa/em-x270.c，供你參考。\r\n最後，如果實在不想使用已有的框架，你完全可以自己寫一個driver，將需要由userspace控制regulator導出，至於格式嘛，完全取決於您咯～～"
+ },
+ {
+  "id": "6484",
+  "parent": "0",
+  "date": "2018-01-18T10:36:27+08:00",
+  "author": "tiem",
+  "site": "",
+  "text": "@wowo:\r\n有个疑问能否解答一下：\r\n如果app打开了某个LDO（比如camera app），如果没来得及退出就crash了，那么LDO怎么释放？\r\n\r\nThanks."
+ },
+ {
+  "id": "7882",
+  "parent": "0",
+  "date": "2020-02-14T17:32:14+08:00",
+  "author": "小学生",
+  "site": "",
+  "text": "hi wowo，\r\n请问regulator-min-microamp可以等于0吗？内核代码中machine_constraints_voltage()中，cmin = constraints->min_uV,下面函数有个判断if(cmin<=0 || cmax<=0 || cmax<cmin)->return -EINVAL，"
+ }
+]

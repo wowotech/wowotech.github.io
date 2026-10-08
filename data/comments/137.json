@@ -1,0 +1,98 @@
+[
+ {
+  "id": "1259",
+  "parent": "0",
+  "date": "2015-03-02T11:22:52+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "为什么我的kernel3.10的版本里面，clock_monotonic里面有timer set 跟get 呢？\t\r\nstruct k_clock clock_monotonic = {\r\n\t\t.clock_getres\t= hrtimer_get_res,\r\n\t\t.clock_get\t= posix_ktime_get_ts,\r\n\t\t.nsleep\t\t= common_nsleep,\r\n\t\t.nsleep_restart\t= hrtimer_nanosleep_restart,\r\n\t\t.timer_create\t= common_timer_create,\r\n\t\t.timer_set\t= common_timer_set,\r\n\t\t.timer_get\t= common_timer_get,\r\n\t\t.timer_del\t= common_timer_del,\r\n\t};"
+ },
+ {
+  "id": "1264",
+  "parent": "1259",
+  "date": "2015-03-02T12:20:45+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：clock_monotonic的确有timer set 跟get函数，我是说没有clock set函数。"
+ },
+ {
+  "id": "4656",
+  "parent": "0",
+  "date": "2016-10-07T14:14:27+08:00",
+  "author": "andreaji",
+  "site": "",
+  "text": "只要struct posix_clock包括了cdev成员，struct posix_clock_operations中的owner以及struct posix_clock中的kref应该没有存在的必要了。 \r\n=====================================================================================\r\n\r\n您好 linuxer，请教一个问题：\r\n\r\n我在读 linux-3.19.y 版本的 driver/ptp/ptp_clock.c  时看到使用 ptp clock 模块使用 posix_clock_register 注册 posix clock 时 posix_clock_operations 结构体 ptp_clock_ops 的 owner 设置为 THIS_MODULE（我理解这个 THIS_MODULE 为 ptp clock 模块）\r\n\r\nstatic struct posix_clock_operations ptp_clock_ops = {\r\n\t.owner\t\t= THIS_MODULE,\r\n        ... ...\r\n};\r\n\r\n进入 posix_clock_register 函数时将 posix_clock -> cdev.owner 也设置为 ptp_clock_ops.owner\r\n\r\nint posix_clock_register(struct posix_clock *clk, dev_t devid)\r\n{\r\n        ... ...\r\n\r\n\tcdev_init(&clk->cdev, &posix_clock_file_operations);\r\n\tclk->cdev.owner = clk->ops.owner;\r\n\t\r\n        ... ...\r\n}\r\n\r\n可是在 posix-clock.c 中 file_operations 结构体 posix_clock_file_operations（也就是上面 cdev_init 函数中传入的 file_operations 结构体）的 owner 被设置为 THIS_MODULE，这个 THIS_MODULE 指的是什么？如果指的是 posix-clock 的话，会不会又矛盾？\r\n\r\n请教一下 linuxer 对于这样的设计，您是怎么看？"
+ },
+ {
+  "id": "4659",
+  "parent": "4656",
+  "date": "2016-10-08T11:30:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@andreaji：这里的回复不能画图，所以我在/forum/#p448回复了你，请参考。"
+ },
+ {
+  "id": "4682",
+  "parent": "4659",
+  "date": "2016-10-10T11:05:09+08:00",
+  "author": "andreaji",
+  "site": "",
+  "text": "@linuxer：您好 Linuxer，感谢您的及时回复，不过我还有一事不明：\r\n\r\nposix-clock.c 中并没有使用 module_init 宏，所以我不理解 posix clock 如何能够成为独立的内核模块。\r\n\r\n这也是我无法判断 posix_clock_file_operations.owner 到底是是指向 ptp_clock 模块还是指向 posix clock 的根本原因。\r\n\r\n还请 Linuxer 指点一下。多谢！"
+ },
+ {
+  "id": "4686",
+  "parent": "4682",
+  "date": "2016-10-10T21:40:17+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@andreaji：posix_clock_file_operations.owner 不会指向ptp_clock 模块的struct module数据结构的，因为它不属于ptp_clock 模块而是属于posix-clock.c这个模块。当posix-clock.c不是编译成模块而是build in kernel，那么posix_clock_file_operations.owner 等于NULL。"
+ },
+ {
+  "id": "4692",
+  "parent": "4686",
+  "date": "2016-10-11T14:43:20+08:00",
+  "author": "andreaji",
+  "site": "",
+  "text": "@linuxer：感谢 Linuxer !"
+ },
+ {
+  "id": "5575",
+  "parent": "0",
+  "date": "2017-05-19T11:42:30+08:00",
+  "author": "江南书生",
+  "site": "http://no",
+  "text": "老板，你好！\r\n\r\n请问clock和timer有什么不同么？看了这么多文章一直在思考，都是对脉冲计数的啊？请问能不能用个例子说明一下不同呀？"
+ },
+ {
+  "id": "5578",
+  "parent": "5575",
+  "date": "2017-05-19T15:18:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@江南书生：clock就是钟表啊，从上面可以读取当前时间的一种工具。timer总是基于某个clock而言的，当clock推进到某个时间点的时候会触发调用timer的callback函数。"
+ },
+ {
+  "id": "6145",
+  "parent": "0",
+  "date": "2017-10-26T16:30:57+08:00",
+  "author": "Murick",
+  "site": "",
+  "text": "CLOCK_MONOTONIC_RAW启动时间点被设成0，此后一直不断累加，而且能设定，不会随NTP调整。\r\nCLOCK_MONOTONIC_RAW 用户无法设定，写错了吧？"
+ },
+ {
+  "id": "7357",
+  "parent": "0",
+  "date": "2019-04-17T19:16:10+08:00",
+  "author": "okmine",
+  "site": "",
+  "text": "是不是ptp 的timer 不支持 timer_create()? \r\n运行了一下tools/testing/selftests/ptp/testptp.c， 不支持这个定时，其它都正常。"
+ },
+ {
+  "id": "7359",
+  "parent": "7357",
+  "date": "2019-04-18T10:28:30+08:00",
+  "author": "okmine",
+  "site": "",
+  "text": "@okmine：我的kernel4.14里面没有timer_create：\r\n164 static const struct file_operations posix_clock_file_operations = {\r\n165         .owner          = THIS_MODULE,\r\n166         .llseek         = no_llseek,\r\n167         .read           = posix_clock_read,\r\n168         .poll           = posix_clock_poll,\r\n169         .unlocked_ioctl = posix_clock_ioctl,\r\n170         .open           = posix_clock_open,\r\n171         .release        = posix_clock_release,\r\n172 #ifdef CONFIG_COMPAT\r\n173         .compat_ioctl   = posix_clock_compat_ioctl,\r\n174 #endif\r\n175 };\r\n\r\n（1）ops是该dynamic posix clock的操作函数集，分成两个group，一个是timer（例如：timer_create、timer_delete等）以及clock操作相关（例如clock_gettime、clock_settime等），另外一个是普通字符设备的操作函数（例如：open、read、write等）。"
+ }
+]

@@ -1,0 +1,50 @@
+[
+ {
+  "id": "7533",
+  "parent": "0",
+  "date": "2019-07-16T19:28:37+08:00",
+  "author": "LeonZHAO",
+  "site": "",
+  "text": "关于Precharge部分，如果一开始对某一个Column进行读写操作，之后对对于同一Bank同一Row不同Column进行读写时，是否还需要进行Precharge？"
+ },
+ {
+  "id": "7554",
+  "parent": "0",
+  "date": "2019-07-29T13:17:14+08:00",
+  "author": "CARL",
+  "site": "",
+  "text": "請教一下,DQ是什麼的縮寫?"
+ },
+ {
+  "id": "8020",
+  "parent": "0",
+  "date": "2020-06-10T17:20:22+08:00",
+  "author": "wink",
+  "site": "",
+  "text": "不需要了。precharge的作用是关闭已打开的row，每次突发的时候是在同row中对BL个column操作。只有在切换row的时候才需要precharge关闭当前row，然后再发送act激活下一个操作行，"
+ },
+ {
+  "id": "8021",
+  "parent": "0",
+  "date": "2020-06-10T17:21:39+08:00",
+  "author": "wink",
+  "site": "",
+  "text": "不需要了。precharge的作用是关闭已打开的row，每次突发的时候是在同row中对BL个column操作。只有在切换row的时候才需要precharge关闭当前row，然后再发送act激活下一个操作行."
+ },
+ {
+  "id": "8022",
+  "parent": "0",
+  "date": "2020-06-12T09:51:49+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "lpddr5可以接受cpu的 类似memset 指令，对一片内存清零，而不是传统的只能4/8 bytes操作。\r\n请问这是怎么实现的？lpddr5的控制芯片升级了？"
+ },
+ {
+  "id": "8679",
+  "parent": "0",
+  "date": "2022-09-30T01:18:18+08:00",
+  "author": "11",
+  "site": "",
+  "text": "第一次进行读写的时候需要precharge吗？这个precharge为什么叫做关闭行？明明是读写前的准备工作呀。"
+ }
+]

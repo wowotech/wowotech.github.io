@@ -1,0 +1,32 @@
+{{ define "main" }}
+{{ $posts := sort (where site.RegularPages "Type" "posts") "Date" "desc" }}
+{{ $pager := .Paginate $posts 20 }}
+
+<section class="intro">
+  <h1>{{ site.Title }}</h1>
+  <p>{{ site.Params.description }}</p>
+  <p class="muted small">
+    共 {{ len $posts }} 篇技术笔记（2014–{{ (index $posts 0).Date.Year }}）·
+    <a href="/forum/index.html">讨论区存档（{{ (index hugo.Data.forum "topics") }} 个主题）</a> ·
+    <a href="/archive/">数据下载</a>
+  </p>
+</section>
+
+<ul class="post-list">
+{{ range $pager.Pages }}
+  <li>
+    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    <span class="muted small">
+      {{ .Date.Format "2006-01-02" }}
+      {{ with .Params.category }}· {{ . }}{{ end }}
+      {{ if gt (int .Params.comment_count) 0 }}· {{ .Params.comment_count }} 评论{{ end }}
+    </span>
+  </li>
+{{ end }}
+</ul>
+
+<nav class="pager">
+  {{ with $pager.Prev }}<a href="{{ .URL }}">← 更新的文章</a>{{ end }}
+  {{ with $pager.Next }}<a href="{{ .URL }}" class="next">更早的文章 →</a>{{ end }}
+</nav>
+{{ end }}

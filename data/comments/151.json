@@ -1,0 +1,274 @@
+[
+ {
+  "id": "1307",
+  "parent": "0",
+  "date": "2015-03-08T14:55:37+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "非常棒！跟着楼主的思路学了很多东西。"
+ },
+ {
+  "id": "1308",
+  "parent": "1307",
+  "date": "2015-03-09T03:43:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@schedule：客气客气，大家一起进步！"
+ },
+ {
+  "id": "1454",
+  "parent": "0",
+  "date": "2015-04-01T17:05:17+08:00",
+  "author": "hack",
+  "site": "",
+  "text": "大侠，谢谢你的分享， hrtimer 是靠硬件的timer 的one-shot模式实现的吗？ 相对与以前的低精度的 tick 在HZ设定为100的情况下， tick就是10ms， 说明内核心跳的精度是10ms， hrtimer 是靠主动去设定expire产生的间隔吗？ 是否是这样理解的？多谢！"
+ },
+ {
+  "id": "1455",
+  "parent": "1454",
+  "date": "2015-04-01T17:59:14+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@hack：hrtimer 是靠硬件的timer 的one-shot模式实现的吗？\r\n－－－－－－－－－－－－－－－－－－－－\r\n是的\r\n\r\n hrtimer 是靠主动去设定expire产生的间隔吗？\r\n－－－－－－－－－－－－－－－－－－－－－－\r\n是的，找到最近要超期的那个timer，设定到HW timer中"
+ },
+ {
+  "id": "1540",
+  "parent": "0",
+  "date": "2015-04-21T17:22:05+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "在kernel中，time 就是 frequence吗 这两个概念感觉是一样的，因为我要调整一个LDB的时钟频率，就要从源头看起 ，看这货是怎么从PLL5上分频出来的。。而PLL5 又来源于时钟晶振。 所以我是在调时间吗。。。\r\n原谅我的思维混乱，毕竟工作了一天。。"
+ },
+ {
+  "id": "1542",
+  "parent": "1540",
+  "date": "2015-04-21T21:33:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@printk：只有“愚蠢”的人类才需要“时间”这个概念啦，对kernel而言，它只知道tick啊，Tick，Tick，Tick...\r\nTick就是频率啊，无论是周期固定的频率还是周期不定的频率。\r\n频率是什么呢？是变化。嗯，只有变化的才是有生命的..."
+ },
+ {
+  "id": "1544",
+  "parent": "1542",
+  "date": "2015-04-22T11:16:44+08:00",
+  "author": "printk",
+  "site": "",
+  "text": "@wowo：wowo大虾简直就是kernel中的哲学家阿。。。这个地方太有意思啦，以后常来分享~"
+ },
+ {
+  "id": "2657",
+  "parent": "0",
+  "date": "2015-09-22T15:18:07+08:00",
+  "author": "firo",
+  "site": "http://firoyang.org",
+  "text": "一些传统的内核moik...\r\n\r\n模块?"
+ },
+ {
+  "id": "2667",
+  "parent": "2657",
+  "date": "2015-09-22T23:32:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@firo：多谢指正，已经修改了。"
+ },
+ {
+  "id": "3022",
+  "parent": "0",
+  "date": "2015-11-10T17:30:16+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "周期tick的软中断上下文中（参考run_timer_softirq），如果满足条件，会调用hrtimer_switch_to_hres将hrtimer从低精度模式切换到高精度模式上。\r\n//---------------------------------\r\n这里好像有点问题，看代码应该是hrtimer_run_queues 被调用到的，这里应该是在硬中断上下文。"
+ },
+ {
+  "id": "3024",
+  "parent": "3022",
+  "date": "2015-11-11T12:14:50+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madang：void run_local_timers(void)\r\n{\r\n    hrtimer_run_queues();\r\n    raise_softirq(TIMER_SOFTIRQ);\r\n}\r\n在timer的硬件上下文中会调用hrtimer_run_queues，只是用于在周期性tick下驱动高精度timer（这时候，系统配置是低精度timer + 周期tick ），但是，我的文章中描述的是从低精度模式切换到高精度模式的过程，实际上，还是在timer的软中断上下文中（参考run_timer_softirq）中实现切换的，在hrtimer_run_queues函数中，我没有看到模式切换的内容啊"
+ },
+ {
+  "id": "3027",
+  "parent": "3024",
+  "date": "2015-11-11T15:51:24+08:00",
+  "author": "madang",
+  "site": "",
+  "text": "@linuxer：void hrtimer_run_queues(void) \r\n{ \r\n...... \r\n    if (hrtimer_hres_active()) \r\n        return; \r\n....... \r\n} \r\n这个代码的意思应该是：如果处于高精度模式则退出 ？"
+ },
+ {
+  "id": "3028",
+  "parent": "0",
+  "date": "2015-11-11T16:24:12+08:00",
+  "author": "sched_fork",
+  "site": "",
+  "text": "好文章，拜读。以下两个小细节：\r\n> 能维持50年左右的timeline也可以接受。\r\nclocksource 回饶不是问题，就算回饶了，算出来的 delta 还是正确的。只要两次读取 clocksource 的时间内没有回饶就不会有bug。\r\n> 有些事情（例如整个系统的负荷计算）不适合在local tick驱动下进行，因此，所有的local tick device中会有一个被选择做global tick device，该device负责维护整个系统的jiffies，更新wall clock，计算全局负荷什么的。 \r\nx86 架构里面的 local tick 是 apci timer，broadcast timer 是 hpet timer。\r\narm 架构里面的 local tick 是 arch timer，而 broadcast timer 一般是 soc 中额外的 timer。因为如果整个 cluster 掉电的时候， arch timer 也 clock gating 了。不能产生一个唤醒信号把 cluster 唤醒。"
+ },
+ {
+  "id": "3030",
+  "parent": "3027",
+  "date": "2015-11-11T17:37:43+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@madang：在这个场景下，驱动hrtimer_run_queues函数的是周期性tick。这时候，系统会在每一次周期性tick到来的时候调用hrtimer_run_queues函数，该函数来检查是否有expire的hrtimer。毫无疑问，这里的高精度timer也就是没有意义了。 \r\n\r\n如果处于高精度模式的话，不会使用这个函数。我上面的回复有些武断了，需要修改。"
+ },
+ {
+  "id": "3036",
+  "parent": "3028",
+  "date": "2015-11-12T10:19:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@sched_fork：多谢您的意见。关于回滚问题，我又仔细看了看代码，系统的timeline实际上是timekeeping模块负责的，而该模块是在tick到来的时候，根据上次和当前的clocksource的delta来更新timeline，因此，clocksource的回滚不是问题，只要delta值是对的就OK了。\r\n\r\n关于tick问题，x86的架构我不是很熟悉，不过根据您的描述，看起来apci timer应该是per cpu的，而hpet timer应该所有cpu core共享的，并且在CPU core idle的时候，仍然可以work。"
+ },
+ {
+  "id": "3545",
+  "parent": "3036",
+  "date": "2016-02-26T14:39:41+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@linuxer：这里有点不解关于clocksource的回饶问题，正如上面所说，clocksource 回饶不是问题，就算回饶了，算出来的 delta 还是正确的。只要两次读取 clocksource 的时间内没有回饶就不会有bug。我的疑惑是如何保证两次读取 clocksource 的时间内没有回饶。在clocksource中确实有max_idle_ns这个变量，不知是否和这个回饶有关，如果样，Linux应该会在适当的时间点去更新clocksource的cycle_last变量，以保证用户在使用clocksource->read来计算cycle_delta出现回铙问题。关于这个部分代码在哪里可以找到，谢谢！"
+ },
+ {
+  "id": "4305",
+  "parent": "0",
+  "date": "2016-07-22T21:56:13+08:00",
+  "author": "liana07151018",
+  "site": "",
+  "text": "那么请问wowo大神，hrtimer模式下的时候，更高的时间精度是基于怎样的时钟源选择？因为内核中，默认clock event的时钟频率是32.768KHz，所以想问问，要使用高精度定时器，内核是如何一层层实现ns级精度的"
+ },
+ {
+  "id": "4306",
+  "parent": "4305",
+  "date": "2016-07-23T15:17:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@liana07151018：如果要用hrtimer，clock event就不能用32K的了，要用一个更高精度的。"
+ },
+ {
+  "id": "4694",
+  "parent": "0",
+  "date": "2016-10-11T18:53:31+08:00",
+  "author": "驴肉火烧",
+  "site": "",
+  "text": "wowo你好，我现在遇到一个问题，向您请教一下，arm64架构单板如果只使用arch_sys_counter作为时钟源，发现定时器不准，每睡眠10ms就会有10ms左右的误差，时钟源是50MHZ的，是否因为我内核版本低呢，3.10的内核，arm64下没有sched_clock"
+ },
+ {
+  "id": "4695",
+  "parent": "4694",
+  "date": "2016-10-11T21:35:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@驴肉火烧：50MHZ 10ms差10ms？怎么可能？"
+ },
+ {
+  "id": "4696",
+  "parent": "4695",
+  "date": "2016-10-12T08:56:59+08:00",
+  "author": "驴肉火烧",
+  "site": "",
+  "text": "@wowo：我也是很纳闷的，如果使用了jiffes到时可以解释的通，因为CONFIG_HZ = 100，但是从启动流程上很明确的将这个jiffies的默认时钟源切换为arch_sys_counter时钟源，我也是百思不得其解，参考了arm64的JUNO单板，如果将其arm,armv7-timer-mem时钟源禁用，也会有这种情况，难道arm64的时钟源必须依赖一个arm,armv7-timer-mem的时钟源么？"
+ },
+ {
+  "id": "4697",
+  "parent": "4696",
+  "date": "2016-10-12T14:11:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@驴肉火烧：从你的描述里面,我觉得,你的系统是不是没有使能\"arch_sys_counter\" clock source?\r\n因为只有dts中配置了\"arm,armv7-timer\"或者\"arm,armv8-timer\",才会走注册流程(arch_timer_init).\r\n\r\n/* drivers/clocksource/arm_arch_timer.c */\r\nCLOCKSOURCE_OF_DECLARE(armv7_arch_timer, \"arm,armv7-timer\", arch_timer_init);   \r\nCLOCKSOURCE_OF_DECLARE(armv8_arch_timer, \"arm,armv8-timer\", arch_timer_init);"
+ },
+ {
+  "id": "4698",
+  "parent": "4697",
+  "date": "2016-10-12T16:51:01+08:00",
+  "author": "驴肉火烧",
+  "site": "",
+  "text": "@wowo：这里dts有描述，也完成了注册，但是我读/proc/timer_list\r\nTick Device: mode:     0\r\nPer CPU device: 0\r\nClock Event Device: arch_sys_timer\r\n max_delta_ns:   42949672900\r\n min_delta_ns:   1000\r\n mult:           214748365\r\n shift:          32\r\n mode:           3\r\n next_event:     88105540000000 nsecs\r\n set_next_event: arch_timer_set_next_event_phys\r\n set_mode:       arch_timer_set_mode_phys\r\n event_handler:  tick_handle_periodic\r\n retries:        0\r\n\r\nevent_handler这里看着是有问题的，拜读了你们的文章，看样子是时钟没能完成切换？"
+ },
+ {
+  "id": "4699",
+  "parent": "4698",
+  "date": "2016-10-12T18:06:17+08:00",
+  "author": "驴肉火烧",
+  "site": "",
+  "text": "@驴肉火烧：知道原因了，仅描述了compatible = \"arm,armv8-timer\";还是不够的，系统中是存在compatible = \"arm,armv7-timer-mem\";时钟源的，dts中补充上就正常了，现在纳闷的是，我在飞腾arm64的服务器上测试，其dts中没有compatible = \"arm,armv7-timer-mem\";的描述，时钟也是准的，想不通了"
+ },
+ {
+  "id": "4723",
+  "parent": "0",
+  "date": "2016-10-17T15:44:27+08:00",
+  "author": "江南书生",
+  "site": "",
+  "text": "你好，我想问一下，现在我开启了高精度的时钟，在用户空间定时ms级别还是比较准的，但是在us级别就出现实时性很差的情况，有时快有时慢。我想知道是不是实时性不好啊？"
+ },
+ {
+  "id": "4737",
+  "parent": "4723",
+  "date": "2016-10-18T18:28:19+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@江南书生：在用户空间其实永远也不能达到很高的精度，因为时间精度依赖于调度器。"
+ },
+ {
+  "id": "4746",
+  "parent": "4737",
+  "date": "2016-10-19T17:35:53+08:00",
+  "author": "江南书生",
+  "site": "http://no",
+  "text": "@linuxer：我现在直接用硬件timer玩起来的，感觉你写的东西很不错，有没有群，加一下大家交流一下啊？"
+ },
+ {
+  "id": "4747",
+  "parent": "4746",
+  "date": "2016-10-19T18:51:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@江南书生：网站上有写的，呵呵～～\r\n联系我们\r\n\r\nQQ: 2841962892\r\n\r\nQQ交流群:457024058\r\n\r\nE-mail: service#wowotech.net\r\n          发送邮件时请将#替换为@"
+ },
+ {
+  "id": "6232",
+  "parent": "0",
+  "date": "2017-11-22T23:08:29+08:00",
+  "author": "gnx",
+  "site": "",
+  "text": "我觉得下面一段描述值得商榷\r\n“4、高精度timer + 周期性Tick\r\n这种配置不多见，多半是由于硬件无法支持one shot的clock event device，这种情况下，整个系统仍然是运行在周期tick的模式下。”\r\n既然支持高精度timer，那么clock event device或者tick device肯定是支持one shot的，这种组合模式一般是由于在启动参数中配置了nohz=on，或者没有配置NO_HZ_COMMON选项，这种组合确实不多见"
+ },
+ {
+  "id": "6233",
+  "parent": "6232",
+  "date": "2017-11-22T23:10:37+08:00",
+  "author": "gnx",
+  "site": "",
+  "text": "@gnx：夜深了，脑袋有点糊了，应该是nohz=off。。。"
+ },
+ {
+  "id": "6568",
+  "parent": "0",
+  "date": "2018-02-27T15:57:40+08:00",
+  "author": "kenneth",
+  "site": "",
+  "text": "2.4 内核应该是没有timekeeping吧，timekeeping是在高版本跟hrtimer 一起出来的"
+ },
+ {
+  "id": "8688",
+  "parent": "0",
+  "date": "2022-10-18T16:11:38+08:00",
+  "author": "奥特曼",
+  "site": "",
+  "text": "你好 我有一个问题\r\n在用户层调用usleep(1000)时，发现实际用时有10000us(100HZ的配置)，但是我是有自己的HRTIMER的，不知道为啥没起效，经过排查，我自己注册的clk_event被系统的dummy_timer替代作为了pre_cpu的clk_evnent （我是ARMV7的），而我注册的clk_event却作为了Broadcast。所以定时应该是用了dummy_timer的，而系统又是100HZ的，所以精度只有10ms了。\r\n我想知道我应该怎么做才能让我的clk_event作为定时器？\r\n谢谢大哥"
+ },
+ {
+  "id": "8689",
+  "parent": "8688",
+  "date": "2022-10-18T16:16:00+08:00",
+  "author": "奥特曼",
+  "site": "",
+  "text": "@奥特曼：补充: kernel版本是4.14.73\r\n启动时有\r\n Clockevents: could not switch to one-shot\r\n Clockevents: could not switch to one-shot\r\n Clockevents: could not switch to one-shot\r\n Clockevents: could not switch to one-shot\r\n等打印，经排查是tick_switch_to_oneshot()中的tick_device_is_functional()返回了真，说明是挑选了当前的pre_cpu的dummy_timer。"
+ },
+ {
+  "id": "8942",
+  "parent": "0",
+  "date": "2024-11-25T17:48:58+08:00",
+  "author": "水禾田",
+  "site": "",
+  "text": "大神请教一下，mips架构，使用cpufreq框架动态调整CPU频率，发现调整频率后，时钟变了。比如900M调整到300M，发现sleep 1变成了3秒。Compare寄存器的1毫秒中断间隔一直是初始的900M的频率间隔(450000)。需要怎么调整才能使得时钟和CPU频率匹配呢？"
+ }
+]

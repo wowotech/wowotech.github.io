@@ -1,0 +1,1298 @@
+[
+ {
+  "id": "168",
+  "parent": "0",
+  "date": "2014-05-30T19:28:06+08:00",
+  "author": "烂番茄",
+  "site": "http://www.lfqie.com",
+  "text": "各种概念，但是我也不晓得 - -小白飘过~~"
+ },
+ {
+  "id": "169",
+  "parent": "0",
+  "date": "2014-05-31T11:16:25+08:00",
+  "author": "Daniel Shieh",
+  "site": "",
+  "text": "已经写了两篇了，继续等待更进一步的，可以写一下内核和device tree是如何关联起来的吗？内部实现原理，这部分好像比较复杂，期待大牛的讲解。"
+ },
+ {
+  "id": "191",
+  "parent": "169",
+  "date": "2014-06-03T09:48:52+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Daniel Shieh：大牛是谈不上，只是对linux kernel比较有热情。呵呵～～～\r\n对于新的3版本的内核，我也是正在学习，对以前的2.6版本的内核还算熟悉。内核和device tree如何关联会在下一篇文档中完成，我估计也要下个星期了。"
+ },
+ {
+  "id": "264",
+  "parent": "0",
+  "date": "2014-07-29T16:15:54+08:00",
+  "author": "zhoutao.temp",
+  "site": "",
+  "text": "因为项目的需求，开始接触\"设备树\"，请问一下，有没有比较基础的文档或网页？如何操作设备文件、如何针对具体的硬件添加设备、如何编译等等，请问有没有操作性强的文档或网页。\r\n\r\n如能回复，感激不尽。"
+ },
+ {
+  "id": "265",
+  "parent": "264",
+  "date": "2014-07-29T18:28:23+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zhoutao.temp：起始linux-3.14\\Documentation\\devicetree目录下的文档已经提供了足够的信息，你可以参考"
+ },
+ {
+  "id": "294",
+  "parent": "0",
+  "date": "2014-08-13T16:36:43+08:00",
+  "author": "zhoutao.temp",
+  "site": "",
+  "text": "你好，我正在分析 CubieTruck 的设备树文件，有两个问题想请问你一下。\r\n\r\n1. 下面脚本里，两个管脚是从哪里得来的？\r\n\r\n\tallwinner,pins = \"PB18\", \"PB19\";\r\n\tallwinner,function = \"i2c1\";\r\n\r\n2. 这个 timer 的起始地址0x01c60000 从哪里来的？\r\n   还有interrupts 的四个中断是从哪里来的？\r\n是不是有什么硬件手册？\r\n\r\n\ttimer@01c60000 {\r\n\t\treg = <0x01c60000 0x1000>;\r\n\t\tinterrupts = \"0 51 1\",\r\n\t\t  \t \"0 52 1\",\r\n\t\t\t \"0 53 1\",\r\n\t\t\t \"0 54 1\";\r\n\t\t};"
+ },
+ {
+  "id": "296",
+  "parent": "294",
+  "date": "2014-08-13T17:14:22+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@zhoutao.temp：hi zhoutao.temp \r\ndevice tree的用途就是硬件的描述，所以里面的信息基本都是跟你的board相关的硬件信息。\r\n1：这两个管脚，因为我没有接触过你这个板子，但是基本的思路就是你去代码里面看着两个管脚是怎么用的，然后对照datasheet来查找。\r\n2：这timer的起始地址，一定是在芯片的datasheet里面的。有4个中断号，这个你要看code中，这个中断号注册的handler，才知道这几个中断到底是用来做什么的。\r\n一定要把dts文件跟code结合来看，要不然光看硬件描述根本无法知道在软件上这个dts为什么要这么写。"
+ },
+ {
+  "id": "297",
+  "parent": "294",
+  "date": "2014-08-13T19:12:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zhoutao.temp：1、我想你用的是全志的CPU，全部的定义是这样的：\r\ni2c1_pins_a: i2c1@0 {\r\n\tallwinner,pins = \"PB18\", \"PB19\";\r\n\tallwinner,function = \"i2c1\";\r\n\tallwinner,drive = <0>;\r\n\tallwinner,pull = <0>;\r\n};\r\n这个device node定义了i2c1的pin configuration。你问两个管脚是从哪里得来的？我不是很清楚你的问题，我猜你想想知道在linux kernel中哪里定义的，具体的代码是在drivers/pinctrl目录下的全志相关的pinctrl相关的driver，我猜是pinctrl-sunxi.c，PB18和PB19定义在pinctrl-sunxi-pins.h以及pinctrl-sunxi.h中。如果你想问硬件的内容，参考其芯片的datasheet就OK了，在GPIO章节会描述相关内容\r\n\r\n2、timer的地址以及中断信息都是在硬件datasheet或者user manual中有定义"
+ },
+ {
+  "id": "298",
+  "parent": "296",
+  "date": "2014-08-13T19:13:36+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：多谢帮忙！"
+ },
+ {
+  "id": "307",
+  "parent": "297",
+  "date": "2014-08-14T17:01:09+08:00",
+  "author": "zhoutao.temp",
+  "site": "",
+  "text": "@linuxer：感谢版本的回复，让我对设备树的理解又加深了一些。"
+ },
+ {
+  "id": "308",
+  "parent": "0",
+  "date": "2014-08-14T21:15:50+08:00",
+  "author": "zhoutao.temp",
+  "site": "",
+  "text": "你好，\r\n刚发一电子邮件，内容与这个帖子内容相同。这个为更新版。非常感谢你热心的回复。有点不好意思了，我还有问题需要问一下。\r\n\r\n\r\n1. 如何读懂 Cubietruck_HW 这个文件，并构造出一个以CPU为根的连接树。\r\n2. 如何从 Cubietruck_HW ,user manual 和 DataSheet从这三个文件如何查出设备树的一些属性值？\r\n\r\n以下面脚本为例，如何从这三个PDF文件看出要填写下面的value。\r\n\r\ni2c1_pins_a: i2c1@0 { \r\n    allwinner,pins = \"PB18\", \"PB19\"; \r\n    allwinner,function = \"i2c1\"; \r\n    allwinner,drive = <0>; \r\n    allwinner,pull = <0>; \r\n};\r\n\r\n-------------------------------------------------\r\n\r\n( 这三个文件的链接在下面列出了 )。\r\n\r\nCubietruck_HW.pdf : http://dl.cubieboard.org/hardware/A20_Cubietruck_HW_V10_130606.pdf\r\n\r\nA20 user manual.pdf :    http://dl.cubieboard.org/software/ubuntuone/public/cubieboard/docs/A20_user%20manual%20V1.0%2020130322.pdf \r\n \r\nA20 DataSheet.pdf :    \r\nhttp://dl.linux-sunxi.org/A20/A20%20Brief%202013-02-27.pdf \r\n \r\n_______________________________"
+ },
+ {
+  "id": "309",
+  "parent": "308",
+  "date": "2014-08-14T23:38:18+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zhoutao.temp：1、http://dl.cubieboard.org/hardware/A20_Cubietruck_HW_V10_130606.pdf 是电路原理图，如果不是面对面，我很难告诉你如何你如何读懂它\r\n\r\n2、我建议你先阅读A20 user manual.pdf的1.19章节，port controller，如果你知道这个章节描述的内容，自然也就能回答你提出的问题了"
+ },
+ {
+  "id": "331",
+  "parent": "0",
+  "date": "2014-08-21T09:08:33+08:00",
+  "author": "Frogcoder",
+  "site": "",
+  "text": "最近开始关注device tree，博主你的文章让人受益匪浅啊，灰常感谢分享！"
+ },
+ {
+  "id": "332",
+  "parent": "331",
+  "date": "2014-08-21T12:01:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Frogcoder：多谢鼓励，能够帮助到大家是我们继续下去的动力。"
+ },
+ {
+  "id": "392",
+  "parent": "0",
+  "date": "2014-09-02T16:08:00+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "需要提醒的是interrupt controller也是可以级联的，上图中没有表示出来。\r\n-------------------------------------------------------------------------------\r\nPCI host bridge设备中有一些下游的设备，也会产生中断，但是他们的中断都是连接到PCI host bridge上的interrupt controller（术语叫做interrupt nexus），\r\n-------------------------------------------------------------------------------\r\n这个PCI host bridge 就是一个interrupt controller，那这不就是级联的吗？"
+ },
+ {
+  "id": "396",
+  "parent": "392",
+  "date": "2014-09-02T18:31:07+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：interrupt nexus和interrupt controller是有区别的，至少interrupt nexus是和总线行为相关联的，更详细的内容让我先思考一下"
+ },
+ {
+  "id": "462",
+  "parent": "0",
+  "date": "2014-09-24T00:21:30+08:00",
+  "author": "741342765",
+  "site": "",
+  "text": "博主，都是用2440的开发板写的代码吗？"
+ },
+ {
+  "id": "463",
+  "parent": "462",
+  "date": "2014-09-24T08:42:43+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@741342765：我参与的平台比较多，但2440没有用过，我用过2410和2451这两个SOC"
+ },
+ {
+  "id": "540",
+  "parent": "0",
+  "date": "2014-10-21T15:13:10+08:00",
+  "author": "常山黄豆",
+  "site": "",
+  "text": "@linuxer,#interrupt-cells 和#address-cells概念是类似的，也就是说，用多少个u32来标识一个interrupt source。你文章里面#interrupt-cells = <0x4>; 而我本地一个exynos5430的工程里面有#interrupt-cells = <0x3>; gpio的interrupt controller也有#interrupt-cells = <0x2>; 那我们如何理解cells不同定义时，interrupts< 7 0 0>里面各个cell的含义？\r\n    同样#gpio-cells也是一样的，他们各个cell的含义在哪里可以找到？"
+ },
+ {
+  "id": "542",
+  "parent": "540",
+  "date": "2014-10-21T16:24:55+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@常山黄豆：linux-3.14/Documentation/devicetree/bindings目录下应该可以找到你想要的东西。"
+ },
+ {
+  "id": "544",
+  "parent": "540",
+  "date": "2014-10-21T16:58:11+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@常山黄豆：Linuxer所说的document，可以参考：\r\nDocumentation/devicetree/bindings/interrupt-controller/interrupts.txt\r\nDocumentation/devicetree/bindings/gpio/gpio.txt\r\n\r\ndevice tree只提供基本机制，如它规定了#gpio-cells、#interrupt-cells等关键字，这些机制保证了provider（如interrupt controller driver）和consumer（如uart driver）使用相对一致的语言对话。但对话的内容，还是要由provider根据自己的实际情况制定。这就是为什么会有Documentation/devicetree/bindings/这个目录，该目录存放了不同公司、不同软件模块所提供的DTS provider的规则。\r\n不过，device tree可能会多做一些规定，如在Documentation/devicetree/bindings/interrupt-controller/interrupts.txt中规定#interrupt-cells中的1表示什么，2表示什么。但是，provider可以无视它（如果理由充分的话），只要在bindings/某个位置说明清楚即可。"
+ },
+ {
+  "id": "569",
+  "parent": "542",
+  "date": "2014-10-24T15:46:17+08:00",
+  "author": "常山黄豆",
+  "site": "",
+  "text": "@linuxer：每看一次都有收获！"
+ },
+ {
+  "id": "730",
+  "parent": "0",
+  "date": "2014-11-12T21:59:53+08:00",
+  "author": "uudiin",
+  "site": "http://www.uudiin.com",
+  "text": "非常好的文章，对设备树有了更深入的了解\r\n博主可以的话，做个友链，www.uudiin.com"
+ },
+ {
+  "id": "731",
+  "parent": "730",
+  "date": "2014-11-12T22:33:08+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@uudiin：已经加入贵站，希望能多交流。"
+ },
+ {
+  "id": "998",
+  "parent": "0",
+  "date": "2015-01-04T15:59:29+08:00",
+  "author": "cloudxxcloud",
+  "site": "",
+  "text": "interrupts = <1 0 4 28>, <1 1 4 28>;   这些值的含义 要和具体的代码 相关联？具体的代码一般都是在什么位置？64bit的arm 已经去掉mach目录和plat目录了"
+ },
+ {
+  "id": "999",
+  "parent": "0",
+  "date": "2015-01-04T16:06:07+08:00",
+  "author": "cloudxxcloud",
+  "site": "",
+  "text": "pinctrl_0: pinctrl@56000000 比如这些命名 都是任意的吗？如：pinctrl_0: pinctrlxxxx@0x0aaaa;56000000这个值一般都是寄存器的基地值"
+ },
+ {
+  "id": "1006",
+  "parent": "998",
+  "date": "2015-01-05T09:38:36+08:00",
+  "author": "admin",
+  "site": "",
+  "text": "@cloudxxcloud：可以参考“Documentation/devicetree/bindings/interrupt-controller/interrupts.txt”，kernel是有些规定，但具体的driver，可以按照自己的想法实现。"
+ },
+ {
+  "id": "1007",
+  "parent": "999",
+  "date": "2015-01-05T09:39:27+08:00",
+  "author": "admin",
+  "site": "",
+  "text": "@cloudxxcloud：是可以任意命名。使用地址命名，是其中的一种常规做法。"
+ },
+ {
+  "id": "1095",
+  "parent": "0",
+  "date": "2015-01-15T14:15:50+08:00",
+  "author": "JJ",
+  "site": "",
+  "text": "方法1：\r\n\r\n    memory@0 {\r\n        device_type = \"memory\";\r\n        reg = <0x000000000 0x00000000 0x00000000 0x80000000\r\n                  0x000000001 0x00000000 0x00000001 0x00000000>;\r\n    };\r\n\r\n    方法2：\r\n\r\n    memory@0 {\r\n        device_type = \"memory\";\r\n        reg = <0x000000000 0x00000000 0x00000000 0x80000000>;\r\n    };\r\n\r\n    memory@100000000 {\r\n        device_type = \"memory\";\r\n        reg = <0x000000001 0x00000000 0x00000001 0x00000000>;\r\n    };\r\n\r\n\r\nreg 是不是寫錯了?怎麼會有 9 個bit"
+ },
+ {
+  "id": "1100",
+  "parent": "1095",
+  "date": "2015-01-15T23:25:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@JJ：应该是写错了，您看的真是仔细，赞！！"
+ },
+ {
+  "id": "1287",
+  "parent": "0",
+  "date": "2015-03-04T16:33:18+08:00",
+  "author": "linuxer_j",
+  "site": "",
+  "text": "非常感谢博主的付出！"
+ },
+ {
+  "id": "1364",
+  "parent": "0",
+  "date": "2015-03-21T16:43:27+08:00",
+  "author": "young",
+  "site": "",
+  "text": "这篇文章很受用，赞一个！"
+ },
+ {
+  "id": "1615",
+  "parent": "0",
+  "date": "2015-04-28T15:55:52+08:00",
+  "author": "阳光",
+  "site": "http://无",
+  "text": "文章还没有看完,实在忍不住,先赞一个.博主的文章真的,除了赞,不知道还能说什么.就是有了博主这样的人,我们很多人才进步的更快,说一声谢谢."
+ },
+ {
+  "id": "1779",
+  "parent": "0",
+  "date": "2015-05-13T11:10:34+08:00",
+  "author": "financer",
+  "site": "",
+  "text": "请问博主，\r\nlinux,phandle 怎么解释啊"
+ },
+ {
+  "id": "1780",
+  "parent": "1779",
+  "date": "2015-05-13T13:21:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@financer：linux,phandle和phandle是一个标示这个DTS node的句柄（想象一下文件句柄）。\r\n在DTS的语法中，我们可以为某个node起一个别名，如下面的“gpu_vdd”：\r\n        gpu_vdd: gpio-regulator {\r\n                ...   \r\n        };\r\n在其它node中，可以引用这个别名，如：\r\n        gpu@e0600000 {\r\n                ...\r\n                gpu-supply = <&gpu_vdd>;\r\n                ...\r\n        };\r\n但对DTS编译器来(dtc）说，别名很麻烦，没有数字来得实在，因此会自动把别名转为为phandle，如下（将DTB文件反编译后就可以看到）：\r\n        gpio-regulator {\r\n                ...\r\n                linux,phandle = <0x1e>;\r\n                phandle = <0x1e>;\r\n        };\r\n\r\n        gpu@e0600000 {\r\n                ...\r\n               gpu-supply = <0x1e>;\r\n                ...\r\n        };"
+ },
+ {
+  "id": "1781",
+  "parent": "0",
+  "date": "2015-05-13T16:13:20+08:00",
+  "author": "蒸汽机车",
+  "site": "",
+  "text": "请教语法问题。\r\nXXXX.dtsi文件这么定义\r\n&mdss_mdp {\r\n\tdsi_hx8379a_wvga_vid: qcom,mdss_dsi_hx8379a_wvga_video {\r\n\t\tqcom,mdss-dsi-panel-name = \"HX8379A wvga video mode dsi panel\";\r\n\t\tqcom,mdss-dsi-panel-controller = <&mdss_dsi0>;\r\n                ...........\r\n\r\n}\r\nXXX.dtsi\r\n又有mdss_mdp: qcom,mdss_mdp@1a00000 {\r\n\t\tcompatible = \"qcom,mdss_mdp\";\r\n\t\treg = <0x1a00000 0x90000>,\r\n}\r\n第一个是引用，第二个是定义吗？引用可以重新赋值吗。\r\n谢谢了~"
+ },
+ {
+  "id": "1782",
+  "parent": "1781",
+  "date": "2015-05-13T16:45:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@蒸汽机车：它等同于这样：\r\nXXXX1.dtsi------------------->\r\nqcom,mdss_mdp@1a00000 { \r\n    dsi_hx8379a_wvga_vid: qcom,mdss_dsi_hx8379a_wvga_video { \r\n        qcom,mdss-dsi-panel-name = \"HX8379A wvga video mode dsi panel\"; \r\n        qcom,mdss-dsi-panel-controller = <&mdss_dsi0>; \r\n                ........... \r\n\r\n} \r\n\r\nXXX2.dtsi --------------------->\r\nqcom,mdss_mdp@1a00000 { \r\n        compatible = \"qcom,mdss_mdp\"; \r\n        reg = <0x1a00000 0x90000>, \r\n} \r\n\r\n同一个node可以定义在两个DTS文件中，dtc会合并成一个。\r\n至于为什么会用“&mdss_mdp”的形式，可能他们觉得node的名字有点长吧。\r\n\r\nPS：这种用法还是挺好玩的，呵呵~~~~~~~"
+ },
+ {
+  "id": "1786",
+  "parent": "1782",
+  "date": "2015-05-14T09:40:25+08:00",
+  "author": "蒸汽机车",
+  "site": "",
+  "text": "@wowo：这样子，我看代码里很多这样写法。\r\n再请教一下。\r\n qcom,mdss-dsi-panel-controller = <&mdss_dsi0>; \r\nmdss_dsi0也是一个节点。会在本节点展开吗。还是只是一个地址而已？"
+ },
+ {
+  "id": "1787",
+  "parent": "1786",
+  "date": "2015-05-14T09:44:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@蒸汽机车：不会展开，它不是C语言中宏的概念。因为DTS的功能是描述，因此在kernel启动时会解析DTB，这个符号类似指针，将解析过程转到另一个node中。"
+ },
+ {
+  "id": "1788",
+  "parent": "1787",
+  "date": "2015-05-14T10:40:27+08:00",
+  "author": "蒸汽机车",
+  "site": "",
+  "text": "@wowo：嗯\r\nqcom,mdss-dsi-panel-controller = <&mdss_dsi0>; \r\n他这样做的意义是什么，语法上，是加入一个子节点的意思吗"
+ },
+ {
+  "id": "1789",
+  "parent": "1787",
+  "date": "2015-05-14T10:42:42+08:00",
+  "author": "蒸汽机车",
+  "site": "",
+  "text": "@wowo：嗯，和指针是一个意思。\r\nqcom,mdss-dsi-panel-controller = <&mdss_dsi0>; \r\n他这样做的意义是什么，语法上，是加入一个子节点的意思吗"
+ },
+ {
+  "id": "1790",
+  "parent": "1780",
+  "date": "2015-05-14T15:17:08+08:00",
+  "author": "financer",
+  "site": "",
+  "text": "@wowo：谢谢博主拔冗回答，再请问\r\nlinux,phandle\r\nphandle\r\n必须同时使用才能定义一个句柄吗。linux是指类型的意思吗？谢谢"
+ },
+ {
+  "id": "1791",
+  "parent": "1790",
+  "date": "2015-05-14T15:32:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@financer：不用，这两个只是不同时期的名字，现在kernel都兼容，具体可参考：\r\n./drivers/of/fdt.c\r\n/* We accept flattened tree phandles either in\r\n  * ePAPR-style \"phandle\" properties, or the\r\n  * legacy \"linux,phandle\" properties.  If both\r\n  * appear and have different values, things\r\n  * will get weird.  Don't do that. */\r\n所以 \"linux,phandle\"是旧的属性，不建议使用了。"
+ },
+ {
+  "id": "1793",
+  "parent": "1789",
+  "date": "2015-05-14T16:50:47+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@蒸汽机车：不是加入子节点的意思，而是它需要使用其它节点。"
+ },
+ {
+  "id": "1805",
+  "parent": "1793",
+  "date": "2015-05-15T09:10:21+08:00",
+  "author": "蒸汽机车",
+  "site": "",
+  "text": "@wowo：嗯，谢谢博主"
+ },
+ {
+  "id": "2010",
+  "parent": "0",
+  "date": "2015-06-19T11:24:31+08:00",
+  "author": "xie1230",
+  "site": "",
+  "text": "有一个问题想请教一下：\r\n需要写一个i2c设备驱动，需要在一个i2c总线上加一个设备，dts文件应该要怎么写才好？\r\n有点不能理解，改如何配置这个i2c总线的bus号等一些配置项？\r\n\r\n这个是有标准的写法，还是需要自己定义驱动去识别的properties来配置i2c bus的？"
+ },
+ {
+  "id": "2011",
+  "parent": "2010",
+  "date": "2015-06-19T11:36:24+08:00",
+  "author": "xie1230",
+  "site": "",
+  "text": "@xie1230：又仔细看了一下actions 平台中的dts，里面各个i2c总线下，又会定义不同的设备，看来应该在这里面定义自己的设备了，不过还是有一个问题要确认一下，如果我在自己的设备驱动中需要使用dts中的某个配置，是可以自己定义properties的吧，通过of API读取？"
+ },
+ {
+  "id": "2012",
+  "parent": "2011",
+  "date": "2015-06-19T12:40:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@xie1230：我们需要先理解一点：DTS文件描述的是platform bus上的platform设备。\r\n这也是为什么linux kernel of模块只会帮忙解析DTS中第2级别（例如i2c controller）的节点，因为只有这一级别的节点才是根正苗红的platform device。\r\n然后再回到i2c bus下面的设备，它已经不是platform设备了（虽然很多driver也会为其创建platform设备），因此，kernel of模块就不会帮忙解析。那么谁解析呢？i2c bus driver。这就是为什么i2c设备的DTS node放到了i2c controller下面，也因此就没有i2c bus number的困扰了。\r\n最后，i2c device设备的DTS node，本质上也是DTS node，只要能拿到它的句柄，一样可以通过of接口解析其中的properties。"
+ },
+ {
+  "id": "2266",
+  "parent": "1782",
+  "date": "2015-07-21T15:15:57+08:00",
+  "author": "enjoyer",
+  "site": "",
+  "text": "@wowo：借用@蒸汽机车 同学的\r\nXXXX.dtsi文件这么定义 \r\n&mdss_mdp { \r\n    dsi_hx8379a_wvga_vid: qcom,mdss_dsi_hx8379a_wvga_video { \r\n        qcom,mdss-dsi-panel-name = \"HX8379A wvga video mode dsi panel\"; \r\n        qcom,mdss-dsi-panel-controller = <&mdss_dsi0>; \r\n                ........... \r\n\r\n} \r\nXXX.dtsi \r\n又有mdss_mdp: qcom,mdss_mdp@1a00000 { \r\n        compatible = \"qcom,mdss_mdp\"; \r\n        reg = <0x1a00000 0x90000>, \r\n} \r\n\r\n如果这两个节点里面有相同的属性，如\r\n&mdss_mdp { \r\n     aa = <1>,\r\n    } \r\nXXX.dtsi \r\n又有mdss_mdp: qcom,mdss_mdp@1a00000 { \r\n        compatible = \"qcom,mdss_mdp\"; \r\n        reg = <0x1a00000 0x90000>, \r\n        aa = <2>,\r\n} \r\n那么两者合并的时候是不是有个先后顺序的；后者替换先者的？"
+ },
+ {
+  "id": "2279",
+  "parent": "2266",
+  "date": "2015-07-22T00:02:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@enjoyer：其实你自己试一下就知道了，将dts编译成二进制的dtb，然后反编译成dts，这样就知道DTC是如何处理的了，呵呵~~~这样至少省去了看DTC source code的麻烦了"
+ },
+ {
+  "id": "2301",
+  "parent": "0",
+  "date": "2015-07-23T11:33:47+08:00",
+  "author": "Bruce",
+  "site": "",
+  "text": "請問如果在makefile中看到在編譯時會取用多個DTB files\r\n如果在不同的dts file都有各自的敘述 比方在\r\na.dtsi是這樣苗訴的\r\n&mdss_dsi0 {\r\n\tqcom,dsi-pref-prim-pan = <&dsi_jdi_1080_vid>;\r\n\tpinctrl-names = \"mdss_default\", \"mdss_sleep\";\r\n\tpinctrl-0 = <&mdss_dsi_active &mdss_te_active>;\r\n\tpinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;\r\n\r\n\tqcom,platform-enable-gpio = <&msm_gpio 97 0>;\r\n\tqcom,platform-reset-gpio = <&msm_gpio 25 0>;\r\n\tqcom,platform-bklight-en-gpio = <&msm_gpio 98 0>;\r\n};\r\n\r\nb.dtsi卻是這樣\r\n&mdss_dsi0 {\r\n\tqcom,dsi-pref-prim-pan = <&dsi_hx8379a_fwvga_video>;\r\n\tpinctrl-names = \"mdss_default\", \"mdss_sleep\";\r\n\tpinctrl-0 = <&mdss_dsi_active>;\r\n\tpinctrl-1 = <&mdss_dsi_suspend>;\r\n\r\n\tqcom,platform-reset-gpio = <&msm_gpio 25 0>;\r\n};\r\n\r\n如此一來會怎麼樣呢?"
+ },
+ {
+  "id": "2305",
+  "parent": "2301",
+  "date": "2015-07-23T13:16:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Bruce：后面包含进来的会覆盖前面的。下面有一些关于这的讨论，您可以参考一下。"
+ },
+ {
+  "id": "2307",
+  "parent": "0",
+  "date": "2015-07-23T14:11:20+08:00",
+  "author": "Bruce",
+  "site": "",
+  "text": "@wowo:先謝謝博主,另外想再請問我目前遇到的情況\r\n在makefile中平台會include很多dtb files\r\n\r\ndtb-$(CONFIG_ARCH_MSM8916) += msm8916-cdp.dtb \\\r\n\tmsm8916-cdp-smb1360.dtb \\\r\n\tmsm8916-mtp.dtb \\\r\n\tmsm8916-mtp-smb1360.dtb \\\r\n\tmsm8916-qrd-skuh.dtb \\\r\n\tmsm8916-qrd-skuhf.dtb \\\r\n\tmsm8916-qrd-skui.dtb \\\r\n\tmsm8916-qrd-skuic.dtb \\\r\n\tmsm8916-qrd-skuid.dtb \\\r\n\tmsm8916-qrd-skut1.dtb \\\r\n\tapq8016-mtp.dtb \\\r\n\tapq8016-mtp-smb1360.dtb \\\r\n\tapq8016-sbc.dtb \\\r\n\tmsm8939-qrd-skuk.dtb \\\r\n\tmsm8939-qrd-skul.dtb \\\r\n\tmsm8939-cdp.dtb \\\r\n\tmsm8939-cdp-jdi.dtb \\\r\n\tmsm8939-cdp-jdi-a216-fhd.dtb \\\r\n\tmsm8939-mtp.dtb \\\r\n\tmsm8939-mtp-jdi.dtb \\\r\n\tmsm8939-mtp-smb1360.dtb \\\r\n\tmsm8939-mtp-wcd9306.dtb \\\r\n\tmsm8936-qrd-skuk.dtb \\\r\n\tmsm8936-cdp.dtb \\\r\n\tmsm8936-cdp-smb1360.dtb \\\r\n\tmsm8936-mtp.dtb \\\r\n\tmsm8936-mtp-smb1360.dtb \\\r\n\tmsm8936-mtp-wcd9306.dtb \\\r\n\tmsmtellurium-sim.dtb \\\r\n\tmsmtellurium-rumi.dtb \\\r\n\tmsm8929-cdp.dtb \\\r\n\tmsm8929-mtp.dtb \\\r\n\tmsm8929-mtp-smb1360.dtb \\\r\n\tmsm8929-mtp-jdi-smb1360.dtb \\\r\n\tmsm8929-mtp-wcd9306-smb1360.dtb \\\r\n\tmsm8929-qrd-skul.dtb \\\r\n\tmsm8929-qrd-skulb.dtb \\\r\n\tmsm8929-cdp-jdi.dtb\r\n\r\n在這種情況下要如何確保自己修改某一個dts而不會被蓋過去呢?\r\n將自己的dtb在makefile中順序往下移動嗎?\r\n或是有什麼建議的管理方式呢?\r\n謝謝"
+ },
+ {
+  "id": "2308",
+  "parent": "2307",
+  "date": "2015-07-23T14:48:18+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Bruce：DTS的include，隐含的是板级的派生和继承，建议您还是把这个先理清楚，至于怎么改DTS，就简单了。"
+ },
+ {
+  "id": "2319",
+  "parent": "2279",
+  "date": "2015-07-27T10:20:07+08:00",
+  "author": "enjoyer",
+  "site": "",
+  "text": "@linuxer：嗯，后来已尝试过，发现还是多尝试效果较好；"
+ },
+ {
+  "id": "2379",
+  "parent": "0",
+  "date": "2015-07-30T17:28:35+08:00",
+  "author": "newhand",
+  "site": "",
+  "text": "假设我们的系统是64bit的，physical memory分成两段，定义如下：\r\nRAM: starting address 0x0, length 0x80000000 (2GB) \r\nRAM: starting address 0x100000000, length 0x100000000 (4GB)\r\n\r\nmemory@0 { \r\n    device_type = \"memory\"; \r\n    reg = <0x000000000 0x00000000 0x00000000 0x80000000 \r\n              0x000000001 0x00000000 0x00000001 0x00000000>; \r\n};\r\n\r\n為什麼不是\r\nmemory@0 { \r\n    device_type = \"memory\"; \r\n    reg = <0x000000000 0x00000000 0x00000000 0x80000000 \r\n              0x000000001 0x00000000 0x00000001 0x100000000>; \r\n};\r\n\r\n第二個不是4G嗎?"
+ },
+ {
+  "id": "2380",
+  "parent": "2379",
+  "date": "2015-07-30T18:11:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@newhand：前面已经假设了系统是64bit的，因此reg中的那些bit是按照64bit来解析的：\r\n  <0x000000000 0x00000000                   0x00000000 0x80000000\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\nstart address  （0）                         length （2G）\r\n\r\n   0x000000001 0x00000000                   0x00000001 0x00000000>; \r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\nstart address （4G地址空间开始的位置）        length （4G）"
+ },
+ {
+  "id": "2381",
+  "parent": "2380",
+  "date": "2015-07-31T08:57:50+08:00",
+  "author": "newhand",
+  "site": "",
+  "text": "@linuxer：謝謝版主～～～！！"
+ },
+ {
+  "id": "2382",
+  "parent": "0",
+  "date": "2015-07-31T12:27:00+08:00",
+  "author": "newhand",
+  "site": "",
+  "text": "板大您好：\r\n   小弟還有些問題，以高通8974平台为例中，會有些\r\n   qcom,i2c-bus-freq\r\n   qcom,sda-gpio\r\n   這種屬性，試問這類型的屬性都專屬高通?和我要怎麼知道有這些屬性??"
+ },
+ {
+  "id": "2383",
+  "parent": "0",
+  "date": "2015-07-31T12:42:53+08:00",
+  "author": "linuxer2010",
+  "site": "",
+  "text": "写的很好，对我帮助特别大，我要把网站上所有的文章都读过来。"
+ },
+ {
+  "id": "2393",
+  "parent": "2382",
+  "date": "2015-07-31T18:58:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@newhand：在linux-4.0\\Documentation\\devicetree\\bindings\\i2c或者E:\\home\\linux-4.0\\linux-4.0\\Documentation\\devicetree\\bindings\\arm目录下可以找到这些属性的定义"
+ },
+ {
+  "id": "2404",
+  "parent": "2393",
+  "date": "2015-08-03T09:36:08+08:00",
+  "author": "newhand",
+  "site": "",
+  "text": "@linuxer：謝謝！！"
+ },
+ {
+  "id": "2443",
+  "parent": "0",
+  "date": "2015-08-10T11:21:28+08:00",
+  "author": "Hanks",
+  "site": "",
+  "text": "比有些平台介绍自己的dts格式的描述文档还清晰！必须赞！"
+ },
+ {
+  "id": "2749",
+  "parent": "0",
+  "date": "2015-10-12T17:21:02+08:00",
+  "author": "justforfun",
+  "site": "",
+  "text": "timer11: timer@48088000 {\r\n\t\t\tcompatible = \"ti,omap2-timer\";\r\n\t\t\treg = <0x48088000 0x80>;\r\n\t\t\tinterrupts = <0 47 0x4>;\r\n\t\t\tti,hwmods = \"timer11\"; 这和下面的是什么意思，这又是什么写法？\r\n\t\t\tti,timer-ipu;\r\n\t\t\tti,timer-pwm;\r\n\t\t};"
+ },
+ {
+  "id": "2752",
+  "parent": "2749",
+  "date": "2015-10-13T00:23:33+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@justforfun：那些是OMAP Timer bindings，具体请参考Documentation\\devicetree\\bindings\\arm\\omap\\timer.txt文件"
+ },
+ {
+  "id": "2816",
+  "parent": "0",
+  "date": "2015-10-22T11:32:07+08:00",
+  "author": "路人甲",
+  "site": "",
+  "text": "楼主真的对device tree了解很深入啊，佩服"
+ },
+ {
+  "id": "2879",
+  "parent": "0",
+  "date": "2015-10-28T18:30:40+08:00",
+  "author": "小白",
+  "site": "",
+  "text": "大大，请问dtb文件如何进行反编译的"
+ },
+ {
+  "id": "2885",
+  "parent": "2879",
+  "date": "2015-10-29T08:46:02+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@小白：dtc的source code位于linux/scripts/dtc目录下，你一看便知"
+ },
+ {
+  "id": "2888",
+  "parent": "2885",
+  "date": "2015-10-29T09:45:14+08:00",
+  "author": "小白",
+  "site": "",
+  "text": "@linuxer：感谢大大的回答，但是还出现下面的问题还请指教下\r\nlcl dtc # dtc -I dtb -O dts /workspace/wtr4905/ap-msm8916-wtr4905-5-1/out/debug/target/product/L3_project_demo/obj/KERNEL_OBJ/arch/arm64/boot/msm8916-qrd-skuh-L3_project_demo.dtb\r\n执行这命令后提示程序“dtc”尚未安装。  您可以使用以下命令安装：\r\n是我的命令有问题还是要安装dtc的"
+ },
+ {
+  "id": "2892",
+  "parent": "2888",
+  "date": "2015-10-29T17:15:14+08:00",
+  "author": "firo",
+  "site": "http://firoyang.org",
+  "text": "@小白：可以确定层主真小白:-)\r\n\r\n你可以用绝对路径指定dtc, or 把 dtc所在的路径加到PATH里面."
+ },
+ {
+  "id": "2893",
+  "parent": "2892",
+  "date": "2015-10-29T17:16:30+08:00",
+  "author": "firo",
+  "site": "http://firoyang.org",
+  "text": "@firo：也可以用./dtc 这种相对路径写法."
+ },
+ {
+  "id": "2899",
+  "parent": "2892",
+  "date": "2015-10-30T15:46:18+08:00",
+  "author": "小白",
+  "site": "",
+  "text": "@firo：我已经进入到dtc目录下执行的，应该不用加上路径的了吧，我看了网上说高通的dtc不可直接使用的，而在android源码上是可以执行反编译的，不知道是不是和高通平太有关呢，请大大指教一下"
+ },
+ {
+  "id": "2902",
+  "parent": "2899",
+  "date": "2015-10-30T17:51:30+08:00",
+  "author": "firo",
+  "site": "http://firoyang.org",
+  "text": "@小白：在dtc目录下执行./dtc 试试."
+ },
+ {
+  "id": "3121",
+  "parent": "0",
+  "date": "2015-11-25T10:41:37+08:00",
+  "author": "太阳",
+  "site": "http://www.shareuworld.com",
+  "text": "看了你的文章学到了不少，但我发现dts中会用到include\r\n\r\n想请教一下：\r\n#include\r\n/include/\r\n/*/include/\r\n\r\n这几个有啥差别来着，还望赐教"
+ },
+ {
+  "id": "3124",
+  "parent": "3121",
+  "date": "2015-11-25T14:55:46+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@太阳：哈哈，这个问题相当“刁钻”啊！\r\n\r\n我找了很久，没有这方面的资料，自己猜测如下：\r\n\r\n1. /include/的方式，应该是dts脚本的标准语法，可以从dtc的词法分析器的代码中看到（kernel/scripts/dtc/dtc-lexer.l）：\r\n\r\n<*>\"/include/\"{WS}*{STRING} {                                                   \r\n\r\n                        char *name = strchr(yytext, '\\\"') + 1;                  \r\n\r\n                        yytext[yyleng-1] = '\\0';                                \r\n\r\n                        push_input_file(name);                                  \r\n\r\n                } \r\n\r\nstart\r\n\r\n2. #include的方式，应该是兼容C语言的语法，因此dtc在某个阶段应该调用C的解释器了（我没有细看代码，不能确认）。\r\n\r\n3. /*/include/    这种方式是对的？？"
+ },
+ {
+  "id": "3125",
+  "parent": "3121",
+  "date": "2015-11-25T15:04:14+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@太阳：#include 是经典的c代码的风格\r\n/include/ 是device tree source定义的\r\n这两种格式都是被dtc支持的，没有什么区别。\r\n\r\n/*/include/  这个好象没有见过，你能给出一个例子吗？"
+ },
+ {
+  "id": "3132",
+  "parent": "3124",
+  "date": "2015-11-25T16:47:45+08:00",
+  "author": "太阳",
+  "site": "http://www.shareuworld.com",
+  "text": "@wowo：刚刚在代码注释了一下编译验证了一下，结果如下。\r\n第一个是在本地同一个目录搜索文件\r\n第二个是可以从其他的路径准确的说是Makefile 额外添加了路径的地方搜索文件\r\n第三个应该是少了个*/ /*/include xxx*/是注释。\r\n\r\n你知道yyparse源码放哪里的？"
+ },
+ {
+  "id": "3133",
+  "parent": "3132",
+  "date": "2015-11-25T17:02:51+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@太阳：第二个之所以能从指定路径中搜索，是不是正因为它是使用C的编译环境？\r\nyyparse应该和lex yacc有关吧，我不太了解。"
+ },
+ {
+  "id": "3135",
+  "parent": "3133",
+  "date": "2015-11-25T17:25:39+08:00",
+  "author": "太阳",
+  "site": "http://www.shareuworld.com",
+  "text": "@wowo：我感觉用/include/类似于c环境\r\n#include 只能从当前目录搜索"
+ },
+ {
+  "id": "3137",
+  "parent": "3135",
+  "date": "2015-11-26T08:53:00+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@太阳：抱歉，把你的表述看反了。我平时一般都用#include的方式，知道怎么用就行了，没必要深究。"
+ },
+ {
+  "id": "3210",
+  "parent": "0",
+  "date": "2015-12-09T18:58:07+08:00",
+  "author": "wal",
+  "site": "",
+  "text": "参考标签在反编译的DTS文件中显示为数字"
+ },
+ {
+  "id": "3215",
+  "parent": "3210",
+  "date": "2015-12-10T09:10:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wal：是的。"
+ },
+ {
+  "id": "3342",
+  "parent": "0",
+  "date": "2016-01-05T11:06:40+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "wowo,如果一个dts里面引用了某个dtsi的label,但这个include dtsi是放在这个dts的末尾，即没有在引用前就include。不知道dtc是会按顺序预处理，还是说是include相关的会提请加载预处理。"
+ },
+ {
+  "id": "3343",
+  "parent": "3342",
+  "date": "2016-01-05T11:25:17+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@gzz：尝试了下，貌似label的引用和include的位置无关，应该是提前于加载类似于makefile的include处理，而不是C编译的处理。"
+ },
+ {
+  "id": "3345",
+  "parent": "3215",
+  "date": "2016-01-05T15:32:41+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@wowo：wowo,在root node中如果有一个A:A{}子节点，然后在这个dts中的根节点/{}外面又增加了\r\n&A{\r\nxxxxxx\r\n其他node信息\r\n}\r\n这种方式是不是就是只是给A节点增加信息，本质就是只有一个A node，只是分开来描述而已，是这么理解吗？\r\nps:文章里貌似没有出现过这样处理方式，在节点内部&label倒是有说明，两者应该是不一样的吧？"
+ },
+ {
+  "id": "3347",
+  "parent": "3345",
+  "date": "2016-01-05T17:15:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@gzz：是的，这样理解没有问题。\r\n这两者本质上是一样的，只是用法不同而已，区别在于是否在平级引用而已。"
+ },
+ {
+  "id": "3379",
+  "parent": "0",
+  "date": "2016-01-11T22:13:29+08:00",
+  "author": "feibob",
+  "site": "",
+  "text": "想请教一下:　如果一个GPIO口是复用的,　比如它同时有GPIO功能和PWM功能, 那么在dtsi文件中,　系统同时定义了两种用法定义,gpio7和pwm0,　那我们如何判断它在最终的使用中是作何解释的?　又或者应该是如何打开其中一项功能,并关闭另一项功能的呢?"
+ },
+ {
+  "id": "3383",
+  "parent": "3379",
+  "date": "2016-01-12T17:35:40+08:00",
+  "author": "linglongqion",
+  "site": "",
+  "text": "@feibob：看驱动的注册顺序"
+ },
+ {
+  "id": "3389",
+  "parent": "3383",
+  "date": "2016-01-13T09:51:54+08:00",
+  "author": "feibob",
+  "site": "",
+  "text": "@linglongqion：那这样说来,　就是看Kernel解读这些文件的顺序了?　还是在Kernel中有相应的流程来控制?"
+ },
+ {
+  "id": "3390",
+  "parent": "3379",
+  "date": "2016-01-13T10:41:50+08:00",
+  "author": "云",
+  "site": "",
+  "text": "@feibob：硬件配置，不是DT事。\r\n引用一段，供大家参考：\r\n•\tThe Device Tree is really a hardware description language.\r\n•\tIt should describe the hardware layout, and how it works. \r\n•\tBut it should not describe which particular hardware configuration you’re interested in. \r\n•\tAs an example: \r\n    o\tYou may describe in the DT whether a particular piece of hardware supports DMA or not. \r\n    o\tBut you may not describe in the DT if you want to use DMA or not."
+ },
+ {
+  "id": "3455",
+  "parent": "0",
+  "date": "2016-01-28T14:04:43+08:00",
+  "author": "quan",
+  "site": "",
+  "text": "请问一下，这个aliases节点具体有什么用处，我在不同的SOC下面发现aliases节点包含的设备节点都不一样，\r\n引用设备节点不是使用&label的方式就可以了吗，为什么还要这个aliases，他是用来告诉操作系统某些信息的吧"
+ },
+ {
+  "id": "3457",
+  "parent": "3455",
+  "date": "2016-01-29T08:59:50+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@quan：aliases节点用来定义alias property的，每个SOC平台都可以根据自己的喜好随意定义，没有什么特别的，就是为了方便而已。"
+ },
+ {
+  "id": "3459",
+  "parent": "3455",
+  "date": "2016-01-29T09:06:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@quan：alias的作用，相当于为node起一个别名，然后其它的node就可以引用这个别名。它的好处是：\r\n有些node在不同的版型里面，真名可能有变化，例如gpio，有些版型可能叫做gpio0、gpio1、…，而有些可能叫做gpioa、gpiob、…，原因是node起名的依据应该尽量贴近硬件。\r\n而其它driver（例如使用gpio的driver）引用gpio时，又不想随着gpio的真名的改变，统统改变一下，所以它们就可以引用gpio的别名。\r\n别名尽量固定，更改真名的情况下，只需要更改alias处即可，不需要更改每一个用到的driver。"
+ },
+ {
+  "id": "3460",
+  "parent": "3457",
+  "date": "2016-01-29T09:10:16+08:00",
+  "author": "quan",
+  "site": "",
+  "text": "@郭健：谢谢你的回答，这相当于aliases节点没有什么用是吗，那是为了方便什么了？"
+ },
+ {
+  "id": "3461",
+  "parent": "3459",
+  "date": "2016-01-29T09:30:13+08:00",
+  "author": "quan",
+  "site": "",
+  "text": "@wowo：不好意思，还是不怎么明白，驱动为什么会去调用这个别名了"
+ },
+ {
+  "id": "3462",
+  "parent": "3459",
+  "date": "2016-01-29T09:39:46+08:00",
+  "author": "quan",
+  "site": "",
+  "text": "@wowo：设备树中引用某个节点，直接使用&label就行，与aliases节点没有关系对吧"
+ },
+ {
+  "id": "3463",
+  "parent": "3462",
+  "date": "2016-01-29T09:47:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@quan：因为真名或者label都有可能会变，最不可能变的是别名。"
+ },
+ {
+  "id": "3464",
+  "parent": "3463",
+  "date": "2016-01-29T10:17:29+08:00",
+  "author": "quan",
+  "site": "",
+  "text": "@wowo：驱动或者内核在什么地方会使用这个别名，可否给一个实例\r\n谢谢"
+ },
+ {
+  "id": "3466",
+  "parent": "3464",
+  "date": "2016-01-29T10:52:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@quan：抱歉，我上面的描述不准确，aliases的主要目的是方便某一类设备的driver的编写，以gpio举例。\r\nCPU可能有多个gpio controller，DTS中通常这样描述：\r\n        gpio1: gpio@1 {                                                         \r\n                compatible = \"fsl,imx28-gpio\";                                  \r\n                ...                                         \r\n        };                                                                      \r\n                                                                                \r\n        gpio2: gpio@2 {                                                         \r\n                compatible = \"fsl,imx28-gpio\";                                  \r\n                ...                                       \r\n        }; \r\n\t...\r\n需要注意的是，这样多个gpio的nodes的compatible 是一样的，因此driver probe的时候无法知道到底是哪一个node，1？2？\r\n那用什么方法让driver知道呢？可以在每个node里面自己加一个id，例如'id = <1>;'，driver自行解析即可。但这样不通用，因此kernel就提供了一个标准方法，aliases：\r\naliases {                                                                       \r\n        gpio0 = &gpio0;                                                         \r\n        gpio1 = &gpio1;                                                         \r\n        gpio2 = &gpio2;                                                         \r\n        gpio3 = &gpio3;                                                         \r\n        gpio4 = &gpio4;                                                         \r\n}; \r\n\r\n这样driver在获得某一个gpio node（&gpio1）后，就可以以该node指针以及aliases的关键字（gpio）为参数，调用of_alias_get_id接口，获得对应的id。"
+ },
+ {
+  "id": "3468",
+  "parent": "3462",
+  "date": "2016-01-29T11:22:16+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@quan：定义一个lable，然后通过&label来引用当然可以，但是你也许需要多个不同的名字呢？比如你的名字叫做quan（是一个符号），我引用的时候就是&quan，但是你老婆引用的时候可能是老公，那么“老公”就是一个alias，也就是说\r\n老公 = &quan\r\n如果是朋友想要引用你，那么他们可能叫你“老Q”，那么“老Q”就是一个alias，也就是说\r\n老Q = &quan\r\n\r\n根据场合，定义不同的alias是不是会方便一些呢？"
+ },
+ {
+  "id": "3469",
+  "parent": "3466",
+  "date": "2016-01-29T11:46:49+08:00",
+  "author": "quan",
+  "site": "",
+  "text": "@wowo：非常感谢，你的回复，我好好理一理"
+ },
+ {
+  "id": "3470",
+  "parent": "3468",
+  "date": "2016-01-29T14:35:43+08:00",
+  "author": "quan",
+  "site": "",
+  "text": "@郭健：不好意思，本人比较愚钝，不是太明白你说的，我觉得上面蜗蜗分析的和你说的完全不一样"
+ },
+ {
+  "id": "3471",
+  "parent": "3470",
+  "date": "2016-01-29T15:09:50+08:00",
+  "author": "云",
+  "site": "",
+  "text": "@quan：他们说的都是对的，都是alias的使用场景：）"
+ },
+ {
+  "id": "3480",
+  "parent": "3470",
+  "date": "2016-01-29T21:52:16+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@quan：一样的啊，lable不就是定义在node name或者property 之前的符号吗？通过&就可以引用该符号而不必使用很长的full path。\r\n\r\n你可以直接引用这些符号，也可以定义一些别名（alias）来代替（&lable）。如果你愿意，可以定义n个别名来表示对某个符号的引用，只要你愿意。"
+ },
+ {
+  "id": "3814",
+  "parent": "3390",
+  "date": "2016-04-08T12:28:03+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "@云：根据你提供的资料，比如我在节点1里有：\r\nirq_gpio_off = <&gpio2 GPIO_B1 IRQ_TYPE_EDGE_FALLING>\r\n\r\n是不是必须在驱动里\r\nof_get_named_gpio_flags(node, \"irq_gpio_off\", 0, &flag);这一句之后 gpio2-b1才被配置成gpio模式（假设该gpio初始是i2c_scl模式）。"
+ },
+ {
+  "id": "3815",
+  "parent": "3390",
+  "date": "2016-04-08T12:28:05+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "@云：根据你提供的资料，比如我在节点1里有：\r\nirq_gpio_off = <&gpio2 GPIO_B1 IRQ_TYPE_EDGE_FALLING>\r\n\r\n是不是必须在驱动里\r\nof_get_named_gpio_flags(node, \"irq_gpio_off\", 0, &flag);这一句之后 gpio2-b1才被配置成gpio模式（假设该gpio初始是i2c_scl模式）。"
+ },
+ {
+  "id": "3943",
+  "parent": "0",
+  "date": "2016-05-17T14:30:11+08:00",
+  "author": "teensoul",
+  "site": "",
+  "text": "作者太棒了，感谢作者。DT这个系列看完，连评论都舍不得放过，写得太好了，完全是工作中的前辈手把手教啊。"
+ },
+ {
+  "id": "3944",
+  "parent": "3943",
+  "date": "2016-05-17T22:48:13+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@teensoul：多谢鼓励:-)"
+ },
+ {
+  "id": "4068",
+  "parent": "0",
+  "date": "2016-06-14T14:31:10+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "分析的很好。最近在工作上遇到点问题。\r\n经常在.dtsi文件中的设备节点中有 status = “disable”，然后在.dts文件中用句柄获取这个节点后status = “okay”。\r\n 一直弄不清 disable 和 okay 的具体功能，似乎有些设备即使你不去status = ‘okay’，也能工作。希望版主解答一下。"
+ },
+ {
+  "id": "4071",
+  "parent": "4068",
+  "date": "2016-06-14T15:46:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@emeralddream：status = “disable”和把这个dts节点删掉，效果相同。至于为什么不直接删掉呢？大家应该可以猜到吧:-)"
+ },
+ {
+  "id": "4072",
+  "parent": "4071",
+  "date": "2016-06-15T11:01:06+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "@wowo：现在原厂喜欢在dtsi文件中配置节点时status=disable，然后在dts中&xxx {status = \"okay\"};就是说如果不okay，这个设备节点就无法和驱动匹配，执行probe函数吗?\r\n\r\n我现在遇到一个uart，用来抓log的。并没有在status = ‘okay’，为什么他依然能够工作？"
+ },
+ {
+  "id": "4073",
+  "parent": "4071",
+  "date": "2016-06-15T11:01:10+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "@wowo：现在原厂喜欢在dtsi文件中配置节点时status=disable，然后在dts中&xxx {status = \"okay\"};就是说如果不okay，这个设备节点就无法和驱动匹配，执行probe函数吗?\r\n\r\n我现在遇到一个uart，用来抓log的。并没有在status = ‘okay’，为什么他依然能够工作？"
+ },
+ {
+  "id": "4074",
+  "parent": "4073",
+  "date": "2016-06-15T13:16:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@emeralddream：是的。\r\n没有status = ‘okay’没有关系，只要不显式的设置“status=disable”，都会编译进入的。"
+ },
+ {
+  "id": "4095",
+  "parent": "0",
+  "date": "2016-06-16T16:47:52+08:00",
+  "author": "fox",
+  "site": "",
+  "text": "你好，请问下pop device是怎么实现的呢"
+ },
+ {
+  "id": "4096",
+  "parent": "4095",
+  "date": "2016-06-16T17:24:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@fox：建议你先给大家普及一下pop device的概念吧？呵呵:-)"
+ },
+ {
+  "id": "4107",
+  "parent": "4096",
+  "date": "2016-06-17T11:54:04+08:00",
+  "author": "fox",
+  "site": "",
+  "text": "@wowo：我说的pop device指的是device和driver的匹配过程，dt引入后，他们的匹配过程还和dt之前一样吗？谢过wowo"
+ },
+ {
+  "id": "4108",
+  "parent": "4107",
+  "date": "2016-06-17T13:17:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@fox：DT的目的是生成device结构（从之前的静态table变为现在的动态生成），后续的匹配过程，还是一样的。"
+ },
+ {
+  "id": "4110",
+  "parent": "4108",
+  "date": "2016-06-17T15:39:37+08:00",
+  "author": "fox",
+  "site": "",
+  "text": "@wowo：DT把device结构传到kernel之后，应该匹配什么驱动就是kernel那块通过比对compatible实现的吗？我也看过你关于kobject那块的文章，说是通过name匹配，这块有点不太清楚，还有热插拔设备和DT就没关系了吧。"
+ },
+ {
+  "id": "4111",
+  "parent": "4110",
+  "date": "2016-06-17T15:43:41+08:00",
+  "author": "fox",
+  "site": "",
+  "text": "@fox：还有如果kernel都一样，用在不同的arm 平台上，把dts传进去后，刚开始是匹配machine type，在表中查找和dtb中对应的machine type 这个是实现啥作用呢？我问题有点多了，先谢过wowo了:)"
+ },
+ {
+  "id": "4112",
+  "parent": "4110",
+  "date": "2016-06-17T15:44:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@fox：是的，现在一般都是通过compatible了，以前是通过name，当然还有其它方式，具体细节，可以直接看匹配的地方的代码。\r\n热拔插的device，一般都是bus的代码自动创建的，所以不会用DT指定。"
+ },
+ {
+  "id": "4113",
+  "parent": "4111",
+  "date": "2016-06-17T15:49:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@fox：这个问题，在“/device_model/dt-code-analysis.html”中有介绍，主要是在setup_arch中，调用setup_machine_fdt了。\r\nmachine Type在旧的mach-xxx中，比较有用，因为需要依据这个找到那个数据结构。但在dts时代，并不是特别重要了。"
+ },
+ {
+  "id": "4115",
+  "parent": "4112",
+  "date": "2016-06-17T16:08:11+08:00",
+  "author": "fox",
+  "site": "",
+  "text": "@wowo：谢过wowo，我把你统一设备模型里面的文档挨个看了一遍，收获很大"
+ },
+ {
+  "id": "4116",
+  "parent": "4112",
+  "date": "2016-06-17T16:57:27+08:00",
+  "author": "fox",
+  "site": "",
+  "text": "@wowo：#address-cells和#size-cells究竟是啥意思呢？前者是地址，后者是代表地址长度吗？那上面的cpu #size-cells=<0>就是地址无效吗"
+ },
+ {
+  "id": "4117",
+  "parent": "0",
+  "date": "2016-06-17T21:16:27+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@fox,关于#address-cells和#size-cells，这篇文章中有讲解。简单的说，它们是针对本DTS节点中的\"reg=<>;\"字段的，分别规定了该字段中用于表示address的数据宽度和用于表述address范围的数据宽度，例如：\r\nmemory@0 { \r\n    device_type = \"memory\"; \r\n    reg = <0x000000000 0x00000000 0x00000000 0x80000000>; \r\n};\r\nreg表示memory的开始地址为0x0，长度为0x80000000.\r\n其中#address-cells和#size-cells分别为2（两个dword）。\r\n对于cpu #size-cells=<0>，则表示CPU节点中的reg，没有范围的概念（只有address，0,1等等）。"
+ },
+ {
+  "id": "4118",
+  "parent": "4117",
+  "date": "2016-06-18T17:09:35+08:00",
+  "author": "fox",
+  "site": "",
+  "text": "@wowo：那rangs和reg的区别是啥呢？我的理解是rangs表示该节点与子节点的地址，reg表示该节点自己的地址"
+ },
+ {
+  "id": "4123",
+  "parent": "4118",
+  "date": "2016-06-21T08:35:37+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@fox：ranges的定义：\r\nThe ranges property provides a means of defining a mapping or translation between the address space of the bus (the child address space) and the address space of the bus node's parent (the parent address space).\r\n\r\nreg的定义：\r\nThe reg property describes the address of the device's resources within the address space defined by its parent bus. Most commonly this means the offsets and lengths of memory-mapped IO register blocks, but may have a different meaning on some bus types. Addresses in the address space defined by root node are cpu real addresses.\r\n\r\nranges是和父子设备的地址空间映射相关的\r\nreg是定义设备自己的地址资源的（在自己的地址空间中）"
+ },
+ {
+  "id": "4155",
+  "parent": "0",
+  "date": "2016-06-29T11:12:08+08:00",
+  "author": "大头元",
+  "site": "",
+  "text": "首先感谢博主的分享，有个问题请教一下，我在看am335x-evm.dts时对0x94,0x90,0x70...这些是什么意思不太清楚，这个是怎么计算出来的啊？\r\ngpio_keys_s0: gpio_keys_s0 {\r\n\t\tpinctrl-single,pins = <\r\n\t\t\t0x94 (PIN_INPUT_PULLDOWN | MUX_MODE7)\t/* gpmc_oen_ren.gpio2_3 */\r\n\t\t\t0x90 (PIN_INPUT_PULLDOWN | MUX_MODE7)\t/* gpmc_advn_ale.gpio2_2 */\r\n\t\t\t0x70 (PIN_INPUT_PULLDOWN | MUX_MODE7)\t/* gpmc_wait0.gpio0_30 */\r\n\t\t\t0x9c (PIN_INPUT_PULLDOWN | MUX_MODE7)\t/* gpmc_ben0_cle.gpio2_5 */\r\n\t\t>;\r\n\t};"
+ },
+ {
+  "id": "4156",
+  "parent": "4155",
+  "date": "2016-06-29T11:18:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@大头元：建议参考这个文档：\r\n\r\n./Documentation/devicetree/bindings/pinctrl/pinctrl-single.txt\r\n\r\n\r\nThe pin configuration nodes for pinctrl-single are specified as pinctrl\r\nregister offset and value pairs using pinctrl-single,pins. Only the bits\r\nspecified in pinctrl-single,function-mask are updated. For example, setting\r\na pin for a device could be done with:\r\n\r\n        pinctrl-single,pins = <0xdc 0x118>;\r\n\r\nWhere 0xdc is the offset from the pinctrl register base address for the\r\ndevice pinctrl register, and 0x118 contains the desired value of the\r\npinctrl register. See the device example and static board pins example\r\nbelow for more information."
+ },
+ {
+  "id": "4164",
+  "parent": "4156",
+  "date": "2016-06-30T17:41:40+08:00",
+  "author": "大头元",
+  "site": "",
+  "text": "@wowo：谢谢哈，我找到了，在am33xx.dtsi文件中定义了两个ranges.\r\nocp {\r\n\t\tranges;\r\n\t\tl4_wkup: l4_wkup@44c00000 {\r\n\t\t\tranges = <0 0x44c00000 0x280000>;\r\n\t\t\tscm: scm@210000 {\r\n\t\t\t\tranges = <0 0x210000 0x2000>;\r\n\t\t\t\tam33xx_pinmux: pinmux@800 {\r\n\t\t\t\t\tcompatible = \"pinctrl-single\";\r\n\t\t\t\t\treg = <0x800 0x238>;\r\n\t\t\t\t};\r\n                         };\r\n                 };\r\n};"
+ },
+ {
+  "id": "4474",
+  "parent": "0",
+  "date": "2016-08-30T16:47:39+08:00",
+  "author": "Jordon Wu",
+  "site": "",
+  "text": "@wow & all,\r\n请教使用device tree如何实现lvds module的poweron/poweroff 的时序控制？\r\n使用imx 接lvds过程中，panel对poweron/poweroff时有几个pin脚有时序上的要求（VCC->STBYB->Blacklight）,看了fsl,imx-fb.txt bingding doc里面只有timeing相关的配置，像这种额外的pin脚时序配置如何处理？\r\n\r\n搜索https://community.nxp.com/thread/353019 看到这里有自己实现了display-powerup/display-powerdown, 不知这种做法是否正确？ 谢谢"
+ },
+ {
+  "id": "4475",
+  "parent": "4474",
+  "date": "2016-08-30T16:49:22+08:00",
+  "author": "Jordon Wu",
+  "site": "",
+  "text": "@Jordon Wu：或者哪个模块由类似的处理，也请帮忙指出，去参考学习下。"
+ },
+ {
+  "id": "4478",
+  "parent": "4475",
+  "date": "2016-08-30T18:21:42+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Jordon Wu：你给的例子中，做的已经很好了"
+ },
+ {
+  "id": "4794",
+  "parent": "0",
+  "date": "2016-10-28T10:24:55+08:00",
+  "author": "jasonshi",
+  "site": "",
+  "text": "感谢"
+ },
+ {
+  "id": "4795",
+  "parent": "0",
+  "date": "2016-10-28T10:29:19+08:00",
+  "author": "jasonshi",
+  "site": "",
+  "text": "讲的很好，很有帮助， 在实际中看到很多这样写的例子，\r\n    4、s3c2416-pinctrl.dtsi\r\n     这个文件定义了pinctrl@56000000 这个节点的若干child node，主要用来描述GPIO的bank信息。\r\n这个文件中是这样写的：\r\n&pinctrl_0 {\r\n\t。。。。。\r\n        。。。。。\r\n}\r\n不太理解这样的用法，这个&pinctrl_0 这里的用法是算什么呢？ label吗？  dtc编译会将它与s3c24xx.dtsi中的pinctrl_0: pinctrl@56000000 {。。。}进行合并操作吗？\r\n     请解惑，谢谢。"
+ },
+ {
+  "id": "4797",
+  "parent": "4795",
+  "date": "2016-10-28T10:48:17+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@jasonshi：你理解的已经对了，合并操作，如果有重复，后面覆盖前面。"
+ },
+ {
+  "id": "4853",
+  "parent": "0",
+  "date": "2016-11-08T17:17:51+08:00",
+  "author": "harveygoodday",
+  "site": "",
+  "text": "非常感谢蜗窝。看蜗窝的文章是一种享受。\r\n真是达到了“慢下来，享受技术”的境界。"
+ },
+ {
+  "id": "5160",
+  "parent": "0",
+  "date": "2017-01-17T15:45:15+08:00",
+  "author": "风雪新86",
+  "site": "",
+  "text": "wowo；\r\n为什么这个reg 起始地址不是从0开始？先谢过！\r\nmemory {\r\n\t\tdevice_type = \"memory\";\r\n\t\treg = <0x80000000 0x7f000000>; /* 1024 MB */\r\n\t};"
+ },
+ {
+  "id": "5162",
+  "parent": "5160",
+  "date": "2017-01-18T12:26:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@风雪新86：这要看这段memory到底是怎么寻址的，从哪里开始都没有问题的。"
+ },
+ {
+  "id": "5164",
+  "parent": "5162",
+  "date": "2017-01-18T13:46:08+08:00",
+  "author": "风雪新86",
+  "site": "",
+  "text": "@wowo：感谢wowo!"
+ },
+ {
+  "id": "5234",
+  "parent": "0",
+  "date": "2017-02-22T14:58:10+08:00",
+  "author": "麦兜要努力",
+  "site": "",
+  "text": "@wowo请教一下版主，\r\n1. 本例中的物理内存的布局并没有通过memory node传递，其实我们可以使用command line传递，我们command line中的参数“mem=64M@0x30000000”已经给出了具体的信息。\r\n如果dtsi中有定义以下的memory node,然后同时dtsi里面又要bootcmd,那到底是通过memory node去传递还是command line去传递呢？如何区分呢？\t\r\nmemory@0{\r\n\t\tdevice_type = \"memory\";\r\n\t\treg = <0x00000000 0x02000000>;\r\n\t};\r\nchosen {\r\n       bootargs = \"console=ttyS0,38400 mem=32M@0x00000000 init=/init earlyprintk\";\r\n\r\n}\r\n2.memory block定义有的节点有两种，一种是node name是memory@形态的，另外一种是node中定义了device_type属性并且其值是memory.参考dtsi里面的node,发现memory@形态中也有定义device_type,如\r\n\r\n\t\tmemory@0 {\r\n\t\tdevice_type = \"memory\";\r\n\t\treg = <0x20000000 0x1f000000>, <0xc0000000 0x3f000000>;\r\n\t};\r\nor\r\n\t\tmemory@70000000 {\r\n\t\tdevice_type = \"memory\";\r\n\t\treg = <0x70000000 0x20000000>;\r\n\t};\r\n感觉就有点混淆了?如果commandline里面没有传递mem=32M@0x00000000，发现memory@{}和memory{},在Virtual kernel memory layout的lowmem会有差别..\r\n\r\n希望能得到版主的解答！感激！"
+ },
+ {
+  "id": "5235",
+  "parent": "5234",
+  "date": "2017-02-22T15:41:32+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@麦兜要努力：第一个问题在本站的内存布局（/memory_management/memory-layout.html）文档中已经有描述，可以参考，简单来说：\r\n1、dts中的memory node给出内存布局信息。\r\n2、在过去，没有device tree的时代，mem这个命令行参数传递了memory bank的信息，内核根据这个信息来创建系统内存的初始布局。在ARM64中，由于强制使用device tree，因此mem这个启动参数失去了本来的意义，现在它只是定义了memory的上限（最大的系统内存地址），可以限制DTS传递过来的内存参数。\r\n\r\n这是arm64的处理，至于arm平台，你可以自行看看代码是如何实现的。"
+ },
+ {
+  "id": "5346",
+  "parent": "4155",
+  "date": "2017-03-21T17:36:51+08:00",
+  "author": "iwakan",
+  "site": "",
+  "text": "@大头元：@linuxer @wowo 请问\r\ngpio_keys_s0: gpio_keys_s0 { \r\n        pinctrl-single,pins = < \r\n            0x94 (PIN_INPUT_PULLDOWN | MUX_MODE7)    /* gpmc_oen_ren.gpio2_3 */ \r\n            0x90 (PIN_INPUT_PULLDOWN | MUX_MODE7)    /* gpmc_advn_ale.gpio2_2 */ \r\n            0x70 (PIN_INPUT_PULLDOWN | MUX_MODE7)    /* gpmc_wait0.gpio0_30 */ \r\n            0x9c (PIN_INPUT_PULLDOWN | MUX_MODE7)    /* gpmc_ben0_cle.gpio2_5 */ \r\n        >; \r\n    }; 这个节点描述前面的偏移地址应该怎么（计算/查阅）得到呢？我刚学习，这些数据的来源不太了解……"
+ },
+ {
+  "id": "5347",
+  "parent": "5346",
+  "date": "2017-03-21T17:54:39+08:00",
+  "author": "iwakan",
+  "site": "",
+  "text": "@iwakan：就是数据的含义和来源不太了解，如何从源码或者手册中得到体现，如果问题问得不好还请指教。"
+ },
+ {
+  "id": "5348",
+  "parent": "5347",
+  "date": "2017-03-21T18:40:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@iwakan：看datasheet，pinctorl（或者gpio）那一章节，找寄存器的偏移地址（要结合具体的硬件看，这里是am335x）。"
+ },
+ {
+  "id": "5355",
+  "parent": "5348",
+  "date": "2017-03-22T14:11:33+08:00",
+  "author": "iwakan",
+  "site": "",
+  "text": "@wowo：谢谢！"
+ },
+ {
+  "id": "5480",
+  "parent": "0",
+  "date": "2017-04-23T15:38:31+08:00",
+  "author": "sunshine.huang",
+  "site": "",
+  "text": "hi linuxer \r\n请教个问题\r\n\r\n关于这段：\r\nunit-address的具体格式是和设备挂在那个bus上相关。例如对于cpu，其unit-address就是从0开始编址，以此加一。而具体的设备，例如以太网控制器，其unit-address就是寄存器地址\r\n\r\n有什么途径可以获取unit-address全部格式的说明呢？比如你列举了这几个是从哪里获取得来的，除了你列举的这些，其余的具体还有哪些，分别都是什么格式的？\r\n\r\n谢谢！"
+ },
+ {
+  "id": "5483",
+  "parent": "5480",
+  "date": "2017-04-24T15:30:49+08:00",
+  "author": "hello world",
+  "site": "",
+  "text": "@sunshine.huang：Documentation/devicetree目录下可以找到所有相关的信息。"
+ },
+ {
+  "id": "5652",
+  "parent": "0",
+  "date": "2017-06-10T16:54:04+08:00",
+  "author": "kobj",
+  "site": "",
+  "text": "是不是父节点中定义的变量，子节点中没有定义 都会从父节点中继承下来呢？"
+ },
+ {
+  "id": "5864",
+  "parent": "0",
+  "date": "2017-08-01T11:42:03+08:00",
+  "author": "melo",
+  "site": "",
+  "text": "@linuxer @wowo 请问  突然想知道内核是如何知道设备树文件是怎么使用的呢  也就是说 设备树的使能？"
+ },
+ {
+  "id": "5865",
+  "parent": "5864",
+  "date": "2017-08-01T17:39:07+08:00",
+  "author": "hello",
+  "site": "",
+  "text": "@melo：都不知道你想要问什么问题。"
+ },
+ {
+  "id": "6118",
+  "parent": "0",
+  "date": "2017-10-17T16:22:53+08:00",
+  "author": "seajiajia",
+  "site": "",
+  "text": "你好，请问下嵌入式arm用dts这种机制，那arm server呢？似乎没有找到对应的dts文件？\r\n换句而言，一个server有多少内存资源，需要在device tree里边注明吗？不能动态改变？"
+ },
+ {
+  "id": "6121",
+  "parent": "6118",
+  "date": "2017-10-18T13:17:26+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@seajiajia：没有看过server的平台，还真不知道。\r\n至于内存，linux mm中有hotplug机制，不知道server会不会用。"
+ },
+ {
+  "id": "6221",
+  "parent": "0",
+  "date": "2017-11-20T11:58:07+08:00",
+  "author": "悟空不念经",
+  "site": "",
+  "text": "写的真好！"
+ },
+ {
+  "id": "6415",
+  "parent": "0",
+  "date": "2017-12-24T01:58:14+08:00",
+  "author": "风露",
+  "site": "",
+  "text": "蜗窝大师，再请教一个问题：\r\ndt结构中，哪些node的名字是不能改变的（soc 、chosen不可以？），哪些是可以改变的？"
+ },
+ {
+  "id": "6420",
+  "parent": "6415",
+  "date": "2017-12-25T12:09:52+08:00",
+  "author": "hello-world",
+  "site": "",
+  "text": "@风露：这位大哥，你的问题太细了，而且又很泛，别人没有办法回答啊。"
+ },
+ {
+  "id": "6454",
+  "parent": "0",
+  "date": "2018-01-04T20:43:32+08:00",
+  "author": "linux2607",
+  "site": "http://blog.csdn.net/armfpga123?ref=toolbar",
+  "text": "郭大侠，请问device tree中，16位的整数怎么表示？用什么符号括起来？"
+ },
+ {
+  "id": "6725",
+  "parent": "2902",
+  "date": "2018-05-02T18:10:44+08:00",
+  "author": "kker",
+  "site": "",
+  "text": "@firo：这个我试过\r\nroot@linux:android# out/target/product/msm8909/obj/KERNEL_OBJ/scripts/dtc/dtc -I dtb -O dts out/target/product/msm8909/obj/KERNEL_OBJ/arch/arm/boot/dts/msm8909-1gb-qrd-skua.dtb > /arm/msm8909-1gb-qrd-skua-stu.dts"
+ },
+ {
+  "id": "7221",
+  "parent": "730",
+  "date": "2019-03-05T14:23:28+08:00",
+  "author": "wangyunqian",
+  "site": "",
+  "text": "@uudiin：贵站关了？"
+ },
+ {
+  "id": "7262",
+  "parent": "6415",
+  "date": "2019-03-11T19:38:23+08:00",
+  "author": "tmmdh",
+  "site": "",
+  "text": "@风露：我想你是想问设备树中的保留关键字吧？分析一下dtc源码就知道了"
+ },
+ {
+  "id": "7443",
+  "parent": "0",
+  "date": "2019-05-28T16:37:14+08:00",
+  "author": "BeDook",
+  "site": "",
+  "text": "作为菜鸟，刚接触设备树，看到博主们和其他前辈的讨论和详细的解释，收获颇多，尤其是博主的讲解很有条理，对Linux内核方面可以说是庖丁解牛，功力深厚，这得多少年的积淀啊，向博主们学习，立马转成蜗窝粉！"
+ },
+ {
+  "id": "8375",
+  "parent": "0",
+  "date": "2021-11-16T11:25:17+08:00",
+  "author": "billxiang",
+  "site": "",
+  "text": "感觉和qemu的配置很像，哈哈哈"
+ },
+ {
+  "id": "8674",
+  "parent": "3480",
+  "date": "2022-09-15T14:47:37+08:00",
+  "author": "Bin",
+  "site": "",
+  "text": "@郭健：label在设备树中用，aliases中定义的别名在驱动源码中用"
+ }
+]

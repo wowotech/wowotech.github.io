@@ -1,0 +1,178 @@
+[
+ {
+  "id": "788",
+  "parent": "0",
+  "date": "2014-12-02T16:50:19+08:00",
+  "author": "linux初学者",
+  "site": "",
+  "text": "对于fixed rate clocks，若使用DTS，kernel是如何“自动”注册的？能否再详细一点啊？是否还需要用户的driver去调用of_clk_init（NULL）？"
+ },
+ {
+  "id": "789",
+  "parent": "788",
+  "date": "2014-12-02T17:26:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linux初学者：抱歉，我写的不清楚。在我用的ARM64里面，kernel的setup代码会帮忙调用这个接口，如下：\r\nstatic int __init arm64_device_init(void)\r\n{\r\n        of_clk_init(NULL);\r\n        of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);\r\n        return 0;\r\n}\r\narch_initcall_sync(arm64_device_init);\r\n可是对于其它的ARCH，则需要自行调用。\r\n非常感谢，我会再更新我的描述。"
+ },
+ {
+  "id": "790",
+  "parent": "789",
+  "date": "2014-12-02T18:02:20+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wowo：不过在最新的kernel里，都在time_init中调用了。\r\nvoid __init time_init(void)\r\n{\r\n        u32 arch_timer_rate;\r\n\r\n        of_clk_init(NULL);\r\n        clocksource_of_init();\r\n\r\n        tick_setup_hrtimer_broadcast();\r\n\r\n        arch_timer_rate = arch_timer_get_rate();\r\n        if (!arch_timer_rate)\r\n                panic(\"Unable to initialise architected timer.\\n\");\r\n\r\n        /* Calibrate the delay loop directly */\r\n        lpj_fine = arch_timer_rate / HZ;\r\n}"
+ },
+ {
+  "id": "1302",
+  "parent": "0",
+  "date": "2015-03-06T10:38:32+08:00",
+  "author": "wzw200",
+  "site": "",
+  "text": "WO 你好：\r\nkernel\\arch\\arm\\XX\\clock.c\r\n1：clk_register(struct clk *clk)\r\n\r\n\\kernel\\drivers\\clk\\clk.c\r\n2：struct clk *clk_register(struct device *dev, struct clk_hw *hw)\r\n\r\n函数1是旧内核，2是新内核\r\n\r\n我现在用的板子，我看他们用函数1，自己维护了时钟树，\r\n函数2，是不是系统帮我们维护时钟树了，我们只管调用这个函数注册就可以了是吗"
+ },
+ {
+  "id": "1303",
+  "parent": "1302",
+  "date": "2015-03-06T10:54:33+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wzw200：是的，最好都用kernel的框架，因为它帮我们做了很多事情。"
+ },
+ {
+  "id": "1304",
+  "parent": "1303",
+  "date": "2015-03-06T11:08:11+08:00",
+  "author": "wzw200",
+  "site": "",
+  "text": "@wowo：板级代码里面 clock.c 有一个这样的函数\r\nint clk_register(struct clk *clk,const char *parent)\r\n{.......}\r\nEXPORT_SYMBOL(clk_register);\r\n\r\n驱动\\drivers\\clk\\clk.c \r\nstruct clk *clk_register(struct device *dev, struct clk_hw *hw) \r\n{.......}\r\nEXPORT_SYMBOL_GPL(clk_register);\r\n都用EXPORT_SYMBOL导出了，我系统里面这两个函数都在使用，想不明白他们区别\r\n在看一个SOC amlogic厂的代码"
+ },
+ {
+  "id": "1306",
+  "parent": "1304",
+  "date": "2015-03-06T12:21:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@wzw200：应该不会这样，你再看看，是否有一个没有编译。"
+ },
+ {
+  "id": "1513",
+  "parent": "0",
+  "date": "2015-04-16T10:28:03+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "wowo，我看了高通的code。发现高通好像没有做clk_register而是自己弄了一个msm_clock_register，用clk_lookup进行注册，你看过高通的这部分代码吗。"
+ },
+ {
+  "id": "1514",
+  "parent": "1513",
+  "date": "2015-04-16T11:23:57+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：内核版本是多少？"
+ },
+ {
+  "id": "1516",
+  "parent": "1514",
+  "date": "2015-04-16T14:40:12+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：linux版本是 3.10.49"
+ },
+ {
+  "id": "1518",
+  "parent": "1516",
+  "date": "2015-04-16T15:15:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：它确实没有使用clock框架，自己搞的！"
+ },
+ {
+  "id": "1519",
+  "parent": "1518",
+  "date": "2015-04-16T16:01:11+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：msm_clock_register是不是实现了clk_register里面的clock device tree呢？"
+ },
+ {
+  "id": "1520",
+  "parent": "1519",
+  "date": "2015-04-16T17:14:34+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：我只在arch/arm/mach-msm/中见到过msm的clock driver，但您这里所说的这个接口：msm_clock_register，我一直没有找到，不会是你们自己写的吧？"
+ },
+ {
+  "id": "1521",
+  "parent": "1520",
+  "date": "2015-04-16T17:50:27+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：。。。我们只是ODM厂商，没那个能力啊。你可以看看clock-cpu-8939.c，这个是高通CPU时钟注册，我从msm8939.dtsi中根据compatible找到的。今天我仔细看了一下，确实是高通自己弄了一套出来。"
+ },
+ {
+  "id": "1522",
+  "parent": "1520",
+  "date": "2015-04-16T18:11:39+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@wowo：在/driver/clk/qcom下面可以看到clk_enable跟标准linux定义的都不同了，高通做了很多改动。把clk_prepare都自己重新写了一遍，但不知道为什么高通会花这些力气改内核都已经支持的框架。\r\nint clk_enable(struct clk *clk)\r\n{\r\n\tint ret = 0;\r\n\tunsigned long flags;\r\n\tstruct clk *parent;\r\n\tconst char *name;\r\n\r\n\tif (!clk)\r\n\t\treturn 0;\r\n\tif (IS_ERR(clk))\r\n\t\treturn -EINVAL;\r\n\tname = clk->dbg_name;\r\n\r\n\tspin_lock_irqsave(&clk->lock, flags);\r\n\tWARN(!clk->prepare_count,\r\n\t\t\t\"%s: Don't call enable on unprepared clocks\\n\", name);\r\n\tif (clk->count == 0) {\r\n\t\tparent = clk->parent;\r\n\r\n\t\tret = clk_enable(parent);\r\n\t\tif (ret)\r\n\t\t\tgoto err_enable_parent;\r\n\t\tret = clk_enable(clk->depends);\r\n\t\tif (ret)\r\n\t\t\tgoto err_enable_depends;\r\n\r\n\t\ttrace_clock_enable(name, 1, smp_processor_id());\r\n\t\tif (clk->ops->enable)\r\n\t\t\tret = clk->ops->enable(clk);\r\n\t\tif (ret)\r\n\t\t\tgoto err_enable_clock;\r\n\t}\r\n\tclk->count++;\r\n\tspin_unlock_irqrestore(&clk->lock, flags);\r\n\r\n\treturn 0;\r\n\r\nerr_enable_clock:\r\n\tclk_disable(clk->depends);\r\nerr_enable_depends:\r\n\tclk_disable(parent);\r\nerr_enable_parent:\r\n\tspin_unlock_irqrestore(&clk->lock, flags);\r\n\treturn ret;\r\n}"
+ },
+ {
+  "id": "1523",
+  "parent": "1513",
+  "date": "2015-04-16T18:36:03+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@passerby：单单从clk_enable看，貌似高通有parent不只一个的clock：\r\n       ret = clk_enable(clk->depends); \r\n        if (ret) \r\n            goto err_enable_depends; \r\n可能是硬件比较奇怪吧！"
+ },
+ {
+  "id": "5385",
+  "parent": "0",
+  "date": "2017-03-28T00:13:03+08:00",
+  "author": "zoro",
+  "site": "",
+  "text": "请教一下学习方法，大神的3篇文章我都看了，对这个框架也有了些了解。\r\n但是对于部分细节还是不清楚，于是打算在MTK平台上去实例分析。\r\n看了一下MTK的clk类型有fixed rate、gate、mux、fixed factor还有一个pll不知道算不算。\r\n本来是想把每个类型的注册都看看的，但是发现其实实现还是比较复杂的，也比较耗时间，\r\n所以这里请教一下，对于每个类型的注册是不是都要去看？还是说了解了大体框架就可以呢？"
+ },
+ {
+  "id": "7593",
+  "parent": "0",
+  "date": "2019-08-15T09:45:42+08:00",
+  "author": "Rob",
+  "site": "",
+  "text": "Wow 你好，\r\n\r\n一直有一个困惑，就是clk_set_rate 其实是call clk_core_set_rate_nolock 但是这个函数最终是调用clk_change_rate 来改变gate, 但是clk_change_rate 是void ，也就是不考虑是否设置成功?\r\n\r\n这里极有可能出现设置失败的情况啊。"
+ },
+ {
+  "id": "7594",
+  "parent": "7593",
+  "date": "2019-08-15T19:32:14+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Rob：我理解的是：经过前面那些铺垫，到这一步的时候，就应该一定会成功的。否则的话，早干嘛了呢？"
+ },
+ {
+  "id": "7604",
+  "parent": "7594",
+  "date": "2019-08-21T10:26:05+08:00",
+  "author": "Rob",
+  "site": "",
+  "text": "@wowo：之前的那些铺垫仅仅是确保 clk provider 打开是否成功，rate 是否在支持的分配范围之类。 但是最终的 set 是要刷到寄存器中，拿锁相环来说，你需要确保它到底有没有锁住。"
+ },
+ {
+  "id": "7934",
+  "parent": "5385",
+  "date": "2020-04-02T10:29:52+08:00",
+  "author": "吴成兵",
+  "site": "http://https://wu-being.blog.csdn.net/",
+  "text": "@zoro：第一篇有说：“倍频的PLL（锁相环，Phase Locked Loop）”。\r\n26M的晶振源频率比较稳定，倍频到高频会不太稳定，用PLL锁相环使高频稳定下来，然后用文章说的几种分频或生成子clk\r\n\r\n如 #cat d/clk/clk_summary 的结果\r\n\r\n   clock                         enable_cnt  prepare_cnt        rate   accuracy   phase\r\n----------------------------------------------------------------------------------------\r\n clk32k                                   0            0       32000          0 0  \r\n clk26m                                   7           14    26000000          0 0  \r\n    apll2                                 0            0   196608001          0 0  \r\n       apll2_ck                           0            0   196608001          0 0  \r\n          audio_h_sel                     0            0   196608001          0 0  \r\n             aud_3rd_dac_hires            0            0   196608001          0 0  \r\n             aud_adda6_adc_hires           0            0   196608001          0 0  \r\n             aud_adc_hires_tml            0            0   196608001          0 0  \r\n             aud_adc_hires                0            0   196608001          0 0  \r\n             aud_dac_hires                0            0   196608001          0 0  \r\n       apll2_d2                           0            0    98304000          0 0  \r\n       apll2_d4                           0            0    49152000          0 0  \r\n       apll2_d8                           0            0    24576000          0 0  \r\n...\r\n    mmpll                                 0            4  3149999024          0 0  \r\n       mmpll_ck                           0            0  3149999024          0 0  \r\n       mmpll_d4                           0            2   787499756          0 0  \r\n          mmpll_d4_d2                     0            0   393749878          0 0  \r\n       mmpll_d5                           0            1   629999804          0 0  \r\n          mmpll_d5_d2                     0            1   314999902          0 0  \r\n             cam_sel                      0            0   314999902          0 0  \r\n                camsys_fake_eng           0            0   314999902          0 0  \r\n                camsys_ccu                0            0   314999902          0 0  \r\n                camsys_camsv1             0            0   314999902          0 0  \r\n                camsys_camsv0             0            0   314999902          0 0  \r\n                camsys_seninf             0            0   314999902          0 0  \r\n..."
+ },
+ {
+  "id": "8946",
+  "parent": "0",
+  "date": "2024-12-26T11:20:05+08:00",
+  "author": "piter",
+  "site": "",
+  "text": "在linux 4.14 的版本中\r\n\r\nstruct clk *__of_clk_get_from_provider(struct of_phandle_args *clkspec,\r\n\t\t\t\t       const char *dev_id, const char *con_id)\r\n{\r\n\tstruct of_clk_provider *provider;\r\n\tstruct clk *clk = ERR_PTR(-EPROBE_DEFER);\r\n\tstruct clk_hw *hw;\r\n\r\n\tif (!clkspec)\r\n\t\treturn ERR_PTR(-EINVAL);\r\n\r\n\t/* Check if we have such a provider in our array */\r\n\tmutex_lock(&of_clk_mutex);\r\n\tlist_for_each_entry(provider, &of_clk_providers, link) {\r\n\t\tif (provider->node == clkspec->np) {\r\n\t\t\thw = __of_clk_get_hw_from_provider(provider, clkspec);\r\n\t\t\tclk = __clk_create_clk(hw, dev_id, con_id);\r\n\t\t}\r\n\r\n\t\tif (!IS_ERR(clk)) {\r\n\t\t\tif (!__clk_get(clk)) {\r\n\t\t\t\t__clk_free_clk(clk);\r\n\t\t\t\tclk = ERR_PTR(-ENOENT);\r\n\t\t\t}\r\n\r\n\t\t\tbreak;\r\n\t\t}\r\n\t}\r\n\tmutex_unlock(&of_clk_mutex);\r\n\r\n\treturn clk;\r\n}\r\n很是疑惑为什么这里要用clk = __clk_create_clk(hw, dev_id, con_id);新建一个struct clk ，不是在clk_register 时候已经创建了吗"
+ }
+]

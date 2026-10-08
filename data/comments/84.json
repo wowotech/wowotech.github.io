@@ -1,0 +1,890 @@
+[
+ {
+  "id": "412",
+  "parent": "0",
+  "date": "2014-09-06T12:38:59+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "要不GIC interrupt specifier中的interrupt number加上16，不上SGI的那些ID号，intspec[1]才是真正的HW interrupt ID。\r\n要不---是不是应该是要在\r\n不上---是不是补上\r\n其实不修复也应该能看懂，不过还是提一下。"
+ },
+ {
+  "id": "414",
+  "parent": "412",
+  "date": "2014-09-08T00:13:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：已经修改啦，我都看不出来我当初是想怎么写的，重新组织了一下语句。多谢Forion！\r\n\r\n其实还有些内容需要补充，就是多CPU的情况下，BSP和其他Processor在执行GIC初始化执行的代码是不一样的，中秋前实在没有精力写完了，匆忙发出去，节后再补充吧！\r\n\r\n中秋节搞装修，我腿都跑断了，等上班的时候好好休息一下"
+ },
+ {
+  "id": "415",
+  "parent": "414",
+  "date": "2014-09-09T12:44:57+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：多CPU的情况下，BSP和其他Processor在执行GIC初始化执行的代码是不一样的\r\n不懂，等你补充。上面这句话我没法理解。"
+ },
+ {
+  "id": "416",
+  "parent": "0",
+  "date": "2014-09-09T15:38:07+08:00",
+  "author": "maotou",
+  "site": "",
+  "text": "前辈您让我review实在不敢,只希望能全部吸收您写的.有点不明白的是,在您举的实例图中,在T0到T42时刻,CPU为什么没有ack M的中断呢,等到T42时刻N的到来,到CPU在T64去ack N的中断.这个时间间隔是小于M的响应时间的,所以为什么M没有被响应呢?  还有是不是在active and pending状态就不能被强占了呢?"
+ },
+ {
+  "id": "417",
+  "parent": "415",
+  "date": "2014-09-09T16:41:13+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：我增加了一个小节，描述BSP和其他non-BSP的GIC初始化序列，请参考。"
+ },
+ {
+  "id": "418",
+  "parent": "416",
+  "date": "2014-09-09T17:03:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@maotou：在T0到T42时刻,CPU为什么没有ack M的中断呢？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n1、由于内核同步的原因，nFIQCPU[n]虽然是有效电平状态，但是由于该CPU处于关闭中断状态，因此不能响应该中断，也就是没有办法ack M的中断\r\n2、即便没有关中断，从CPU响应中断到ack M（read GICC_IAR）还是需要有若干条指令的\r\n\r\n关于interrupt preempt的问题\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n一个中断抢占的窗口size是从发生中断的那一刻到ack中断前16个clock这段时间。之所以抢占窗口的end point是ack中断前16个clock，是因为GIC需要时间（16个clock）来识别该中断（更新GICC_IAR寄存器）"
+ },
+ {
+  "id": "433",
+  "parent": "418",
+  "date": "2014-09-11T16:46:16+08:00",
+  "author": "maotou",
+  "site": "",
+  "text": "@linuxer：那我能理解成这个抢占的意思是在active前的pending状态发生的,其实当真正的中断进入active状态时,是不能被抢占的么?"
+ },
+ {
+  "id": "434",
+  "parent": "418",
+  "date": "2014-09-11T16:50:51+08:00",
+  "author": "maotou",
+  "site": "",
+  "text": "@linuxer：从那个例子的图中看,感觉好像是在active and pending状态就不能被抢占了,还有前辈您能解释下active and pending这个状态的意义么,一直有些模糊?谢谢您"
+ },
+ {
+  "id": "435",
+  "parent": "418",
+  "date": "2014-09-11T17:02:42+08:00",
+  "author": "maotou",
+  "site": "",
+  "text": "@linuxer：我看关于GIC的说明文档中 中断的active and pending状态是可以转换为pending状态的,这种抢占会怎么发生呢?   (很抱歉有这么多问题额,脑子有些转不过来 嘿嘿)"
+ },
+ {
+  "id": "436",
+  "parent": "433",
+  "date": "2014-09-11T18:50:20+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@maotou：真是太感谢你的问题了，你的问题切中要害。我上面的回答应该是错误的（抱歉抱歉，我靠直觉回答了你的问题），我重新修正一下interrupt peemption这个概念：当CPU ack了低优先级的中断（进入active或者active and pending状态），并准备服务该中断，这时候，如果有高优先级中断进来，CPU响应了该中断，并ack这个高优先级中断，并开始服务它（而不是之前的那个active的中断），我们称低优先级中断被抢占了。\r\n因此，实际上，pending状态是和抢占无关的（CPU都没有准备服务你又何谈抢占呢？），一个中断进入active状态，表示CPU正在服务该中断，这时候高优先级中断可以抢占低优先级中断，让CPU终止服务低优先级中断，转而服务高优先级中断。这时候，系统中有两个active状态的中断，这也被称为中断嵌套。\r\n当然，我上面的话对于linux kernel而言是正确的，因为linux kernel进入IRQ异常向量的时候是关闭CPU中断的，新的内核整个handler都是关闭中断的，因此，一旦软件读取了GICC_IAR，就确定了本次要服务的中断号，这时候，即便产生了高优先级中断，发生了抢占，并signal到该CPU上，但是由于中断已经关闭，软件无法感知。"
+ },
+ {
+  "id": "438",
+  "parent": "418",
+  "date": "2014-09-11T18:53:30+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：关于interrupt preempt的问题\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n一个中断抢占的窗口size是从发生中断的那一刻到ack中断前16个clock这段时间。之所以抢占窗口的end point是ack中断前16个clock，是因为GIC需要时间（16个clock）来识别该中断（更新GICC_IAR寄存器）\r\n\r\n注：上面关于interrupt preempt的描述是从软件角度来看的抢占，并不是GIC定义的抢占"
+ },
+ {
+  "id": "439",
+  "parent": "434",
+  "date": "2014-09-11T19:05:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@maotou：从那个例子的图中看,感觉好像是在active and pending状态就不能被抢占了\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n例图中只是描述了一种情况，如果低优先级中断进入active and pending状态，高优先级仍然可以抢占并向CPU signal中断（当然，这时候软件是否响应该中断就另当别论了）。\r\n对于linux kernel而言，即便高优先级中断发生了抢占（硬件角度），但是中断服务不能被抢占了（软件角度）。\r\n\r\n关于active and pending状态\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n这个状态是和电平触发的中断相关。我们以高电平有效的中断为例子，只有该signal是高电平，对于GIC而言它就是pending的，当外设拉高电平，触发一次中断的时候，首先进入pending状态，CPU ACK该中断后会进入active，表明CPU正在服务该中断，但是，由于高电平是外设控制的，因此，即便CPU ack了中断，并不能改变该signal的高电平状态，因此该中断又是pending的，因此存在了active and pending状态。只有该外设中断的ISR中通过读写外设寄存器，清除了中断状态，这是，该中断信号才能被外设拉低，解除pending状态。\r\n\r\nPS：不用叫我前辈，大家都是搞技术的，直接叫我的名字就OK了"
+ },
+ {
+  "id": "440",
+  "parent": "435",
+  "date": "2014-09-11T19:11:42+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@maotou：如果你愿意，可以把原文贴上来，可能更清楚。\r\n\r\n我的理解：CPU通过发送EOI来解除中断的active状态，因此一个可能的流程是这样的：\r\n1、中断触发，进入pending状态\r\n2、CPU ack，进入active and pending状态\r\n3、ISR ack，进入active状态\r\n4、外设再次检测到中断事件，重新触发中断，进入active and pending状态\r\n5、CPU EOI，进入pending状态\r\n\r\n这时候，软件一旦打开中断，该中断会再次触发"
+ },
+ {
+  "id": "444",
+  "parent": "0",
+  "date": "2014-09-13T18:58:51+08:00",
+  "author": "sky",
+  "site": "",
+  "text": "@linuxer ，文章写的透彻。如果把中断的注册request_irq，触发 等讲一下，就会有一个中断的完整体系，期待！"
+ },
+ {
+  "id": "446",
+  "parent": "444",
+  "date": "2014-09-13T22:32:49+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@sky：中断注册属于linux中断子系统之之（五）：driver API的内容，也是我正在进行的内容。由于最近家里搞装修，可能进度不是非常的理想，预计下个星期可以发表。\r\n\r\n多谢对蜗窝的关注和鼓励！"
+ },
+ {
+  "id": "452",
+  "parent": "439",
+  "date": "2014-09-17T17:07:08+08:00",
+  "author": "maotou",
+  "site": "",
+  "text": "@linuxer：理解了很多，非常感谢您的回答，我会继续去思考 然后挖一挖"
+ },
+ {
+  "id": "453",
+  "parent": "440",
+  "date": "2014-09-17T17:08:39+08:00",
+  "author": "maotou",
+  "site": "",
+  "text": "@linuxer：我说的图就是关于ＧＩＣ的datasheet上的  几个状态之间的切换 之前不理解，现在您解释了之后理解啦"
+ },
+ {
+  "id": "454",
+  "parent": "436",
+  "date": "2014-09-18T14:37:17+08:00",
+  "author": "Xiang",
+  "site": "",
+  "text": "@linuxer：@linuxer: 上面第三段的\"當然，我上面的話對於linux kernel而言是正確的\"，是否指的應該是\"對於linux kernel而言不是正確的\"?因為依照第一段搶佔的定義，應該是CPU開始服務優先權高的中斷才叫做搶占。但是新的kernel在整個handler都是關閉cpu中斷，所以應該沒有機會在CPU ack之後還發生搶占?"
+ },
+ {
+  "id": "457",
+  "parent": "454",
+  "date": "2014-09-18T22:27:43+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Xiang：可能我这里描述的不清楚。\"当然，我上面的话对于linux kernel而言是正确的\"，这里“上面的话”是指上一个回复中的话，具体如下：\r\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\r\n一个中断抢占的窗口size是从发生中断的那一刻到ack中断前16个clock这段时间。之所以抢占窗口的end point是ack中断前16个clock，是因为GIC需要时间（16个clock）来识别该中断（更新GICC_IAR寄存器）\r\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\r\n\r\n对于GIC而言（从硬件角度看），它的抢占就是更新GICC_IAR寄存器病assert CPU，具体CPU是否响应就不是我家的事情了。\r\n对于linux kernel而言（从软件角度看），抢占是中断handler的抢占，因此，上面++++符号围起来的那段描述对linux kernel而言是正确的，因为一旦读出了GICC_IAR寄存器，中断handler将不会再被抢占，因为整个handler中都是关闭中断的。\r\n\r\nBTW，您使用繁体中文，冒昧的问一句：你是不是来自台湾或者香港？"
+ },
+ {
+  "id": "460",
+  "parent": "457",
+  "date": "2014-09-19T16:40:37+08:00",
+  "author": "Xiang",
+  "site": "",
+  "text": "@linuxer：感謝linuxer的說明，看來我原先的理解應該是正確的\r\n再多請教一個問題，在中斷時序圖T64到T126的中間，如果有更高優先權的外設P發生了中斷，nFIQCPU在這段時間內是不是又會assert low?\r\n\r\n另外，是的，我來自台灣。感謝蝸窩提供這麼多優質文章，這裡每篇文章我都慢慢吸收，再配著內核代碼看，真的是種享受。\r\n以前很急著想要短時間看很多東西，理解不紮實，結果最後也是都忘記。"
+ },
+ {
+  "id": "461",
+  "parent": "0",
+  "date": "2014-09-19T18:54:19+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：感謝linuxer的說明，看來我原先的理解應該是正確的\r\n再多請教一個問題，在中斷時序圖T64到T126的中間，如果有更高優先權的外設P發生了中斷，nFIQCPU在這段時間內是不是又會assert low?\r\n\r\n另外，是的，我來自台灣。感謝蝸窩提供這麼多優質文章，這裡每篇文章我都慢慢吸收，再配著內核代碼看，真的是種享受。\r\n以前很急著想要短時間看很多東西，理解不紮實，結果最後也是都忘記。\r\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\r\n目前回复的次数有限制，因此我重新开一个评论。\r\n我的理解：T64到T126之间，如果有更高优先级的中断进来，nFIQCPU会assert low的，当然，对于linux kernel，这时候由于关中断不能响应。\r\n\r\n欢迎来自台湾的朋友，其实我现在就职于一家台湾公司，也算是有缘了。大家都是对linux kernel有兴趣才走到一起，多交流，多提出问题，一起进步吧！"
+ },
+ {
+  "id": "593",
+  "parent": "0",
+  "date": "2014-10-30T21:30:04+08:00",
+  "author": "zhedawo",
+  "site": "",
+  "text": "@linuer 你写的文章非常好，让我受益匪浅。\r\n我有一个疑惑：\r\n在2.3.b 里你提到: \"如果在这个过程中又产生了新的中断，那么Distributor就会把该中断的状态从pending状态修改成pending and active。这时候，CPU interface仍然会保持nIRQ或者nFIQ信号的asserted状态，也就是向processor signal下一个中断\"\r\n但在实例中，T64 时刻，尽管N中断的状态为pending and active，但却Desasserted 了CPU。\r\n请问，哪里是正确的？谢谢"
+ },
+ {
+  "id": "595",
+  "parent": "593",
+  "date": "2014-10-31T10:10:41+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zhedawo：我花费了较长的时间恢复现场，呵呵～～～这份文档有写了有一段时间了。\r\n我相信实例中描述的是正确的，一旦processor ack了中断，一定会CPU interface就会deassert nIRQCPU或者nFIQCPU信号线。\r\n\r\n如果在这个过程中，该interrupt source又产生了新的中断，Distributor就会把该中断的状态从active状态（当前正在处理）修改成pending and active。当然，也不是说该中断状态变成pending就要向processor trigger中断，实际上这和Distributor如何分发中断相关"
+ },
+ {
+  "id": "599",
+  "parent": "0",
+  "date": "2014-11-01T21:54:50+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "hi linuxer\r\n这篇文章的信息量确实不是读一两次就能完全吸收的掉的。\r\n现在问题来了，\r\n1：local timer的那个中断，不一定是用30吧？会不会有些soc，使用自己soc里面的timer，申请SPI中断作为smp 各个core的timer 中断呢？\r\n2：比如cpu睡下去了，一般cpu都会suspend到iram里面执行，那么比如外部一个gpio中断唤醒cpu，那么cpu的电，比如vddarm 是由gic 来唤醒cpu 让cpu上电的吗？当然我也不太清楚vddarm 是给gic供电的还是什么，因为如果vddarm给gic供电，那么肯定是先有vddarm上电，gic才能活动。"
+ },
+ {
+  "id": "604",
+  "parent": "599",
+  "date": "2014-11-02T23:40:15+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：其实如果CPU suspend to ram，那么所有的context保存在RAM中，internal RAM那么小，能保存所有的现场吗？当然，对于CPU suspend to ram，系统要保证RAM CHIP是供电的，确保其数据可以保持，如果是SDRAM，多半是保持供电，SDRAM处于self refresh的状态。CPU模块是否要供电呢？说CPU语义不是特别清晰，我们还是说SOC好了，SOC是否需要供电呢？毫无疑问，Vcore（核心电压，我猜测是你说的vddarm）是不需要供给的，processor已经是suspend了，不需要取指令，不需要执行，不需要保存硬件上下文（已经保存在ram中了），有什么理由要供电呢？整个SOC唯一需要供电的就是一个小小的HW block，主要是保证系统被唤醒时候需要的block（例如一个或者两个GPIO，或者RTC）以及恢复现场需要的硬件支持(一个恢复现场需要的地址，因为下电后，再上电，processor的PC值等于0)。唤醒过程给Vcore加电当然不能是GIC的功能，GIC本身也应该是VCORE供电的。这个功能来自外部的PMU。\r\n\r\n关于timer的问题，我明天再回答吧。"
+ },
+ {
+  "id": "605",
+  "parent": "599",
+  "date": "2014-11-03T15:05:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：基本上如何使用PPI是由SOC系统决定的。对于GIC 400，ARM公司规定了其使用的方法（本文档中描述的内容）。不过，对于各个SOC Vendor，可以自行确定其PPI的使用方式，同样的，SOC厂商也可以自己设计local timer，global timer等。不过，对于使用Cortext A9的ARM 处理器，A9内部已经集成了local timer和watchdog timer的硬件（每个processor一个哦），对应的interrupt ID分别是29和30。\r\n你说的“SOC里面的timer”，我想你说的是global timer，当然，一般而言，我们倾向把global timer的中断设定为PPI type，也就是说，虽然global timer的硬件只有一个，但是其产生的中断事件是per cpu的。当然，你说的方法也OK，申请SPI中断，不过，这个SPI中断必须广播给系统的所有的CPU，而这个广播的动作又需要SGI来完成。虽然可以实现功能，但是比较繁琐。"
+ },
+ {
+  "id": "606",
+  "parent": "605",
+  "date": "2014-11-03T16:32:47+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：hi 我想你上面描述的是只有一个SPI的globale timer\r\n我现在的系统是，global timer 申请4个，每个cpu上面有一个，中断号各不相同。而不是一个SPI,这样是不是就不需要广播的动作呢？"
+ },
+ {
+  "id": "607",
+  "parent": "606",
+  "date": "2014-11-03T16:34:18+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@forion：有4个spi的中断，作为4个cpu的local timer"
+ },
+ {
+  "id": "608",
+  "parent": "607",
+  "date": "2014-11-03T17:15:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@forion：那你需要四个独立的timer硬件哦。不过始终都是怪怪的，整个系统应该在一个统一的tick下运行，你的tick策略为何呢？"
+ },
+ {
+  "id": "609",
+  "parent": "608",
+  "date": "2014-11-03T18:06:06+08:00",
+  "author": "forion",
+  "site": "",
+  "text": "@linuxer：我就是没有完全理解这个timer的策略，好像是再有一个broadcast的timer 用作smp各个core的同步"
+ },
+ {
+  "id": "614",
+  "parent": "0",
+  "date": "2014-11-04T16:51:48+08:00",
+  "author": "azureming",
+  "site": "",
+  "text": "非常感谢linuxer的分享。\r\n想请教个问题，SPI分发到各个CPU有没有什么策略来着？比如是依次轮着把产生的中断给各个CPU，还是说看哪个CPU有空就给哪个CPU来着。"
+ },
+ {
+  "id": "616",
+  "parent": "614",
+  "date": "2014-11-04T18:25:19+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@azureming：对于GIC-V2而言，SPI的分发是根据Distributor中的Interrupt Processor Targets Registers来决定的。对于任何一个SPI，其都有在某个GICD_ITARGETSRn寄存器中有8个bit标识送达的processor，如果只有一个bit被set，那么就很简单了，如果该中断是当前优先级最高的中断，那么Distributor就会送到对应的CPU interface，具体CPU interface是否会signal对应的CPU还是有其他寄存器来控制（Interrupt Priority Mask Register），如果优先级OK的话，该中断最终会送达指定的CPU。\r\n\r\n现在问题来了（不是挖掘机哪家强哦），如果该中断对应的Interrupt Processor Targets Registers中的那8个bit有多个bit被set的话，Distributor如何处理呢？你的猜测是“依次轮着把产生的中断给各个CPU，还是说看哪个CPU有空就给哪个CPU来着”，让硬件处理这么复杂的逻辑有些不合适，实际上，GIC的硬件是不会进行任何判断的，也不会集成任何的算法，它就是根据Interrupt Processor Targets Registers的bit设定情况，忠实的把中断送往指定的一个processor或者多个processors。\r\n\r\n一个SPI的中断送往多个CPU对于软件处理是否OK呢？当然不OK了，具体原因大家可以思考一下。这时候，就要靠软件来控制了。大家可以去看看gic_set_affinity这个函数，实际上，这个函数确保一个中断的Interrupt Processor Targets Registers中的那8个bit只有一个bit被设定。"
+ },
+ {
+  "id": "627",
+  "parent": "0",
+  "date": "2014-11-05T10:37:56+08:00",
+  "author": "azureming",
+  "site": "",
+  "text": "非常感谢linuxer的解释\r\n想再请教个问题\r\n----------------------------\r\n对于GIC而言（从硬件角度看），它的抢占就是更新GICC_IAR寄存器病assert CPU，具体CPU是否响应就不是我家的事情了。 \r\n对于linux kernel而言（从软件角度看），抢占是中断handler的抢占，因此，上面++++符号围起来的那段描述对linux kernel而言是正确的，因为一旦读出了GICC_IAR寄存器，中断handler将不会再被抢占，因为整个handler中都是关闭中断的。 \r\n----------------------------\r\n看到你们的讨论，理解下大概是这样，低优先级中断发生的前16个Clock期间发生了高优先级中断，这个时候会CPU会服务高优先级中断先。\r\n那如果是已经进入了低优先级中断的服务，正在处理，那这个时候高优先级中断发生了，会进行打断原来的中断服务程序么？我看到过一个说法是，当开始服务之后，会调用local_irq_enable函数打开中断，那是不是意味着这个时候高优先级中断是没有被屏蔽的来着？“一旦读出了GICC_IAR寄存器，中断handler将不会被抢占，因为整个handler中都是关闭中断的”看上去又有点矛盾，求解释下，谢谢（PS：貌似总懒得看代码，希望站在巨人的肩膀上，想速成）"
+ },
+ {
+  "id": "628",
+  "parent": "627",
+  "date": "2014-11-05T10:52:23+08:00",
+  "author": "azureming",
+  "site": "",
+  "text": "@azureming：（c）中断处理完毕的通知。当interrupt handler处理完了一个中断的时候，会向写CPU interface的寄存器从而通知GIC CPU已经处理完该中断。做这个动作一方面是通知Distributor将中断状态修改为deactive，另外一方面，可以允许其他的pending的interrupt向CPU interface提交。\r\n--是指在中断处理过程中，其它pending的interrupt在distributor就会被禁止向CPU interface提交中断申请么，即使被pending的是高优先级的中断？"
+ },
+ {
+  "id": "634",
+  "parent": "627",
+  "date": "2014-11-05T12:32:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@azureming：对于GIC硬件而言，preempt意味着一个高优先级中断抢占（注意：是硬件抢占，就是更新GICC_IAR寄存器并assert CPU）当前active的中断，这里包含两层意思：\r\n1、必须有当前active的中断。如果软件已经调用了EOI的动作，GIC硬件会标记该中断为idle，那么就不存在抢占了\r\n2、有当前active 的中断，那么GIC硬件就会记录current priority，如果新的pending中断优先级高于current priority，那么就会抢占当前中断\r\n\r\n对于linux kernel而言，如果是已经进入了低优先级中断的服务（interrupt handler），正在处理，那这个时候高优先级中断发生了，虽然硬件会抢占并signal cpu，但是cpu是不会响应该中断的，直到软件调用local_irq_enable函数打开中断（在irq_exit函数中，进入softirq处理的时候）。当然，我上面的描述是针对比较新的内核，你说的情况可能发生在旧内核中，也就是还区分fast handler和slow handler的时代，对于slow handler，在进入具体的中断服务程序（irq action）的时候，会调用local_irq_enable函数打开中断。\r\n“一旦读出了GICC_IAR寄存器，中断handler将不会被抢占，因为整个handler中都是关闭中断的”，我上面的这些描述是针对新的内核，我所有的分析是基于3.14内核的"
+ },
+ {
+  "id": "635",
+  "parent": "634",
+  "date": "2014-11-05T12:36:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@linuxer：“一旦读出了GICC_IAR寄存器，中断handler将不会被抢占，因为整个handler中都是关闭中断的”，更好懂的说法是：一旦读出了GICC_IAR寄存器，该中断的top half过程中将不会被抢占，因为整个top half过程中都是关闭中断的”"
+ },
+ {
+  "id": "637",
+  "parent": "628",
+  "date": "2014-11-05T12:53:04+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@azureming：多谢你的指正。我在这里的表述应该是不准确的，我已经修改成：做这个动作一方面是通知Distributor将中断状态修改为deactive，另外一方面，CPU interface会priority drop，从而允许其他的pending的interrupt向CPU提交。 \r\n\r\ndistributor永远是把当前enable的优先级最高的那个pending中断送达CPU interface"
+ },
+ {
+  "id": "638",
+  "parent": "635",
+  "date": "2014-11-05T14:46:59+08:00",
+  "author": "azureming",
+  "site": "",
+  "text": "@linuxer：谢谢，对于不求甚解的我，大概也知道了抢占大概咋回事了，呵呵\r\n内容写的非常好，貌似找不到转发的按钮？(感觉很有必要建立自己的转发档案，便于搜寻)\r\n牛文值得收藏啊"
+ },
+ {
+  "id": "985",
+  "parent": "0",
+  "date": "2015-01-01T16:59:59+08:00",
+  "author": "tuya",
+  "site": "",
+  "text": "@linuxer，请教一个问题，dts中的中断号是软件中断号还是硬件中断号呢？"
+ },
+ {
+  "id": "986",
+  "parent": "985",
+  "date": "2015-01-01T23:58:12+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tuya：dts中的中断号当然是硬件中断号了，对于一个使用中断的外设的dts中，一定要描述下面的内容：\r\n1、使用哪一个interrupt controller\r\n2、使用该interrupt controller的哪一个中断号。这个中断号是和interrupt controller和外设interrupt request signal的物理连接有关系，当然是该interrupt controller这个domain中的硬件interrupt ID\r\n\r\n你说的软件中断号应该是指IRQ number，这个IRQ number是系统分配的，和硬件无关"
+ },
+ {
+  "id": "987",
+  "parent": "986",
+  "date": "2015-01-02T10:01:54+08:00",
+  "author": "tuya",
+  "site": "",
+  "text": "@linuxer：@linuxer，IRQ Domain介绍 文中写道：\r\n这时候，对于这个版本的GIC driver而言，初始化之后，HW interrupt ID和IRQ number的映射关系已经建立，保存在线性lookup table中，size等于GIC支持的中断数目，具体如下：\r\n\r\nindex 0～15对应的IRQ无效\r\n\r\n16号IRQ  <------------------>16号HW interrupt ID\r\n\r\n17号IRQ  <------------------>17号HW interrupt ID \r\n\r\n是不是说在gic driver中HW interrupt ID和IRQ number是相等的？\r\n\r\n但是你文中又说到\r\n     if (domain->ops->xlate(domain, irq_data->np, irq_data->args,－－－－C\r\n                    irq_data->args_count, &hwirq, &type))\r\n            return 0;\r\n    }\r\n\r\n    /* Create mapping */\r\n    virq = irq_create_mapping(domain, hwirq);－－－－－－－－D\r\n    if (!virq)\r\n        return virq; \r\n\r\n C：解铃还需系铃人，interrupts属性最好由interrupt controller（也就是irq domain）解释。如果xlate函数能够完成属性解析，那么将输出参数hwirq和type，分别表示HW interrupt ID和interupt type（触发方式等）。\r\n\r\nD：解析完了，最终还是要调用irq_create_mapping函数来创建HW interrupt ID和IRQ number的映射关系。 \r\n\r\n我的理解是在gic_irq_domain_xlate中会将dts中的中断号+32获得真正的HW interrupt ID，然后在用virq = irq_create_mapping(domain, hwirq)获得HW interrupt ID和IRQ number的映射。不知到这样理解对吗？\r\n\r\n还有一个问题\r\nrequest_irq用的应该是IRQ number吧？"
+ },
+ {
+  "id": "1008",
+  "parent": "987",
+  "date": "2015-01-05T12:07:19+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tuya：是不是说在gic driver中HW interrupt ID和IRQ number是相等的？ \r\n---------------------------------------------------------\r\n是的\r\n\r\n我的理解是在gic_irq_domain_xlate中会将dts中的中断号+32获得真正的HW interrupt ID，然后在用virq = irq_create_mapping(domain, hwirq)获得HW interrupt ID和IRQ number的映射。不知到这样理解对吗？ \r\n---------------------------------------------------------\r\nIRQ和HW interrupt ID的映射数据库的建立有两种形态：\r\n1、一次性在interrupt controller的driver中的初始化代码中完成。例如当前版本的GIC driver。\r\n2、在各个driver的初始化代码中不断的创建，丰富，完善\r\n\r\n因此irq_create_mapping函数有上面两种场景，对以场景1，其实并没有创建IRQ和hw interrupt之间的映射（映射已经建立好了），这是，直接返回对应的IRQ number就OK了。另外一个场景就是需要创建映射，这时候，需要调用alloc IRQ number分配一个空闲的IRQ，然调用irq_domain_associate来真正创建映射\r\n\r\n\r\n还有一个问题\r\nrequest_irq用的应该是IRQ number吧？\r\n---------------------------------------------------------\r\n当然，必须的"
+ },
+ {
+  "id": "1423",
+  "parent": "0",
+  "date": "2015-03-26T15:00:59+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "hi linuxer\r\n3个clock之后，由于CPU已经ack了中断，因此GIC中CPU interface模块 deassert nFIQCPU信号线，解除发向该CPU的中断请求 \r\n我没有想明白，其实这个时候还是有中断M在pending的，为什么nFIQCPU信号会被deassert呢？\r\n我看gic datasheet 没有找到对这里的描述。"
+ },
+ {
+  "id": "1424",
+  "parent": "0",
+  "date": "2015-03-26T16:45:10+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "hi linuxer\r\n因此，这些寄存器是read only的，读取这些寄存器返回的就是cpu mask值。假设CPU0接在CPU interface 4上，那么运行在CPU 0上的程序在读GIC_DIST_TARGET0～GIC_DIST_TARGET7的时候，返回的就是0b00010000。\r\n---------\r\n为什么读GIC_DIST_TARGET0～GIC_DIST_TARGET7就知道cpu0接到cpu interface4上面呢？这里寄存器的值，是谁设置的呢？\r\n为什么我的理解这里读到的应该是 每一个中断跟cpu interface的关系，也就是distributor会把这个中断forward到具体哪一个cpu intreface\r\n然后cpu interface跟具体的cpu其实是一一对应的\r\n这段代码读了好几遍，还是没看懂\r\n下面是datasheet里面的描述\r\nTable 4-17 Meaning of CPU targets field bit values\r\nCPU targets field value Interrupt targets\r\n0bxxxxxxx1              CPU interface 0\r\n0bxxxxxx1x              CPU interface 1\r\n0bxxxxx1xx              CPU interface 2\r\n0bxxxx1xxx              CPU interface 3\r\n0bxxx1xxxx              CPU interface 4\r\n0bxx1xxxxx              CPU interface 5\r\n0bx1xxxxxx              CPU interface 6\r\n0b1xxxxxxx              CPU interface 7"
+ },
+ {
+  "id": "1428",
+  "parent": "1423",
+  "date": "2015-03-27T08:54:08+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：我的理解如下：\r\n1、GIC和Processor之间除了nFIQCPU信号之外，还有AXI slave interface signals用于寄存器的访问。\r\n2、虽然M和N同时asserted，在ack本次中断的时间点，高优先级的N胜出，processor进入对N的处理，M虽然pending，也只能等到N处理完（processor写EOI寄存器）再assert processor，这时GIC和processor的约定\r\n3、为何一定这么做呢？因为GIC是支持中断优先级的，试想，如果在ack中断的时候，由于M仍然pending，因此nFIQCPU仍保持asserted状态，那么当一个比N还高优先级的P产生了中断，这时候如何通知Processor呢？这时候是无法同nFIQCPU信号传递的，因为它还是asserted状态\r\n4、因此，一定ack了中断，nFIQCPU必须deasserted，无论还有多少个中断pending，哪些中断的优先级都是低于当前处理的那个。除非优先级高过当前处理中的那个中断，这时候GIC才会通过nFIQCPU通知procssor，告知该事件"
+ },
+ {
+  "id": "1432",
+  "parent": "1424",
+  "date": "2015-03-27T12:36:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：为什么读GIC_DIST_TARGET0～GIC_DIST_TARGET7就知道cpu0接到cpu interface4上面呢？这里寄存器的值，是谁设置的呢？ \r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n当然是硬件设定的了\r\n\r\n需要注意的是，gic_dist_init应该只被初始化一次，因此只有BSP才会执行这个函数。\r\n假设BSP是cpu0，接到gic的interface 4，这些连接在硬件系统设计的时候就确定下来了，因此需要一个read only的寄存器保存这个连接信息（目前选用的寄存器是GIC_DIST_TARGET0～GIC_DIST_TARGET7）。\r\n\r\n在这样的连接情况下，当cpu0调用gic_get_cpumask函数的时候，返回的就是一个0b00010000值。\r\n\r\n如果想要设定某个中断送达该CPU，那么就需要在该中断对应的GIC_DIST_TARGET寄存器中设定该bit。因此\r\nfor (i = 32; i < gic_irqs; i += 4)\r\n\t\twritel_relaxed(cpumask, base + GIC_DIST_TARGET + i * 4 / 4);\r\n这段代码就是把系统中所有的SPI中断全部送达BSP。当然，后续可以通过set irq affinity来修改。"
+ },
+ {
+  "id": "1450",
+  "parent": "0",
+  "date": "2015-04-01T11:09:14+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "最近看了一下Cortex-A53的datasheet，发现\r\nThe Cortex-A53 processor includes only the GIC CPU Interface.\r\n那外部就只有一个独立的distributor component了\r\n不知道老大对这个有研究吗？"
+ },
+ {
+  "id": "1459",
+  "parent": "1450",
+  "date": "2015-04-01T19:10:26+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：整个系统的components是不会变化的，仍然是CPU interfaces ＋ Distributor，只不过在GICV2上，CPU interfaces ＋ Distributor作为一个外设，挂在AMBA总线上，这时候，GIC都是memory mapped。\r\n来到了GICV3/4上，processor可以通过system register interface来访问CPU interface这个HW block（而不是memory mapped的那些寄存器），访问Distributor则保持了v2的形式。因此，Cortex-A53的datasheet会说The Cortex-A53 processor includes only the GIC CPU Interface。而传统的包含CPU Interfaces和Distributor的GIC则只包括了Distributor了。你可以看看GIC-500的datasheet就明白了。\r\n当然，要强调的是：中断控制器仍然包括CPU Interfaces和Distributor，只不过CPU Interfaces变成了processor的一部分了。\r\n有时间你也可以考虑为何结构会这么变化，呵呵～～～其实也挺有意思的。"
+ },
+ {
+  "id": "1461",
+  "parent": "1459",
+  "date": "2015-04-01T19:48:41+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：那这样之前代码里面读寄存器获得cpu。interface 与core的关系的代码是不是可以省略啦？"
+ },
+ {
+  "id": "1465",
+  "parent": "1461",
+  "date": "2015-04-01T23:17:44+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：当然是可以省略的了。"
+ },
+ {
+  "id": "1490",
+  "parent": "0",
+  "date": "2015-04-10T14:56:08+08:00",
+  "author": "tiger20081015",
+  "site": "",
+  "text": "@linuxer,有一个问题想请教一下：在 irq_alloc_descs(irq_start, 16, gic_irqs,  numa_node_id()); 中，为什么要从16开始？我理解这个函数只是从一个bitmap上16号位置开始找连续的gic_irqs个非0的bit，和硬件中断本身应该没什么关系。为什么不直接从0开始呢？我在我的平台上（有gic）上试着把16改成0，结果板子启动到一半就hang了。"
+ },
+ {
+  "id": "1664",
+  "parent": "616",
+  "date": "2015-04-30T22:38:43+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：一个SPI的终端送往多个CPU在绝大多数的时候是没有意义的，因为有可能会造成多个CPU去响应这个中断，虽然最后只有一个CPU会真正ack这个irq，而其它CPU会读到1023这个fake irq number，这样子意味着其它CPU浪费了资源做无用功，所以MIPS和ARM斗士在set_affinity函数里面做了点文法，无视上层传递下来的mask里面的多个bit，只会把该中断分发给mask里面的第一个有效位（这个位代表的cpu必须是online的）代表的CPU。\r\n      但是这里面也有例外，假设有一个secure watchdog，它是全局的一个watchdog，并不是per－cpu类型的，这个中断一般会分发给每一个CPU，如果系统有8核，那么这个secure watchdog会分配给8个CPU，当然这个代码可以自己写，不能呼叫ARM的API。这样做的理由是：全局的secure watchdog保障的是全系统的稳定，单个CPU的watch dog事件由per－cpu的watchdog irq去处理就行了。\r\n      还有例外的情况是类似于bus error这种中断，也是广播到所有CPU去处理。"
+ },
+ {
+  "id": "1682",
+  "parent": "1664",
+  "date": "2015-05-03T22:29:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@buyit：你说的这个secure watchdog的例子我到时很感兴趣，能否给些具体的信息？什么CPU，我打算去看看它的datasheet\r\n\r\nPS：bus error是属于IRQ中断吗？感觉好像是其他某种类型的exception"
+ },
+ {
+  "id": "1686",
+  "parent": "1682",
+  "date": "2015-05-04T10:12:24+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@linuxer：前公司的一种实现，没有公开资料。。。\r\nsecure watchdog和bus error都配置成了fiq，在secure mode处理。：）"
+ },
+ {
+  "id": "1690",
+  "parent": "1682",
+  "date": "2015-05-04T13:42:51+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：如果我没有记错的话，qualcomm 在他的b family架构系列里面，比如8x16/8x26 会有一个secure的watchdog\r\n我不清楚他的secuer /non secure的watchdong是不是同一个watchdog，但是他的设计是比如正常时间watchdog timer out 发一个irq，这个irq给non -secure的系统处理，比如Linux kernel，如果这个时候Linux kernel hung住了，那么这个watch dog继续timer out，发一个fiq出来，这个fiq 就call到trust os里面，trust os处理了，如果turst os这个时候也卡住了，那没办法，软件没法响应，那就只能暴力让硬件重启了"
+ },
+ {
+  "id": "1695",
+  "parent": "1690",
+  "date": "2015-05-04T16:26:41+08:00",
+  "author": "buyit",
+  "site": "",
+  "text": "@tigger：qc系统里面有两种watchdog：non－secure和secure\r\nnon－secure watchdog超时，发送irq给kernel喂狗，如果kernel不能及时处理，发送fiq给secure os，这时候secure os会重启之后做dump，不会继续执行。\r\nsecure watchdog超时，发送fiq给secure os喂狗，如果secure os不能及时处理，HW直接重启之后做dump。"
+ },
+ {
+  "id": "1820",
+  "parent": "1695",
+  "date": "2015-05-18T09:02:15+08:00",
+  "author": "piter",
+  "site": "",
+  "text": "@buyit：hi linuxer:\r\n  想請教一下，看到你說的這個gic_dist_init只會讓該中斷對應到一個cpu。然後我就去追當我們註冊irq時的這個function:request_threaded_irq，發現他最後也是call 這個gic_dist_init這個::\r\nrequest_threaded_irq ->__setup_irq -> setup_affinity -> chip->irq_set_affinity (.irq_set_affinity = gic_set_affinity, drivers/irqchip/irq-gic.c)\r\n  這樣不是代表，當我們用request_threaded_irq註冊interrupt 時候，該interrupt 只會給特定的cpu 嗎(變成大部分都只有cpu0)? 這樣感覺跟以往的認知不一樣。比如說以往會有個觀念是說若cpu0 正在處理interrupt0 這時候若有interrupt1 進來時，cpu1會去處理interrupt 1。感覺若照程式這樣看來，會變成同一時間只能有單一中斷被響應...。\r\n   請問您有什麼看法，感謝"
+ },
+ {
+  "id": "1821",
+  "parent": "1432",
+  "date": "2015-05-18T09:15:08+08:00",
+  "author": "piter",
+  "site": "",
+  "text": "@linuxer：hi tigger:\r\n  這個地方我也看了兩個小時才懂..，其實他是這樣的。\r\n因為每個GIC_DIST_TARGET有32 bits，但標註cpu target 只需要8個bits，\r\n所以也就是說\r\nGIC_DIST_TARGET0\r\n|int 0's cpu| int 1's cpu| int 2's cpu| int 3's cpu| 依此類推。\r\n然後就如同linuxer 所說前32個interrupt 是給固定的cpu interface，\r\n所以也就是說需要GIC_DIST_TARGET0~GIC_DIST_TARGET7。\r\n  再來就是這段程式不好懂\r\n    for (i = mask = 0; i < 32; i += 4) { \r\n        mask = readl_relaxed(base + GIC_DIST_TARGET + i); \r\n        mask |= mask >> 16; \r\n        mask |= mask >> 8;\r\n   for i +=4，如同上面所說一個GIC_DIST_TARGET可以對應到4個中斷;\r\n   而再來他可能是想說要去找看看中斷0~31 他們對應到的interrupt interface 是多少(只要有找到一個就可以確認了)。這邊可能是用個小聰明，原本需要處理四次才可以把一個GIC_DIST_TARGET各個讀出來做判斷，但是由於理論上中斷0~31若有值應該都是對應到同一個interrupt interface，故他用>> 16 折半，然後再用 >> 8 在折半，這樣只需要兩次即葛判斷了。\r\n   以上是我的推論"
+ },
+ {
+  "id": "1829",
+  "parent": "0",
+  "date": "2015-05-18T12:16:01+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@piter，由于有回复限制，因此我copy了一份您的问题：\r\n想請教一下，看到你說的這個gic_dist_init只會讓該中斷對應到一個cpu。然後我就去追當我們註冊irq時的這個function:request_threaded_irq，發現他最後也是call 這個gic_dist_init這個::\r\nrequest_threaded_irq ->__setup_irq -> setup_affinity -> chip->irq_set_affinity (.irq_set_affinity = gic_set_affinity, drivers/irqchip/irq-gic.c)\r\n  這樣不是代表，當我們用request_threaded_irq註冊interrupt 時候，該interrupt 只會給特定的cpu 嗎(變成大部分都只有cpu0)? 這樣感覺跟以往的認知不一樣。比如說以往會有個觀念是說若cpu0 正在處理interrupt0 這時候若有interrupt1 進來時，cpu1會去處理interrupt 1。感覺若照程式這樣看來，會變成同一時間只能有單一中斷被響應...。\r\n   請問您有什麼看法，感謝\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n我觉得这是一个策略和机制的问题。对于内核中的中断子系统，当然只是负责提供机制，例如提供set affinity的策略。到底SPI的中断由哪一个cpu处理是一个策略问题。可能是永远的将某个外设（例如ethernet）的中断送达cpu0（配合的系统策略是：在该cpu上启动若干的线程来处理来自网络的请求），也可能是平均分配外设的中断，象你说的那样，一会cpu0处理，一会儿cpu1处理。\r\n但无论如何，内核无法确定策略，因此，在系统初始化的时候，总是先初始化成一种形态，后续应该会有一些其他的软件模块（irq banlance daemon）会根据irq的负荷来控制irq affinity的。"
+ },
+ {
+  "id": "1836",
+  "parent": "1829",
+  "date": "2015-05-19T14:05:29+08:00",
+  "author": "piter",
+  "site": "",
+  "text": "@linuxer：irq banlance daemon!!  竟然有這種東西~~\r\n請問一下，知道他在哪個地方有真正設定到irq 分配給哪個cpu 嗎~?\r\n感謝~"
+ },
+ {
+  "id": "1837",
+  "parent": "1836",
+  "date": "2015-05-19T18:12:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@piter：用户空间的程序（例如irq banlance）可以通过proc文件系统和linux 中断子系统交互IRQ affinity的相关信息：\r\n1、/proc/irq/default_smp_affinity。通过该接口可以访问系统缺省的IRQ affinity。在内核的source code中定义为： \r\ncpumask_var_t irq_default_affinity; \r\n在系统初始化的时候，irq_default_affinity被初始化成送达所有CPU（参考early_irq_init函数）。在具体中断描述符初始化的时候，会用irq_default_affinity来初始化desc->irq_data.affinity成员。 \r\n需要注意的是：向该接口写入新的缺省IRQ affinity不会影响已经设定的中断描述符，但是新分配的中断描述符的affinity（desc->irq_data.affinity成员）会按照新的default irq affinity值进行初始化。\r\n\r\n2、/proc/irq/<irq>/。linux kernel会为每一个IRQ number建立一个目录，保存该IRQ相关的信息\r\n\r\n3、/proc/irq/<irq>/smp_affinity。通过该接口可以访问具体某个IRQ number的IRQ affinity（desc->irq_data.affinity成员）。初始化的时候，该值被设定为系统缺省的IRQ affinity（irq_default_affinity），在系统运行过程中，根据实际系统中断负荷和irq balancing的策略，有可能会修改该值。\r\n\r\n4、/proc/irq/<irq>/affinity_hint。通过该接口可以读取（read only）具体某个IRQ number的affinity hint（desc->affinity_hint成员）。 \r\n底层的driver可以通过irq_set_affinity_hint接口来设定它期望的affinity值，当然，这只是给用户空间一个提示，运行于用户空间的irq affinity daemon进程会根据这个值进行IRQ affinity的设定\r\n\r\n5、/proc/irq/<irq>/smp_affinity_list。这个接口是和/proc/irq/<irq>/smp_affinity接口是一样的，只不过表述形式不一样而已。/proc/irq/<irq>/smp_affinity是用cpu mask的形式给出的，但是当cpu的数目比较大的时候，调整affinity变得不那么方便了，因此，linux kernel增加了smp_affinity_list的接口，这个接口的输出是用ascii的形式输出，我们还是举例子吧： \r\n如果一个IRQ被允许送达cpu3和cpu6，那么读取smp_affinity_list将返回3，6 \r\n如果一个IRQ被允许送达所有的cpu（0～7），那么读取smp_affinity_list将返回0-7\r\n\r\n......."
+ },
+ {
+  "id": "2270",
+  "parent": "1008",
+  "date": "2015-07-21T16:41:40+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@linuxer：真正的HW interrupt ID.在写入到dt里面还需要减去32吗？因为之前已经建立好hw与irq间的映射关系了。dt中的hw号在of_create_mapping时把这个值+32.则比如hw实际是30.到mapping时变为62.但一旦中断去读gic的中断id时，又直接是用hw 30去寻找irq num，那么久找不到irq=62的啦。所以在dt里面的hw需要减去32？\r\n比如一个62的hw 串口中断。写入dt描述是《0 30 0x04>吗？\r\n不知道理解的对不对啊"
+ },
+ {
+  "id": "2271",
+  "parent": "1008",
+  "date": "2015-07-21T17:00:05+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@linuxer：如果是简单的情况下，这个request_irq传入的irq num本质的数值大小就等于物理中断号吧？"
+ },
+ {
+  "id": "2276",
+  "parent": "2270",
+  "date": "2015-07-21T19:40:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@gzz：对于gic而言，HW interrupt ID是[0-1019]，其中：\r\n1、SPI interrupts 范围是 [32-1019]\r\n2、SGI interrupts 范围是 [0-15]\r\n3、PPI interrupts 范围是 [16-31]\r\n\r\n\r\n在dts文件中的HW interrupt ID定义如下：\r\n1、SPI interrupts 范围是 [0-987]\r\n2、PPI interrupts 范围是 [0-15]\r\n\r\n只要掌握这两个编码规则，一切都很简单了"
+ },
+ {
+  "id": "2277",
+  "parent": "2271",
+  "date": "2015-07-21T19:47:55+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@gzz：本质上virtual interrupt ID（irq number）和HW interrupt ID之间可以建立任何的映射关系。不过对于本文中的GIC驱动代码，它采用了偷懒的做法，初始化的时候就创建了映射，这个映射关系就是virtual interrupt ID等于HW interrupt ID。"
+ },
+ {
+  "id": "2385",
+  "parent": "0",
+  "date": "2015-07-31T13:23:00+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "还是一个原来的疑惑：\r\n假设一个root gic controll下面挂了另一个gic controller。比如是SPI64的。那么如果将次controller的上的2个中断进行request_irq时，是不是都用的irq_num SPI64就行了呢？\r\n如果是那么如何去区分两者的handler呢。\r\n因为chain的irq中断回调处理，还是去找的irq_desc然后找irq_handler.但次controller上的两个不同中断，难道有他自己的一直irq_desc?还是一个domain就一张irq_num?\r\n是不是级联的时候，中断号就是连续的呢，比如root就是0-64.然后次controller是65-128？这样貌似次controller上的2个中断号就可以分为65,66假设。不用读是64了吧？\r\n请指教下。都是假设，但有这种情况，内核是怎么处理的，因为request时没看到有对级联controller的单独处理？"
+ },
+ {
+  "id": "2386",
+  "parent": "2385",
+  "date": "2015-07-31T13:35:34+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@gzz：可以看到，级联时domain的中断处理：\r\nstatic void gic_handle_cascade_irq(unsigned int irq, struct irq_desc *desc)\r\n{\r\n\tstruct gic_chip_data *chip_data = irq_get_handler_data(irq);\r\n\tstruct irq_chip *chip = irq_get_chip(irq);\r\n\tunsigned int cascade_irq, gic_irq;\r\n\tunsigned long status;\r\n\r\n\tchained_irq_enter(chip, desc);\r\n\r\n\traw_spin_lock(&irq_controller_lock);\r\n\tstatus = readl_relaxed(gic_data_cpu_base(chip_data) + GIC_CPU_INTACK);//级联的操作对应的chip controll 需要获取gic_irq\r\n\traw_spin_unlock(&irq_controller_lock);\r\n\r\n\tgic_irq = (status & 0x3ff);\r\n\tif (gic_irq == 1023)\r\n\t\tgoto out;\r\n\r\n\tcascade_irq = irq_find_mapping(chip_data->domain, gic_irq);//找到该级controll下hw irq对应的irq num\r\n\tif (unlikely(gic_irq < 32 || gic_irq > 1020))\r\n\t\tdo_bad_IRQ(cascade_irq, desc);\r\n\telse\r\n\t\tgeneric_handle_irq(cascade_irq);//子controller下hw对应的回调处理\r\n\r\n out:\r\n\tchained_irq_exit(chip, desc);\r\n}\r\n也是一个中断号，所有我更加猜测，假设就是简单的一对一的映射，root gic controller（比如0-64）+次 controller(对应65-128).这样两者的中断号就不会重合？"
+ },
+ {
+  "id": "2389",
+  "parent": "2385",
+  "date": "2015-07-31T16:20:45+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@gzz：我在高通里面看到，GPIO INT CONTROLLER和GIC的级联，也许能给你启发。\r\n高通GPIO的控制器会连到GIC 208引脚上，在初始化的时候就会在gpio ontroller init的时候注册这个GIC 208的中断。当GPIO中断发生时，其实会触发GIC的gic_handle_irq处理函数。gic_handle_irq函数就会去读取当前谁发生了中断，最后会发现208引脚中断，然后执行208中断的handler，最后执行desc->action函数。\r\n这个时候gpio controller在初始化时候通过devm_request_irq就会去检查GPIO CONTROLLER的相应位从而知道是哪个GPIO 哪个引脚发生中断，最后调用\t\t\tgeneric_handle_irq(virq);\r\n去执行你在gpio request_irq时注册的GPIO 中断函数。"
+ },
+ {
+  "id": "2390",
+  "parent": "2389",
+  "date": "2015-07-31T16:25:58+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@passerby：次级GIC会使用ROOT GIC一个中断线，通过向这个中断线注册一个中断服务函数A。当这个中断线发生中断后肯定就是次级GIC上的中断引发的，那A函数就会去读取次级GIC中断位状态，从而知道次级GIC哪个位发生了中断。这样就可以调用相应次级GIC的中断服务函数了。"
+ },
+ {
+  "id": "2402",
+  "parent": "2390",
+  "date": "2015-08-03T09:18:55+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@passerby：按你的说法，那么每个GPIO中断，在注册request时，使用的virq是什么？如果是这样，我猜测这个Virq在domain初始化时，肯定和root controller上的其他中断是不重合的（也许不同平台会做不同处理）。假如是一对一映射的话，目测gpio controller上的中断应该是从208号以后算起的吧，是这样的吧？不然要是也是0开始算，会把root controller注册的相关desc给覆盖掉的吧？"
+ },
+ {
+  "id": "2403",
+  "parent": "2390",
+  "date": "2015-08-03T09:22:44+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@passerby：我更多的疑问在于主次controller是如何维护着virq的或者说是h_irq。两者应该不能出现重合的吧，不然request如何处理呢，virq毕竟和handle相关联的？"
+ },
+ {
+  "id": "2408",
+  "parent": "2403",
+  "date": "2015-08-03T17:26:56+08:00",
+  "author": "passerby",
+  "site": "",
+  "text": "@gzz：对的，virq是不会重合的。每次调用irq_of_parse_and_map去解析都会将传入的hwid转化成一个virq，virq在高通平台里是一个bit map表，所以保证了每个肯定都是唯一的virq。"
+ },
+ {
+  "id": "2412",
+  "parent": "2408",
+  "date": "2015-08-04T09:00:48+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@passerby：thanks,那应该是合理的"
+ },
+ {
+  "id": "2413",
+  "parent": "2403",
+  "date": "2015-08-04T09:04:43+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@gzz：能加你QQ，咨询些问题吗？我的是1037701636，谢谢"
+ },
+ {
+  "id": "2445",
+  "parent": "1821",
+  "date": "2015-08-11T00:53:29+08:00",
+  "author": "faxiang1230",
+  "site": "",
+  "text": "@piter：那为什么读出来的是0b00010000值？不懂啊，睡不着觉。"
+ },
+ {
+  "id": "2446",
+  "parent": "2445",
+  "date": "2015-08-11T00:59:18+08:00",
+  "author": "faxiang1230",
+  "site": "",
+  "text": "@faxiang1230：如果每个Dist都需要GIC_DIST_TARGET0~GIC_DIST_TARGET7，那么8×8应该有64个GICD_ITARGETSR，但是GIC-400的文档上是这样的：\r\n0x800 - 0x81C GICD_ITARGETSRn---共计28个，对不上啊？\r\n而且读出来的值也不对，很困或。"
+ },
+ {
+  "id": "2447",
+  "parent": "2445",
+  "date": "2015-08-11T09:13:54+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@faxiang1230：你再仔细看看Distributor，cpu interface和cpu的结构图，然后思考这样一个问题：如果cpu 0想要把某个SPI送达自己，那么它应该怎么做？如果拓扑结构是：\r\ncpu interface 0 －－－－－>  cpu 0\r\ncpu interface 1 －－－－－>  cpu 1\r\n.......\r\ncpu interface 7 －－－－－>  cpu 7\r\n那么实际上设定到GIC_DIST_TARGETx（x和你要设定的SPI中断号相关）寄存器的mask是0b00000001，不过实际上，拓扑结构并发总是那么一一对应，假设拓扑结构如下：\r\ncpu interface 0 －－－－－>  cpu 4\r\ncpu interface 1 －－－－－>  cpu 1\r\ncpu interface 2 －－－－－>  cpu 2\r\ncpu interface 3 －－－－－>  cpu 3\r\ncpu interface 4 －－－－－>  cpu 0\r\ncpu interface 5 －－－－－>  cpu 5\r\ncpu interface 6 －－－－－>  cpu 6\r\ncpu interface 7 －－－－－>  cpu 7\r\n在这样的结构下，cpu 0想要把某个SPI送达自己应该怎么办？实际上该SPI的中断信号是需要送到cpu interface 4，其实也就是送达了cpu0。这时候，cpu 0在set affinity的时候需要设定的mask就是0b00010000，对应cpu interface 4.\r\n\r\n那么，如何得到cpu和cpu interface之间的拓扑呢？当然通过read only的寄存器了，这些都是芯片设计的时候就确定的结构。使用哪个寄存器呢？\r\n我们知道SGI和PPI不需要使用GIC_DIST_TARGET控制target CPU。SGI送达目标CPU有自己特有的寄存器来控制（Software Generated Interrupt Register），对于PPI，其是CPU私有的，因此不需要控制target CPU。GIC_DIST_TARGET0～GIC_DIST_TARGET7是控制0～31这32个interrupt ID（SGI和PPI）的target CPU的，但是实际上SGI和PPI是不需要控制target CPU的，因此，可以借用这些TARGET寄存器。"
+ },
+ {
+  "id": "3348",
+  "parent": "0",
+  "date": "2016-01-05T17:17:01+08:00",
+  "author": "jiffy",
+  "site": "",
+  "text": "hi,linuxer\r\nT64时刻 3个clock之后，由于CPU已经ack了中断，因此GIC中CPU interface模块 deassert nFIQCPU信号线，解除发向该CPU的中断请求.\r\n--由于是level interrupt我认为是中断控制流层先mask irq导致CPU interface deassert nIRQCPU和nFIQCPU信号线，并ack irq清除pending state."
+ },
+ {
+  "id": "3349",
+  "parent": "3348",
+  "date": "2016-01-05T18:24:23+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@jiffy：中断处理分成两个层次：\r\n1、CPU层次的中断处理\r\n2、各个IRQ层面的处理\r\n由于中文习惯通常中断，因此工程师很容易混淆这两个概念。\r\n\r\nT64时刻 3个clock之后，由于CPU已经ack了中断，因此GIC中CPU interface模块 deassert nFIQCPU信号线\r\n－－－－－－－－－－－－－－－－－\r\n这里都是CPU层面的中断处理，和具体的IRQ无关"
+ },
+ {
+  "id": "3350",
+  "parent": "3349",
+  "date": "2016-01-05T19:00:45+08:00",
+  "author": "jiffy",
+  "site": "",
+  "text": "@linuxer：@linuxer：有点不明白，\r\nvoid\r\nhandle_level_irq(unsigned int irq, struct irq_desc *desc)\r\n{\r\n    raw_spin_lock(&desc->lock);\r\n    mask_ack_irq(desc);   -------------------(a)\r\n    ....\r\n(a)我认为在这里mask interrupt，才让CPU interface deassert nIRQCPU和nFIQCPU信号线，也就是说如果将(a)更改为ack_irq(desc),CPU interface 将保持assert nIRQCPU和nFIQCPU信号线直至interrupt source停止触发并清除pending state."
+ },
+ {
+  "id": "3351",
+  "parent": "3350",
+  "date": "2016-01-05T22:44:59+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@jiffy：你为何会这么认为呢？有什么根据吗？\r\n\r\n对于gic而言，根本不会调用handle_level_irq这个函数，其highlevel irq-events handler是handle_fasteoi_irq。\r\n\r\n对于GIC而言，其中断处理过程是：\r\n1、ARM中断处理过程\r\n2、gic_handle_irq\r\n3、generic_handle_irq\r\n4、在generic_handle_irq_desc函数中调用desc->handle_irq(irq, desc)，对于GIC而言，应该是handle_fasteoi_irq\r\n\r\n上面的中断处理过程步骤2会进行ack GIC cpu interface的动作，在步骤4中，回针对某个具体的IRQ进行mask或者ack的动作，但是，那和CPU的中断信号没有关系了。"
+ },
+ {
+  "id": "3353",
+  "parent": "3351",
+  "date": "2016-01-06T12:17:44+08:00",
+  "author": "jiffy",
+  "site": "",
+  "text": "@linuxer：不好意思，是我的疏忽，仔细看了GIC 协议发现GIC的中断流控功能是硬件实现的，handle_fasteoi_irq让我们无需关注何时mask/unmask，甚至不需要我们ack，但内核还是利用desc的preflow_handler字段给了我们插手的机会，你是正确的，学习了。"
+ },
+ {
+  "id": "3354",
+  "parent": "3353",
+  "date": "2016-01-06T16:30:48+08:00",
+  "author": "jiffy",
+  "site": "",
+  "text": "@jiffy：...\r\n上面的中断处理过程步骤2会进行ack GIC cpu interface的动作，在步骤4中，回针对某个具体的IRQ进行mask或者ack的动作，但是，那和CPU的中断信号没有关系了。--\r\n在步骤4中，也就是中断流控处理层会调用中断通用逻辑层提供的API，而中断通用逻辑层会调用硬件封装层(我们的gic chip)提供的回调接口，所以4中的mask/unmask/ack等操作还是和cpu的中断信号有关系，只是被中断逻辑层封装隔离了。"
+ },
+ {
+  "id": "3778",
+  "parent": "0",
+  "date": "2016-04-03T16:57:01+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "HI Hello World\r\n我一直有个疑问，ipi的中断能够撤销吗？\r\n我的理解一般core直接的ipi，如果一个core发出去了，另一个core必须要给回复，发出ipi的core才能继续运行\r\nRescheduling Interrupts 这个IPI是调度器发出来的，那么调度器可以把发出去的ipi再撤销么？"
+ },
+ {
+  "id": "3779",
+  "parent": "3778",
+  "date": "2016-04-05T10:24:22+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@tigger：我的理解一般core直接的ipi，如果一个core发出去了，另一个core必须要给回复，发出ipi的core才能继续运行。\r\n-->通过调用smp_cross_call发送ipi（如smp_send_reschedule）的，不需要等待；通过调用smp_call_function_single发送ipi（如on_each_cpu）的，最后一个参数wait是判断是否需要等待的（基于kernel-3.10）。\r\n\r\nRescheduling Interrupts 这个IPI是调度器发出来的，那么调度器可以把发出去的ipi再撤销么？\r\n-->一般没有撤销的使用场景。IPI中断是通过操作gic的GICD_ICDSGIR发出SGI中断的，一旦发出去就无法撤销的（SPI还可以操作相应的Pending寄存器和enable寄存器，来disable此中断），目的cpu会决定是否处理、如何处理此SGI。"
+ },
+ {
+  "id": "3781",
+  "parent": "0",
+  "date": "2016-04-05T10:50:59+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "hi linuxer \r\n对于高电平（SPI）中断，在电平拉高并一直处于高电平时、中断是一直上报吗？\r\nlinux处理完一次中断后回来，还会继续处理此中断吗？"
+ },
+ {
+  "id": "3782",
+  "parent": "3781",
+  "date": "2016-04-05T10:53:14+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@bsp：电平敏感（level-triggered）的中断处理流程是怎样的？"
+ },
+ {
+  "id": "3784",
+  "parent": "3781",
+  "date": "2016-04-05T11:39:22+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@bsp：在设备---->GIC---->cpu这个链条中，只要设备检测到出发中断的条件还在，那么设备到GIC之间的irq信号线就会保持asserted（也就是保持触发中断的电平信号），不过具体该中断是否被GIC上报给CPU是和GIC的设定有关，如果mask了该中断，那么其实是不会将该中断通知到CPU的。"
+ },
+ {
+  "id": "4084",
+  "parent": "0",
+  "date": "2016-06-15T20:33:47+08:00",
+  "author": "CANAAN",
+  "site": "",
+  "text": "博主您好，谢谢写出这么好的文章！我想请教一下，SGI跟软中断有什么联系和区别？如果是一个东西，那么SGI那16个中断号就是软中断的中断号（HI_SOFTIRQ,TIMER_SOFTIRQ等等）？如果有区别，我通过GIC相应寄存器去配置跟触发SGI后，SGI的中断服务程序在哪，硬中断尚且可以在request_irq里指定。"
+ },
+ {
+  "id": "4088",
+  "parent": "4084",
+  "date": "2016-06-16T09:09:27+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@CANAAN：SGI是一个硬件概念\r\nsoftirq是一个linux kernel中的软件机制\r\n这两种东西完全无关的"
+ },
+ {
+  "id": "4092",
+  "parent": "4088",
+  "date": "2016-06-16T14:35:09+08:00",
+  "author": "CANAAN",
+  "site": "",
+  "text": "@hello_world：@hello_world，谢谢您的回复，我有点明白了。那SGI就是ipi？想在Linux kernel中用上SGI的话，就是send_ipi_message,smp_cross_call相关函数？"
+ },
+ {
+  "id": "4093",
+  "parent": "4092",
+  "date": "2016-06-16T15:46:38+08:00",
+  "author": "hello_world",
+  "site": "",
+  "text": "@CANAAN：是的"
+ },
+ {
+  "id": "4094",
+  "parent": "4093",
+  "date": "2016-06-16T15:50:12+08:00",
+  "author": "CANAAN",
+  "site": "",
+  "text": "@hello_world：非常感谢您hello_world!"
+ },
+ {
+  "id": "4132",
+  "parent": "0",
+  "date": "2016-06-22T11:14:46+08:00",
+  "author": "zcjfish",
+  "site": "",
+  "text": "你好，请问PPI 中断的使用场景都有哪些？ 或者说什么样的中断适合走PPI中断？"
+ },
+ {
+  "id": "4137",
+  "parent": "4132",
+  "date": "2016-06-23T09:10:27+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@zcjfish：PPI适合per cpu的中断，也就是说，如果一个中断只是送达本CPU，并且每个CPU都有这样的一格外设中断，那么该中断适合PPI。例如，per cpu local timer hw block的中断。"
+ },
+ {
+  "id": "5036",
+  "parent": "0",
+  "date": "2016-12-16T23:53:28+08:00",
+  "author": "甲乙丙丁",
+  "site": "",
+  "text": "既然GIC只支持高电平和上升沿种中断模式，那么外设的低电平触发中断和下降沿触发中断是怎么处理，是由什么硬件将其翻转为GIC支持的高电平和上升沿信号吗？"
+ },
+ {
+  "id": "5084",
+  "parent": "5036",
+  "date": "2017-01-04T08:39:52+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@甲乙丙丁：文章中只是说“SGI只支持高电平触发”，其它的还是没有问题的。"
+ },
+ {
+  "id": "6531",
+  "parent": "0",
+  "date": "2018-02-05T16:55:49+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "请教郭大侠：\r\n关于gic初始化distributor时：\r\n1、为何要使用0-31(SGI/PPI)中断id中的一个来初始化所有的SPI中断？\r\n\r\n2、在获取0-31中某个中断时，实际上代码是获取0-4-8-...-28中断mask，代码如下所示，如果这些id对应的mask刚好全部无效，岂不很奇怪？\r\nstatic u8 gic_get_cpumask(struct gic_chip_data *gic) \r\n{ \r\n    void __iomem *base = gic_data_dist_base(gic); \r\n    u32 mask, i;\r\n    for (i = mask = 0; i < 32; i += 4) {   // 因为i += 4,因此获取的mask实际上是按4跳跃\r\n        mask = readl_relaxed(base + GIC_DIST_TARGET + i); \r\n        mask |= mask >> 16; \r\n        mask |= mask >> 8; \r\n        if (mask) \r\n            break; \r\n    }\r\n    return mask; \r\n}"
+ },
+ {
+  "id": "6536",
+  "parent": "6531",
+  "date": "2018-02-07T09:25:36+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：第二个问题：gic_get_cpumask是获取cpumask值，通过它可以设定该中断送达的CPU。之所以按照0-4-8-...-28进行操作，那是因为0、1、2、3是一样的。原文中有一段话清楚的说明了这个情况：\r\n－－－－－－－－－－－－－－－－\r\nGIC_DIST_TARGETn（Interrupt Processor Targets Registers）位于Distributor HW block中，能控制送达的CPU interface，并不是具体的CPU，如果具体的实现中CPU interface和CPU是严格按照上图中那样一一对应，那么GIC_DIST_TARGET送达了CPU Interface n，也就是送达了CPU n。当然现实未必如你所愿，那么怎样来获取这个CPU的mask呢？我们知道SGI和PPI不需要使用GIC_DIST_TARGET控制target CPU。SGI送达目标CPU有自己特有的寄存器来控制（Software Generated Interrupt Register），对于PPI，其是CPU私有的，因此不需要控制target CPU。GIC_DIST_TARGET0～GIC_DIST_TARGET7是控制0～31这32个interrupt ID（SGI和PPI）的target CPU的，但是实际上SGI和PPI是不需要控制target CPU的，因此，这些寄存器是read only的，读取这些寄存器返回的就是cpu mask值。假设CPU0接在CPU interface 4上，那么运行在CPU 0上的程序在读GIC_DIST_TARGET0～GIC_DIST_TARGET7的时候，返回的就是0b00010000。 \r\n－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n\r\n第一个问题我没有特别搞清楚你的意思，能不能给出对应的代码？"
+ },
+ {
+  "id": "6538",
+  "parent": "6536",
+  "date": "2018-02-07T10:04:55+08:00",
+  "author": "callme_friend",
+  "site": "",
+  "text": "@linuxer：这两个问题都是关于中断的mask初始化。\r\n第一个问题，我的意思是，为何通过0-31中断的cpu mask来初始化其他的SPI中断的cpu mask？\r\n\r\n第二个问题，为何0、1、2、3号中断的cpu mask一样？"
+ },
+ {
+  "id": "6539",
+  "parent": "6538",
+  "date": "2018-02-07T10:24:39+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@callme_friend：第二个问题：\r\n0-31的中断需要cpu mask吗？不需要啊，SGI是软件设定target，PPI是一对一的，因此，0-31的中断号不需要设定target cpu，也就是说它们的GIC_DIST_TARGET是没有意义的。不过ARM仍然提供了这些寄存器，是readonly的，通过它们可以读出8个CPU interface的mask值。8个CPU Interface如何对应到32个中断号上，那么就0、1、2、3对应cpu interface 0，4、5、6、7对应cpu interface 1 ........\r\n\r\n第一个问题\r\n通过这样子可以把所有SPI中断送达系统中所有的CPU。"
+ },
+ {
+  "id": "6819",
+  "parent": "0",
+  "date": "2018-06-26T18:24:14+08:00",
+  "author": "zoro",
+  "site": "",
+  "text": "@linuxer:\r\n   这里有个疑惑\r\n   if (gic_nr == 0 && (irq_start & 31) > 0) {\r\n        hwirq_base = 16;\r\n        if (irq_start != -1)\r\n            irq_start = (irq_start & ~31) + 16;\r\n    } else {\r\n        hwirq_base = 32;\r\n    } \r\n irq_start = -1\r\n 应该是进入上面的if语句吧，即PPI也mapping吧？"
+ },
+ {
+  "id": "7403",
+  "parent": "0",
+  "date": "2019-05-09T11:23:20+08:00",
+  "author": "Mike_wu",
+  "site": "",
+  "text": "您好，请问个问题。假设CPU0接在CPU interface 4上，那么运行在CPU 0上的程序在读GIC_DIST_TARGET0～GIC_DIST_TARGET7的时候，返回的就是0b00010000。"
+ },
+ {
+  "id": "7404",
+  "parent": "7403",
+  "date": "2019-05-09T11:24:23+08:00",
+  "author": "Mike_wu",
+  "site": "",
+  "text": "@Mike_wu：这个不是太懂"
+ },
+ {
+  "id": "7436",
+  "parent": "0",
+  "date": "2019-05-22T15:54:13+08:00",
+  "author": "威点零",
+  "site": "",
+  "text": "这里操作的寄存器是Interrupt Processor Targets Registers，该寄存器组中，每个GIC上的interrupt ID都有8个bit来控制送达的target CPU。我们来看看下面的图片：\r\nGIC_DIST_TARGETn（Interrupt Processor Targets Registers）位于Distributor HW block中，能控制送达的CPU interface，并不是具体的CPU，如果具体的实现中CPU interface和CPU是严格按照上图中那样一一对应，那么GIC_DIST_TARGET送达了CPU Interface n，也就是送达了CPU n。当然现实未必如你所愿，那么怎样来获取这个CPU的mask呢？我们知道SGI和PPI不需要使用GIC_DIST_TARGET控制target CPU。SGI送达目标CPU有自己特有的寄存器来控制（Software Generated Interrupt Register），对于PPI，其是CPU私有的，因此不需要控制target CPU。GIC_DIST_TARGET0～GIC_DIST_TARGET7是控制0～31这32个interrupt ID（SGI和PPI）的target CPU的，但是实际上SGI和PPI是不需要控制target CPU的，因此，这些寄存器是read only的，读取这些寄存器返回的就是cpu mask值。假设CPU0接在CPU interface 4上，那么运行在CPU 0上的程序在读GIC_DIST_TARGET0～GIC_DIST_TARGET7的时候，返回的就是0b00010000。\r\n\r\n文章写得不错，但是上面这段，我是看了又看，有很多地方没明白。\r\n1.上面提到每个interrupt Num由8bit控制送达的target cpu，后面又提到Cpu Interface和CPUx不是对应接的。不太明白，distributor到底是控制到cpu interface还是到Cpu的。\r\n2.GIC_DIST_TARGET0～GIC_DIST_TARGET7是控制0～31这32个interrupt ID（SGI和PPI）的target CPU的。按第8bit来算，位数应该是32*32个bit，GIC_DIST_TARGET0～GIC_DIST_TARGET7，每个target是多少位呢？\r\n3.假设CPU0接在CPU interface 4上，那么运行在CPU 0上的程序在读GIC_DIST_TARGET0～GIC_DIST_TARGET7的时候，返回的就是0b00010000。这里是无论读GIC_DIST_TARGET0\\、GIC_DIST_TARGET1...GIC_DIST_TARGET7都是0b00010000吗？\r\n总得看下来，看得有点晕晕的。"
+ },
+ {
+  "id": "7437",
+  "parent": "0",
+  "date": "2019-05-22T16:18:30+08:00",
+  "author": "威点零",
+  "site": "",
+  "text": "研究了一下：\r\n为gic中断分配cpu, GIC_DIST_TARGET寄存器为gic中断提供8-bits的目标CPU，一个GIC_DIST_TARGET寄存器可服务于4个gic中断。为什么一个CPU target只需要8bit呢？因为cortex_a9_gic只支持8个CPU。若CPU targets=0xff，表示任何一个cpu都可处理该中断，如果CPU targets=0x01，则表示只有CPU0可处理该中断。GIC_DIST_TARGET结构如下：\r\n    b31-b24        b23-b16        b15-b8         b7-b0\r\n  CPU targets    CPU targets    CPU targets    CPU targets \r\n    offset3        offset2        offset1        offset0"
+ },
+ {
+  "id": "7455",
+  "parent": "0",
+  "date": "2019-06-04T17:16:49+08:00",
+  "author": "BeDook",
+  "site": "",
+  "text": "博主大侠，请教个关于GIC的入门问题，在ARM V8系统中，如何实现一个SPI中断同时给多个Core响应么？貌似手册上说对于SPI类型的中断，不论是Targeted distribution model模式还是1 of N model模式，其一次只能指定由一个核响应改变该中断的状态？而其他核上中断状态仍为Pending，菜鸟认为这样的后果是各个核一次轮流响应SPI z中断？"
+ },
+ {
+  "id": "7476",
+  "parent": "0",
+  "date": "2019-06-18T13:56:04+08:00",
+  "author": "soc",
+  "site": "",
+  "text": "博主：\"（3）gic_irq_domain_xlate函数\" 下方的注释 \"GIC interrupt specifier中的interrupt number需要加上16（也就是加上SGI的那些ID号），才能转换成GIC的HW interrupt ID。\" 上面的步骤只是跳过了SGI,转换了PPI，如果是SPI的话还要+16，我查了下源码发现是有的：\r\n/* For SPIs, we need to add 16 more to get the GIC irq ID number */\r\n\tif (!intspec[0])\r\n\t\t*out_hwirq += 16;"
+ },
+ {
+  "id": "7742",
+  "parent": "0",
+  "date": "2019-11-09T16:02:01+08:00",
+  "author": "无非",
+  "site": "",
+  "text": "在GIC硬件初始化这一章节里：  设定CPU interface的control register。enable了group 0的中断，disable了group 1的中断，group 0的interrupt source触发IRQ中断（而不是FIQ中断）。\r\n请问：既然没有打开FIQ，哪系统是怎样触发FIQ类型中断的，还是不能触发FIQ类型的中断。"
+ },
+ {
+  "id": "7943",
+  "parent": "0",
+  "date": "2020-04-09T15:19:40+08:00",
+  "author": "qixi",
+  "site": "",
+  "text": "谢谢作者的分享，请问文中描述GIC和CPU接口上的交互过程的时序图是参考的哪个文档？多谢"
+ },
+ {
+  "id": "8568",
+  "parent": "7742",
+  "date": "2022-03-06T17:14:43+08:00",
+  "author": "yz",
+  "site": "",
+  "text": "@无非：group0和group1其中一个可以产生fiq，如果想要触发fiq，就需要把中断的group更改一下，并且开启gic中fiq的使能，就可以产生fiq中断"
+ }
+]

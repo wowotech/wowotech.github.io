@@ -1,0 +1,74 @@
+[
+ {
+  "id": "6791",
+  "parent": "0",
+  "date": "2018-06-08T15:40:55+08:00",
+  "author": "狂奔的蜗牛",
+  "site": "",
+  "text": "这种算不算上是一种内核漏洞呢？这个块设备已经被mount的情况下，还允许别的进程进行读写操作，是不是应该在open的时候进行检查，一些特殊情况下，比如被mount了，或者被其他操作独占了的情况下，就不允许打开操作了。"
+ },
+ {
+  "id": "6888",
+  "parent": "0",
+  "date": "2018-08-15T11:44:11+08:00",
+  "author": "coderall",
+  "site": "",
+  "text": "这里第二种直接操作文件数据的方式已经绕过文件系统了，也就不存在你说的第二次打开等问题；再者，如果一个文件正在读写，对于数据的一致性，这个应该由应用来维护了"
+ },
+ {
+  "id": "7043",
+  "parent": "0",
+  "date": "2018-11-20T11:41:47+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "硬文，楼主的调试技巧很丰富！\r\none comment: vmtouch先mmap文件，再调用mincore() to determine whether pages are resident in memory."
+ },
+ {
+  "id": "7088",
+  "parent": "0",
+  "date": "2018-12-17T10:22:49+08:00",
+  "author": "fishland",
+  "site": "",
+  "text": "文件层面最终会“看到”修改后的内容，那么本质上也算是同步的了:D"
+ },
+ {
+  "id": "7581",
+  "parent": "0",
+  "date": "2019-08-09T12:27:36+08:00",
+  "author": "小学生",
+  "site": "",
+  "text": "楼主在文章开头说：“注：本文代码基于linux-3.18.31，此版本中块缓存已经合入页缓存。”，意思是不是说kernel-3.18.31下，块缓存和页缓存两者不再独立呢？"
+ },
+ {
+  "id": "7777",
+  "parent": "7581",
+  "date": "2019-12-07T15:16:21+08:00",
+  "author": "colin",
+  "site": "http://www.colins110.cn",
+  "text": "@小学生：应该指的是，在这个版本中，经过VFS对文件的读取，实际上数据存到块缓存（buffer）中，而文件对应的page cache实际指向前面的buffer吧。"
+ },
+ {
+  "id": "8246",
+  "parent": "0",
+  "date": "2021-06-15T15:31:16+08:00",
+  "author": "askatwowotech",
+  "site": "",
+  "text": "请教一下unlink文件后这个文件对应的page frames会自动被reclaim吗? 如果会自动被reclaim是当场reclaim, 还是稍等一段时间以后被reclaim?"
+ },
+ {
+  "id": "8251",
+  "parent": "8246",
+  "date": "2021-07-16T15:24:19+08:00",
+  "author": "bsp",
+  "site": "",
+  "text": "@askatwowotech：等内存紧张时，会自动reclaim，即swap。"
+ },
+ {
+  "id": "8726",
+  "parent": "0",
+  "date": "2022-12-20T15:53:14+08:00",
+  "author": "abccdeg",
+  "site": "",
+  "text": "篇幅不多，但讲得非常透彻，尤其实验过程，赞！"
+ }
+]

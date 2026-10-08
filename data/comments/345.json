@@ -1,0 +1,82 @@
+[
+ {
+  "id": "4815",
+  "parent": "0",
+  "date": "2016-11-01T10:19:17+08:00",
+  "author": "西人",
+  "site": "",
+  "text": "昨天还在问进程组的问题，今天就有新文章出来了，好及时啊，哈哈"
+ },
+ {
+  "id": "4859",
+  "parent": "0",
+  "date": "2016-11-10T12:00:00+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "这篇文章太好了，串起了先前的所有疑惑，但还是有点模糊的感觉！如果能结合linux代码就完美了！"
+ },
+ {
+  "id": "4863",
+  "parent": "4859",
+  "date": "2016-11-10T19:03:20+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@electrlife：其实在写这份文档的时候就规划了一个叫做内核代码实现的章节，后来删除了，有时间我整理一下，形成一篇《进程管理和终端驱动：内核代码实现》。\r\n其实不同的人有不同的需求，刚开始的工程师喜欢代码情景分析这样的文档，可以手把手的告诉你一切细节，其实随着经验的增加，你渐渐会更喜欢概念性的、框架性的文档，呵呵～～"
+ },
+ {
+  "id": "4883",
+  "parent": "0",
+  "date": "2016-11-17T14:39:50+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "再次拜读了一遍，有一些疑问：\r\n\r\n1、可以支持single user mode进行登录\r\n什么是single user mode，不太了解\r\n\r\n2、接收来自内核的日志信息和告警信息 \r\n我的理解kernel的log是存放在ring buffer中，应用klogd和其它的一些logs应用来负责其输出到哪里。终端或是console能否显示kernel的log为何是由终端的类型来定的（如，console可以显示）？\r\n\r\n3、为何process group leader不能调用setsid来创建session呢？\r\n对于这个的解释，还是不太理解？"
+ },
+ {
+  "id": "4890",
+  "parent": "4883",
+  "date": "2016-11-18T09:32:40+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@electrlife：1、当丢失了root口令需要通过single user mode登录进行恢复，其实就是Runlevel 1，在我们的inittab文件可以看出一点端倪：\r\n# Runlevel 0 is halt.\r\n# Runlevel 1 is single-user.\r\n# Runlevels 2-5 are multi-user.\r\n# Runlevel 6 is reboot.\r\n\r\n2、你的描述也对，内核的日志（通过printk输出日志）的确是放到一个buffer中，并且在适当的时机进行下面的动作：\r\n（1）通知用户空间的klogd和syslogd进行处理\r\n（2）遍历系统中注册的console driver，把buffer中的数据写入console driver\r\n\r\n3、process group leader调用setsid来创建session，而创建session的同时也就创建了一个进程组，该进程组的ID就是process group leader的进程ID（我们称之A），而在旧的session中也同样存在同样的ID是A的进程组，这样进程组A的所有进程并不是在一个session中，而是分布在两个session中。"
+ },
+ {
+  "id": "5020",
+  "parent": "0",
+  "date": "2016-12-14T15:18:59+08:00",
+  "author": "motou",
+  "site": "",
+  "text": "有两个问题：\r\n1. “比如说shell程序属于进程组A，当用户输入aaa程序启动一个新进程的时候（是shell创建了该进程，没有&符号，是前台进程），aaa进程则归属与进程组A（和shell程序属于同一个进程组）。”这个和后面的描述有冲突吧？后面描述的又是aaa新创建了新一个aaa的进程组。\r\n2. ps –eo stat,comm,sid,pid,pgid,tty | grep tty | more & 这个需要fg才能输出。但是如果命令是ps –eo stat,comm,sid,pid,pgid,tty |ｇｒｅｐ tty &. 终端还是正常输出，more在这里面起了个什么作用。"
+ },
+ {
+  "id": "5024",
+  "parent": "5020",
+  "date": "2016-12-15T10:27:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@motou：1、多谢指正，哈哈，有些文字是一年多前写的，自己没有仔细检查。没有&符号，shell也是创建新的进程组，只不过自己隐居幕后，待前台进程组执行完毕，自己则再度出山。\r\n2、我自己也试了一下，的确是这样的，很有意思的。使用\r\nps –eo stat,comm,sid,pid,pgid,tty | grep tty | more & \r\n这个命令的时候，ps、grep和more进程都进入stop状态，而使用\r\nps –eo stat,comm,sid,pid,pgid,tty | grep tty  & \r\n这个命令的时候，ps和grep并没有进入stop状态。\r\n\r\n当然，这和后台进程组对终端写入的配置有关，两种可能的配置是：\r\n（1）后台进程组可以向终端输出\r\n（2）前台进程组可以输出，但是后台进程组不可以。如果发生了后台进程组对终端的写访问动作，终端驱动将发送SIGTOUT信号给相应的后台进程组，这将导致后台进程组进入stop状态。\r\n\r\n我思考的方向是这样的，有时间的话可以去查看一些这些程序的代码。"
+ },
+ {
+  "id": "5025",
+  "parent": "5024",
+  "date": "2016-12-15T13:45:08+08:00",
+  "author": "motou",
+  "site": "",
+  "text": "@linuxer：你的文章很不错，很羡慕你这么有恒心把东西总结写出来，并分享给大家。我也受益匪浅，也帮我把很多平时零散的东西归类重新学习了一下。\r\n对于第二个问题，我的理解是后台进程组是可以向终端输出的，但是不能输入。因为我们平时执行后台程序，他们的log信息都可以显示出来的。根子可能在more，因为more是要与终端交互的，因为不能输入，而把整个进程组挂起。我想知道怎么知道进程组收到哪个信号了？怎么知道后台进程组收到的是SIGTOUT信号？我看到的是SIGCONT。"
+ },
+ {
+  "id": "5026",
+  "parent": "5025",
+  "date": "2016-12-15T16:40:21+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@motou：这个问题的回答是需要去阅读more的源代码的，本来比较懒，想让你去看看代码，呵呵～～～算了，还是自己看看代码吧，哈哈，工程师的天性如此，对于疑问不解决就不舒服。\r\n\r\n正如我前面所说，后台进程组可以设定为允许向终端输出，也可以禁止（发SIGTOUT信号)，具体如何设定可以通过stty -a命令来看，如果看到的是-tostop，那么允许后台进程组访问终端，这时候允许ls &，ls进程仍然能够立刻执行，输出到终端，然后正常结束，不会进入stop状态。\r\n\r\n如果运行stty tostop这个命令来禁止后台进程组写终端，同样运行ls &，这时候，ls进程不会输出，而是进入stop状态。\r\n\r\n同样的实验可以在more上进行。例如进入linux的源代码目录，运行more Makefile &。这时候，无论如何，more进程都会进入stop状态，就好象对当前终端的设定没有任何的作用。\r\n\r\n带着这个疑问，我下载了util-linux 2.25.2（我计算机上做实验的版本）并阅读了more的源代码，代码片段如下：\r\n－－－－－－－－－－－－－－－－－－－\r\n\t\t\tint tgrp;\r\n\t\t\t/* Wait until we're in the foreground before we\r\n\t\t\t * save the terminal modes. */\r\n\t\t\tif ((tgrp = tcgetpgrp(fileno(stdout))) < 0) {\r\n\t\t\t\tperror(\"tcgetpgrp\");\r\n\t\t\t\texit(EXIT_FAILURE);\r\n\t\t\t}\r\n\t\t\tif (tgrp != getpgrp(0)) {\r\n\t\t\t\tkill(0, SIGTTOU);\r\n\t\t\t\tgoto retry;\r\n\t\t\t}\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n\r\n从代码可知，more程序在操作终端之前就自己判断是否是前台进程组，如果不是那么手动发送SIGTTOU信号，一切终于可以大白了。"
+ },
+ {
+  "id": "5029",
+  "parent": "5026",
+  "date": "2016-12-15T20:07:20+08:00",
+  "author": "motou",
+  "site": "",
+  "text": "@linuxer：非常感谢，茅塞顿开。"
+ }
+]

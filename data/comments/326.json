@@ -1,0 +1,18 @@
+[
+ {
+  "id": "6294",
+  "parent": "0",
+  "date": "2017-12-06T22:52:47+08:00",
+  "author": "foxtang",
+  "site": "",
+  "text": "mach-types不需要了吗？"
+ },
+ {
+  "id": "6297",
+  "parent": "6294",
+  "date": "2017-12-07T09:13:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@foxtang：mach-types在arm平台需要，arm64平台不再使用了。"
+ }
+]

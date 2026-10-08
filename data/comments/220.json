@@ -1,0 +1,82 @@
+[
+ {
+  "id": "2835",
+  "parent": "0",
+  "date": "2015-10-26T15:48:06+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "hello\r\n所以说PoC&PoU 在一个SMP系统中是同时存在的，只是具体的memory 点，具体看待了？\r\nsmp 各个cpu直接是PoU，smp 各个cpu 与dma 直接是Poc？"
+ },
+ {
+  "id": "2836",
+  "parent": "0",
+  "date": "2015-10-26T16:32:22+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "所谓Speculative data accesses就是说cpu对memory的访问必须由顺序执行的执行产生，不能由于自己想加快性能而投机的，提前进行某些数据访问\r\n\r\n这里应该是说 不能Speculative data accesses 吧？"
+ },
+ {
+  "id": "2837",
+  "parent": "0",
+  "date": "2015-10-26T16:44:26+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "我看了一下代码\r\nioremap与ioremap_nocache的实现是一样的\r\n而且他们的参数都是PROT_DEVICE_nGnRE\r\n这样让我思考nE 与E 实际差异会带来什么问题？arm 默认实现都是E吗？"
+ },
+ {
+  "id": "2839",
+  "parent": "2835",
+  "date": "2015-10-26T18:16:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：所以说PoC&PoU 在一个SMP系统中是同时存在的，只是具体的memory 点，具体看待了？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n对于ARMv8而言，其最大能支持7个level的的cache，当然实际上系统未必会实现那么多level。对于一个系统，同时并且真实存在的就是各个level的cache，PoC和PoU仅仅说明cache操作是哪一个level。具体PoC和PoU是哪一个level的cache是和系统设计相关的，具体系统具体分析。\r\n\r\nsmp 各个cpu直接是PoU，smp 各个cpu 与dma 直接是Poc？\r\n－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－\r\n我似乎不是很明白你的问题，你能不能更明确的说明你的问题？"
+ },
+ {
+  "id": "2840",
+  "parent": "2836",
+  "date": "2015-10-26T18:19:26+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：是的，笔误了，多谢指正"
+ },
+ {
+  "id": "2849",
+  "parent": "2837",
+  "date": "2015-10-27T09:13:53+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@tigger：使用ioremap和ioremap_nocache都是创建PROT_DEVICE_nGnRE类型的映射，也就是enable了write buffer，写入这段memory的时候数据可以不到最终的地点（外设）而是写入write buffer，然后由中间节点（例如interconnection器件）返回write response给bus master，说明本次transaction结束了。在总线不是那么繁忙的时候，可以最终将write buffer中的数据写入终点（外设）\r\n\r\n启用了write buffer会带来性能的提升，在保证硬件操作逻辑正确的情况下，启用write buffer是正确的行为。\r\n\r\n以上是我的理解，也很肤浅，不过慢慢积累吧！"
+ },
+ {
+  "id": "2852",
+  "parent": "2839",
+  "date": "2015-10-27T09:51:54+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "@linuxer：我的意思是，比如一个8核的soc，在处理smp各个核直接的数据的时候，需要考虑PoU,需要考虑各个核与比如DMA之间的数据的时候，需要考虑的就是POC?"
+ },
+ {
+  "id": "3578",
+  "parent": "0",
+  "date": "2016-03-04T10:14:55+08:00",
+  "author": "g",
+  "site": "",
+  "text": "PoU 是纵向的，表示各级cache level之间数据的统一性。\r\nPoC 是横向的，表示总线上多个 “观察者”，所看到的数据一致性。\r\n\r\n为了保证PoU PoC,需要有cache mantain。"
+ },
+ {
+  "id": "4369",
+  "parent": "0",
+  "date": "2016-08-04T16:59:14+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "根据ARM64 boot protocol规定，kernel image对应的VA会被cleaned to PoC，这时候，各级的data cache的数据都是一致性的，按理说，BSP只需要清除本cpu core上的instruction cache就OK了。不过代码使用了PoU，也就是说操作到了L2，而实际上，L2是unified cache，其数据是有效的，清除了会影响性能，这里我也想的不是很清楚，先存疑吧。\r\n------------------------------------------------------\r\n如果一段代码，是通过memory copy的方式拷贝到了某个地址进行执行。这段代码之前应该是在data cache里面，后面又变成了指令，所以就在instruction cache里面。这个时候只清除 instruction cache是不是有问题。这段代码肯定在L2里面。但是我不知道在L2里面他具体的属性，是data/instrucion ，还是说在L2里面并不区分？"
+ },
+ {
+  "id": "4370",
+  "parent": "4369",
+  "date": "2016-08-04T22:33:16+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：L2通常不区分data和instruction。"
+ }
+]

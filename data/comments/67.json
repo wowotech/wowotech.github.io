@@ -1,0 +1,394 @@
+[
+ {
+  "id": "244",
+  "parent": "0",
+  "date": "2014-07-21T18:56:34+08:00",
+  "author": "foiron",
+  "site": "http://meiyou",
+  "text": "hi linux \r\n更新了啊，抓紧来看看。\r\nI:（3）如果是输入，可以[或者]GPIO引脚上的电平状态 ---这里是要写检测吗?\r\nII:具体GPIO interrupt chip driver以及interrupt subsystem请参考本站其他相关文档 这个会在中断子系统里面讲解吗？因为现有的文档没有对这个进行描述\r\nps：每天都会打开蜗窝主页，算是对你们的辛勤劳动做一点贡献吧：）"
+ },
+ {
+  "id": "245",
+  "parent": "244",
+  "date": "2014-07-21T21:00:22+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@foiron：I：多谢指正，已经修改了笔误\r\nII：其实是准备写一个Linux kernel的中断子系统的系列文章，不过现在还没有动笔（GIC的代码分析应该是中断子系统中的一篇，后续还会写一个GPIO type的interrupt controller的驱动，其实这两种irq chip的概念是类似的），呵呵～～完成之后再完整本文中的链接。"
+ },
+ {
+  "id": "1775",
+  "parent": "0",
+  "date": "2015-05-12T19:34:53+08:00",
+  "author": "peter",
+  "site": "",
+  "text": "学些了，谢谢分享"
+ },
+ {
+  "id": "1918",
+  "parent": "0",
+  "date": "2015-06-02T14:00:43+08:00",
+  "author": "车干",
+  "site": "",
+  "text": "楼主你好，上次麻烦你出书，你不肯。那有推荐的书没有，毛德操，赵炯两位老师的书内核版本太老了，实际应用没那么高。较新的内核没碰到好点的书，麻烦推荐下像之前两位老师那样差不多的书，"
+ },
+ {
+  "id": "1919",
+  "parent": "1918",
+  "date": "2015-06-03T13:41:45+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@车干：说实话，基于新内核的书还真没有。现在大家比较浮躁，都去写android的了，很少有人研究kernel了啊。"
+ },
+ {
+  "id": "1920",
+  "parent": "1918",
+  "date": "2015-06-03T13:42:56+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@车干：个人意见，最好的书就是kernel source code啊。"
+ },
+ {
+  "id": "1922",
+  "parent": "0",
+  "date": "2015-06-03T15:27:55+08:00",
+  "author": "车干",
+  "site": "",
+  "text": "手上有本老罗的的android的源代码分析。感觉android不比内核简单多少，可能是自己c++，java不行，要是他肯写内核多好。主要用电脑看代码很费眼，而且不如看书能静下心来，自己习惯的问题，只能这样了。\r\n\r\n话说今天上午正看着，突然网页怎么也上不了，之前也没存多少html。我还在想完了，难得好的资料看不了了。留个邮箱吧，我的是g5912667@163.com，以防万一。"
+ },
+ {
+  "id": "1923",
+  "parent": "1922",
+  "date": "2015-06-03T16:15:42+08:00",
+  "author": "蜗蜗",
+  "site": "",
+  "text": "@车干：Android涉及到业务逻辑，所以比较繁琐，但是思路是一样的，弄清楚一个点之后，其它的都能触类旁通。\r\nKernel相比Android，就像理科和工科之间的关系一样，是比较基础的。\r\n上不了是因为博客所在的空间商的IP被攻击。没关系的，我都有备份，wowotech不会不告而别的。"
+ },
+ {
+  "id": "1949",
+  "parent": "0",
+  "date": "2015-06-10T11:15:30+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "这个硬件描述的相当完美"
+ },
+ {
+  "id": "1979",
+  "parent": "1949",
+  "date": "2015-06-11T00:17:03+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@SleepDeXiang：汗颜！承蒙夸奖，其实这几份GPIO的文档（还有device tree那几份）是真的没走心，中断子系统、时间子系统和内核同步的确是“亲生的”，我写的比较用心一些。anyway，欢迎这位欢乐的工程师，哈哈"
+ },
+ {
+  "id": "1984",
+  "parent": "1979",
+  "date": "2015-06-11T10:40:17+08:00",
+  "author": "SleepDeXiang",
+  "site": "",
+  "text": "@linuxer：哈哈，小弟的确平时挺欢乐的！本科毕业马上三年了，以前一直搞驱动(BSP)相关的，今年过来比较闲就想学学更高级的内核相关东西，然后就来到你这！哈哈，真是风水宝地。。。ps：我们部门做SOC的，也是linaro金牌会员，kernel3.8以后的网上根本搜不到资料，我去年年初接触的，第一次在你这看到这么新的知识，真是接地气，特别佩服楼主，万分膜拜！"
+ },
+ {
+  "id": "2035",
+  "parent": "0",
+  "date": "2015-06-24T16:54:42+08:00",
+  "author": "RRR",
+  "site": "",
+  "text": "哎 博主好久没有更新了...GPIO & Pinctrl & IRQ 看了一半就断层了...\r\n好多东西不能联系到一起，好纠结\r\n希望博主有机会能继续完结整个GPIO"
+ },
+ {
+  "id": "2040",
+  "parent": "2035",
+  "date": "2015-06-25T19:56:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@RRR：Linuxer同学这一段时间有点忙，相信他很快就会回归的。"
+ },
+ {
+  "id": "2316",
+  "parent": "0",
+  "date": "2015-07-27T09:08:35+08:00",
+  "author": "fucker",
+  "site": "",
+  "text": "hi  linuxer:\r\n\r\n     在先拜读文章前，先让我先表达下，小弟对你的崇拜~！！！\r\n     \r\n   (__)　\r\n　 /oo\\\\________\r\n　 \\　/　　　　 \\---\\\r\n 　 \\/　　　 /　 \\　 \\\r\n 　　　\\\\_|___\\\\_|/　　*\r\n 　　　  ||　 YY|  \r\n 　　　  ||　　||  　"
+ },
+ {
+  "id": "2496",
+  "parent": "0",
+  "date": "2015-08-27T17:31:09+08:00",
+  "author": "xie1230",
+  "site": "",
+  "text": "作者真的很牛，佩服，收藏了"
+ },
+ {
+  "id": "2656",
+  "parent": "0",
+  "date": "2015-09-22T15:08:41+08:00",
+  "author": "tom",
+  "site": "",
+  "text": "pin control subsystem 和 gpio subsystem 有什么区别，"
+ },
+ {
+  "id": "3335",
+  "parent": "1922",
+  "date": "2016-01-04T15:52:12+08:00",
+  "author": "gzz",
+  "site": "",
+  "text": "@车干：android和linux是两种境界，各有味道，研读起来都有一番风味，是C与C++的典范"
+ },
+ {
+  "id": "3762",
+  "parent": "2656",
+  "date": "2016-03-31T09:04:01+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "@tom：个人理解 PINCTRL更高级吧，涉及到了pimux。目前gpio子系统只保留了API。具体的回调函数已经全部移到pinctrl子系统中去了。"
+ },
+ {
+  "id": "3763",
+  "parent": "2656",
+  "date": "2016-03-31T09:04:05+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "@tom：个人理解 PINCTRL更高级吧，涉及到了pimux。目前gpio子系统只保留了API。具体的回调函数已经全部移到pinctrl子系统中去了。"
+ },
+ {
+  "id": "3905",
+  "parent": "0",
+  "date": "2016-05-11T11:27:32+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "博主你好，gpio DTS 的配置中的宏定义有什么作用一直无法理解。\r\n比如：\r\nirq_gpio = <&gpio3 GPIO_A2 GPIO_ACTIVE_LOW>;这里 GPIO_ACTIVE_LOW 说明了低电平有效。\r\n\r\n在驱动里首先会 gpio_request（）获取资源。然后 gpio_direction_input/output(),gpio_set_value()这2个 API去将 gpio 拉高 拉低。那么 DTS"
+ },
+ {
+  "id": "3906",
+  "parent": "3905",
+  "date": "2016-05-11T11:28:53+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "@emeralddream：里的 GPIO_ACTIVE_LOW 究竟在解析的时候起到了说明作用？是不是对初始值有影响？"
+ },
+ {
+  "id": "3907",
+  "parent": "3905",
+  "date": "2016-05-11T11:28:56+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "@emeralddream：里的 GPIO_ACTIVE_LOW 究竟在解析的时候起到了说明作用？是不是对初始值有影响？"
+ },
+ {
+  "id": "3908",
+  "parent": "3907",
+  "date": "2016-05-11T13:11:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@emeralddream：解析的时候没有什么用，就是把这个flag保存下来。\r\n然后在后面使用的时候，比如xxx_power_enable，可以根据gpio的GPIO_ACTIVE_LOW flag，决定是把gpio拉低还是拉高。"
+ },
+ {
+  "id": "3909",
+  "parent": "3908",
+  "date": "2016-05-11T13:22:30+08:00",
+  "author": "emeralddream",
+  "site": "",
+  "text": "@wowo：你所说的后面就是DTS里面？"
+ },
+ {
+  "id": "4899",
+  "parent": "0",
+  "date": "2016-11-21T11:18:02+08:00",
+  "author": "higari",
+  "site": "",
+  "text": "博主你好，想请问一个问题\r\n如果设置为输入口之后，进行gpio_set_value操作会发生什么？\r\ngpiolib有没有对于这种user space的误操作情况采取什么手段。\r\n网上查了查，没有什么头绪，所以想请教一下，嘿嘿"
+ },
+ {
+  "id": "4900",
+  "parent": "4899",
+  "date": "2016-11-21T11:32:12+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@higari：直接看一下代码，答案应该很快就出来了，然后顺便给我们分享一下:-)"
+ },
+ {
+  "id": "4905",
+  "parent": "4900",
+  "date": "2016-11-22T15:31:36+08:00",
+  "author": "higari",
+  "site": "",
+  "text": "@wowo：>gpiolib有没有对于这种user space的误操作情况采取什么手段。\r\n我直接看了gpiolib.c的代码，\r\n_gpiod_set_raw_value\r\ngpiod_set_raw_value\r\ngpiod_set_value\r\n这三个函数都没有check gpio的方向\r\n\r\n>如果设置为输入口之后，进行gpio_set_value操作会发生什么？ \r\n我觉得对于设置为输入的gpio进行gpio_set_value操作，只是对它的输出端口的值进行设定，而不会影响gpio_get_value的结果，因为读的值是输入端口的值。\r\n一个简单的例子就是gpio-rcar.c,他的gpio作为输入时和输出时，同样是gpio_get_value函数，但读取的寄存器是不一样的。\r\n当gpio作为输入时，读取portin的值，输出时，读取portout.\r\n另外不论gpio方向是输入还是输出，gpio_set_value都是对portout进行操作。\r\n所以回到一开始的问题，方向设置为输入的gpio而言，gpio_set_value改变了是portout,而对于你真正想读取的portin并没有影响，当你再使用gpio_get_value时，总能读到你想要的正确的值。\r\n\r\n以上有什么错误望指正，有别的疑问可以一起探讨，谢谢拉"
+ },
+ {
+  "id": "4906",
+  "parent": "4905",
+  "date": "2016-11-22T16:07:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@higari：总结的非常好啊，感谢你的分享！～～\r\n所以kernel没有做任何处理，也是合理的了:-)"
+ },
+ {
+  "id": "4919",
+  "parent": "0",
+  "date": "2016-11-24T09:55:49+08:00",
+  "author": "higari",
+  "site": "",
+  "text": ">总结的非常好啊，感谢你的分享\r\n和博主的分享比起来真实微不足道，看了很多博主的文章受益匪浅。\r\n\r\n博主要是有时间的话，能不能讲讲IOMMU,特别是核心IOMMU.C和ARM-SMMU.C这个驱动。最近要做ARM-SMMU.C的测试。没接触过这玩意，测试条目不知道怎么写了，正在啃那个300多页的HW MANUAL，英语苦手，看不太懂"
+ },
+ {
+  "id": "4920",
+  "parent": "4919",
+  "date": "2016-11-24T10:18:05+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@higari：以前有过一段时间我也想了解一下iommu，不过后来由于自己的外设的MMU做的不标准，就自己写了一个简单的，没有用kernel标准的框架。虽然想写，苦于没时间。不知道linuxer同学有时间写不。"
+ },
+ {
+  "id": "4921",
+  "parent": "4920",
+  "date": "2016-11-24T10:38:00+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@wowo：写就写吧，反正最近一直酝酿一篇DMA mapping framework的文档，中间会涉及iommu的东西，但是不会太多的纠缠iommu的细节。"
+ },
+ {
+  "id": "4922",
+  "parent": "4921",
+  "date": "2016-11-24T10:41:01+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@linuxer：哈哈，不错，期待～～～"
+ },
+ {
+  "id": "4979",
+  "parent": "0",
+  "date": "2016-12-06T16:16:44+08:00",
+  "author": "higari",
+  "site": "",
+  "text": "博主你好，我又来了。我有一个疑问特来请教（关于gpio的suspend/reusme）\r\n\r\n我在my-gpio.c里写了两个函数\r\n1.my_gpio_suspend\r\n做的工作主要是把HW寄存器的值存入dir和data中。\r\n2.my_gpio_resume\r\n与suspend相反，把dir和data保存的值写回HW寄存器\r\n\r\n执行步骤如下\r\necho 18 > /sys/class/gpio\r\necho out > /sys/class/gpio/gpio18/direction\r\necho 1 > /sys/class/gpio/gpio18/value\r\n然后控制sys/power/state实现suspend/resume\r\n\r\n于是问题是这样的:\r\nresume后，上面做的这些设定（18,out,1）还会存在吗\r\n\r\n因为手头上没有试验环境，上面又急着要设计方案。所以在此求助（没有实机摆弄的项目真是郁闷）"
+ },
+ {
+  "id": "4980",
+  "parent": "4979",
+  "date": "2016-12-06T17:03:54+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@higari：应该没有问题。"
+ },
+ {
+  "id": "4982",
+  "parent": "4980",
+  "date": "2016-12-06T18:01:59+08:00",
+  "author": "higari",
+  "site": "",
+  "text": "@wowo：好的，谢谢啦。\r\n另外，为什么你回复的那么快啊，一直盯着博客么"
+ },
+ {
+  "id": "4983",
+  "parent": "4982",
+  "date": "2016-12-06T21:54:43+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@higari：不客气，要注意suspend的时候ram不能掉电，否则变量里面保存的东西会丢。\r\nPS：作为一个嵌入式工程师，怎么允许busy loop（一直盯着博客么）呢？怎么说也要中断触发（邮件提醒），否则定时器查询（偶尔看一下）啊！哈哈~~"
+ },
+ {
+  "id": "5147",
+  "parent": "0",
+  "date": "2017-01-14T19:56:10+08:00",
+  "author": "hongxiaoh",
+  "site": "",
+  "text": "你好，请问下，安卓linux 在kernel的键值表在哪里呢？"
+ },
+ {
+  "id": "5148",
+  "parent": "5147",
+  "date": "2017-01-14T20:00:02+08:00",
+  "author": "hongxiaoh",
+  "site": "",
+  "text": "@hongxiaoh：linux,code = <> 里对应的键值表。"
+ },
+ {
+  "id": "5155",
+  "parent": "5148",
+  "date": "2017-01-16T09:13:45+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hongxiaoh：不太明白您这里指的是什么。您可以把代码的前因后果贴出来。"
+ },
+ {
+  "id": "6193",
+  "parent": "0",
+  "date": "2017-11-13T11:05:32+08:00",
+  "author": "bigpillow",
+  "site": "",
+  "text": "Hi Linuxer,\r\n我们这边有写一套完整的GPIO & pinctrl driver.,\r\n但是一直没有找到很好的压测方案，\r\n不知大神可否为测试整套GPIO function （大概200 pins）提供下思路\r\n感谢~"
+ },
+ {
+  "id": "6208",
+  "parent": "6193",
+  "date": "2017-11-16T16:05:30+08:00",
+  "author": "你想得美",
+  "site": "",
+  "text": "@bigpillow：你想得美"
+ },
+ {
+  "id": "6210",
+  "parent": "6208",
+  "date": "2017-11-16T21:28:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@你想得美：呵呵，还真没听过压测GPIO和pinctrl的，它们一般比较稳定，覆盖测一遍，对了就对了，不大可能还会出错。"
+ },
+ {
+  "id": "6239",
+  "parent": "6210",
+  "date": "2017-11-24T11:09:09+08:00",
+  "author": "bigpillow",
+  "site": "",
+  "text": "@wowo：是，这边用户量比较大，怕万一被误踩register就尴尬了，所有要想办法压测。不过一直没有更好的方式。"
+ },
+ {
+  "id": "6278",
+  "parent": "0",
+  "date": "2017-12-01T17:33:42+08:00",
+  "author": "floater",
+  "site": "",
+  "text": "请问有没有关于gpio扩展驱动的文章呢？扩展的gpio申请中断的原理看不明白，也不太清楚应该找那个子系统的文章看"
+ },
+ {
+  "id": "6485",
+  "parent": "5147",
+  "date": "2018-01-18T16:06:45+08:00",
+  "author": "阿哈哈",
+  "site": "",
+  "text": "@hongxiaoh：generic.kl里面都有"
+ },
+ {
+  "id": "6784",
+  "parent": "2316",
+  "date": "2018-06-06T13:56:39+08:00",
+  "author": "莫迪卡",
+  "site": "",
+  "text": "@fucker：您好:wowo \r\n我想问一下如何直接获取gpio引脚号 ?"
+ },
+ {
+  "id": "6815",
+  "parent": "0",
+  "date": "2018-06-21T09:40:36+08:00",
+  "author": "薛文旺",
+  "site": "",
+  "text": "你好！\"如果操作GPIO可能导致sleep，那么同步机制不能采用spinlock\"，为什么？"
+ },
+ {
+  "id": "6816",
+  "parent": "6815",
+  "date": "2018-06-21T22:41:38+08:00",
+  "author": "smcdef",
+  "site": "",
+  "text": "@薛文旺：spinlock要求不能sleep"
+ },
+ {
+  "id": "8812",
+  "parent": "6239",
+  "date": "2023-09-01T17:21:51+08:00",
+  "author": "ychao",
+  "site": "",
+  "text": "@bigpillow：拿锤子掉两下试试"
+ }
+]

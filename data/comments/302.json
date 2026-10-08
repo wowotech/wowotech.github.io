@@ -1,0 +1,66 @@
+[
+ {
+  "id": "4004",
+  "parent": "0",
+  "date": "2016-05-31T02:40:44+08:00",
+  "author": "Codingbelief",
+  "site": "",
+  "text": "个人感觉，observer 刚开始接触时，让人费解的一个原因是把它翻译为“观察者”。\r\n\r\n在中文上，观察有着“看”的操作，进而会让人联想到\"读\"，再而让人联想到 observers 之间通过“读”感知到对方的动作，然后后面的一些 observed read write 解释起来就变得很别扭。\r\n\r\n我觉得，在上面 coherent order {3,1,4,2} 的例子中，每一个 observer 实际上是只能够确定自己的 write 和 read 的发生的时间、结束的时间以及执行的结果，并不能具体的”感知\"到其他 observer 所进行的操作，observers 之间也没有进行\"观察\"对方的动作。\r\n\r\n当然，并不是说 observer 翻译成“观察者”是错误的，只是翻译成“观察者”会在前期理解的时候比较费力。\r\n\r\n换个角度，如果把 observer 翻译为“执行者”，可能会省力一些。\r\n\r\nobserver 是“执行者”，它拥有“执行”读或者写内存的能力。那么对于 observed write 和 observed read 的可以解释如下：\r\n\r\n\r\nobserved write 描述了这样一个事实： “执行者” 完成了特定的 write memory 的操作的执行。\r\n\r\n在上面经典例子的图中，我们可以很清楚的看到，在时间坐标轴上 500ns 时，CPU4 完成了 write 4 的操作。然而，在 PE 中，我们并没有这个关键的时间轴，这时候，我们就需要找其他的方法，来肯定\"CPU4 完成了 write 4 的操作”这一事实。在 ARMv8 中，确定 write 操作已经完成执行(即 observed write)的方法是通过以下的两个事件：\r\n\r\n- CPU4 对同样的内存地址执行的下一个读操作，读回了刚刚写入的值，或者读回  coherent order 4 之后的值。\r\n- CPU4 对同样的内存地址执行下一个写操作，该写操作写入的值在 coherent order 4 之后。\r\n\r\n也就是说，当发生了上面的两个事件中的一个时，我们就可以认为 CPU4 的 write 4 操作已经执行完成，即 observed。\r\n\r\n\r\nobserved read 则描述了这样一个事实： “执行者” 完成了特定的  read memory 的操作的执行。 \r\n\r\n同样在上面经典例子的图中，在时间坐标轴上 500ns 后，CPU4 执行了 read 的操作，并且返回了 2。什么时候我们可以说 CPU4 已经完成了 read 2 的执行呢？在 ARMv8 中，如下定义：\r\n\r\n- 如果 CPU4 对同样内存地址执行了下一个 write 操作，并且该 write 操作没有影响 read 操作返回的值。\r\n\r\n上面的条件一旦达成，就意味着 CPU4 读回 2 已经是铁板钉钉的事实了，就可以说 CPU4  read  2 已经完成，即 observed read。\r\n\r\n\r\nobserved 给我的感觉更多的是一个“边界”的概念，用于定义某一时刻某个执行者是否已经完成了特定的操作。"
+ },
+ {
+  "id": "4005",
+  "parent": "0",
+  "date": "2016-05-31T02:47:56+08:00",
+  "author": "Codingbelief",
+  "site": "",
+  "text": "所以我理解的 PE observes memory access，是 PE 执行 memory access。而 observed，则是指执行的 memory access 可以认定为完成。"
+ },
+ {
+  "id": "4009",
+  "parent": "4005",
+  "date": "2016-05-31T11:55:24+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Codingbelief：“PE observes memory access”这句话，我的理解是observes是一个动词，表示PE正在“感知”来自自己或者其他PE的memory access的操作结果。\r\n\r\nobserved是形容词，用来描述一个memory指令的执行结果是否被感知到。指令完成和指令被感知到是不同的概念，如果一条内存访问的指令已经完成，那么：\r\n1、该memory access被系统中所有的observer感知到（就是globally observed）\r\n2、和该内存访问指令相关的translation table walks（也会引发内存访问操作）必须执行完毕。 \r\n因此observed和内存指令执行完成也不是同一个概念。"
+ },
+ {
+  "id": "4010",
+  "parent": "4004",
+  "date": "2016-05-31T12:05:06+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Codingbelief：看我之前写的文档，我和你一样被“忽悠”了，以为PE都是通过read来“观察”内存访问指令的结果。当然，具体的翻译而言，我觉得执行者更容易误导啊，因为很容易联想成“指令执行者”\r\n\r\n另外，你上面这段话我不是很认同，基本上，CPU 4上的对某个共享遍历的读或者写操作是否完成不能从CPU 4的视角来判断，应该是从系统的角度来看，即其他的CPU是如何看待CPU4 上的读写操作的。"
+ },
+ {
+  "id": "4011",
+  "parent": "4004",
+  "date": "2016-05-31T12:05:35+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Codingbelief：遍历--->变量"
+ },
+ {
+  "id": "6958",
+  "parent": "0",
+  "date": "2018-09-17T12:02:54+08:00",
+  "author": "oldlinux",
+  "site": "",
+  "text": "您好，读了您的文章，感觉非常的有用，但是因为理解一部分，但是当我在看4个CPU赋值的时候有点不明白， \r\nCPU1 |                         1                         |                            2                   | \r\n这个1表示CPU1往memory写值么，如果是写值需要等待一会才会把1写入A变量中么？ \r\n那么CPU1和CPU2同时赋值的时候总线不是冲突的么？ \r\n而，“对于全局变量A，其coherent order是{3,1,4,2}”中A的序列3，1，4，2是我们在外部观察到A值变化的先后顺序么？"
+ },
+ {
+  "id": "7828",
+  "parent": "0",
+  "date": "2020-01-10T11:40:15+08:00",
+  "author": "z13",
+  "site": "",
+  "text": "不是观察的意思，也不只是read和write动作来感知的意思，而是一系列操作过程中，每一个操作的边界互不重叠，使得这些操作顺序的唯一性，得到的结果也是唯一的，无论何时何地。"
+ },
+ {
+  "id": "8159",
+  "parent": "0",
+  "date": "2020-12-17T09:30:56+08:00",
+  "author": "xiejin",
+  "site": "",
+  "text": "我做过ARMv8 core RTL design，谈一下我的理解吧。\r\n其实在真实的硬件里面，observe 这个动作，远远不止load/store 这些cpu 指令。\r\n基本上core 和 core 之间相互observe，是通过snoop 协议相互snoop，最终是在interconnect 上完成排序，来达到globally observed 的目的。"
+ }
+]

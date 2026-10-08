@@ -1,0 +1,106 @@
+[
+ {
+  "id": "3558",
+  "parent": "0",
+  "date": "2016-02-27T09:46:37+08:00",
+  "author": "众宏健身器材",
+  "site": "",
+  "text": "博主的内容更新很快哈"
+ },
+ {
+  "id": "3585",
+  "parent": "0",
+  "date": "2016-03-04T16:22:33+08:00",
+  "author": "buhui",
+  "site": "",
+  "text": "忽然发现蜗握科技的文章最能提高我的技术水平，相反，呆在某些科技型公司，并不能提高技术，提高的都是为了老板资本家赚钱的能力。"
+ },
+ {
+  "id": "3586",
+  "parent": "3585",
+  "date": "2016-03-04T17:36:03+08:00",
+  "author": "郭健",
+  "site": "",
+  "text": "@buhui：这是蜗窝科技的荣幸"
+ },
+ {
+  "id": "3828",
+  "parent": "0",
+  "date": "2016-04-15T14:17:50+08:00",
+  "author": "dy1224",
+  "site": "",
+  "text": "希望博主可以发布一下I2C出错之后的信息解析"
+ },
+ {
+  "id": "3829",
+  "parent": "3828",
+  "date": "2016-04-15T22:43:30+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@dy1224：多谢建议，后面会考虑添加。"
+ },
+ {
+  "id": "4745",
+  "parent": "0",
+  "date": "2016-10-19T17:08:40+08:00",
+  "author": "hangkeke052",
+  "site": "",
+  "text": "Hi wowo大神：\r\n  我现在使用了一款NXP的uart转i2c controller 的芯片，我现在大概有一个思路，然后想请你参考一下\r\n 1）在device tree 中我应该把这个设备描述成为一个i2c controller\r\n 2）nxp_i2c_probe  adapter_hw_init 中首先将这个设备识别成为dev下的普通串口设备，并且设置比特率等串口设备信息，还有芯片的 power reset动作\r\n 3）通过串口设备的读和写 实现 i2c_algorithm 操作 \r\n 4）i2c_add_adapter 将i2c adapter 注册到platform bus 上 。"
+ },
+ {
+  "id": "4750",
+  "parent": "4745",
+  "date": "2016-10-19T21:45:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hangkeke052：我觉得的你这个场景很有意思，要怎么做，得先问一个问题：你打算把这个串口实现为一个标准的TTY设备并通过用户空间访问它吗？\r\n如果不是，就简单了，i2c driver该怎么做就怎么做，区别就是，平常的i2c driver通过读写i2c controller的寄存器，实现i2c的收发，而此处的i2c driver，则是通过读写UART controller的寄存器，实现i2c的收发。你在这个driver中，将一切差异屏蔽掉就okay了。\r\n如果是，就有点麻烦，你要先实现标准的uart driver，然后想办法利用uart的API实现i2c driver。此时的dts拓扑结构应该是UART driver---->I2C driver，为从属关系。"
+ },
+ {
+  "id": "4770",
+  "parent": "4750",
+  "date": "2016-10-21T15:09:36+08:00",
+  "author": "hangkeke052",
+  "site": "",
+  "text": "@wowo：\"平常的i2c driver通过读写i2c controller的寄存器，实现i2c的收发，而此处的i2c driver，则是通过读写UART controller的寄存器，实现i2c的收发\" \r\n这一句不是很理解，其中的i2c driver 指的是device 的i2c_driver 这个结构体还是指的是platform driver ? https://community.nxp.com/servlet/JiveServlet/showImage/2-842429-166109/pastedImage_1.png 这个是我画的一个草图，对i2c子设备的读写操做只能通过uart向SC18IM700发送特定format 的消息。而发送消息则是open操作 /dev/tty*，那应该是第二种方式？"
+ },
+ {
+  "id": "4771",
+  "parent": "4750",
+  "date": "2016-10-21T15:11:45+08:00",
+  "author": "hangkeke052",
+  "site": "",
+  "text": "@wowo：\"平常的i2c driver通过读写i2c controller的寄存器，实现i2c的收发，而此处的i2c driver，则是通过读写UART controller的寄存器，实现i2c的收发\" \r\n这一句不是很理解，其中的i2c driver 指的是device 的i2c_driver 这个结构体还是指的是platform driver ? https://community.nxp.com/servlet/JiveServlet/showImage/2-842429-166109/pastedImage_1.png 这个是我画的一个草图，对i2c子设备的读写操做只能通过uart向SC18IM700发送特定format 的消息。而发送消息则是open操作 /dev/tty*，那应该是第二种方式？"
+ },
+ {
+  "id": "4772",
+  "parent": "4771",
+  "date": "2016-10-21T15:59:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@hangkeke052：我只是觉得，这个UART只作为i2c转换用的话，没必要绕道到用户空间。\r\n其实kernel有一个子系统，是支持这种需求的：serio，类似serial子系统（可以理解为kernel态的串口驱动吧）。\r\n并且kernel中也有类似的例子：\r\ndrivers/i2c/busses/i2c-taos-evm.c\r\n如果真的要标准，而且不怕麻烦的话，就照着这个做就行了。"
+ },
+ {
+  "id": "6071",
+  "parent": "0",
+  "date": "2017-09-26T17:00:46+08:00",
+  "author": "小亮",
+  "site": "",
+  "text": "struct i2c_bus_recovery_info,新加入的这种机制的目的是什么呢？"
+ },
+ {
+  "id": "6076",
+  "parent": "6071",
+  "date": "2017-09-27T10:17:10+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@小亮：这是为了实现“可以将i2c bus从异常状态恢复的机制”，具体可参考i2c spec“bus clear”有关的章节（这里有一个nxp的版本：https://www.nxp.com/docs/en/user-guide/UM10204.pdf）\r\n\r\n3.1.16 Bus clear\r\nIn the unlikely event where the clock (SCL) is stuck LOW, the preferential procedure is to\r\nreset the bus using the HW reset signal if your I2C devices have HW reset inputs. If the\r\nI\r\n2C devices do not have HW reset inputs, cycle power to the devices to activate the\r\nmandatory internal Power-On Reset (POR) circuit.\r\nIf the data line (SDA) is stuck LOW, the master should send nine clock pulses. The device\r\nthat held the bus LOW should release it sometime within those nine clocks. If not, then\r\nuse the HW reset or cycle power to clear the bus"
+ },
+ {
+  "id": "6078",
+  "parent": "6076",
+  "date": "2017-09-27T11:28:41+08:00",
+  "author": "小亮",
+  "site": "",
+  "text": "@wowo：@wowo 明白了，谢谢大神"
+ }
+]

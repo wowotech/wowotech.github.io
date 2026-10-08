@@ -1,0 +1,170 @@
+[
+ {
+  "id": "5310",
+  "parent": "0",
+  "date": "2017-03-14T14:43:47+08:00",
+  "author": "徐君",
+  "site": "",
+  "text": "你好，我现在也想玩一下微信蓝牙，但是我的第一个蓝牙数据广播就没办法通过检测，所以想请教一下。"
+ },
+ {
+  "id": "5311",
+  "parent": "0",
+  "date": "2017-03-14T14:46:31+08:00",
+  "author": "徐君",
+  "site": "",
+  "text": "可否发个邮件给我，想请教一下这方面的问题。\r\n517204655@qq.com"
+ },
+ {
+  "id": "5312",
+  "parent": "5310",
+  "date": "2017-03-14T16:17:04+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@徐君：可以看看广播数据是什么，对一下微信的协议，看看少哪些东西（一般是MAC地址不对）。或者点一下AirSyncDebugger2.3.0界面右边的问号，看看原因。"
+ },
+ {
+  "id": "5313",
+  "parent": "5311",
+  "date": "2017-03-14T16:17:32+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@徐君：这里有联系方式：/contact_us.html"
+ },
+ {
+  "id": "5314",
+  "parent": "0",
+  "date": "2017-03-14T16:34:56+08:00",
+  "author": "徐君",
+  "site": "",
+  "text": "报错信息是：\r\nresult=false,Has no 0xfee7 or standard service in broadcast record!\r\n广播包：02 01 06 0D FF 00 0A 12 34 56 78 9A BC 03 03 E7 FE 0A 09 4D 42 31 32 2D 31 32 33 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
+ },
+ {
+  "id": "5315",
+  "parent": "0",
+  "date": "2017-03-14T16:52:44+08:00",
+  "author": "徐君",
+  "site": "",
+  "text": "已经检测出来了，谢谢！"
+ },
+ {
+  "id": "5316",
+  "parent": "5314",
+  "date": "2017-03-14T16:54:07+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@徐君：我们可以慢慢解析这个广播数据，看看怎么回事（参考如下的链接）：\r\n/bluetooth/ble_broadcast.html\r\nhttp://iot.weixin.qq.com/wiki/new/index.html?page=4-3\r\nhttps://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile\r\n\r\n02 01 06（OK）\r\n\tData的长度是02；Data是01 06；AD Type是01（Flags）；AD Data是06，表明支持General Discoverable Mode、不支持BR/EDR。\r\n\r\n0D FF 00 0A 12 34 56 78 9A BC 03 03 E7 FE（0D这个长度有问题！！）\r\n\tData的长度是0D，Data是FF 00 0A 12 34 56 78 9A BC 03 03 E7 FE；\r\n\tAD Type是FF（厂商自定义），AD Data是00 0A 12 34 56 78 9A BC 03 03 E7 FE；（参考http://iot.weixin.qq.com/wiki/new/index.html?page=4-3）\r\n\t\t00 0A：厂商ID\r\n\t\t12 34 56 78 9A BC：MAC地址\r\n\t\t\r\n\t\t03 03 E7 FE（service信息，但是service的长度包在0D这个长度里面了）。\r\n\r\n0A 09 4D 42 31 32 2D 31 32 33 34（OK）\r\n\tData的长度是0A，Data是09 4D 42 31 32 2D 31 32 33 34；\r\n\tAD Type是09（Complete Local Name），AD Data是4D 42 31 32 2D 31 32 33 34（MB12-1234）"
+ },
+ {
+  "id": "5457",
+  "parent": "0",
+  "date": "2017-04-11T18:20:02+08:00",
+  "author": "饭吃到一半",
+  "site": "",
+  "text": "经测试好用，但是微信运动里一堆数据来源怎么删除掉，取消关注测试公众号也没用啊。。。"
+ },
+ {
+  "id": "5459",
+  "parent": "5457",
+  "date": "2017-04-11T18:46:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@饭吃到一半：我也不知道怎么删，这是微信运动设计的问题。"
+ },
+ {
+  "id": "5469",
+  "parent": "5459",
+  "date": "2017-04-14T11:14:16+08:00",
+  "author": "bbigcd",
+  "site": "",
+  "text": "@wowo：添加过设备之后，在微信的我->设置里面的隐私与通用之间会出现一个“设备”里面记录的是添加过的设备"
+ },
+ {
+  "id": "5694",
+  "parent": "0",
+  "date": "2017-06-19T10:48:57+08:00",
+  "author": "mossad",
+  "site": "",
+  "text": "请问支持蓝牙4.0的笔记本可以在虚拟机上完成嘛，还是说要额外的有一个usb ble dongle\r\n\r\n我的环境是 ubuntu 12.04 ，bluez 5.37 ，go 1.8.3\r\n\r\n按照步骤编译完成 执行 sudo ./weixin 却提示，按说笔记本蓝牙适配器是dell 1705 bluetooth，应该支持bluetooth 4.0，旧版本的bluez也被我purge后重新编译安装了，不知道还有什么需要升级还是有啥其他的问题 - -：\r\n    2017/06/19 10:32:11 dev: hci0 does not support LE\r\n    2017/06/19 10:32:11 Failed to open device, err: no supported devices available\r\n\r\n执行 hciconfig -a：\r\n\r\n  hci0:\tType: BR/EDR  Bus: USB\r\n\tBD Address: 9C:D2:1E:7A:8A:6C  ACL MTU: 8192:128  SCO MTU: 64:128\r\n\tUP RUNNING \r\n\tRX bytes:5318 acl:0 sco:0 events:97 errors:0\r\n\tTX bytes:364 acl:0 sco:0 commands:56 errors:0\r\n\tFeatures: 0xff 0xff 0x8f 0xfe 0x83 0xe1 0x08 0x80\r\n\tPacket type: DM1 DM3 DM5 DH1 DH3 DH5 HV1 HV2 HV3 \r\n\tLink policy: RSWITCH HOLD SNIFF PARK \r\n\tLink mode: SLAVE ACCEPT \r\n\tName: 'Virtual Bluetooth Adapter'\r\n\tClass: 0x000100\r\n\tService Classes: Unspecified\r\n\tDevice Class: Computer, Uncategorized\r\n\tHCI Version: 2.1 (0x4)  Revision: 0x100\r\n\tLMP Version: 2.1 (0x4)  Subversion: 0x100\r\n\tManufacturer: not assigned (6502)\r\n\r\n我是小白，还望 wowo 有空可以指点一下，谢谢啦"
+ },
+ {
+  "id": "5698",
+  "parent": "5694",
+  "date": "2017-06-19T17:03:32+08:00",
+  "author": "mossad",
+  "site": "",
+  "text": "@mossad：实在没找到解决办法,于是换用 ubuntu 14.04 , 并把蓝牙设备加载到虚拟机中,安装配置好golang 1.8.1 后,发现 gatttool 存在,就试着用自带的bluez,发现 $ sudo ./weixin 可以成功运行,后面的步骤按照 wowo 大大的说明都成功了.\r\n\r\n唯独在最后的时候,微信运动中添加数据来源时,无法搜索到设备,但是AirSyncDebugger2.3.0可以检测到,计步测试的调试信息也未见error.\r\n\r\n使用手机红米 note2 和 平板 nexus 7都是这样.   - -. \r\n\r\n难过...T_T"
+ },
+ {
+  "id": "5700",
+  "parent": "5698",
+  "date": "2017-06-19T17:13:06+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@mossad：AirSyncDebugger2.3.0能否成功的，再检查一下微信授权的部分，一般都是授权的问题。"
+ },
+ {
+  "id": "5702",
+  "parent": "5700",
+  "date": "2017-06-19T18:11:53+08:00",
+  "author": "mossad",
+  "site": "",
+  "text": "@wowo：确实是授权的问题，重新再添加一个设备后就可以扫描到了，谢谢 wowo 大大～"
+ },
+ {
+  "id": "5804",
+  "parent": "0",
+  "date": "2017-07-14T10:31:36+08:00",
+  "author": "Reashy",
+  "site": "",
+  "text": "使用bluez的测试代码（bluez-5.37/test/example-gatt-server），这个例子在那里有？"
+ },
+ {
+  "id": "5806",
+  "parent": "5804",
+  "date": "2017-07-14T10:47:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@Reashy：你是指源码吗？bluez软件包里面有。不过我也没有用过。"
+ },
+ {
+  "id": "6147",
+  "parent": "0",
+  "date": "2017-10-27T14:37:40+08:00",
+  "author": "cuiran",
+  "site": "",
+  "text": "\"接下来要连接设备。对iOS来说，在设置界面无法主动连接BLE设备，必须有应用程序自行连接，这里以微信运动为例，搜索并连接刚才授权的那个设备，即可看到计步数据的更新。步骤如下面图片（不再解释了，大家可以自己试试）：\"  对Android 设备来说，设置界面能主动连接BLE设备吗?"
+ },
+ {
+  "id": "6148",
+  "parent": "6147",
+  "date": "2017-10-27T16:55:25+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@cuiran：不好说，要看手机的实现。不过可以通过ble测试工具来测试，例如iOS下的LighBlue。"
+ },
+ {
+  "id": "6363",
+  "parent": "0",
+  "date": "2017-12-14T15:29:02+08:00",
+  "author": "single-coffee",
+  "site": "",
+  "text": "你好窝窝.\r\n我使用 bluez-5.47 在一个raspberry3b上.然后我想用我的Android 手机连接这个ble.我在我的raspberry 3b上面使用了  blue-5.47/test/example-gatt-server .可是 我使用google play的ble测试应用.\"ble scanner\" 看不到 example-gatt-server  创建的服务.但是我使用我同事的iphone手机可以连接.可以看到服务.  \r\n窝窝.有空帮我看看  ...  ... 万分感谢.好人一生平安\r\n测试手机  iphone 6,8\r\n         小米4 6 max2"
+ },
+ {
+  "id": "6365",
+  "parent": "6363",
+  "date": "2017-12-14T18:15:35+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@single-coffee：android对ble的支持不是特别好，有一些奇奇怪怪的问题很正常，你可以多试试几个ble测试应用。"
+ },
+ {
+  "id": "6631",
+  "parent": "0",
+  "date": "2018-04-01T20:12:18+08:00",
+  "author": "骆凉皮",
+  "site": "",
+  "text": "小白路过，膜拜大神"
+ }
+]

@@ -1,0 +1,39 @@
+{{ define "main" }}
+<article class="post">
+{{ if eq .Type "forum" }}
+  <header class="post-header">
+    <h1>{{ .Title }}</h1>
+    <p class="meta">
+      <a href="/forum/index.html">蜗窝讨论区存档</a>
+      {{ with .Params.forum }} · {{ . }}{{ end }}
+      · 楼主 {{ .Params.poster }}
+      · {{ .Date.Format "2006-01-02" }}
+      · {{ add (int .Params.replies) 1 }} 帖
+    </p>
+  </header>
+{{ else }}
+  <header class="post-header">
+    <h1>{{ .Title }}</h1>
+    <p class="meta">
+      {{ with .Params.author }}{{ . }} · {{ end }}
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年1月2日" }}</time>
+      {{ with .Params.category_alias }} · <a href="/{{ . }}/">{{ $.Params.category }}</a>{{ end }}
+      {{ if gt (int .Params.views) 0 }} · 阅读 {{ .Params.views }}{{ end }}
+      {{ if eq .Type "posts" }} · <a href="/record/{{ .Date.Format "200601" }}/">{{ .Date.Format "2006年1月" }}存档</a>{{ end }}
+    </p>
+  </header>
+{{ end }}
+
+  <div class="post-body">
+    {{ .Content }}
+  </div>
+
+{{ if .Params.tags }}
+  <p class="tags">标签：{{ range .Params.tags }}<span class="tag">{{ . }}</span>{{ end }}</p>
+{{ end }}
+
+{{ if ne .Type "forum" }}
+  {{ partial "comments.html" . }}
+{{ end }}
+</article>
+{{ end }}

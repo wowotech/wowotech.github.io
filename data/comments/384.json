@@ -1,0 +1,26 @@
+[
+ {
+  "id": "7660",
+  "parent": "0",
+  "date": "2019-09-22T14:25:49+08:00",
+  "author": "MarcusKin",
+  "site": "",
+  "text": "getpriority看内核代码应该是[40...1]，为了解决返回-1的问题，请确认下我的理解是否正确。"
+ },
+ {
+  "id": "7661",
+  "parent": "7660",
+  "date": "2019-09-22T14:28:27+08:00",
+  "author": "MarcusKin",
+  "site": "",
+  "text": "@MarcusKin：内核系统调用返回是[40...1]，C库又转成[-20...19]了？"
+ },
+ {
+  "id": "8854",
+  "parent": "0",
+  "date": "2023-12-25T11:14:34+08:00",
+  "author": "icy_river",
+  "site": "",
+  "text": "// glibc实现\r\nint\r\n__getpriority (enum __priority_which which, id_t who)\r\n{\r\n  int res;\r\n\r\n  res = INLINE_SYSCALL (getpriority, 2, (int) which, who);\r\n  if (res >= 0)\r\n    res = PZERO - res;  // PZERO==20\r\n  return res;\r\n}"
+ }
+]

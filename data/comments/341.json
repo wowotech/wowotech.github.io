@@ -1,0 +1,346 @@
+[
+ {
+  "id": "4713",
+  "parent": "0",
+  "date": "2016-10-15T15:16:03+08:00",
+  "author": "coray",
+  "site": "",
+  "text": "好文章，一直很喜欢你的文章。\r\n\r\n这些地方估计写错了：\r\n在体系结构相关的汇编初始化阶段，我们会准备二段地址的页表：一段是identity mapping，其实就是把物理地址mapping到**物理地址**上去\r\n\r\nkernel txt、**dernel** rodata、data、bss等等\r\n\r\n**做为**kernel image的一部"
+ },
+ {
+  "id": "4714",
+  "parent": "0",
+  "date": "2016-10-15T15:35:45+08:00",
+  "author": "coray",
+  "site": "",
+  "text": "nice，一直很喜欢你的文章，十分期待更新哦。\r\n\r\n这些地方估计写错了：\r\n在体系结构相关的汇编初始化阶段，我们会准备二段地址的页表：一段是identity mapping，其实就是把物理地址mapping到**物理地址**上去\r\n\r\nkernel txt、**dernel** rodata、data、bss等等\r\n\r\n**做为**kernel image的一部"
+ },
+ {
+  "id": "4715",
+  "parent": "0",
+  "date": "2016-10-15T16:17:59+08:00",
+  "author": "HZM",
+  "site": "",
+  "text": "终于看到内存方面的了..\r\n楼主内存方面的文章，有无打算写程序编译和链接过程呀。。\r\n个人觉得内存管理和程序的编译链接 两者关系挺密切"
+ },
+ {
+  "id": "4716",
+  "parent": "4714",
+  "date": "2016-10-16T21:42:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@coray：多谢指正，关于identity mapping，更准确的说法应该是把地址等于物理地址的那些虚拟地址映射到物理地址上去，这样说起来有些拗口，所以我就简化成了“物理地址”到物理地址的mapping，呵呵~~~"
+ },
+ {
+  "id": "4717",
+  "parent": "4715",
+  "date": "2016-10-16T21:45:47+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@HZM：后面写进程地址空间的时候应该会写到的。"
+ },
+ {
+  "id": "4741",
+  "parent": "0",
+  "date": "2016-10-19T15:21:22+08:00",
+  "author": "lucky",
+  "site": "",
+  "text": "Hi linuxer，下面是我本地的一个dts，前两个memreserve含义比较明显，第三和第四个也是base和size的规则吗？算了一下不一样啊，这个alignment怎么看啊？\r\n/* memory reserved for SMEM */\r\n/memreserve/ 0x87800000 0x500000; /* Offset:120M, Size:5M */\r\n\r\n/* memory reserved for LTE modem */\r\n/memreserve/ 0x89600000 0x3E80000; /* Offset:150M, Size:62.5M*/\r\n\r\n/* memory reserved for fb */\r\n/memreserve/ 0x9ED74000 0xA8C000; /* 480*854*4*3, 4K alignment*/\r\n\r\n/* memory reserved for ION */\r\n/memreserve/ 0x9F800000 0x800000; /* 480*854*4*2, 8K alignment */\r\n\r\n/include/ \"skeleton.dtsi\"\r\n/include/ \"scx35l-sp9830ied-clocks.dtsi\"\r\n/include/ \"sc2723-regulators.dtsi\"\r\n/include/ \"sprd-sound.dtsi\"\r\n/include/ \"sprd-battery.dtsi\"\r\n\r\n/ {\r\n\tmodel = \"Spreadtrum SP8835EB board\";\r\n\tcompatible = \"sprd,sp8835eb\";\r\n\tsprd,sc-id = <8830 1 0x20000>;\r\n\t#address-cells = <1>;\r\n\t#size-cells = <1>;\r\n\tinterrupt-parent = <&gic>;\r\n\r\n\tchosen {\r\n\t\tbootargs = \"loglevel=1 console=ttyS1,115200n8 init=/init root=/dev/ram0 rw androidboot.hardware=sc8830\";\r\n\t\tlinux,initrd-start = <0x85500000>;\r\n\t\tlinux,initrd-end   = <0x855a3212>;\r\n\t};\r\n\r\n\tmemory: memory {\r\n\t\tdevice_type = \"memory\";\r\n\t\treg = <0x80000000 0x40000000>;\r\n\t};\r\n\t\r\nsetup_arch\r\n    arm_memblock_init\r\n\t    setup_arch\r\n\t\tearly_init_fdt_scan_reserved_mem\r\n\t\t    识别 \"reserved-memory\"字段解析  //我看代码里识别\"reserved-memory\"，但是dts里面都是memreserve的字段，这个是怎么解析的啊？ 问题可能比较浅显，还请指导。。谢谢"
+ },
+ {
+  "id": "4743",
+  "parent": "4741",
+  "date": "2016-10-19T15:31:57+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@lucky：fdt_get_mem_rsv解析memreserve（位于dtb header中，不是node）\r\n__fdt_scan_reserved_mem解析reserved-memory node"
+ },
+ {
+  "id": "4773",
+  "parent": "0",
+  "date": "2016-10-24T10:46:37+08:00",
+  "author": "HZM",
+  "site": "",
+  "text": "Hello,linuxer\r\n请教一个问题，可能对你比较简单，但是我百思不得其解\r\n\r\nLinux中的各个驱动是在进程的上下文里面执行的吗，如果是，在哪个进程\r\n\r\n谢谢。"
+ },
+ {
+  "id": "4774",
+  "parent": "4773",
+  "date": "2016-10-24T18:32:34+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@HZM：谢谢你的问题，不过我建议你去讨论区去提问。之所以想这样做，主要是为了复用已经后续查找方便。\r\n\r\n其实你这个问题我已经在某片博文下面中回答过了，当然，我不记得是在哪一篇了。也就是说，博文下面的交互其实很难检索。今天我在这样一篇讲内存的博文下面回答了你这个驱动上下文的问题，过一段时间后，其实很难找回这个问答咨询。当其他人问起这个问题的时间，我只能再一次重复回答，呵呵～～～这也是我为什么建议你去讨论区提问，见谅！"
+ },
+ {
+  "id": "4937",
+  "parent": "0",
+  "date": "2016-11-30T13:52:40+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "对于mmu不太熟，所以从elf角度思考且有些不解。\r\n\r\n我理解：\r\nbootloaderr把image 搬运到物理内存里，此时mmu， cache等都是关闭的。此时的image是一个包含代码段数据段ZI段的binary。因此kernle首要任务是把此elf的binary中的各个section/segment映射到相应的虚拟空间上去。\r\n\r\nQ1.这些虚拟的地址应该是在编译时就确定的，比如text section，在编译时就确认了其虚拟地址。\r\n所以我们需要把这些虚拟地址映射到对应的物理地址上？\r\n\r\nQ2.建立这些映射，需要建立其相应的页表，而页表也需要内存空间，依据您的描述，我的理解这此空间是位于elf binary 的bss段之后，其size是可以使其能够映射所有的elf binary所需的虚拟空间即可？\r\n\r\nQ3.您文章中所提到的 kernel image mapping 是不是指的就是整个elf binary的映射（包括RO,RW,ZI,etc） ？\r\n\r\nQ4.假设我们此时已经把整个elf binary (kernle image)映射到了相应的虚拟空间去，我们知道程序运行需要一些额外的环境的建立， 如RW段的搬运，ZI段的初始化，那其实我们已经映射其需要的虚拟地址上，是不是也就意味着这些动作就不需要执行了？\r\n\r\nQ5. 依据您的描述我的理解在刚刚init时，物理空间布局如下，想了解下为何swapper process所需的空间有如此重要的地位？在这么早的阶段就需要静态的进行映射？\r\n\r\n+------------------------------+\r\n|                              |\r\n| elf binary (kernel image)    |\r\n|                              |\r\n+------------------------------+\r\n| page tables (elf binary)     |\r\n+------------------------------+\r\n| page tables (fixed mapping)  |\r\n+------------------------------+\r\n| page tables (swapper process)|\r\n+------------------------------+"
+ },
+ {
+  "id": "4939",
+  "parent": "4937",
+  "date": "2016-11-30T15:25:46+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@electrlife：Q1：内核开始阶段的代码是PIC的，copy到任何的位置都可以正确的执行\r\n\r\nQ2：是的，不过elf binary使用的不准确，kernel elf binary不包括bss段以及之后的page table这样的特殊section，因此，准确的说，静态定义的page table只要能完成kernel image mapping（链接脚本中的_text符号到_end符号）就OK了\r\n\r\nQ3：kernel image mapping一定是覆盖elf binary，不过不仅仅是elf binary，还有bss段和静态定义的页表区\r\n\r\nQ4：一旦完成了地址映射（填充好了页表内容、打开了MMU），那么kernel已经在其虚拟地址空间中欢快运行（编译就是按照虚拟地址编的），你说的那些RW段的搬运，ZI段的初始化应该都是不需要的，BTW，我感觉你是搞cortex M系列处理器的，RW ZI这些术语不属于GNU GCC，应该是realview那套编译环境的\r\n\r\nQ5：swapper process就是内核，swapper process地址空间就是内核地址空间。"
+ },
+ {
+  "id": "4940",
+  "parent": "4939",
+  "date": "2016-11-30T16:15:35+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "@linuxer：哈哈，\r\n===>>> BTW，我感觉你是搞cortex M系列处理器的\r\n这都被你看出来了，确实做了几年的MCU开发，基本都是cortex-m系列\r\n\r\n===>>> Q5：swapper process就是内核，swapper process地址空间就是内核地址空间。\r\n+------------------------------+\r\n|                              |\r\n| elf binary (kernel image)    |\r\n|                              |\r\n+------------------------------+\r\n| page tables (elf binary)     |\r\n+------------------------------+\r\n| page tables (fixed mapping)  |\r\n+------------------------------+\r\n| page tables (swapper process)|\r\n+------------------------------+ \r\n您的意思是（page tables (swapper process)）存放的是内核空间映射虚拟地址所需要的page tables？ 我理解的内核空间（例如，1:3）指的是最高虚拟地址的那1G的空间？ \r\n如果是这样，是不是可以理解内核空间映射所需要的所有page tables都被安排在这段物理内存上？ 感觉这和我理解的不一样，难道内核空间的内存不是使用是动态的进行映射的嘛？如果这样静态的映射如何确认所需的物理空间的大小？\r\n\r\n问题比较撒哈，见谅！ :-)"
+ },
+ {
+  "id": "4941",
+  "parent": "4940",
+  "date": "2016-12-01T09:25:58+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@electrlife：不是的，所有的内核线程共享一个地址空间，如下：\r\nstruct mm_struct init_mm = {\r\n\t.mm_rb\t\t= RB_ROOT,\r\n\t.pgd\t\t= swapper_pg_dir,\r\n\t.mm_users\t= ATOMIC_INIT(2),\r\n\t.mm_count\t= ATOMIC_INIT(1),\r\n\t.mmap_sem\t= __RWSEM_INITIALIZER(init_mm.mmap_sem),\r\n\t.page_table_lock =  __SPIN_LOCK_UNLOCKED(init_mm.page_table_lock),\r\n\t.mmlist\t\t= LIST_HEAD_INIT(init_mm.mmlist),\r\n\tINIT_MM_CONTEXT(init_mm)\r\n};\r\n\r\n－－－－－－－－－－－－－－－－\r\n整个内核空间的页表当然是一个树状结构，其根在swapper_pg_dir，初始阶段，静态定义的页表只有几个page，这时候，pgd中有一个entry，指向静态定义的PUD，PUD中有一个entry，指向静态定义的PMD。如果是section mapping，那么到PMD就OK了，PMD中有若干个描述符，完成初始阶段kernel img mapping。\r\n\r\n因此，刚开始，内核空间的页表就几个，更广阔的地址空间mapping是随着初始化的不断进行而慢慢建立的。"
+ },
+ {
+  "id": "5056",
+  "parent": "0",
+  "date": "2016-12-22T15:21:01+08:00",
+  "author": "electrlife",
+  "site": "",
+  "text": "所有中间level的Translation table都是在early_fixmap_init函数中完成初始化的，最后一个level则是在各个具体的模块进行的，对于DTB而言，这发生在fixmap_remap_fdt函数中.\r\n===>>> 想知道为什么最后一个Level要到具体的模块内进行映射，对于DTB而言，直接在early_fixmap_init时行映射不就可以了，这样分成两步来做，是须的吗？或是说有什么优点吗？"
+ },
+ {
+  "id": "5086",
+  "parent": "5056",
+  "date": "2017-01-04T08:59:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@electrlife：这里体现的思想是：自己的memory，自己映射。early_fixmap_init怎么会知道到底要映射多少东西呢？比如我想映射一个GPIO的I/O空间点一个LED，也让early_fixmap_init帮忙吗？"
+ },
+ {
+  "id": "5395",
+  "parent": "0",
+  "date": "2017-03-30T17:25:01+08:00",
+  "author": "MDO3054",
+  "site": "",
+  "text": "以下是我调试时的函数调用关系，内核打开了DEBUG_LL配置：\r\nstart_kernel\r\n\tearly_print(\"setup_arch()\\n\")\r\n\tsetup_arch\r\n\t\tearly_print(\"setup_machine_fdt()\\n\")\r\n\t\tmdesc = setup_machine_fdt(__atags_pointer)\r\n\t\t... ....\r\n\t\tearly_fixmap_init()\r\n\t\tearly_ioremap_init()\r\n很明显，在early_fixmap_init()前，我就在使用early_print()打印了，这个时候也是用的串口的虚拟地址，那这个串口的虚拟地址是不需要early_ioremap()吗？另外，这个uart的内存映射是在哪里做的呢？"
+ },
+ {
+  "id": "5421",
+  "parent": "5395",
+  "date": "2017-04-02T22:26:59+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@MDO3054：early_print的代码如下（arm平台，3.18.12）：\r\n\r\nvoid __init early_print(const char *str, ...)\r\n{\r\n\textern void printascii(const char *);\r\n\tchar buf[256];\r\n\tva_list ap;\r\n\r\n\tva_start(ap, str);\r\n\tvsnprintf(buf, sizeof(buf), str, ap);\r\n\tva_end(ap);\r\n\r\n#ifdef CONFIG_DEBUG_LL\r\n\tprintascii(buf);\r\n#endif\r\n\tprintk(\"%s\", buf);\r\n}\r\n\r\n如果early_print在early_ioremap_init之后，那么early_print不太可能是操作UART的虚拟地址，因为还没有mapping。代码中，printk实际上是输出到log buffer，而printascii是汇编写的，我记得是初始化阶段的调试方法，应该是操作UART的物理地址完成的。"
+ },
+ {
+  "id": "5422",
+  "parent": "5421",
+  "date": "2017-04-03T08:48:41+08:00",
+  "author": "MDO3054",
+  "site": "",
+  "text": "@linuxer：1、为啥early_ioremap_init之后，反而不可能操作虚拟地址？start_kernel前就已经开启MMU了，到这里应该全部都是虚拟地址了吧？\r\n2、printascii()最后会调用arch/arm/include/xxx.S里的addruart宏：\r\n\t\t.macro\taddruart, rp, rv, tmp\r\n\t\tldr\t\\rp, =LL_UART_PADDR\t@ physical\r\n\t\tldr\t\\rv, =LL_UART_VADDR\t@ virtual\r\n\t\t.endm\r\n该宏貌似用的就是虚拟地址？"
+ },
+ {
+  "id": "5425",
+  "parent": "5422",
+  "date": "2017-04-04T00:17:56+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@MDO3054：呵呵，写错了，如果early_print在early_ioremap_init之前，那么early_print不太可能是操作UART的虚拟地址。\r\n\r\n\r\n其实printascii用什么地址我不关心，反正打开MMU之后，就不能直接操作UART物理地址了，而想要使用UART的物理地址，那么必须要mapping。如果printascii使用虚拟地址，那么一定在调用early_print之前就进行了UART io地址的mapping了。"
+ },
+ {
+  "id": "6499",
+  "parent": "0",
+  "date": "2018-01-25T16:13:53+08:00",
+  "author": "Zhenhua",
+  "site": "",
+  "text": "而那些需要预留的，不需要内核管理的内存被保存在memblock的reserved type的数组中（上图中的青色block，也是按照地址的大小顺序排列）\r\n>>>觉得这个说法有问题啊，其实加进reserved type的memory也是会被map的，也会被内核管理。真正不需要管理的是带no-map属性，就是只在memory type中被除去的。。请指正？"
+ },
+ {
+  "id": "6503",
+  "parent": "6499",
+  "date": "2018-01-26T09:21:25+08:00",
+  "author": "linuxer",
+  "site": "",
+  "text": "@Zhenhua：你说的是对的。不过我这里“不需要内核管理”是指不需要进入“伙伴系统”"
+ },
+ {
+  "id": "6776",
+  "parent": "0",
+  "date": "2018-06-01T13:39:45+08:00",
+  "author": "mm",
+  "site": "",
+  "text": "hi linuxer,\r\n\r\n想要请教一下，我没有理解 identity mapping 的意思。\r\n1. VA_START 是 kernel 虚拟地址空间的起始，\r\n2. PAGE_OFFSET 是映射 kernel image 的虚拟地址空间的起始，\r\n\r\n假设 VA_BITS / CONFIG_ARM64_VA_BITS 为 39,\r\nVA_START    = (0xffff ffff ffff ffff UL) << 39, 也就是 0xffff ff80 0000 0000\r\nPAGE_OFFSET = (0xffff ffff ffff ffff UL) << 38, 也就是 0xffff ffc0 0000 0000\r\n也就是 PAGE_OFFSET 将内核虚拟地址空间对半分的意思，PAGE_OFFSET 往上放 kernel image, VA_START -> PAGE_OFFSET 中靠近 PAGE_OFFSET 的地方放 FIXED_MAP 映射所需的虚拟地址空间，用来做后面映射 DTB 时所需。\r\n\r\n那么，kernel image mapping 就是 PAGE_OFFSET 映射到 __PHYS_OFFSET(我的理解 __PHYS_OFFSET 就是可以看着是物理地址 0 地址？)\r\n\r\n请问 identity mapping 的意思就是 __PHYS_OFFSET(假设为 0)，也要映射到虚拟地址空间的 0 地址的意思吗？还有个问题，从 bootloader 转过来调到 stext 后，一直没有看见重新设置 sp, 那就是说使用的栈一直没有变化，identity mapping 是考虑到这个吗？为什么 mapping 后不考虑重设栈起始呢？tks!"
+ },
+ {
+  "id": "6778",
+  "parent": "6776",
+  "date": "2018-06-02T18:25:42+08:00",
+  "author": "mm",
+  "site": "",
+  "text": "@mm：哦哦，明白了。\r\n其实文章里面已经很明确地说明了是 enable_mmu 需要的。enable_mmu 还有一些别的函数放在 .idmap.text 这个 section 里面，要对这个 section 做特殊的处理，所以要 VA 和 PA 相等。\r\n\r\nkernel image mapping 当然也要，不过不要求 VA 和 PA 相等了。\r\n\r\n__PHYS_OFFSET 就是个地址值，KERNEL_START - TEXT_OFFSET, 其实更像虚拟地址。"
+ },
+ {
+  "id": "6854",
+  "parent": "0",
+  "date": "2018-07-26T17:07:18+08:00",
+  "author": "nzg",
+  "site": "",
+  "text": "hi linuxer,\r\n有个疑问请教一下，如果当前VA_BITS=39;\r\nVA_START=0xffffff8000000000, PAGE_OFFSET=0xffffffc000000000,\r\n而PAGE_OFFSET是kerme image 虚拟起始地址，_text算出 等于0xffffff8008080000（代码中是基于VA_START计算的）,\r\n_text不是应该大于 PAGE_OFFSET才对吗？这怎么理解呢？ 谢谢"
+ },
+ {
+  "id": "6880",
+  "parent": "6854",
+  "date": "2018-08-11T17:01:47+08:00",
+  "author": "mm",
+  "site": "",
+  "text": "@nzg：你看的是什么版本？如果是 4.4 之后的版本，在这里映射完成后，后面还会重新映射一次， setup_arch->paging_init->map_kernel 那，改到用 vmalloc 区域来管理映射了。\r\n\r\n/memory_management/436.html\r\n这里也有讲。\r\n\r\n当然这里最初启动期间的映射还是线性的(kernel image 的地址段映射对应物理内存放置地址段)，只是说 kernel 映射的虚拟地址区域不再是线性映射区域了，而是放到了 VMALLOC 区域。不过不知道 kernel 是哪个具体版本引入这个改动的，原因又是什么。\r\n\r\n另外，映射 kernel image 的虚拟起始地址也不再是 PAGE_OFFSET, 而是 KIAMGE_VADDR + TEXT_OFFSET。\r\nPAGE_OFFSET 相当于将整个kernel虚拟地址空间又分成两个部分，PAGE_OFFSET 之上是线性映射区域，之下是各种 MODULES, VMALLOC, FIXMAP 之类的映射区域。"
+ },
+ {
+  "id": "7023",
+  "parent": "0",
+  "date": "2018-11-11T15:28:12+08:00",
+  "author": "兔子",
+  "site": "",
+  "text": "嗨；DTB header中的memreserve域,这个属性包含的内存空间（比如：/memreserve/ 0x87800000 0x500000; ）\r\n内核是不会对这段内存访问的吗？？完全可以留着自己使用的吗？？\r\n如果是，那么访问该内存的话是以虚拟地址方式还是物理地址方式访问呢？？？谢谢"
+ },
+ {
+  "id": "7121",
+  "parent": "0",
+  "date": "2019-01-04T16:17:57+08:00",
+  "author": "HW.Yang",
+  "site": "",
+  "text": "Hello,\r\n\r\n>在体系结构相关的汇编初始化阶段，我们会准备二段地址的页表\r\n\r\n請問系統如何決定這兩個頁表要被放在物理記憶體的哪個位址呢?\r\n\r\n謝謝!"
+ },
+ {
+  "id": "7738",
+  "parent": "0",
+  "date": "2019-11-05T10:20:36+08:00",
+  "author": "Zaiqiang",
+  "site": "",
+  "text": "@linuxer\r\n\"（PAGE_OFFSET，PAGE_OFFSET＋SWAPPER_INIT_MAP_SIZE）这段虚拟内存创建地址映射，mapping到（PHYS_OFFSET，PHYS_OFFSET＋SWAPPER_INIT_MAP_SIZE）这段物理内存的时候，调用create_mapping不会发生内存分配，因为所有的页表都已经存在了\"\r\n请教一下，这里PTE的页表肯定是没有的啊，肯定要分配啊，难道内核是使用的是块映射吗？如果还是，我理解肯定需要分配一页做PTE啊。"
+ },
+ {
+  "id": "7753",
+  "parent": "0",
+  "date": "2019-11-17T21:40:10+08:00",
+  "author": "orangeboyye",
+  "site": "",
+  "text": "《内存初始化（下）》，在哪里可以看到，急切盼望"
+ },
+ {
+  "id": "7784",
+  "parent": "6776",
+  "date": "2019-12-10T20:37:14+08:00",
+  "author": "伊斯科明",
+  "site": "",
+  "text": "@mm：#define VA_START\t\t(UL(0xffffffffffffffff) - \\\r\n\t(UL(1) << VA_BITS) + 1)\r\n\r\n当VA_BITS=39时，VA_START=0xFFFFFF0000000000\r\n\r\n而，\r\n\r\n#define PAGE_OFFSET\t\t(UL(0xffffffffffffffff) - \\\r\n\t(UL(1) << (VA_BITS - 1)) + 1)\r\n当VA_BITS=39时，PAGE_OFFSET=0xFFFFFF8000000000\r\n\r\n从System.map可以看到：\r\nffffff8009080000 T _text\r\n\r\n所以_text是比PAGE_OFFSET地址大的。代码基于4.9.113"
+ },
+ {
+  "id": "7785",
+  "parent": "7784",
+  "date": "2019-12-10T20:40:24+08:00",
+  "author": "伊斯科明",
+  "site": "",
+  "text": "@伊斯科明：囧，回复错人了"
+ },
+ {
+  "id": "7893",
+  "parent": "0",
+  "date": "2020-02-20T23:02:51+08:00",
+  "author": "鱼儿",
+  "site": "",
+  "text": "在建立kernle image的映射时，为什么要使用section map有点疑问，\r\n假设48 bit的虚拟地址配置，4k的page size，这时候需要4级映射，地址被分成9（level 0 or PGD） ＋ 9（level 1 or PUD） ＋ 9（level 2 or PMD） ＋ 9（level 3 or PTE） ＋ 12（page offset），假设我们分配4个page分别保存Level 0到level 3的translation table，那么可以建立的最大的地址映射范围是512（level 3中有512个entry） X 4k ＝ 2M。\r\n对于这段话不理解的是，为何只算level3呢？level0 和level1为何只放一个entry？"
+ },
+ {
+  "id": "8134",
+  "parent": "0",
+  "date": "2020-11-13T07:20:55+08:00",
+  "author": "啊啊啊",
+  "site": "http://meiyou",
+  "text": "因为前三级都是0->1->2,只有最后那个4k指向具体的页，懂了吧，前三个只是页表系统的一部分，你不能用0级页表指向具体内存吧，"
+ },
+ {
+  "id": "8135",
+  "parent": "7738",
+  "date": "2020-11-13T07:24:01+08:00",
+  "author": "啊啊啊",
+  "site": "http://meiyou",
+  "text": "@Zaiqiang：之前使用的是section映射，现在要pte映射，所以需要内存"
+ },
+ {
+  "id": "8559",
+  "parent": "0",
+  "date": "2022-02-18T16:26:25+08:00",
+  "author": "korone",
+  "site": "",
+  "text": "补充对PIC术语的说明：\r\nPIC，即 Position Independent Code ，地址无关代码。这种代码可以在主存储器中任意位置正确地运行。"
+ },
+ {
+  "id": "8748",
+  "parent": "7738",
+  "date": "2023-03-06T17:45:20+08:00",
+  "author": "jqdeng",
+  "site": "",
+  "text": "@Zaiqiang：用的已经不是启动时的页表，而是在early_fixmap_init里面使用了bm_pud/bm_pmd/bm_pte这三个数组重新建立了映射"
+ },
+ {
+  "id": "8772",
+  "parent": "7893",
+  "date": "2023-04-12T09:57:46+08:00",
+  "author": "melo",
+  "site": "",
+  "text": "@鱼儿：我觉得: \r\n假设我们分配4个page分别保存\r\n只有4个pages, 第一个page存放pgd, 第二个放pud, 第三个放pmd, 第四个放pte\r\npte最多放512个entries\r\n为何只算level3呢？如果低于level3, 需要的pages就多于4个了"
+ },
+ {
+  "id": "8865",
+  "parent": "8772",
+  "date": "2024-02-07T15:49:52+08:00",
+  "author": "landau",
+  "site": "",
+  "text": "@melo：基于melo 的说法，如果level0不止一个entry，那么意味着level1的entry不止一个page（此时一个page在level0~level3 中都是能保存512个entry），因为level0的entry存放的值，对应的是pgd table中的level1的table的地址。level1也同理。所以在只有4个page的场景下，那么level0-level2 有且只能各有一个page，同时里面只能有一个entry。\r\n此时最大的地址映射范围，自然也是有level3 里面entry的个数决定。"
+ },
+ {
+  "id": "8874",
+  "parent": "0",
+  "date": "2024-03-28T10:46:08+08:00",
+  "author": "huozi",
+  "site": "",
+  "text": "我也是还没看懂这句话，映射范围不应该是entry0*entry1*entry2*entry3*4k吗？\r\n另外entry3为何是512？"
+ },
+ {
+  "id": "8875",
+  "parent": "8134",
+  "date": "2024-03-28T14:27:34+08:00",
+  "author": "huozi",
+  "site": "",
+  "text": "@啊啊啊：你这个前提就是entry0、entry1、entry2均是1，entry3为512才是这个，但为什么level 0、level 1、level 2、level 3均有1page保存，为什么entry0、entry1、entry2均是1，entry3为512呢？"
+ },
+ {
+  "id": "8876",
+  "parent": "8865",
+  "date": "2024-03-28T14:39:47+08:00",
+  "author": "huozi",
+  "site": "",
+  "text": "@landau：我想原文应该也是想表达这样一个意思，举一个映射范围最大为2M的例子，只是他这个例子，我们读者可能都默认level0-level2对应的三个page均填满，那样映射范围肯定不止2M，原文level0-level2 均是只有一个entry才有原文的结论。"
+ },
+ {
+  "id": "8877",
+  "parent": "7121",
+  "date": "2024-03-28T15:59:09+08:00",
+  "author": "huozi",
+  "site": "",
+  "text": "@HW.Yang：页表自身存放在哪里，原文中也有一些提示，如下：\r\n内核起始刚开始的汇编代码基本上是PIC的，首先需要定位到页表的位置，然后在页表中填入kernel image mapping和identity mapping的页表项。页表的起始位置比较好定（bss段之后），但是具体的size还是需要思考一下的。"
+ },
+ {
+  "id": "8878",
+  "parent": "7023",
+  "date": "2024-03-28T16:12:17+08:00",
+  "author": "huozi",
+  "site": "",
+  "text": "@兔子：既然是reserve，那就应该可用可不用。开启了MMU之后，若要用，应该要建立映射通过虚拟地址来访问。"
+ }
+]

@@ -1,0 +1,82 @@
+[
+ {
+  "id": "5592",
+  "parent": "0",
+  "date": "2017-05-23T11:33:45+08:00",
+  "author": "江南书生",
+  "site": "http://no",
+  "text": "老板，你好！\r\nSD卡上面的CD引脚，如果悬空（开机前已经把卡插上去了）的话，SD卡的驱动就无法识别到SD卡设备的存在，请问这是为什么？CD引脚必须要使用么？"
+ },
+ {
+  "id": "5594",
+  "parent": "5592",
+  "date": "2017-05-23T16:57:15+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@江南书生：你是指要设置为不可拔插的卡吗？是的话，看一下kernel拔插检测的流程吧，试着设置一下MMC_CAP_NONREMOVABLE属性。"
+ },
+ {
+  "id": "5596",
+  "parent": "5594",
+  "date": "2017-05-23T16:59:23+08:00",
+  "author": "江南书生",
+  "site": "http://no",
+  "text": "@wowo：老板，你好！\r\n\r\n    热插拔会引起中断，但是我如果直接把卡插上去（开机前），为啥也能检测的卡，这是什么原理啊？\r\n\r\n谢谢，老板"
+ },
+ {
+  "id": "5597",
+  "parent": "5596",
+  "date": "2017-05-23T19:01:49+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@江南书生：照你的描述，mmc子系统初始化的时候，会去查询一次（这就是为什么插着卡开机可以检测到），后面就不再查询了。"
+ },
+ {
+  "id": "5665",
+  "parent": "5596",
+  "date": "2017-06-13T09:08:53+08:00",
+  "author": "秋暮离",
+  "site": "",
+  "text": "@江南书生：按wowo所说，s3c平台在MMC子系统初始化阶段会去查询一次卡的有无：sdhci_s3c_probe->sdhci_add_host->sdhci_enable_card_detection->sdhci_set_card_detection，以后的卡插拔事件由中断负责检测"
+ },
+ {
+  "id": "6222",
+  "parent": "0",
+  "date": "2017-11-20T14:09:41+08:00",
+  "author": "rega",
+  "site": "",
+  "text": "hi wowo MMC部分还会继续写完吗？"
+ },
+ {
+  "id": "6226",
+  "parent": "6222",
+  "date": "2017-11-20T17:13:38+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@rega：有时间的话应该会，不过时间太少了，估计写的比较慢:-("
+ },
+ {
+  "id": "6234",
+  "parent": "6226",
+  "date": "2017-11-23T15:12:08+08:00",
+  "author": "rega",
+  "site": "",
+  "text": "@wowo：期待wowo能完成这部分。。。"
+ },
+ {
+  "id": "7036",
+  "parent": "0",
+  "date": "2018-11-14T16:36:07+08:00",
+  "author": "jasonactions",
+  "site": "",
+  "text": "这里的每个内存区域描述（物理连续的一段内存，可以是一个page，也可以是page的一部分），就称作Segment。一个Segment包含多个相邻扇区。\r\n这里 应该说一个Segment对应多个相邻扇区比较好吧？因为Segment是内存缓冲区，对应的是bio_vec"
+ },
+ {
+  "id": "7127",
+  "parent": "0",
+  "date": "2019-01-09T16:51:18+08:00",
+  "author": "草京虫",
+  "site": "",
+  "text": "因该是在sdhci_s3c_probe->sdhci_add_host->mmc_start->_mmc_detect_change中触发检测"
+ }
+]

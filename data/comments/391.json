@@ -1,0 +1,106 @@
+[
+ {
+  "id": "5599",
+  "parent": "0",
+  "date": "2017-05-24T20:46:25+08:00",
+  "author": "秋暮离",
+  "site": "",
+  "text": "wowo好，\r\n__dma_request_channel和dma_request_slave_channel应用场景有什么不同吗？我看到一些驱动里面用dma_request_slave_channel的情形好像更多一些。"
+ },
+ {
+  "id": "5601",
+  "parent": "5599",
+  "date": "2017-05-25T10:14:19+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@秋暮离：dma_request_channel----直接找一个符合规则的dma channel。\r\ndma_request_slave_channel---配合device tree等，获取和对应设备绑定的dma channel（一般是在dts中指定了）。"
+ },
+ {
+  "id": "5611",
+  "parent": "0",
+  "date": "2017-05-28T21:51:59+08:00",
+  "author": "秋暮离",
+  "site": "",
+  "text": "wowo好，\r\n麻烦请教一个问题，spi-pl022.c有如下代码：\r\npl022_transfer_one_message\r\n    do_interrupt_dma_transfer(pl022);\r\n        /* If we're using DMA, set up DMA here */\r\n\tif (pl022->cur_chip->enable_dma) {\r\n\t    /* Configure DMA transfer */\r\n\t    if (configure_dma(pl022)) {\r\n\t        dev_dbg(&pl022->adev->dev,\r\n\t\t    \"configuration of DMA failed, fall back to interrupt mode\\n\");\r\n\t\tgoto err_config_dma;\r\n\t    }\r\n\t    /* Disable interrupts in DMA mode, IRQ from DMA controller */\r\n\t    irqflags = DISABLE_ALL_INTERRUPTS; //禁掉SSP的所有中断\r\n            /* Enable SSP, turn on interrupts */\r\n\t    writew((readw(SSP_CR1(pl022->virtbase)) | SSP_CR1_MASK_SSE),\r\n\t           SSP_CR1(pl022->virtbase));\r\n\t    writew(irqflags, SSP_IMSC(pl022->virtbase));\r\n\r\n它这里判断如果是采用DMA传输message，就禁掉SPI控制器的所有中断，意思是数据的后续推进全部交由DMA控制器负责，但这里有一点我不是很明确，麻烦请教：DMA传输也经由设备FIFO中转，这里把FIFO相关中断都禁掉了，那DMA传输期间设备FIFO是否可用，是不是就应该由SPI控制器通过DMA请求线告知DMA控制器？但他这里似乎没有写寄存器的动作来设置自己使用DMA传输？是禁掉所有中断默认就是DMA传输吗？\r\n另外，想知道是不是所有平台控制器采用DMA传输时，都像这样禁掉自身所有中断，然后一切交给DMA负责的路子？"
+ },
+ {
+  "id": "5616",
+  "parent": "5611",
+  "date": "2017-05-31T17:25:22+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@秋暮离：FIFO是否可用，和“FIFO是否产生中断”，是两个独立的功能，没有依赖。\r\n如果用DMA传输，SPI控制器不需要向CPU产生中断，但它会向DMA控制器产生一些信号，而DMA控制器在传输的过程中会产生中断。\r\n\r\n至于怎么启动dma传输，和这个平台的实现有关，看看spec就行了。"
+ },
+ {
+  "id": "5696",
+  "parent": "0",
+  "date": "2017-06-19T11:37:44+08:00",
+  "author": "秋暮离",
+  "site": "",
+  "text": "wowo好，\r\n最近在学习V4L2时产生一些疑问，麻烦wowo帮忙点拨以下理解是否正确？\r\n1、在驱动实现的mmap接口函数中，可以使用dma_mmap_attrs把外部sensor申请的DMA缓冲区mmap到用户空间，此时之前申请DMA缓冲区的函数必须是dma_alloc_attrs，mmap之后相当于有两块虚拟地址对应了同一块物理地址。\r\n2、dma_alloc_attrs和dma_alloc_coherent在用法上有什么区分吗？适用场景？\r\n3、我看到像一些fb驱动实现的mmap调用的都是remap_pfn_range，网上说可以使用它来映射内存中的保留页、设备I/O、framebuffer、camera等内存。那是不是可以这样理解：remap_pfn_range作用是用来将物理地址映射到用户空间，ioremap作用是用来将物理地址映射到内核空间。\r\n4、在videobuf2-dma-config.c中有dma-buf的实现，大概是一个供用户空间或其他设备驱动共享DMA buffer的技术，虽然使用步骤很简单（调用几个API）但我这里还是不太理解：假设1中的想法正确的话，那它和dma_mmap_attrs映射DMA缓冲区到用户空间的手段有什么区别吗，感觉dma_mmap_attrs也有“共享”的意思，ISP负责向DMA buffer放数据，用户空间负责从DMA buffer取数据。\r\n5、ISP各个子模块间流通数据需要内存额外开辟buffer中转吗（比如preview、resizer、H3A之间），还是它们有相应的硬件缓冲区，只需要将最终处理完的数据放到内存buffer就OK了\r\n6、像camera、framebuffer用的大内存都来自保留内存吗（mem=size），感觉这种方式比较粗放、浪费，有其它更好的技术吗？\r\n以上问题麻烦wowo前辈解惑，等您不帮时回复即可，不胜感激！"
+ },
+ {
+  "id": "5701",
+  "parent": "5696",
+  "date": "2017-06-19T17:18:58+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@秋暮离：这个问题留在这篇文章下面有点不符啊，因为此dma非彼dma（dmaengine）啊。memory的事情，让@linuxer大神回答吧，不敢班门弄斧啊～～"
+ },
+ {
+  "id": "5703",
+  "parent": "5701",
+  "date": "2017-06-19T18:55:11+08:00",
+  "author": "秋暮离",
+  "site": "",
+  "text": "@wowo：抱歉，这些问题是不太符合本文，那我贴到讨论区好了，看看@linuxer大神有时间解答。"
+ },
+ {
+  "id": "5871",
+  "parent": "0",
+  "date": "2017-08-03T17:27:31+08:00",
+  "author": "benjoying",
+  "site": "",
+  "text": "hi wowo,\r\n问个问题，\r\n在使用dma传输的时候\r\n1）申请一个DMA channel。\r\n2）根据设备（slave）的特性，配置DMA channel的参数。\r\n3）要进行DMA传输的时候，获取一个用于识别本次传输（transaction）的描述符（descriptor）。\r\n4）将本次传输（transaction）提交给dma engine并启动传输。\r\n5）等待传输（transaction）结束。\r\n正常的逻辑思路都是这样来走的，但是我看到有些项目上是直接配置寄存器操作，没有这些过程，\r\n这个实在没理解，不知道这是DMA物理硬件上就已经做好了，直接配寄存器就好了？"
+ },
+ {
+  "id": "5879",
+  "parent": "5871",
+  "date": "2017-08-07T10:08:36+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@benjoying：这也可以理解，框架的好处是接口统一、使用规范，但也有弊端，就是复杂性稍微会增加，理解起来也不是那么直接。\r\n因此有些开发者（或开发团队）喜欢绕过框架，直接折腾硬件了。这样做可以在最短的时间内将功能做出来，但后期的维护成本可能会高一些，因为通用的框架类似统一的语言，不同公司、不同团队的开发者都懂，自己折腾出来的，就不一样了。"
+ },
+ {
+  "id": "5882",
+  "parent": "5879",
+  "date": "2017-08-07T11:14:24+08:00",
+  "author": "benjoying",
+  "site": "",
+  "text": "@wowo：感谢，如您所说，框架的比较好理解，但是直接折腾硬件的如果没有相关的文档，确实看起来很晦涩"
+ },
+ {
+  "id": "7179",
+  "parent": "0",
+  "date": "2019-02-11T11:19:15+08:00",
+  "author": "菜鸟",
+  "site": "",
+  "text": "请问内核中还有一组 \r\ndma_async_memcpy_buf_to_buf API 这个和async_memcpy API有什么关系吗？"
+ },
+ {
+  "id": "8477",
+  "parent": "5871",
+  "date": "2022-01-07T16:19:01+08:00",
+  "author": "mars",
+  "site": "",
+  "text": "@benjoying：1.如果是单片机的话,直接使用phy 地址安全系数高\r\n2.如果是有mmu 的mcu 或者 soc 用linux系统就得做到 kernel 中去,这样就内存管理上来讲,就会安全的多\r\n3.如果ddr 空间大的情况下,我可以在用户空间指定一块内存空间,供我使用,但是mmap只提供映射关系,不提供空间访问限制,所以不太安全,如果内存紧张,就非常容易出错传输的数据\r\n4.我现在想用axi sg dma kenrel 驱动 操作，但是fpga 那边修改了参考设计，就很麻烦\r\n5.我就只能在kernel 中 写一个驱动 使用寄存器的方式, 如题主所说,维护起来很麻烦"
+ },
+ {
+  "id": "8625",
+  "parent": "5882",
+  "date": "2022-06-05T10:05:25+08:00",
+  "author": "irreallich",
+  "site": "",
+  "text": "@benjoying：其实对于目前的很多开发者来说,反倒是直接折腾硬件更加简便\r\n做控制器开发很多资深工程师大多经历过单片机,rots,到linux的过程,对linux的dmaengine系统并不熟, 但是因为以前的经验, 对dma控制器的逻辑很熟, 直接从芯片手册操作寄存器的来实现dma功能的速度更快"
+ }
+]

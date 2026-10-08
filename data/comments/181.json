@@ -1,0 +1,178 @@
+[
+ {
+  "id": "1748",
+  "parent": "0",
+  "date": "2015-05-10T14:38:03+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "CPU/GPU 绝对耗电大户啊"
+ },
+ {
+  "id": "1749",
+  "parent": "0",
+  "date": "2015-05-10T14:57:58+08:00",
+  "author": "schedule",
+  "site": "",
+  "text": "高端手机平台现在都是cpuidle + scheduler(HMP) 做省功耗方案。hotplug只在thermal控制中使用了。"
+ },
+ {
+  "id": "1750",
+  "parent": "1749",
+  "date": "2015-05-11T10:29:56+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@schedule：多谢分享，第一次听说HMP的概念，要了解了解。"
+ },
+ {
+  "id": "1859",
+  "parent": "1750",
+  "date": "2015-05-24T22:42:42+08:00",
+  "author": "zzq57683968",
+  "site": "",
+  "text": "@wowo：1、是的，64bit 4核以上arm cpu方案基本都采用HMP(GTS) + Interactive(DVFS)组合，但功耗调试需要花时间。"
+ },
+ {
+  "id": "1861",
+  "parent": "1859",
+  "date": "2015-05-25T11:05:09+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@zzq57683968：原来HMP就是big·little模式的multi-processor，我对HMP这个词不太了解。big·little是ARM为了性能和功耗平衡搞出来的一个东西，和CPU topology有关。\r\nDVFS还没有深入了解，就是我们项目加上去过一段时间，后来又去掉了，据说不太稳定，呵呵。"
+ },
+ {
+  "id": "2439",
+  "parent": "0",
+  "date": "2015-08-08T15:19:03+08:00",
+  "author": "buhui",
+  "site": "",
+  "text": "好文章，读这样的文章，就像饥饿的人扑到了面包上。比陈浩强的文章有天壤之别。"
+ },
+ {
+  "id": "2482",
+  "parent": "0",
+  "date": "2015-08-20T14:51:52+08:00",
+  "author": "tigger",
+  "site": "",
+  "text": "cpu_online_bits，系统中所有运行状态的CPU core（后面会详细说明这个状态的意义）；\r\n系统是如果确定运行状态呢？\r\ncpu_active_bits，有active的进程正在运行的CPU core。\r\n这个online 与active 如何区别呢？"
+ },
+ {
+  "id": "2483",
+  "parent": "2482",
+  "date": "2015-08-20T17:11:08+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@tigger：不好意思，一直空接着写这一块的东西：\r\ncpu_online_bits比较容易理解，CPU启动的话（也即CPU运行了kernel代码，secondary_start_kernel），就认为是online的，会通过set_cpu_online接口设置这个bit mask。\r\n而cpu_active_bits，则表示有任务在这个CPU上调度，由kenrel sched模块，调用set_cpu_active设置。\r\nonline和active的区别是，只要active，一定是online，因此online更多的代码了CPU的“物理状态”，而active，更多的是OS调度层面的抽象，CPU本身没有这一个状态。"
+ },
+ {
+  "id": "2512",
+  "parent": "0",
+  "date": "2015-08-30T20:25:00+08:00",
+  "author": "firo",
+  "site": "http://firoyang.org",
+  "text": "非常期待 Linux CPU core的电源管理(5)_cpu control\r\n这篇文章.\r\n现在移植一个cpuidle功能到高版本内核, bootloader一走完, 就hang住了. \r\n我猜和PM与SMP初始化哪里出错了. 很多代码不是我写的, 现在正在看.\r\n请教lz, PM和smp初始化相关的代码有哪些呢?"
+ },
+ {
+  "id": "2514",
+  "parent": "2512",
+  "date": "2015-08-31T09:05:21+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@firo：解决问题的时候，看代码不是最有效的方法，你可以用一些收到，查一查hang在哪里了。\r\n另外，这个时候和PM没有关系吧？SMP的话，可以去“arch/xxx/kernel/smp.c”看看。"
+ },
+ {
+  "id": "2515",
+  "parent": "2514",
+  "date": "2015-08-31T10:42:57+08:00",
+  "author": "firo",
+  "site": "http://firoyang.org",
+  "text": "@wowo：感谢.\r\n\r\n内核什么信息都没打印出来,就hang了.\r\n因为我是只把上个版本cpuidle & suspend相关的代码和进来.系统就不能启动了. 所以和PM关系非常大."
+ },
+ {
+  "id": "2517",
+  "parent": "2515",
+  "date": "2015-09-01T09:45:13+08:00",
+  "author": "snail",
+  "site": "",
+  "text": "@firo：可以把选项CONFIG_DEBUG_LL（kernel low-level debugging functions）打开，即使console还没有初始化，也可以用printascii等函数加入打印信息，这样就可以定位具体挂在哪里了？这个功能非常实用。"
+ },
+ {
+  "id": "2519",
+  "parent": "2517",
+  "date": "2015-09-01T11:13:38+08:00",
+  "author": "firo",
+  "site": "http://firoyang.org",
+  "text": "@snail：感谢!\r\n昨天用printascii看到4个core都走到了cpu_startup_entry.看上去系统正常启动了. \r\n\r\n1. 可能是console没有正常启动所以看不到printk之类的信息, 概率较小, 因为支部分代码没动过.\r\n2. wowo知道用什么方法可以, 把printk在系统启动时打到console里面的信息用printascii 或者其他方法输出出来, 看看用户态是否起来了? 排除是否只是console有问题. \r\n3. 还有一个问题, arm多核cpu_do_idle是用宏定义成processor._do_idle(), 我没有找到这个_do_idle是在哪里初始化的.\r\n在setup_processor只看到了processor的整体赋值语句\r\nlist = lookup_processor_type(read_cpuid_id());\r\n...\r\n processor = *list->proc;\r\n我昨天用printascii打印的时候只打印到\r\nstatic void default_idle(void)\r\n{\r\n        if (arm_pm_idle)\r\n                arm_pm_idle();\r\n        else\r\n                cpu_do_idle(); //这是个宏\r\n        local_irq_enable();\r\n}接下来不知道怎么走了."
+ },
+ {
+  "id": "2520",
+  "parent": "2519",
+  "date": "2015-09-01T12:26:02+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@firo：2. 很久以前我们做过，方法有多种，比如重写printk，调用printascii 输出。\r\n3. processor的_do_idle，一般都是发指令到CPU core中了，不同平台不一样。一般情况下，跟到这里面，就没有方法接着跟了。"
+ },
+ {
+  "id": "2600",
+  "parent": "0",
+  "date": "2015-09-17T15:35:39+08:00",
+  "author": "YANG23",
+  "site": "",
+  "text": "非常期待 电源管理PSCI相关的文章，希望作者尽快发表啊，另外能不能对比一下 PSCI和SMP SPIN TABLE优劣主要对功耗的影响呢  期待作者"
+ },
+ {
+  "id": "2610",
+  "parent": "2600",
+  "date": "2015-09-18T12:20:48+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@YANG23：多谢关注，其实一般情况下，不会深入到PSCI的，会用就可以了。\r\nPSCI主要的特点，就是支持CPU hotplug。对功耗而言，PSCI的ops可能会单独core的power，因而肯定比SPIN table好。"
+ },
+ {
+  "id": "3451",
+  "parent": "0",
+  "date": "2016-01-27T19:56:12+08:00",
+  "author": "archer",
+  "site": "",
+  "text": "写的很好，才发现有这么好的一个地方，谢谢！ 希望能快点学习，以后我也能在这里写一篇文章。 :)"
+ },
+ {
+  "id": "3452",
+  "parent": "3451",
+  "date": "2016-01-28T08:57:50+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@archer：希望不止有一篇哈，等着你:-)"
+ },
+ {
+  "id": "3988",
+  "parent": "0",
+  "date": "2016-05-27T09:13:10+08:00",
+  "author": "koala",
+  "site": "",
+  "text": "hi，wowo，\r\n\r\n我们经常所说的DVFS，狭隘地是指interactive这个governor吗？还有其他地方有涉及吗？\r\n\r\n啥时候有空把interactive governor分析一下啊？\r\n\r\n谢谢"
+ },
+ {
+  "id": "3989",
+  "parent": "3988",
+  "date": "2016-05-27T10:55:40+08:00",
+  "author": "wowo",
+  "site": "",
+  "text": "@koala：可以这么理解，不过你也可以设计自己的策略。\r\n\r\n有时间可以分析一下interactive governor，多谢关注~"
+ },
+ {
+  "id": "8801",
+  "parent": "0",
+  "date": "2023-08-04T17:03:05+08:00",
+  "author": "hh20194362",
+  "site": "",
+  "text": "请教wowo专家一个问题，是否可以不通过suspend流程，直接对CPU进行减核操作呢？如果没有冻结线程，直接调用函数freeze_secondary_cpus，会不会使某个正在运行的CPU下电，导致业务中断呢？期待您的答复。"
+ },
+ {
+  "id": "8804",
+  "parent": "8801",
+  "date": "2023-08-10T13:54:30+08:00",
+  "author": "lifetjk",
+  "site": "",
+  "text": "@hh20194362：可以啊，直接使用CPU hotplug不就可以直接减核了吗？"
+ }
+]

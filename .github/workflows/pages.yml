@@ -1,0 +1,64 @@
+name: 构建并发布到 GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同时只跑一个发布任务；新的推送取消排队中的旧任务
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  HUGO_VERSION: "0.167.0"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 直接下载官方二进制，不依赖第三方 action，减少长期维护面
+      - name: 安装 Hugo
+        run: |
+          curl -sSL -o /tmp/hugo.tar.gz \
+            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+          tar -xzf /tmp/hugo.tar.gz -C /tmp hugo
+          sudo install -m 0755 /tmp/hugo /usr/local/bin/hugo
+          hugo version
+
+      - name: 解析 Pages 地址
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: 构建站点
+        run: hugo --minify --gc --baseURL "${{ steps.pages.outputs.base_url }}/"
+
+      - name: 校验旧链接
+        run: |
+          python3 tools/check_links.py || true
+          cat recon/linkcheck.txt 2>/dev/null | head -3 || true
+
+      # 硬性门禁：语料里不允许再出现指向原站的绝对地址（老站 2027 年到期）
+      - name: 校验没有跳回原站的链接
+        run: python3 tools/normalize_links.py --check
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

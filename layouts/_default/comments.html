@@ -23,5 +23,6 @@
 </div>
 <p class="muted" id="cnone" hidden>没有匹配的评论。</p>
 
-<script src="/js/comments.js" defer></script>
+{{ $js := resources.Get "js/comments.js" | minify | fingerprint }}
+<script src="{{ $js.RelPermalink }}" defer></script>
 {{ end }}

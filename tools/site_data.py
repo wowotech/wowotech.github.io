@@ -175,14 +175,37 @@ def write_nav_data(root: Path, kept: list[dict], comments: dict, sorts: dict,
         "latest_comments": sidebar_comments,
     }, ensure_ascii=False, indent=1), encoding="utf-8")
 
-    # ---- 全文搜索索引 ----
+    # ---- 全文搜索索引：拆两层 ----
+    #   search-head.json   标题/分类/标签/摘要（小，秒开，先出结果）
+    #   search-body/N.json 正文纯文本分块（后台并行加载，到了自动升级为全文检索）
+    # 一次性下发 5.8MB 在 GitHub Pages 的线路上要等很久，拆开后首屏结果立即出，
+    # 每个分块独立缓存、独立失败重试。
     corpus = [c for c in read_corpus(root) if c["url"] not in ("/404.html",)]
-    index = [{"u": c["url"], "t": c["title"], "c": c["category"], "g": c["tags"],
-              "d": c["date"], "x": c["text"]} for c in corpus]
-    target = root / "static" / "search-index.json"
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")),
-                      encoding="utf-8")
+    entries = [{"u": c["url"], "t": c["title"], "c": c["category"],
+                "g": c["tags"], "d": c["date"], "s": c["text"][:160]}
+               for c in corpus]
+
+    static_dir = root / "assets"          # 索引放 assets/，模板里做指纹后再发布
+    body_dir = static_dir / "search-body"
+    body_dir.mkdir(parents=True, exist_ok=True)
+    for old in body_dir.glob("*.json"):
+        old.unlink()
+
+    chunks, cur, cur_size, start = [], [], 0, 0
+    for i, c in enumerate(corpus):
+        cur.append(c["text"])
+        cur_size += len(c["text"])
+        if cur_size >= 500_000 or i == len(corpus) - 1:
+            name = f"{len(chunks):02d}.json"
+            (body_dir / name).write_text(
+                json.dumps(cur, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+            chunks.append({"file": f"{len(chunks):02d}", "from": start, "to": i + 1})
+            start, cur, cur_size = i + 1, [], 0
+
+    head_path = static_dir / "search-head.json"
+    head_path.write_text(json.dumps({"chunks": chunks, "entries": entries},
+                                    ensure_ascii=False, separators=(",", ":")),
+                          encoding="utf-8")
 
     # ---- 三个生成页 ----
     gen = root / "content" / "_gen"
@@ -228,4 +251,6 @@ def write_nav_data(root: Path, kept: list[dict], comments: dict, sorts: dict,
     n_cats = sum(len(c["children"]) for c in categories)
     report.append(f"  侧栏数据：分类 {len(categories)} 个一级/{n_cats} 个两级、"
                   f"存档 {len(archives)} 年、最新评论 {min(400, len(flat))} 条")
-    report.append(f"  搜索索引：{len(index)} 篇，{(target.stat().st_size) / 1e6:.1f} MB")
+    total = sum(f.stat().st_size for f in body_dir.glob("*.json")) + head_path.stat().st_size
+    report.append(f"  搜索索引：{len(entries)} 篇，标题层 + {len(chunks)} 个正文分块，"
+                  f"合计 {total / 1e6:.1f} MB（未压缩）")

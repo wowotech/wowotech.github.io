@@ -8,5 +8,17 @@
 </form>
 <p class="muted small" id="status">正在载入索引……</p>
 <ul class="search-results" id="results"></ul>
-<script src="/js/search.js" defer></script>
+{{ $head := resources.Get "search-head.json" | minify | fingerprint }}
+{{ $urls := slice }}
+{{ range resources.Match "search-body/*.json" }}
+  {{ $urls = $urls | append (. | fingerprint).RelPermalink }}
+{{ end }}
+{{ $js := resources.Get "js/search.js" | minify | fingerprint }}
+<script>
+  window.SEARCH_URLS = {
+    head: {{ $head.RelPermalink }},
+    body: {{ $urls | jsonify | safeJS }},
+  };
+</script>
+<script src="{{ $js.RelPermalink }}" defer></script>
 {{ end }}

@@ -149,10 +149,17 @@ a:hover { text-decoration: underline; }
 .sidebar li:last-child { border-bottom: none; }
 .sidebar .count { margin-left: auto; color: var(--fg-muted); font-size: 0.8rem; }
 .side-cats li { display: block; }
-.side-cats .catrow { display: flex; gap: 0.5rem; align-items: baseline; }
+.side-cats .catrow { display: flex; gap: 0.5rem; align-items: baseline; padding: 0.12rem 0; }
 .side-cats .catrow a { font-weight: 600; }
-.side-subcats { padding-left: 0.8rem; margin-top: 0.1rem; }
-.side-subcats li { display: flex; }
+/* 二级分类：明显的缩进 + 竖向树形参考线 */
+.sidebar ul.side-subcats {
+  margin: 0.1rem 0 0.15rem 0.3rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--rule);
+}
+.side-subcats li { display: flex; padding: 0.1rem 0; border-bottom: none; }
+.side-subcats a { color: var(--fg-muted); }
+.side-subcats a:hover { color: var(--accent); }
 .sidebar .side-comments li { display: block; line-height: 1.6; }
 .sidebar .side-comments a { display: block; }
 .sidebar .side-comments .small { display: block; }

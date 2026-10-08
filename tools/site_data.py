@@ -19,6 +19,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 CST = timezone(timedelta(hours=8))
+NL = "\n"
 
 
 def iso_date(ts) -> str:
@@ -187,16 +188,15 @@ def write_nav_data(root: Path, kept: list[dict], comments: dict, sorts: dict,
     gen = root / "content" / "_gen"
     gen.mkdir(parents=True, exist_ok=True)
 
-    rows = ["---", 'title: "全部评论"', 'url: "/comments/"', "---", "",
-            f"按时间倒序的最新 {min(400, len(flat))} 条评论（全站共 {stats['comments']} 条）。"
-            "完整评论在各篇文章页底部，也可从[数据存档](/archive/)整体下载。", "",
-            "| 时间 | 评论者 | 评论 | 出处 |", "| --- | --- | --- | --- |"]
-    for c in flat[:400]:
-        text = c["text"].replace("|", "／").replace("\n", " ")
-        rows.append(f"| {c['date'][:10]} | {c['author']} | {text} | "
-                    f"[{c['title'][:28]}]({c['url']}) |")
-    (gen / "comments.md").write_text("\n".join(rows) + "\n", encoding="utf-8")
-
+    # /comments/ 页：只写 front matter，卡片流由模板从 data/latest_comments.json 渲染
+    (gen / "comments.md").write_text(
+        NL.join([
+            "---",
+            'title: "全部评论"',
+            'url: "/comments/"',
+            'layout: "comments"',
+            "---",
+        ]) + NL, encoding="utf-8")
     (gen / "random.md").write_text(
         "---\n"
         'title: "随便看看"\n'

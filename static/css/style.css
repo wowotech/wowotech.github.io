@@ -196,3 +196,18 @@ a:hover { text-decoration: underline; }
 @media (prefers-color-scheme: dark) {
   .search-results mark { background: #6b5a1f; }
 }
+
+/* ---------- 评论流（/comments/） ---------- */
+#cfilter { max-width: 30rem; margin-bottom: 1.2rem; }
+.comment-stream .ccard {
+  padding: 0.9rem 0; border-bottom: 1px solid var(--rule);
+}
+.comment-stream .chead {
+  margin: 0 0 0.3rem; font-size: 0.86rem; color: var(--fg-muted);
+  display: flex; gap: 0.6rem; align-items: baseline; flex-wrap: wrap;
+}
+.comment-stream .chead strong { color: var(--fg); }
+.comment-stream .chead time { color: var(--fg-muted); }
+.comment-stream .chead .csrc { margin-left: auto; text-align: right; }
+.comment-stream .cbody { margin: 0; font-size: 0.97rem; line-height: 1.7; }
+.comment-stream[hidden] { display: none; }

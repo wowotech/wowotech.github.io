@@ -35,6 +35,10 @@ BASE_RE = re.compile(r"^https?://(?:www\.)?wowotech\.net(?::\d+)?", re.I)
 # 论坛垃圾潮：2022 年的 7.8 万条阿拉伯语二元期权帖，一刀切掉 2022 及以后
 FORUM_SPAM_CUTOFF = int(datetime(2022, 1, 1, tzinfo=CST).timestamp())
 
+# 这些根路径由站点自身占用，不能作为文章别名（否则会撞掉 404 页、sitemap 等）
+RESERVED_PATHS = {"/404.html", "/index.html", "/sitemap.xml", "/robots.txt",
+                  "/llms.txt", "/index.xml", "/favicon.ico"}
+
 COMMENT_SPAM_HINTS = (
     "viagra", "levitra", "cialis", "binary option", "payday loan", "casino",
     "replica watch", "fake passport", "الخيارات الثنائية", "tadalafil",
@@ -214,7 +218,7 @@ def convert_posts(data: dict, out: Path, rw: Rewriter, report: list[str]):
             if (p.get("alias") or "").strip() and sa:
                 alt.append(f"/{sa}/{p['gid']}.html")     # 分类+gid 形式
             alt.append(f"/{p['gid']}.html")              # 根路径 gid 形式
-        alt = [a for a in alt if a != url]
+        alt = [a for a in alt if a != url and a not in RESERVED_PATHS]
         if alt:
             fm.append("aliases:")
             fm.extend(f"  - {yaml_str(a)}" for a in alt)

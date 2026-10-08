@@ -33,6 +33,13 @@ const SLUG2URL = {{ hugo.Data.slugmap | jsonify }};
     location.replace(GID2URL[gid]);
     return;
   }
+  // 目录形式的旧地址（/tag/中断、/sort/xxx 等）：GitHub Pages 对非 ASCII 目录
+  // 不带结尾斜杠会 404，这里补上斜杠再试一次
+  const p = location.pathname;
+  if (!p.endsWith('/') && !/\.[a-z0-9]+$/i.test(p)) {
+    location.replace(p + '/' + location.search + location.hash);
+    return;
+  }
   document.getElementById('hint').textContent =
     '这个地址没有对应的内容。可以回到首页按分类浏览，或到讨论区存档里搜索。';
 })();

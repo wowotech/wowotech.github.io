@@ -13,7 +13,6 @@ views: 23036
 comment_count: 16
 aliases:
   - "/tech_discuss/404.html"
-  - "/404.html"
 ---
 
 江湖有很多的门派，IT世界亦然，只不过换了一个名称叫做微信群。  

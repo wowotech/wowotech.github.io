@@ -707,7 +707,7 @@ def main():
     site_url = (opts.get("blogurl") or "https://www.wowotech.net").rstrip("/")
     write_ai_surface(out, emlog, kept, sorts, gid2url, forum, report, site_url)
     write_archive(out, emlog, kept, comments, forum, forum_raw, Path(args.private).resolve(), report)
-    site_data.write_nav_data(out, kept, comments, sorts, gid2url, emlog.get("links", []),
+    site_data.write_nav_data(out, kept, comments, sorts, gid2url,
                              len(forum["topics"]), len(forum["posts"]), report)
 
     manifest = out / "recon" / "assets.txt"

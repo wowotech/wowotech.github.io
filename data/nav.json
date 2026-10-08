@@ -1,124 +1,157 @@
 {
  "categories": [
   {
-   "name": "电源管理子系统",
-   "alias": "pm_subsystem",
-   "count": 48
-  },
-  {
-   "name": "进程管理",
-   "alias": "process_management",
-   "count": 31
-  },
-  {
-   "name": "内存管理",
-   "alias": "memory_management",
-   "count": 31
-  },
-  {
-   "name": "X Project",
-   "alias": "x_project",
-   "count": 28
-  },
-  {
-   "name": "内核同步机制",
-   "alias": "kernel_synchronization",
-   "count": 26
-  },
-  {
    "name": "Linux内核分析",
    "alias": "linux_kenrel",
-   "count": 25
-  },
-  {
-   "name": "蓝牙",
-   "alias": "bluetooth",
-   "count": 16
-  },
-  {
-   "name": "统一设备模型",
-   "alias": "device_model",
-   "count": 15
-  },
-  {
-   "name": "中断子系统",
-   "alias": "irq_subsystem",
-   "count": 15
-  },
-  {
-   "name": "ARMv8A Arch",
-   "alias": "armv8a_arch",
-   "count": 15
-  },
-  {
-   "name": "时间子系统",
-   "alias": "timer_subsystem",
-   "count": 14
-  },
-  {
-   "name": "Linux应用技巧",
-   "alias": "linux_application",
-   "count": 13
-  },
-  {
-   "name": "基础技术",
-   "alias": "basic_tech",
-   "count": 13
-  },
-  {
-   "name": "技术漫谈",
-   "alias": "tech_discuss",
-   "count": 12
-  },
-  {
-   "name": "基础学科",
-   "alias": "basic_subject",
-   "count": 10
-  },
-  {
-   "name": "通信类协议",
-   "alias": "comm",
-   "count": 7
-  },
-  {
-   "name": "软件开发",
-   "alias": "soft",
-   "count": 6
-  },
-  {
-   "name": "TTY子系统",
-   "alias": "tty_framework",
-   "count": 6
-  },
-  {
-   "name": "GPIO子系统",
-   "alias": "gpio_subsystem",
-   "count": 5
-  },
-  {
-   "name": "文件系统",
-   "alias": "filesystem",
-   "count": 5
-  },
-  {
-   "name": "显示",
-   "alias": "display",
-   "count": 3
+   "count": 25,
+   "children": [
+    {
+     "name": "统一设备模型",
+     "alias": "device_model",
+     "count": 15,
+     "children": []
+    },
+    {
+     "name": "电源管理子系统",
+     "alias": "pm_subsystem",
+     "count": 48,
+     "children": []
+    },
+    {
+     "name": "中断子系统",
+     "alias": "irq_subsystem",
+     "count": 15,
+     "children": []
+    },
+    {
+     "name": "进程管理",
+     "alias": "process_management",
+     "count": 31,
+     "children": []
+    },
+    {
+     "name": "内核同步机制",
+     "alias": "kernel_synchronization",
+     "count": 26,
+     "children": []
+    },
+    {
+     "name": "GPIO子系统",
+     "alias": "gpio_subsystem",
+     "count": 5,
+     "children": []
+    },
+    {
+     "name": "时间子系统",
+     "alias": "timer_subsystem",
+     "count": 14,
+     "children": []
+    },
+    {
+     "name": "通信类协议",
+     "alias": "comm",
+     "count": 7,
+     "children": []
+    },
+    {
+     "name": "内存管理",
+     "alias": "memory_management",
+     "count": 31,
+     "children": []
+    },
+    {
+     "name": "图形子系统",
+     "alias": "graphic_subsystem",
+     "count": 2,
+     "children": []
+    },
+    {
+     "name": "文件系统",
+     "alias": "filesystem",
+     "count": 5,
+     "children": []
+    },
+    {
+     "name": "TTY子系统",
+     "alias": "tty_framework",
+     "count": 6,
+     "children": []
+    }
+   ]
   },
   {
    "name": "u-boot分析",
    "alias": "u-boot",
-   "count": 3
+   "count": 3,
+   "children": []
   },
   {
-   "name": "图形子系统",
-   "alias": "graphic_subsystem",
-   "count": 2
+   "name": "Linux应用技巧",
+   "alias": "linux_application",
+   "count": 13,
+   "children": []
   },
   {
-   "name": "USB",
-   "alias": "usb",
-   "count": 1
+   "name": "软件开发",
+   "alias": "soft",
+   "count": 6,
+   "children": []
+  },
+  {
+   "name": "基础技术",
+   "alias": "basic_tech",
+   "count": 13,
+   "children": [
+    {
+     "name": "蓝牙",
+     "alias": "bluetooth",
+     "count": 16,
+     "children": []
+    },
+    {
+     "name": "ARMv8A Arch",
+     "alias": "armv8a_arch",
+     "count": 15,
+     "children": []
+    },
+    {
+     "name": "显示",
+     "alias": "display",
+     "count": 3,
+     "children": []
+    },
+    {
+     "name": "USB",
+     "alias": "usb",
+     "count": 1,
+     "children": []
+    }
+   ]
+  },
+  {
+   "name": "基础学科",
+   "alias": "basic_subject",
+   "count": 10,
+   "children": []
+  },
+  {
+   "name": "技术漫谈",
+   "alias": "tech_discuss",
+   "count": 12,
+   "children": []
+  },
+  {
+   "name": "项目专区",
+   "alias": "project",
+   "count": 0,
+   "children": [
+    {
+     "name": "X Project",
+     "alias": "x_project",
+     "count": 28,
+     "children": []
+    }
+   ]
   }
  ],
  "archives": [
@@ -585,34 +618,12 @@
    "count": 97
   }
  ],
- "links": [
-  {
-   "name": "Source code in Github",
-   "url": "https://github.com/wowotech?tab=repositories",
-   "desc": "保存蜗窝科技中涉及到的所有的source code，包括例子、项目等等"
-  },
-  {
-   "name": "程序员玩耍的小窝",
-   "url": "http://www.forwhat.cn/",
-   "desc": ""
-  },
-  {
-   "name": "Linux265导航网",
-   "url": "http://www.linux265.com",
-   "desc": ""
-  },
-  {
-   "name": "中国Linux公社",
-   "url": "http://www.linuxfans.org/",
-   "desc": ""
-  }
- ],
  "stats": {
   "posts": 372,
   "pages": 5,
   "comments": 7962,
   "views": 14277489,
-  "categories": 24,
+  "categories": 8,
   "forum_topics": 163,
   "forum_posts": 792
  },

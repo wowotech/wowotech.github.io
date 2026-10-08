@@ -34,7 +34,16 @@
     <h3>文章分类</h3>
     <ul class="side-cats">
       {{ range $nav.categories }}
-      <li><a href="/sort/{{ .alias }}/">{{ .name }}</a><span class="count">{{ .count }}</span></li>
+      <li>
+        <span class="catrow"><a href="/sort/{{ .alias }}/">{{ .name }}</a><span class="count">{{ .count }}</span></span>
+        {{ with .children }}
+        <ul class="side-subcats">
+          {{ range . }}
+          <li><a href="/sort/{{ .alias }}/">{{ .name }}</a><span class="count">{{ .count }}</span></li>
+          {{ end }}
+        </ul>
+        {{ end }}
+      </li>
       {{ end }}
     </ul>
   </section>
@@ -54,15 +63,6 @@
       {{ end }}
     </div>
   </section>
-
-  {{ with $nav.links }}
-  <section class="widget">
-    <h3>友情链接</h3>
-    <ul>
-      {{ range . }}<li><a href="{{ .url }}" rel="nofollow noopener">{{ .name }}</a></li>{{ end }}
-    </ul>
-  </section>
-  {{ end }}
 
   {{ with $nav.stats }}
   <section class="widget">

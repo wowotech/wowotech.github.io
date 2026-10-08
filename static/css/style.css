@@ -148,6 +148,11 @@ a:hover { text-decoration: underline; }
 .sidebar li { padding: 0.22rem 0; border-bottom: 1px dotted var(--rule); display: flex; gap: 0.5rem; align-items: baseline; }
 .sidebar li:last-child { border-bottom: none; }
 .sidebar .count { margin-left: auto; color: var(--fg-muted); font-size: 0.8rem; }
+.side-cats li { display: block; }
+.side-cats .catrow { display: flex; gap: 0.5rem; align-items: baseline; }
+.side-cats .catrow a { font-weight: 600; }
+.side-subcats { padding-left: 0.8rem; margin-top: 0.1rem; }
+.side-subcats li { display: flex; }
 .sidebar .side-comments li { display: block; line-height: 1.6; }
 .sidebar .side-comments a { display: block; }
 .sidebar .side-comments .small { display: block; }

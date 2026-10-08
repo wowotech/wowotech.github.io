@@ -1,0 +1,19 @@
+{{ define "main" }}
+{{/* 「随便看看」：从构建时算好的文章清单里随机挑一篇跳过去。
+     清单内联在这个页面里，所以其它页面不用为它多加载任何数据。 */}}
+<h1>随便看看</h1>
+<p id="hint">正在随机挑一篇文章……</p>
+<noscript>
+  <p>这个页面需要 JavaScript。你可以从<a href="/nav/">站内导航</a>、
+  按<a href="/sort/pm_subsystem/">分类</a>或<a href="/record/202504/">月度存档</a>浏览。</p>
+</noscript>
+<script>
+  const ARTICLES = {{ hugo.Data.random | jsonify | safeJS }};
+  (function () {
+    if (!ARTICLES.length) return;
+    const pick = ARTICLES[Math.floor(Math.random() * ARTICLES.length)];
+    document.getElementById('hint').textContent = '正在前往：' + pick.t;
+    location.replace(pick.u);
+  })();
+</script>
+{{ end }}

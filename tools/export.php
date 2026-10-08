@@ -98,6 +98,7 @@ $tables = array(
     $prefix . 'attachment' => null,
     $prefix . 'options'    => null,
     $prefix . 'navi'       => null,
+    $prefix . 'link'       => null,
     // PunBB 论坛：真实帖都早于 2022，垃圾潮（7.8 万条阿拉伯语广告帖）一律不要
     $pun_prefix . 'topics'     => array('posted', '<', 1640995200),
     $pun_prefix . 'posts'      => array('posted', '<', 1640995200),

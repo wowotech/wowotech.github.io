@@ -1,0 +1,78 @@
+{{ $nav := hugo.Data.nav }}
+<aside class="sidebar">
+  <form class="side-search" action="/search/" method="get" role="search">
+    <input type="search" name="q" placeholder="站内搜索…" aria-label="站内搜索">
+    <button type="submit" aria-label="搜索">搜索</button>
+  </form>
+
+  <section class="widget">
+    <h3>功能</h3>
+    <ul>
+      <li><a href="/message_board.html">留言板</a></li>
+      <li><a href="/comments/">全部评论</a></li>
+      <li><a href="/support_list.html">支持者列表</a></li>
+      <li><a href="/random/">随便看看</a></li>
+      <li><a href="/nav/">站内导航总览</a></li>
+    </ul>
+  </section>
+
+  {{ with $nav.latest_comments }}
+  <section class="widget">
+    <h3>最新评论</h3>
+    <ul class="side-comments">
+      {{ range . }}
+      <li>
+        <a href="{{ .url }}"><strong>{{ .author }}</strong>：{{ .text }}</a>
+        <span class="muted small">{{ substr .date 0 10 }}</span>
+      </li>
+      {{ end }}
+    </ul>
+  </section>
+  {{ end }}
+
+  <section class="widget">
+    <h3>文章分类</h3>
+    <ul class="side-cats">
+      {{ range $nav.categories }}
+      <li><a href="/sort/{{ .alias }}/">{{ .name }}</a><span class="count">{{ .count }}</span></li>
+      {{ end }}
+    </ul>
+  </section>
+
+  <section class="widget">
+    <h3>文章存档</h3>
+    <div class="side-archives">
+      {{ range $nav.archives }}
+      <details>
+        <summary>{{ .year }}年<span class="count">{{ .count }}</span></summary>
+        <ul>
+          {{ range .months }}
+          <li><a href="/record/{{ .ym }}/">{{ .label }}</a><span class="count">{{ .count }}</span></li>
+          {{ end }}
+        </ul>
+      </details>
+      {{ end }}
+    </div>
+  </section>
+
+  {{ with $nav.links }}
+  <section class="widget">
+    <h3>友情链接</h3>
+    <ul>
+      {{ range . }}<li><a href="{{ .url }}" rel="nofollow noopener">{{ .name }}</a></li>{{ end }}
+    </ul>
+  </section>
+  {{ end }}
+
+  {{ with $nav.stats }}
+  <section class="widget">
+    <h3>站点统计</h3>
+    <ul class="side-stats">
+      <li>文章 <strong>{{ .posts }}</strong> 篇</li>
+      <li>评论 <strong>{{ .comments }}</strong> 条</li>
+      <li>累计阅读 <strong>约 {{ div .views 10000 }} 万</strong> 次</li>
+      <li>讨论区存档 <strong>{{ .forum_topics }}</strong> 个主题</li>
+    </ul>
+  </section>
+  {{ end }}
+</aside>

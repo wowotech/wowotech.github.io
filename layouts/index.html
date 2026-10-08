@@ -29,4 +29,13 @@
   {{ with $pager.Prev }}<a href="{{ .URL }}">← 更新的文章</a>{{ end }}
   {{ with $pager.Next }}<a href="{{ .URL }}" class="next">更早的文章 →</a>{{ end }}
 </nav>
+{{/* 老站的 /?post=N 是动态路由，在静态站上会落到首页（200，所以 404 兜底不会触发），
+     这里按 id 找回对应文章。 */}}
+<script>
+  (function () {
+    var gid = new URLSearchParams(location.search).get('post');
+    var MAP = {{ hugo.Data.urlmap | jsonify | safeJS }};
+    if (gid && MAP[gid]) location.replace(MAP[gid]);
+  })();
+</script>
 {{ end }}

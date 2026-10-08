@@ -308,8 +308,12 @@ class Normalizer:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true", help="只检查不写入；有指向原站的链接则退出码 1")
-    args = ap.parse_args()
+    return run(ap.parse_args().check)
 
+
+def run(check: bool = False) -> int:
+    """就地规范化（或只检查）。convert.py 生成语料后会自动调用它，
+    避免「重新生成＝把链接打回原形」这种陷阱。"""
     nz = Normalizer(load_known_urls(), load_urlmap())
     changed_files = 0
 
@@ -318,7 +322,7 @@ def main() -> int:
         dst = nz.markdown(src, f.relative_to(ROOT).as_posix())
         if dst != src:
             changed_files += 1
-            if not args.check:
+            if not check:
                 f.write_text(dst, encoding="utf-8")
 
     comments_changed = 0
@@ -343,10 +347,10 @@ def main() -> int:
                 dirty = True
         if dirty:
             comments_changed += 1
-            if not args.check:
+            if not check:
                 f.write_text(json.dumps(items, ensure_ascii=False, indent=1), encoding="utf-8")
 
-    if nz.new_assets and not args.check:
+    if nz.new_assets and not check:
         existing = set()
         if ASSET_MANIFEST.exists():
             existing = {l.strip() for l in ASSET_MANIFEST.read_text(encoding="utf-8").splitlines() if l.strip()}
@@ -374,7 +378,7 @@ def main() -> int:
     if nz.unresolved:
         print(f"\n仍有 {len(nz.unresolved)} 处站内链接指向不存在的地址，详见 {REPORT.name}")
 
-    if args.check:
+    if check:
         left = 0
         for f in CONTENT.rglob("*.md"):
             left += len(re.findall(r"https?://(?:www\.)?wowotech\.net", f.read_text(encoding="utf-8"), re.I))

@@ -17,8 +17,8 @@
 // 兜住老站三种写法：/分类/别名.html、/分类/gid.html、/?post=gid。
 // 前两种在新站大多按 url/aliases 直接命中；命中不了的多半是「分类前缀写错」
 // 或「缺 .html 后缀」的外来链接（搜索引擎里就有不少），这里按 slug 找回。
-const GID2URL = {{ hugo.Data.urlmap | jsonify }};
-const SLUG2URL = {{ hugo.Data.slugmap | jsonify }};
+const GID2URL = {{ hugo.Data.urlmap | jsonify | safeJS }};
+const SLUG2URL = {{ hugo.Data.slugmap | jsonify | safeJS }};
 (function () {
   const q = new URLSearchParams(location.search);
   let gid = q.get('post') || q.get('gid');

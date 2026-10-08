@@ -1,0 +1,12 @@
+{{ define "main" }}
+{{/* 用独立模板而不是 Markdown：搜索界面全是原生 HTML/JS，交给 Markdown 解析反而添乱 */}}
+<h1>站内搜索</h1>
+<form class="search-box" id="search-form" action="/search/" method="get" role="search">
+  <input type="search" id="q" name="q" placeholder="输入关键词，多个词用空格分隔，如：中断 线程化"
+         aria-label="搜索关键词" autocomplete="off" autofocus>
+  <button type="submit">搜索</button>
+</form>
+<p class="muted small" id="status">正在载入索引……</p>
+<ul class="search-results" id="results"></ul>
+<script src="/js/search.js" defer></script>
+{{ end }}

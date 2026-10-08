@@ -25,6 +25,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 import bbcode  # noqa: E402
+import normalize_links  # noqa: E402
+import site_data  # noqa: E402
 import clean_html  # noqa: E402
 import sqldump  # noqa: E402
 
@@ -82,6 +84,7 @@ def load_emlog(path: Path) -> dict:
         "attachments": sqldump.records(path, "emlog_attachment"),
         "options": sqldump.records(path, "emlog_options"),
         "navi": sqldump.records(path, "emlog_navi"),
+        "links": sqldump.records(path, "emlog_link"),
     }
 
 
@@ -641,7 +644,8 @@ def main():
         live = load_live(Path(args.live))
         for suffix, key in (("blog", "posts"), ("comment", "comments"), ("user", "users"),
                             ("sort", "sorts"), ("tag", "tags"), ("attachment", "attachments"),
-                            ("options", "options"), ("navi", "navi")):
+                            ("options", "options"), ("navi", "navi"),
+                            ("link", "links")):
             rows = pick(live, suffix)
             if rows is not None:
                 emlog[key] = rows
@@ -673,7 +677,12 @@ def main():
     (out / "data" / "slugmap.json").write_text(
         json.dumps(slugmap, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
-    opts = {o["name"]: o["value"] for o in emlog["options"] if o.get("name")}
+    opts = {}
+    for o in emlog["options"]:
+        key = o.get("option_name") or o.get("name")
+        if key:
+            val = o.get("option_value")
+            opts[key] = o.get("value") if val is None else val
     (out / "data" / "site.json").write_text(json.dumps({
         "title": opts.get("blogname", "蜗窝科技"),
         "description": opts.get("bloginfo", ""),
@@ -698,11 +707,17 @@ def main():
     site_url = (opts.get("blogurl") or "https://www.wowotech.net").rstrip("/")
     write_ai_surface(out, emlog, kept, sorts, gid2url, forum, report, site_url)
     write_archive(out, emlog, kept, comments, forum, forum_raw, Path(args.private).resolve(), report)
+    site_data.write_nav_data(out, kept, comments, sorts, gid2url, emlog.get("links", []),
+                             len(forum["topics"]), len(forum["posts"]), report)
 
     manifest = out / "recon" / "assets.txt"
     manifest.parent.mkdir(parents=True, exist_ok=True)
     manifest.write_text("\n".join(sorted(rw.assets)) + "\n", encoding="utf-8")
     report.append(f"附件：正文引用 {len(rw.assets)} 个，清单写入 recon/assets.txt")
+
+    # 直接跑 convert 会把语料恢复成原始状态（链接里的旧地址会回来），
+    # 所以这里顺手规范化一遍，保证「生成完就是干净的」
+    normalize_links.run(check=False)
 
     (out / "recon" / "convert_report.txt").write_text("\n".join(report), encoding="utf-8")
     print("\n".join(report))

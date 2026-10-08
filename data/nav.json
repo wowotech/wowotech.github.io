@@ -1,0 +1,663 @@
+{
+ "categories": [
+  {
+   "name": "电源管理子系统",
+   "alias": "pm_subsystem",
+   "count": 48
+  },
+  {
+   "name": "进程管理",
+   "alias": "process_management",
+   "count": 31
+  },
+  {
+   "name": "内存管理",
+   "alias": "memory_management",
+   "count": 31
+  },
+  {
+   "name": "X Project",
+   "alias": "x_project",
+   "count": 28
+  },
+  {
+   "name": "内核同步机制",
+   "alias": "kernel_synchronization",
+   "count": 26
+  },
+  {
+   "name": "Linux内核分析",
+   "alias": "linux_kenrel",
+   "count": 25
+  },
+  {
+   "name": "蓝牙",
+   "alias": "bluetooth",
+   "count": 16
+  },
+  {
+   "name": "统一设备模型",
+   "alias": "device_model",
+   "count": 15
+  },
+  {
+   "name": "中断子系统",
+   "alias": "irq_subsystem",
+   "count": 15
+  },
+  {
+   "name": "ARMv8A Arch",
+   "alias": "armv8a_arch",
+   "count": 15
+  },
+  {
+   "name": "时间子系统",
+   "alias": "timer_subsystem",
+   "count": 14
+  },
+  {
+   "name": "Linux应用技巧",
+   "alias": "linux_application",
+   "count": 13
+  },
+  {
+   "name": "基础技术",
+   "alias": "basic_tech",
+   "count": 13
+  },
+  {
+   "name": "技术漫谈",
+   "alias": "tech_discuss",
+   "count": 12
+  },
+  {
+   "name": "基础学科",
+   "alias": "basic_subject",
+   "count": 10
+  },
+  {
+   "name": "通信类协议",
+   "alias": "comm",
+   "count": 7
+  },
+  {
+   "name": "软件开发",
+   "alias": "soft",
+   "count": 6
+  },
+  {
+   "name": "TTY子系统",
+   "alias": "tty_framework",
+   "count": 6
+  },
+  {
+   "name": "GPIO子系统",
+   "alias": "gpio_subsystem",
+   "count": 5
+  },
+  {
+   "name": "文件系统",
+   "alias": "filesystem",
+   "count": 5
+  },
+  {
+   "name": "显示",
+   "alias": "display",
+   "count": 3
+  },
+  {
+   "name": "u-boot分析",
+   "alias": "u-boot",
+   "count": 3
+  },
+  {
+   "name": "图形子系统",
+   "alias": "graphic_subsystem",
+   "count": 2
+  },
+  {
+   "name": "USB",
+   "alias": "usb",
+   "count": 1
+  }
+ ],
+ "archives": [
+  {
+   "year": "2025",
+   "months": [
+    {
+     "ym": "202504",
+     "label": "4月",
+     "count": 5
+    }
+   ],
+   "count": 5
+  },
+  {
+   "year": "2024",
+   "months": [
+    {
+     "ym": "202402",
+     "label": "2月",
+     "count": 1
+    }
+   ],
+   "count": 1
+  },
+  {
+   "year": "2023",
+   "months": [
+    {
+     "ym": "202305",
+     "label": "5月",
+     "count": 1
+    }
+   ],
+   "count": 1
+  },
+  {
+   "year": "2022",
+   "months": [
+    {
+     "ym": "202202",
+     "label": "2月",
+     "count": 2
+    },
+    {
+     "ym": "202204",
+     "label": "4月",
+     "count": 2
+    },
+    {
+     "ym": "202205",
+     "label": "5月",
+     "count": 1
+    },
+    {
+     "ym": "202206",
+     "label": "6月",
+     "count": 1
+    },
+    {
+     "ym": "202208",
+     "label": "8月",
+     "count": 1
+    },
+    {
+     "ym": "202210",
+     "label": "10月",
+     "count": 1
+    }
+   ],
+   "count": 8
+  },
+  {
+   "year": "2021",
+   "months": [
+    {
+     "ym": "202105",
+     "label": "5月",
+     "count": 3
+    },
+    {
+     "ym": "202106",
+     "label": "6月",
+     "count": 1
+    },
+    {
+     "ym": "202107",
+     "label": "7月",
+     "count": 1
+    },
+    {
+     "ym": "202111",
+     "label": "11月",
+     "count": 5
+    },
+    {
+     "ym": "202112",
+     "label": "12月",
+     "count": 1
+    }
+   ],
+   "count": 11
+  },
+  {
+   "year": "2020",
+   "months": [
+    {
+     "ym": "202001",
+     "label": "1月",
+     "count": 3
+    },
+    {
+     "ym": "202002",
+     "label": "2月",
+     "count": 2
+    },
+    {
+     "ym": "202003",
+     "label": "3月",
+     "count": 3
+    }
+   ],
+   "count": 8
+  },
+  {
+   "year": "2019",
+   "months": [
+    {
+     "ym": "201901",
+     "label": "1月",
+     "count": 3
+    },
+    {
+     "ym": "201903",
+     "label": "3月",
+     "count": 1
+    },
+    {
+     "ym": "201905",
+     "label": "5月",
+     "count": 4
+    },
+    {
+     "ym": "201912",
+     "label": "12月",
+     "count": 3
+    }
+   ],
+   "count": 11
+  },
+  {
+   "year": "2018",
+   "months": [
+    {
+     "ym": "201801",
+     "label": "1月",
+     "count": 5
+    },
+    {
+     "ym": "201802",
+     "label": "2月",
+     "count": 4
+    },
+    {
+     "ym": "201804",
+     "label": "4月",
+     "count": 7
+    },
+    {
+     "ym": "201805",
+     "label": "5月",
+     "count": 1
+    },
+    {
+     "ym": "201806",
+     "label": "6月",
+     "count": 1
+    },
+    {
+     "ym": "201808",
+     "label": "8月",
+     "count": 1
+    },
+    {
+     "ym": "201810",
+     "label": "10月",
+     "count": 2
+    },
+    {
+     "ym": "201811",
+     "label": "11月",
+     "count": 1
+    },
+    {
+     "ym": "201812",
+     "label": "12月",
+     "count": 2
+    }
+   ],
+   "count": 24
+  },
+  {
+   "year": "2017",
+   "months": [
+    {
+     "ym": "201701",
+     "label": "1月",
+     "count": 5
+    },
+    {
+     "ym": "201702",
+     "label": "2月",
+     "count": 6
+    },
+    {
+     "ym": "201703",
+     "label": "3月",
+     "count": 8
+    },
+    {
+     "ym": "201704",
+     "label": "4月",
+     "count": 1
+    },
+    {
+     "ym": "201705",
+     "label": "5月",
+     "count": 3
+    },
+    {
+     "ym": "201706",
+     "label": "6月",
+     "count": 3
+    },
+    {
+     "ym": "201707",
+     "label": "7月",
+     "count": 4
+    },
+    {
+     "ym": "201708",
+     "label": "8月",
+     "count": 4
+    },
+    {
+     "ym": "201709",
+     "label": "9月",
+     "count": 5
+    },
+    {
+     "ym": "201710",
+     "label": "10月",
+     "count": 1
+    },
+    {
+     "ym": "201711",
+     "label": "11月",
+     "count": 2
+    },
+    {
+     "ym": "201712",
+     "label": "12月",
+     "count": 2
+    }
+   ],
+   "count": 44
+  },
+  {
+   "year": "2016",
+   "months": [
+    {
+     "ym": "201601",
+     "label": "1月",
+     "count": 6
+    },
+    {
+     "ym": "201602",
+     "label": "2月",
+     "count": 5
+    },
+    {
+     "ym": "201603",
+     "label": "3月",
+     "count": 5
+    },
+    {
+     "ym": "201604",
+     "label": "4月",
+     "count": 7
+    },
+    {
+     "ym": "201605",
+     "label": "5月",
+     "count": 8
+    },
+    {
+     "ym": "201606",
+     "label": "6月",
+     "count": 8
+    },
+    {
+     "ym": "201607",
+     "label": "7月",
+     "count": 5
+    },
+    {
+     "ym": "201608",
+     "label": "8月",
+     "count": 9
+    },
+    {
+     "ym": "201609",
+     "label": "9月",
+     "count": 6
+    },
+    {
+     "ym": "201610",
+     "label": "10月",
+     "count": 9
+    },
+    {
+     "ym": "201611",
+     "label": "11月",
+     "count": 11
+    },
+    {
+     "ym": "201612",
+     "label": "12月",
+     "count": 6
+    }
+   ],
+   "count": 85
+  },
+  {
+   "year": "2015",
+   "months": [
+    {
+     "ym": "201501",
+     "label": "1月",
+     "count": 6
+    },
+    {
+     "ym": "201502",
+     "label": "2月",
+     "count": 6
+    },
+    {
+     "ym": "201503",
+     "label": "3月",
+     "count": 9
+    },
+    {
+     "ym": "201504",
+     "label": "4月",
+     "count": 9
+    },
+    {
+     "ym": "201505",
+     "label": "5月",
+     "count": 6
+    },
+    {
+     "ym": "201506",
+     "label": "6月",
+     "count": 3
+    },
+    {
+     "ym": "201507",
+     "label": "7月",
+     "count": 7
+    },
+    {
+     "ym": "201508",
+     "label": "8月",
+     "count": 3
+    },
+    {
+     "ym": "201509",
+     "label": "9月",
+     "count": 4
+    },
+    {
+     "ym": "201510",
+     "label": "10月",
+     "count": 9
+    },
+    {
+     "ym": "201511",
+     "label": "11月",
+     "count": 9
+    },
+    {
+     "ym": "201512",
+     "label": "12月",
+     "count": 6
+    }
+   ],
+   "count": 77
+  },
+  {
+   "year": "2014",
+   "months": [
+    {
+     "ym": "201401",
+     "label": "1月",
+     "count": 4
+    },
+    {
+     "ym": "201402",
+     "label": "2月",
+     "count": 3
+    },
+    {
+     "ym": "201403",
+     "label": "3月",
+     "count": 7
+    },
+    {
+     "ym": "201404",
+     "label": "4月",
+     "count": 9
+    },
+    {
+     "ym": "201405",
+     "label": "5月",
+     "count": 9
+    },
+    {
+     "ym": "201406",
+     "label": "6月",
+     "count": 6
+    },
+    {
+     "ym": "201407",
+     "label": "7月",
+     "count": 6
+    },
+    {
+     "ym": "201408",
+     "label": "8月",
+     "count": 12
+    },
+    {
+     "ym": "201409",
+     "label": "9月",
+     "count": 7
+    },
+    {
+     "ym": "201410",
+     "label": "10月",
+     "count": 9
+    },
+    {
+     "ym": "201411",
+     "label": "11月",
+     "count": 8
+    },
+    {
+     "ym": "201412",
+     "label": "12月",
+     "count": 17
+    }
+   ],
+   "count": 97
+  }
+ ],
+ "links": [
+  {
+   "name": "Source code in Github",
+   "url": "https://github.com/wowotech?tab=repositories",
+   "desc": "保存蜗窝科技中涉及到的所有的source code，包括例子、项目等等"
+  },
+  {
+   "name": "程序员玩耍的小窝",
+   "url": "http://www.forwhat.cn/",
+   "desc": ""
+  },
+  {
+   "name": "Linux265导航网",
+   "url": "http://www.linux265.com",
+   "desc": ""
+  },
+  {
+   "name": "中国Linux公社",
+   "url": "http://www.linuxfans.org/",
+   "desc": ""
+  }
+ ],
+ "stats": {
+  "posts": 372,
+  "pages": 5,
+  "comments": 7962,
+  "views": 14277489,
+  "categories": 24,
+  "forum_topics": 163,
+  "forum_posts": 792
+ },
+ "latest_comments": [
+  {
+   "url": "/pm_subsystem/wakeup_events_framework.html#c9194",
+   "author": "22",
+   "date": "2026-09-16T17:39:13+08:00",
+   "text": "@X1hq：你可以看下安卓的autosleep的实现，部分上层程序持wake_lock，然后以熄灭屏幕为检查点判断wake_lo…",
+   "title": "Linux电源管理(7)_Wakeup events framework"
+  },
+  {
+   "url": "/irq_subsystem/soft-irq.html#c9193",
+   "author": "deng",
+   "date": "2026-09-02T10:55:19+08:00",
+   "text": "@owen：ksoftirqd真正执行do_softirq的时候应该不会，抢占入口判断当前如果是中断上下文就不会执行切换",
+   "title": "linux kernel的中断子系统之（八）：softirq"
+  },
+  {
+   "url": "/irq_subsystem/soft-irq.html#c9192",
+   "author": "deng",
+   "date": "2026-09-02T10:47:17+08:00",
+   "text": "@lingkep：如果硬中断打断的是软中断的执行，虽然硬中断退出了，但是仍然处在软中断上下文，文章可能是想表达这个吧",
+   "title": "linux kernel的中断子系统之（八）：softirq"
+  },
+  {
+   "url": "/message_board.html#c9191",
+   "author": "chaicai",
+   "date": "2026-06-29T16:34:45+08:00",
+   "text": "站内搜索不支持了么？",
+   "title": "留言板"
+  },
+  {
+   "url": "/irq_subsystem/alloc_workqueue.html#c9190",
+   "author": "玖伍贰柒",
+   "date": "2026-04-27T09:04:13+08:00",
+   "text": "@坚强的小孩：3，虽然上面分析workqueue肯定会得到调用，但是关于是per workqueue和unbound workq…",
+   "title": "Concurrency Managed Workqueue之（三）：创建workqueue代码分析"
+  },
+  {
+   "url": "/irq_subsystem/alloc_workqueue.html#c9189",
+   "author": "玖伍贰柒",
+   "date": "2026-04-27T09:02:29+08:00",
+   "text": "@每天一小步：你好，讨论的这块代码的调用路径是这样的：\r\nalloc_and_link_pwqs\r\n\tapply_workque…",
+   "title": "Concurrency Managed Workqueue之（三）：创建workqueue代码分析"
+  }
+ ]
+}

@@ -15,9 +15,13 @@
   </div>
 </header>
 
-<main class="wrap">
-{{ block "main" . }}{{ end }}
-</main>
+{{/* 还原原站的双栏版式：正文 + 常驻侧栏 */}}
+<div class="wrap layout">
+  <main class="content">
+  {{ block "main" . }}{{ end }}
+  </main>
+  {{ partial "sidebar.html" . }}
+</div>
 
 <footer class="site-footer">
   <div class="wrap">
@@ -25,7 +29,7 @@
     <p class="muted">
       本站为原 www.wowotech.net 的静态存档，发布于 {{ now.Year }}。
       {{ with site.Params.repoURL }}源码与数据：<a href="{{ . }}">{{ . }}</a> · {{ end }}
-      <a href="/archive/">全站数据存档</a>
+      <a href="/archive/">全站数据存档</a> · <a href="/nav/">站内导航</a> · <a href="/search/">站内搜索</a>
     </p>
   </div>
 </footer>

@@ -6,7 +6,7 @@
   --accent: #8a5a2b;
   --rule: #e6e4e0;
   --code-bg: #f5f4f1;
-  --maxw: 46rem;
+  --maxw: 66rem;   /* 双栏：正文约 46rem + 侧栏 17rem */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -124,4 +124,70 @@ a:hover { text-decoration: underline; }
   body { font-size: 16px; }
   .post-list .small { margin-left: 0; }
   .post-header h1 { font-size: 1.45rem; }
+}
+
+
+/* ---------- 双栏版式与侧栏（还原原站：正文 + 常驻侧栏） ---------- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 17rem;
+  gap: 2.4rem;
+  align-items: start;
+}
+.layout .content { min-width: 0; }
+.layout .site-footer { grid-column: 1 / -1; }
+
+.sidebar { font-size: 0.9rem; }
+.sidebar .widget { margin: 0 0 1.6rem; }
+.sidebar h3 {
+  font-size: 0.92rem; margin: 0 0 0.5rem; padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--rule); color: var(--fg);
+  letter-spacing: 0.03em;
+}
+.sidebar ul { list-style: none; padding: 0; margin: 0; }
+.sidebar li { padding: 0.22rem 0; border-bottom: 1px dotted var(--rule); display: flex; gap: 0.5rem; align-items: baseline; }
+.sidebar li:last-child { border-bottom: none; }
+.sidebar .count { margin-left: auto; color: var(--fg-muted); font-size: 0.8rem; }
+.sidebar .side-comments li { display: block; line-height: 1.6; }
+.sidebar .side-comments a { display: block; }
+.sidebar .side-comments .small { display: block; }
+.sidebar .side-archives details { padding: 0.15rem 0; }
+.sidebar .side-archives summary { cursor: pointer; display: flex; gap: 0.5rem; }
+.sidebar .side-archives summary .count { margin-left: auto; }
+.sidebar .side-archives ul { padding-left: 0.7rem; }
+.sidebar .side-stats li { display: block; }
+
+.side-search { display: flex; gap: 0.35rem; margin-bottom: 1.4rem; }
+.side-search input {
+  flex: 1; min-width: 0; padding: 0.35rem 0.5rem; font-size: 0.88rem;
+  border: 1px solid var(--rule); border-radius: 3px; background: var(--bg); color: var(--fg);
+}
+.side-search button {
+  padding: 0.35rem 0.6rem; font-size: 0.85rem; cursor: pointer;
+  border: 1px solid var(--rule); border-radius: 3px; background: var(--code-bg); color: var(--fg);
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 2rem; }
+  .sidebar { border-top: 1px solid var(--rule); padding-top: 1.2rem; }
+}
+
+/* ---------- 站内搜索页 ---------- */
+.search-box { display: flex; gap: 0.5rem; margin: 0 0 1rem; }
+.search-box input {
+  flex: 1; min-width: 0; padding: 0.55rem 0.7rem; font-size: 1rem;
+  border: 1px solid var(--rule); border-radius: 4px; background: var(--bg); color: var(--fg);
+}
+.search-box button {
+  padding: 0.55rem 1rem; font-size: 0.95rem; cursor: pointer;
+  border: 1px solid var(--rule); border-radius: 4px; background: var(--code-bg); color: var(--fg);
+}
+.search-results { list-style: none; padding: 0; margin: 1.2rem 0 0; }
+.search-results li { padding: 0.8rem 0; border-bottom: 1px solid var(--rule); }
+.search-results .r-title { font-size: 1.05rem; }
+.search-results .small { margin-left: 0.6rem; }
+.search-results .r-snippet { margin: 0.35rem 0 0; font-size: 0.92rem; color: var(--fg-muted); }
+.search-results mark { background: #ffe9a8; color: inherit; padding: 0 0.1em; border-radius: 2px; }
+@media (prefers-color-scheme: dark) {
+  .search-results mark { background: #6b5a1f; }
 }

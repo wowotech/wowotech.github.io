@@ -33,6 +33,7 @@
 {{ end }}
 
 {{ if ne .Type "forum" }}
+  {{ partial "giscus.html" . }}
   {{ partial "comments.html" . }}
 {{ end }}
 </article>

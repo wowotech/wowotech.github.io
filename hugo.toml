@@ -25,7 +25,7 @@ endLevel = 3
   description = "蜗窝科技 —— 嵌入式 Linux 内核技术笔记与讨论存档"
   author = "蜗窝"
   # 冻结评论的展示开关：历史评论只读展示，不提供发帖入口
-  commentsClosedNotice = "评论区已冻结为只读存档；如需讨论，请通过「联系我们」页面的方式联络。"
+  commentsClosedNotice = "以下为原站的历史评论（只读存档）；继续讨论请用上方的评论区。"
   repoURL = "https://github.com/wowotech/wowotech.github.io"
 
 [outputs]

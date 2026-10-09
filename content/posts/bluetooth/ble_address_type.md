@@ -214,7 +214,7 @@ BLE Resolvable private address的解析和过滤操作是在Link Layer实现的�
 
 #### 6. 参考文档
 
-[1] OUI购买链接，[http://cn.ieee.org/OUI\_introduction.html,,](http://cn.ieee.org/OUI_introduction.html,http://standards.ieee.org/develop/regauth/oui/index.html "http://cn.ieee.org/OUI_introduction.html")[http://standards.ieee.org/develop/regauth/oui/index.html](http://standards.ieee.org/develop/regauth/oui/index.html "http://standards.ieee.org/develop/regauth/oui/index.html")
+[1] OUI购买链接，[http://cn.ieee.org/OUI\_introduction.html,,,,,,,,,,,,,,,,](http://cn.ieee.org/OUI_introduction.html,http://standards.ieee.org/develop/regauth/oui/index.html "http://cn.ieee.org/OUI_introduction.html")[http://standards.ieee.org/develop/regauth/oui/index.html](http://standards.ieee.org/develop/regauth/oui/index.html "http://standards.ieee.org/develop/regauth/oui/index.html")
 
 [2] Core\_v4.2.pdf
 

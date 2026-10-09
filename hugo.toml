@@ -4,6 +4,7 @@ defaultContentLanguage = "zh"
 title = "蜗窝科技"
 enableRobotsTXT = false
 disableKinds = ["taxonomy", "term"]
+buildFuture = true   # 当天发的文章按 UTC 换算可能是“未来”，必须构建
 
 # 文章/页面的 URL 全部由 front matter 里的 url 决定，与 emlog 原地址一致，
 # 因此这里不做任何 permalink 改写，避免外链失效。

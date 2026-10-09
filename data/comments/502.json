@@ -61,7 +61,7 @@
   "date": "2022-07-28T10:02:33+08:00",
   "author": "donbear",
   "site": "",
-  "text": "我想我明白了.\r\n\r\n*_avg 就是在 [1024us, 1024us, ...] 这个时间序列的对应指标统计的加权平均.\r\n*_avf 的分母完全是由它的数学定义推导而来的,其原始定义其实就是一个 Exponential Moving Average，分母的推导可以看http://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average................"
+  "text": "我想我明白了.\r\n\r\n*_avg 就是在 [1024us, 1024us, ...] 这个时间序列的对应指标统计的加权平均.\r\n*_avf 的分母完全是由它的数学定义推导而来的,其原始定义其实就是一个 Exponential Moving Average，分母的推导可以看http://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average................................"
  },
  {
   "id": "8729",

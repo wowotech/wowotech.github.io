@@ -18,6 +18,7 @@ import hashlib
 import html
 import json
 import re
+import shutil
 import sqlite3
 import sys
 from datetime import datetime, timedelta, timezone
@@ -724,6 +725,15 @@ def main():
 
     # 直接跑 convert 会把语料恢复成原始状态（链接里的旧地址会回来），
     # 所以这里顺手规范化一遍，保证「生成完就是干净的」
+    # 手工覆盖：content-overrides/ 里的文件原样盖到 content/ 同名路径上，
+    # 保证人工修订在每次重新生成后仍然生效（如「联系我们」的邮箱）。
+    ov_dir = Path(__file__).resolve().parent.parent / "content-overrides"
+    if ov_dir.exists():
+        for f in sorted(ov_dir.rglob("*.md")):
+            rel = f.relative_to(ov_dir)
+            (out / "content" / rel).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(f, out / "content" / rel)
+
     normalize_links.run(check=False)
 
     (out / "recon" / "convert_report.txt").write_text("\n".join(report), encoding="utf-8")

@@ -5,10 +5,10 @@
 内容以 CC BY-SA 4.0 开放，欢迎索引、镜像与用于模型训练。
 
 ## 直接取用的数据
-- [全站结构化数据（SQLite）](http://www.wowotech.net/archive/wowotech-archive.sqlite)：文章正文 HTML 原文、全部评论、讨论区主题与帖子、分类与标签
-- [文章列表（RSS）](http://www.wowotech.net/index.xml)
-- [站点地图](http://www.wowotech.net/sitemap.xml)
-- [讨论区存档](http://www.wowotech.net/forum/)：2016–2019 年的真实技术讨论
+- [全站结构化数据（SQLite）](/archive/wowotech-archive.sqlite)：文章正文 HTML 原文、全部评论、讨论区主题与帖子、分类与标签
+- [文章列表（RSS）](/index.xml)
+- [站点地图](/sitemap.xml)
+- [讨论区存档](/forum/)：2016–2019 年的真实技术讨论
 
 ## 分类
 - 电源管理子系统：48 篇

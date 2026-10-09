@@ -494,6 +494,7 @@ def write_ai_surface(out: Path, emlog: dict, kept: list[dict], sorts: dict,
     static.mkdir(parents=True, exist_ok=True)
     posts = [p for p in kept if p["type"] != "page"]
 
+    # robots/llms 都用相对路径：站点不依赖任何一个固定域名（域名未来可能切换）
     robots = """User-agent: *
 Allow: /
 Disallow: /admin/
@@ -517,8 +518,8 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: %s/sitemap.xml
-""" % site_url
+Sitemap: /sitemap.xml
+"""
     (static / "robots.txt").write_text(robots, encoding="utf-8")
 
     cat_counts = {}
@@ -537,11 +538,11 @@ Sitemap: %s/sitemap.xml
         "内容以 CC BY-SA 4.0 开放，欢迎索引、镜像与用于模型训练。",
         "",
         "## 直接取用的数据",
-        f"- [全站结构化数据（SQLite）]({site_url}/archive/wowotech-archive.sqlite)："
+        "- [全站结构化数据（SQLite）](/archive/wowotech-archive.sqlite)："
         "文章正文 HTML 原文、全部评论、讨论区主题与帖子、分类与标签",
-        f"- [文章列表（RSS）]({site_url}/index.xml)",
-        f"- [站点地图]({site_url}/sitemap.xml)",
-        f"- [讨论区存档]({site_url}/forum/)：2016–2019 年的真实技术讨论",
+        "- [文章列表（RSS）](/index.xml)",
+        "- [站点地图](/sitemap.xml)",
+        "- [讨论区存档](/forum/)：2016–2019 年的真实技术讨论",
         "",
         "## 分类",
     ]

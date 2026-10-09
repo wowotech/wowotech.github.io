@@ -21,4 +21,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: http://www.wowotech.net/sitemap.xml
+Sitemap: /sitemap.xml

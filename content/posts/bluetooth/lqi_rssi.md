@@ -4,7 +4,7 @@ date: 2014-03-12T15:59:46+08:00
 url: "/bluetooth/lqi_rssi.html"
 gid: "17"
 emlog_type: "blog"
-summary: "\r\n\tLQI (Link Quality Indication)，是当前接收到的信号的质量的一种度量。所谓的接收到信号的质量，是接收器通过接收到的信号和理想信号之间的错误累积值估算的。例如，如果使用FSK或者GFSK调制方式，接收器可以将每个bit的频率和期望的频率比较，累积一定数量的symbols（例如64个），就得到了错误累积值。由此可知，由于LQI的测量和调制方式有关，因此它可以相对地给出当"
+summary: "LQI (Link Quality Indication)，是 当前接收到的信号的质量 的一种度量。所谓的接收到信号的质量，是接收器通过 接收到的信号和理想信号之间的错误累积值 估算的。例如，如果使用FSK或者GFSK调制方式，接收器可以将每个bit的频率和期望的频率比较，累积一定数量的symbols（例如64个），就得到了错误累积值。由此可知，由于LQI的测量和调制方式有关，因此它可以相对地给出"
 author: "wowo"
 category: "蓝牙"
 category_alias: "bluetooth"

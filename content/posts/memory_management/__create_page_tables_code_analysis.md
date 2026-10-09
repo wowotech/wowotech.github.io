@@ -4,7 +4,7 @@ date: 2016-11-10T19:07:31+08:00
 url: "/memory_management/__create_page_tables_code_analysis.html"
 gid: "352"
 emlog_type: "blog"
-summary: "\r\n\t本文没有什么框架性的东西，就是按照__create_page_tables代码的执行路径走读一遍，记录在初始化阶段，内核是如何创建内核运行需要的页表过程。想要了解一些概述性的、框架性的东西可以参考内存初始化文档。\r\n\r\n\r\n\t本文的代码来自ARM64，内核版本是4.4.6，此外，阅读本文最好熟悉ARMv8中翻译表描述符的格式。\r\n"
+summary: "本文没有什么框架性的东西，就是按照__create_page_tables代码的执行路径走读一遍，记录在初始化阶段，内核是如何创建内核运行需要的页表过程。想要了解一些概述性的、框架性的东西可以参考 内存初始化 文档。 本文的代码来自ARM64，内核版本是4.4.6，此外，阅读本文最好熟悉ARMv8中翻译表描述符的格式。"
 author: "linuxer"
 category: "内存管理"
 category_alias: "memory_management"

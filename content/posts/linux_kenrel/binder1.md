@@ -4,7 +4,7 @@ date: 2020-02-18T21:13:00+08:00
 url: "/linux_kenrel/binder1.html"
 gid: "475"
 emlog_type: "blog"
-summary: "\r\n\tBinder从入门到放弃包括了上下篇，上篇是框架部分，即本文。下篇通过几个典型的binder通信过程来呈现其实现细节，稍后发布，敬请期待。\r\n"
+summary: "Binder从入门到放弃包括了上下篇，上篇是框架部分，即本文。下篇通过几个典型的binder通信过程来呈现其实现细节，稍后发布，敬请期待。"
 author: "OPPO内核团队"
 category: "Linux内核分析"
 category_alias: "linux_kenrel"

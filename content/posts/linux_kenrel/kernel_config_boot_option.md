@@ -4,7 +4,7 @@ date: 2016-08-12T22:46:06+08:00
 url: "/linux_kenrel/kernel_config_boot_option.html"
 gid: "325"
 emlog_type: "blog"
-summary: "\r\n\t本文将介绍ARM64架构下，Linux kernel和启动有关的配置项。\r\n\r\n\r\n\t注1：本系列文章使用的Linux kernel版本是“X \r\nProject”所用的“Linux 4.6-rc5”，具体可参考“https://github.com/wowotechX/linux.git”。\r\n"
+summary: "本文将介绍ARM64架构下，Linux kernel和启动有关的配置项。 注1：本系列文章使用的Linux kernel版本是“ X Project ”所用的“ Linux 4.6-rc5 ”，具体可参考“ https://github.com/wowotechX/linux.git ”。"
 author: "wowo"
 category: "Linux内核分析"
 category_alias: "linux_kenrel"

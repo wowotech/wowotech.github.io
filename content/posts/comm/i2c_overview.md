@@ -4,7 +4,7 @@ date: 2016-02-14T22:01:19+08:00
 url: "/comm/i2c_overview.html"
 gid: "263"
 emlog_type: "blog"
-summary: "\r\n\tI2C协议是嵌入式系统中广泛使用的一类通信协议，主要用于CPU和各种外设之间的低速数据通信。Linux kernel使用I2C \r\nframework抽象、管理相应的资源，并以各种形式，向各类使用者提供API。另外，作为总线（bus）的一种，I2C framework的实现体现了linux设备模型的精髓，值得研究与学习。这就是攥写“Linux \r\nI2C framework”系列文章的缘由和"
+summary: "I2C协议是嵌入式系统中广泛使用的一类通信协议，主要用于CPU和各种外设之间的低速数据通信。Linux kernel使用I2C framework抽象、管理相应的资源，并以各种形式，向各类使用者提供API。另外，作为总线（bus）的一种，I2C framework的实现体现了 linux设备模型 的精髓，值得研究与学习。这就是攥写“Linux I2C framework”系列文章的缘由和目的。 按"
 author: "wowo"
 category: "通信类协议"
 category_alias: "comm"

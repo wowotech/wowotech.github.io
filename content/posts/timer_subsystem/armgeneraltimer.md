@@ -4,7 +4,7 @@ date: 2014-12-02T10:47:58+08:00
 url: "/timer_subsystem/armgeneraltimer.html"
 gid: "115"
 emlog_type: "blog"
-summary: "\r\n\t关注ARM平台上timer driver（clocksource chip driver和clockevent chip \r\ndriver）的驱动工程师应该会注意到timer硬件的演化过程。在单核时代，各个SOC vendor厂商购买ARM \r\ncore的IP，然后自己设计SOC上的peripherals，这里面就包括了timer的硬件。由于没有统一的标准，各个厂商的设计各不相同，这给驱\r\n"
+summary: "关注ARM平台上timer driver（clocksource chip driver和clockevent chip driver）的驱动工程师应该会注意到timer硬件的演化过程。在单核时代，各个SOC vendor厂商购买ARM core的IP，然后自己设计SOC上的peripherals，这里面就包括了timer的硬件。由于没有统一的标准，各个厂商的设计各不相同，这给驱 动工程师带来了工"
 author: "linuxer"
 category: "时间子系统"
 category_alias: "timer_subsystem"

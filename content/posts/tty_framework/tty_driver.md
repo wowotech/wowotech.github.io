@@ -4,7 +4,7 @@ date: 2016-10-25T22:40:31+08:00
 url: "/tty_framework/tty_driver.html"
 gid: "344"
 emlog_type: "blog"
-summary: "\r\n\t本文将从驱动工程师的角度去看TTY framework：它怎么抽象、管理各个TTY设备？它提供了哪些编程接口以方便TTY driver的开发？怎么利用这些接口编写一个TTY driver？等等。\r\n\r\n\r\n\t注1：话说介绍各个framework的时候，我一直比较喜欢用provider、consumer等概念，因为非常生动、易懂。不过在TTY framework的官方俗语中，压根没有provi"
+summary: "本文将从驱动工程师的角度去看TTY framework：它怎么抽象、管理各个TTY设备？它提供了哪些编程接口以方便TTY driver的开发？怎么利用这些接口编写一个TTY driver？等等。 注1：话说介绍各个framework的时候，我一直比较喜欢用provider、consumer等概念，因为非常生动、易懂。不过在TTY framework的官方俗语中，压根没有provider、consu"
 author: "wowo"
 category: "TTY子系统"
 category_alias: "tty_framework"

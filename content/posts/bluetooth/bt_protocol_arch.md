@@ -4,7 +4,7 @@ date: 2016-01-14T22:20:28+08:00
 url: "/bluetooth/bt_protocol_arch.html"
 gid: "257"
 emlog_type: "blog"
-summary: "本文是蓝牙协议分析的第二篇文章，在“蓝牙协议分析(1)_基本概念”的基础上，从整体架构的角度，了解蓝牙协议的组成，以便加深对蓝牙的理解。"
+summary: "本文是 蓝牙协议分析 的第二篇文章，在“ 蓝牙协议分析(1)_基本概念 ”的基础上，从整体架构的角度，了解蓝牙协议的组成，以便加深对蓝牙的理解。"
 author: "wowo"
 category: "蓝牙"
 category_alias: "bluetooth"

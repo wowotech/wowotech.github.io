@@ -4,7 +4,7 @@ date: 2022-02-16T07:29:28+08:00
 url: "/process_management/load_balance_function.html"
 gid: "500"
 emlog_type: "blog"
-summary: "\r\n\t我们描述CFS任务负载均衡的系列文章一共三篇，第一篇是框架部分，第二篇描述了task placement和active upmigration两个典型的负载均衡场景，第三篇是负载均衡的情景分析，包括tick balance、nohz idle balance和new idle balance。在负载均衡情景分析文档最后，我们给出了结论：tick balancing、nohz idle bal"
+summary: "我们描述CFS任务负载均衡的系列文章一共三篇，第一篇是框架部分，第二篇描述了task placement和active upmigration两个典型的负载均衡场景，第三篇是负载均衡的情景分析，包括tick balance、nohz idle balance和new idle balance。在负载均衡情景分析文档最后，我们给出了结论：tick balancing、nohz idle balanc"
 author: "OPPO内核团队"
 category: "进程管理"
 category_alias: "process_management"

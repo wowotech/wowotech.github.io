@@ -4,7 +4,7 @@ date: 2017-09-01T10:46:14+08:00
 url: "/pm_subsystem/reset_framework.html"
 gid: "408"
 emlog_type: "blog"
-summary: "\r\n\t大家都知道，复杂IC内部有很多具有独立功能的硬件模块，例如CPU cores、GPU \r\ncores、USB控制器、MMC控制器、等等，出于功耗、稳定性等方面的考虑，有些IC在内部为这些硬件模块设计了复位信号（reset \r\nsignals），软件可通过寄存器（一般1个bit控制1个硬件）控制这些硬件模块的复位状态。\r\n\r\n\r\n\tLinux kernel为了方便设备驱动的编写，抽象出一个简单"
+summary: "大家都知道，复杂IC内部有很多具有独立功能的硬件模块，例如CPU cores、GPU cores、USB控制器、MMC控制器、等等，出于功耗、稳定性等方面的考虑，有些IC在内部为这些硬件模块设计了复位信号（reset signals），软件可通过寄存器（一般1个bit控制1个硬件）控制这些硬件模块的复位状态。 Linux kernel为了方便设备驱动的编写，抽象出一个简单的软件框架----rese"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

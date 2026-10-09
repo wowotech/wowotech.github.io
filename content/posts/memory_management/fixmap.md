@@ -4,7 +4,7 @@ date: 2016-09-09T12:44:03+08:00
 url: "/memory_management/fixmap.html"
 gid: "333"
 emlog_type: "blog"
-summary: "\r\n\t某天，wowo同学突然来了一句：如果要在start_kernel中点LED，ioremap在什么时间点才能调用呢？我想他应该是想通过点\r\nLED灯来调试start_kernel之后的初始化的代码（例如DTB解析部分的代码）。那天，我们两个花了二十分钟的时间，讨论相关的问题，我觉得很\r\n有意思，因此决定写fix mapped address这样的一份文档。\r\n\r\n\r\n\t在汇编代码中，由于没有打"
+summary: "某天，wowo同学突然来了一句：如果要在start_kernel中点LED，ioremap在什么时间点才能调用呢？我想他应该是想通过点 LED灯来调试start_kernel之后的初始化的代码（例如DTB解析部分的代码）。那天，我们两个花了二十分钟的时间，讨论相关的问题，我觉得很 有意思，因此决定写fix mapped address这样的一份文档。 在汇编代码中，由于没有打开MMU，想怎么访问外"
 author: "linuxer"
 category: "内存管理"
 category_alias: "memory_management"

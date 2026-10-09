@@ -4,7 +4,7 @@ date: 2014-12-06T15:40:14+08:00
 url: "/armv8a_arch/why_armv8a_arch.html"
 gid: "117"
 emlog_type: "blog"
-summary: "\r\n\t2013年9月11日（是的，911），在ARM公司发布UEFI 64-bit之后，ARM社区release了ARMv8A版本的ARM Architecture Reference Manual（我已经下载，感兴趣的同学可以找我要）。在release note中，作者给出了这样一个设问句：“Why develop ARMv8-A?”。本文也效仿一下，以自问自答的形式，说明为什么会在博客中增加这"
+summary: "2013年9月11日（是的，911），在ARM公司发布UEFI 64-bit之后，ARM社区release了ARMv8A版本的ARM Architecture Reference Manual（我已经下载，感兴趣的同学可以找我要）。在 release note 中，作者给出了这样一个设问句：“Why develop ARMv8-A?”。本文也效仿一下，以自问自答的形式，说明为什么会在博客中增加这样"
 author: "wowo"
 category: "ARMv8A Arch"
 category_alias: "armv8a_arch"

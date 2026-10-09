@@ -4,7 +4,7 @@ date: 2015-10-13T18:18:49+08:00
 url: "/armv8a_arch/create_page_tables.html"
 gid: "218"
 emlog_type: "blog"
-summary: "\r\n\t本文主要描述了ARM64启动过程中，如何建立初始化阶段页表的过程。我们知道，从bootloader到kernel的时候，MMU是off的\r\n（顺带的负作用是无法打开data \r\ncache），为了提高性能，加快初始化速度，我们必须某个阶段（越早越好）打开MMU和cache，而在此之前，我们必须要设定好页表。\r\n\r\n\r\n\t在\r\n初始化阶段，我们mapping三段地址，一段是identity \r"
+summary: "本文主要描述了ARM64启动过程中，如何建立初始化阶段页表的过程。我们知道，从bootloader到kernel的时候，MMU是off的 （顺带的负作用是无法打开data cache），为了提高性能，加快初始化速度，我们必须某个阶段（越早越好）打开MMU和cache，而在此之前，我们必须要设定好页表。 在 初始化阶段，我们mapping三段地址，一段是identity mapping，其实就是把物"
 author: "linuxer"
 category: "ARMv8A Arch"
 category_alias: "armv8a_arch"

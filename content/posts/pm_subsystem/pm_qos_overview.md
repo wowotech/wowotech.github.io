@@ -4,7 +4,7 @@ date: 2015-02-04T23:06:09+08:00
 url: "/pm_subsystem/pm_qos_overview.html"
 gid: "142"
 emlog_type: "blog"
-summary: "\r\n\tQOS为Quality Of Service（服务质量）的简称，对PM QoS而言，表示Linux kernel电源管理相关的服务质量。那到底什么是服务质量呢？\r\n\r\n\r\n\t我们知道，Linux PM的主要功能，是节省功耗，但同时，会付出一定的性能代价，例如延迟（latency）增加、吞吐量（throughput）下降。可以把PM当作一种服务，把它对性能的影响，类比为服务的质量（QoS）。对"
+summary: "QOS为Quality Of Service（服务质量）的简称，对PM QoS而言，表示Linux kernel电源管理相关的服务质量。那到底什么是服务质量呢？ 我们知道，Linux PM的主要功能，是节省功耗，但同时，会付出一定的性能代价，例如延迟（latency）增加、吞吐量（throughput）下降。可以把PM当作一种服务，把它对性能的影响，类比为服务的质量（QoS）。对性能的影响越大，Q"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

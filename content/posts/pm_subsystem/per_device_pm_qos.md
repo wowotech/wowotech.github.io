@@ -4,7 +4,7 @@ date: 2015-02-26T22:44:26+08:00
 url: "/pm_subsystem/per_device_pm_qos.html"
 gid: "148"
 emlog_type: "blog"
-summary: "\r\n\tper-device PM QoS是针对指定设备的QoS framework，背后的思考如下：\r\n\r\n\r\n\t1）resume_latency\r\n\r\n\r\n\t在Runtime PM的框架下，当device的引用计数减为0的时候，RPM会suspend该device。不过，device进入suspend状态以及从suspend状态resume是需要消耗时间的（相关信息保存在pm domain中），"
+summary: "per-device PM QoS是针对指定设备的QoS framework，背后的思考如下： 1）resume_latency 在 Runtime PM 的框架下，当device的引用计数减为0的时候，RPM会suspend该device。不过，device进入suspend状态以及从suspend状态resume是需要消耗时间的（相关信息保存在 pm domain 中），而系统其它实体（如用户"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

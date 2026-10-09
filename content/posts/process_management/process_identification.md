@@ -4,7 +4,7 @@ date: 2014-03-26T12:28:20+08:00
 url: "/process_management/process_identification.html"
 gid: "21"
 emlog_type: "blog"
-summary: "\r\n\t一、概述 \r\n\r\n\r\n\t本文主要描述在linux\r\nkernel中如何标识一个或者一组和进程（线程）相关的实体，包括： \r\n\r\n\r\n\t1、进程ID（线程组ID） \r\n\r\n\r\n\t2、线程ID \r\n\r\n\r\n\t3、进程组ID \r\n\r\n\r\n\t4、Session ID \r\n\r\n\r\n\t需要强调的是本文focus在identification，很多展开的内容会有一系列文档描述。 \r\n"
+summary: "一、概述 本文主要描述在 linux kernel 中如何标识一个或者一组和进程（线程）相关的实体，包括： 1 、进程 ID （线程组 ID ） 2 、线程 ID 3 、进程组 ID 4 、 Session ID 需要强调的是本文 focus 在 identification ，很多展开的内容会有一系列文档描述。"
 author: "linuxer"
 category: "进程管理"
 category_alias: "process_management"

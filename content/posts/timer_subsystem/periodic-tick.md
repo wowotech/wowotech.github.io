@@ -4,7 +4,7 @@ date: 2014-12-11T18:59:02+08:00
 url: "/timer_subsystem/periodic-tick.html"
 gid: "121"
 emlog_type: "blog"
-summary: "tick device layer是clock event core模块的用户，tick device layer利用clock event \r\ncore模块提供的接口实现了各种tick device功能：周期性tick、tickless mode、broadcast \r\ntick等。本文从最简单的周期性tick开始，描述tick device的基本概念以及周期性tick的工作原理。"
+summary: "tick device layer是clock event core模块的用户，tick device layer利用clock event core模块提供的接口实现了各种tick device功能：周期性tick、tickless mode、broadcast tick等。本文从最简单的周期性tick开始，描述tick device的基本概念以及周期性tick的工作原理。"
 author: "linuxer"
 category: "时间子系统"
 category_alias: "timer_subsystem"

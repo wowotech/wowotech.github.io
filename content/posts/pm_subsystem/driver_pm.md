@@ -4,7 +4,7 @@ date: 2014-12-26T18:31:51+08:00
 url: "/pm_subsystem/driver_pm.html"
 gid: "131"
 emlog_type: "blog"
-summary: "\r\n\t首先，回想一下wowo电源管理系列文章中提到的几个PM特性： \r\n\r\n\r\n\tA.&nbsp;Wake Count/Wake Source \r\n\r\n\r\n\tB.&nbsp;Wake Lock \r\n\r\n\r\n\tC.&nbsp;Auto Sleep \r\n\r\n\r\n\tD.&nbsp;Runtime Suspend \r\n\r\n\r\n\t\r\n \r\n\r\n\r\n\t这篇文章就简单简单整理一下以上特性的在Driver中的使用"
+summary: "首先，回想一下wowo电源管理系列文章中提到的几个PM特性： A. Wake Count/Wake Source B. Wake Lock C. Auto Sleep D. Runtime Suspend 这篇文章就简单简单整理一下以上特性的在Driver中的使用场景，理解可能有偏差，大家多指教。"
 author: "Physh"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

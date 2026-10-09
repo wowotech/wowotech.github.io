@@ -4,7 +4,7 @@ date: 2017-09-07T19:49:57+08:00
 url: "/bluetooth/le_security_manager.html"
 gid: "409"
 emlog_type: "blog"
-summary: "\r\n\t注1：此SM是Security Manager的缩写，非彼SM，大家不要理解歪了！ \r\n\r\n\r\n\t书接上文，我们在“蓝牙协议分析(10)_BLE安全机制之LE Encryption”中介绍了BLE安全机制中的终极武器----数据加密。不过使用这把武器有个前提，那就是双方要共同拥有一个加密key（LTK，Long Term Key）。这个key至关重要，怎么生成、怎么由通信的双方共享，关系到加"
+summary: "注1：此SM是Security Manager的缩写，非彼SM，大家不要理解歪了！ 书接上文，我们在“ 蓝牙协议分析(10)_BLE安全机制之LE Encryption ”中介绍了BLE安全机制中的终极武器----数据加密。不过使用这把武器有个前提，那就是双方要共同拥有一个加密key（LTK，Long Term Key）。这个key至关重要，怎么生成、怎么由通信的双方共享，关系到加密的成败。因此蓝"
 author: "wowo"
 category: "蓝牙"
 category_alias: "bluetooth"

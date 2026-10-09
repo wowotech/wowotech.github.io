@@ -4,7 +4,7 @@ date: 2014-04-21T20:32:07+08:00
 url: "/tech_discuss/Unix的历史.html"
 gid: "33"
 emlog_type: "blog"
-summary: "\r\n\t作为一个Linuxer，对unix感兴趣是顺理成章的事情，对unix的了解反过来也可以促进对GNU/Linux的理解。不过在接触unix的过程中，大家一般都会有下面的疑问：\r\n\r\n\r\n\t1、unix这个商标是属于哪一个公司或者机构？\r\n\r\n\r\n\t2、为何unix有那么多的变种？为何各个公司都有自己的unix，例如IBM的AIX（Advanced Interactive eXecutive）操"
+summary: "作为一个Linuxer，对unix感兴趣是顺理成章的事情，对unix的了解反过来也可以促进对GNU/Linux的理解。不过在接触unix的过程中，大家一般都会有下面的疑问： 1、unix这个商标是属于哪一个公司或者机构？ 2、为何unix有那么多的变种？为何各个公司都有自己的unix，例如IBM的AIX（Advanced Interactive eXecutive）操作系统、SUN公司的Solar"
 author: "linuxer"
 category: "技术漫谈"
 category_alias: "tech_discuss"

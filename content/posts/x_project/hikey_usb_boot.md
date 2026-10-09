@@ -4,7 +4,7 @@ date: 2016-12-20T22:36:53+08:00
 url: "/x_project/hikey_usb_boot.html"
 gid: "364"
 emlog_type: "blog"
-summary: "话说在半年前，乐美客送给蜗窝几块Hikey(乐美客版)开发板[1]，不过由于太忙，就一直把它们放在角落里思考人生，因此甚是愧疚。这几天，闲来无事，翻了下Hikey的资料，觉得挺有意思，就想花点时间让“X \r\nProject”在这个板子上跑起来。当然，按照“规矩”，先从“【任务1】启动过程-Boot from \r\nUSB”做起，记录如下。"
+summary: "话说在半年前，乐美客送给蜗窝几块Hikey(乐美客版)开发板 [1] ，不过由于太忙，就一直把它们放在角落里思考人生，因此甚是愧疚。这几天，闲来无事，翻了下Hikey的资料，觉得挺有意思，就想花点时间让“ X Project ”在这个板子上跑起来。当然，按照“规矩”，先从“ 【任务1】启动过程-Boot from USB ”做起，记录如下。"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

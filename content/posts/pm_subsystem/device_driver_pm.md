@@ -4,7 +4,7 @@ date: 2015-03-02T22:53:52+08:00
 url: "/pm_subsystem/device_driver_pm.html"
 gid: "149"
 emlog_type: "blog"
-summary: "\r\n\t相信工作稍微久一点的linux驱动工程师都深有体会：\r\n\r\n\r\n\t在旧时光里，实现某一个设备的电源管理功能，是非常简单的一件事情。大多数设备都被抽象为platform设备，driver只需要提供suspend/resume/shutdown等回调函数，并注册到kernel即可。kernel会在系统电源状态切换的过程中，调用driver提供的回调函数，切换设备的电源状态。\r\n\r\n\r\n\t但是在新"
+summary: "相信工作稍微久一点的linux驱动工程师都深有体会： 在旧时光里，实现某一个设备的电源管理功能，是非常简单的一件事情。大多数设备都被抽象为platform设备，driver只需要提供suspend/resume/shutdown等回调函数，并注册到kernel即可。kernel会在系统电源状态切换的过程中，调用driver提供的回调函数，切换设备的电源状态。 但是在新时代中，设备电源管理有关的操作"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

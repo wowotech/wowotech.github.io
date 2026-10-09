@@ -4,7 +4,7 @@ date: 2014-05-14T16:25:34+08:00
 url: "/basic_tech/sdram-internals.html"
 gid: "41"
 emlog_type: "blog"
-summary: "\r\n\tSDRAM（synchronous dynamic random-access memory）是嵌入式系统中经常用到的器件。对于一个嵌入式软件工程师而言，了解SDRAM的机理是有益的。我们可以从下面三个方面理解SDRAM：\r\n\r\n\r\n\t1、RAM很好理解，就是可以随机存取的memory。\r\n\r\n\r\n\t2、\r\ndynamic 是和static对应的，SRAM就是static random-ac"
+summary: "SDRAM（synchronous dynamic random-access memory）是嵌入式系统中经常用到的器件。对于一个嵌入式软件工程师而言，了解SDRAM的机理是有益的。我们可以从下面三个方面理解SDRAM： 1、RAM很好理解，就是可以随机存取的memory。 2、 dynamic 是和static对应的，SRAM就是static random-access memory。SRAM"
 author: "linuxer"
 category: "基础技术"
 category_alias: "basic_tech"

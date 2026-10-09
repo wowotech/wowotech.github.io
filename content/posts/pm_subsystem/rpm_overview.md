@@ -4,7 +4,7 @@ date: 2014-10-08T23:32:12+08:00
 url: "/pm_subsystem/rpm_overview.html"
 gid: "94"
 emlog_type: "blog"
-summary: "\r\n\t终于可以写Runtime PM了，说实话，蜗蜗有点小激动。因为从个人的角度讲，我很推崇使用Runtime PM进行日常的动态电源管理，而不是suspend机制。\r\n\r\n\r\n\t软件工程的基本思想就是模块化：高内聚和低耦合。通俗地讲呢，就是“各人自扫门前雪”，尽量扫好自己的（高内聚），尽量不和别人交互（低耦合）。而Runtime PM正体现了这一思想：每个设备（包括CPU）都处理好自身的电源管理"
+summary: "终于可以写Runtime PM了，说实话，蜗蜗有点小激动。因为从个人的角度讲，我很推崇使用Runtime PM进行日常的动态电源管理，而不是suspend机制。 软件工程的基本思想就是模块化：高内聚和低耦合。通俗地讲呢，就是“各人自扫门前雪”，尽量扫好自己的（高内聚），尽量不和别人交互（低耦合）。而Runtime PM正体现了这一思想：每个设备（包括CPU）都处理好自身的电源管理工作，尽量以最低的"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

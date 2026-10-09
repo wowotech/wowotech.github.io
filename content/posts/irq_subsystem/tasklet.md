@@ -4,7 +4,7 @@ date: 2015-07-02T18:10:49+08:00
 url: "/irq_subsystem/tasklet.html"
 gid: "197"
 emlog_type: "blog"
-summary: "\r\n\t对于中断处理而言，linux将其分成了两个部分，一个叫做中断handler（top half），属于不那么紧急需要处理的事情被推迟执行，我们称之deferable task，或者叫做bottom half，。具体如何推迟执行分成下面几种情况：\r\n\r\n\r\n\t1、推迟到top half执行完毕\r\n\r\n\r\n\t2、推迟到某个指定的时间片（例如40ms）之后执行\r\n\r\n\r\n\t3、推迟到某个内核线程被调"
+summary: "对于中断处理而言，linux将其分成了两个部分，一个叫做中断handler（top half），属于不那么紧急需要处理的事情被推迟执行，我们称之deferable task，或者叫做bottom half，。具体如何推迟执行分成下面几种情况： 1、推迟到top half执行完毕 2、推迟到某个指定的时间片（例如40ms）之后执行 3、推迟到某个内核线程被调度的时候执行 对于第一种情况，内核中的机制"
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

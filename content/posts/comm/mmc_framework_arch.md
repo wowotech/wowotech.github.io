@@ -4,7 +4,7 @@ date: 2017-01-10T22:24:45+08:00
 url: "/comm/mmc_framework_arch.html"
 gid: "368"
 emlog_type: "blog"
-summary: "\r\n\t由[1]中MMC、SD、SDIO的介绍可知，这三种技术都是起源于MMC技术，有很多共性，因此Linux kernel统一使用MMC framework管理所有和这三种技术有关的设备。\r\n\r\n\r\n\t本文将基于[1]对MMC技术的介绍，学习Linux kernel MMC framework的软件架构。\r\n"
+summary: "由[1]中MMC、SD、SDIO的介绍可知，这三种技术都是起源于MMC技术，有很多共性，因此Linux kernel统一使用MMC framework管理所有和这三种技术有关的设备。 本文将基于[1]对MMC技术的介绍，学习Linux kernel MMC framework的软件架构。"
 author: "wowo"
 category: "通信类协议"
 category_alias: "comm"

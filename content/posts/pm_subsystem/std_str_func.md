@@ -4,7 +4,7 @@ date: 2014-06-10T16:11:19+08:00
 url: "/pm_subsystem/std_str_func.html"
 gid: "49"
 emlog_type: "blog"
-summary: "\r\n\tHibernate和Sleep两个功能是Linux Generic \r\nPM的核心功能，它们的目的是类似的：暂停使用——&gt;保存上下文——&gt;关闭系统以节电········&gt;恢复系统——&gt;恢复上下文——&gt;继续使用。\r\n\r\n\r\n\t本文以内核向用户空间提供的接口为突破口，从整体上对这两个功能进行介绍，并会在后续的文章中，分析它们的实现逻辑和执行动作。\r\n\r\n\r\n\t顺便感"
+summary: "Hibernate和Sleep两个功能是Linux Generic PM的核心功能，它们的目的是类似的：暂停使用——>保存上下文——>关闭系统以节电········>恢复系统——>恢复上下文——>继续使用。 本文以内核向用户空间提供的接口为突破口，从整体上对这两个功能进行介绍，并会在后续的文章中，分析它们的实现逻辑和执行动作。 顺便感概一下，虽然这些机制在Linux系统中存在很久了（类似的概念也存"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

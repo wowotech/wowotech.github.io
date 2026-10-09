@@ -4,7 +4,7 @@ date: 2016-03-08T18:42:57+08:00
 url: "/linux_application/wifi-test-1.html"
 gid: "269"
 emlog_type: "blog"
-summary: "\r\n\t最近入手了一台T450，顺便在上面安装了Windows和Debian \r\n8。一般而言，在windows下的时候通过WiFi上网毫无压力，当然，做为linuxer，我其实也很少在T450上启动windows，那么问题来\r\n了，如何在Debian 8下使用WiFi呢？\r\n\r\n\r\n\t具体的场景是这样的，我们家的网络是通过ADSL进入internet，ADSL \r\nmodem的网线连接到了台式机，"
+summary: "最近入手了一台T450，顺便在上面安装了Windows和Debian 8。一般而言，在windows下的时候通过WiFi上网毫无压力，当然，做为linuxer，我其实也很少在T450上启动windows，那么问题来 了，如何在Debian 8下使用WiFi呢？ 具体的场景是这样的，我们家的网络是通过ADSL进入internet，ADSL modem的网线连接到了台式机，而台式机经常被夫人霸占，我的"
 author: "linuxer"
 category: "Linux应用技巧"
 category_alias: "linux_application"

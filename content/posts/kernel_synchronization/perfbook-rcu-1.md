@@ -4,7 +4,7 @@ date: 2016-02-18T19:07:52+08:00
 url: "/kernel_synchronization/perfbook-rcu-1.html"
 gid: "265"
 emlog_type: "blog"
-summary: "\r\n\t本文主要是对perfbook 9.3章节的翻译，督促自己学习，也顺便分享给大家。\r\n\r\n\r\n\t本文的英文原文来自perfbook-1c.2015.01.31a.pdf ，为了读者方便，我也嵌入到了文档中，任何问题，欢迎探讨。\r\n"
+summary: "本文主要是对perfbook 9.3章节的翻译，督促自己学习，也顺便分享给大家。 本文的英文原文来自perfbook-1c.2015.01.31a.pdf ，为了读者方便，我也嵌入到了文档中，任何问题，欢迎探讨。"
 author: "linuxer"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

@@ -4,7 +4,7 @@ date: 2016-08-24T22:34:47+08:00
 url: "/x_project/bubblegum_uboot_booti.html"
 gid: "328"
 emlog_type: "blog"
-summary: "\r\n\t“X-009-KERNEL-Linux \r\nkernel的移植(Bubblegum-96平台)”中介绍了ARM64平台下，配置、编译、生成Linux kernel \r\nImage文件的方法。Image文件生成后，我们可以借助DFU工具将它下载到板子的DRAM中，然后借助u-boot \r\nboot有关的命令，加载并运行之（这个过程也称作引导）。\r\n\r\n\r\n\t针对不同的Kernel image格"
+summary: "“ X-009-KERNEL-Linux kernel的移植(Bubblegum-96平台) ”中介绍了ARM64平台下，配置、编译、生成Linux kernel Image文件的方法。Image文件生成后，我们可以借助DFU工具将它下载到板子的DRAM中，然后借助u-boot boot有关的命令，加载并运行之（这个过程也称作引导）。 针对不同的Kernel image格式，u-boot提供了不同"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

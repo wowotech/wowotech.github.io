@@ -4,7 +4,7 @@ date: 2018-01-31T19:20:48+08:00
 url: "/process_management/deadline-scheduler-1.html"
 gid: "423"
 emlog_type: "blog"
-summary: "&nbsp;&nbsp;&nbsp; 关于deadline调度器的文档有两篇，本篇简单介绍了实时调度及其背后的一些理论。另外一篇将专门讨论Linux系统中的Deadline调度器。另外，本文主要的框架和思想来自Deadline scheduling part 1 — overview and theory，但经过作者的翻译、整理和演绎。"
+summary: "关于deadline调度器的文档有两篇，本篇简单介绍了实时调度及其背后的一些理论。另外一篇将专门讨论Linux系统中的Deadline调度器。另外，本文主要的框架和思想来自 Deadline scheduling part 1 — overview and theory ，但经过作者的翻译、整理和演绎。"
 author: "linuxer"
 category: "进程管理"
 category_alias: "process_management"

@@ -4,7 +4,7 @@ date: 2016-11-24T12:08:56+08:00
 url: "/memory_management/mem_init_3.html"
 gid: "357"
 emlog_type: "blog"
-summary: "\r\n\t经过内存初始化代码分析（一）和内存初始化代码分析（二）的过渡，我们终于来到了内存初始化的核心部分：paging_init。当然本文不能全部解析完该函数（那需要的篇幅太长了），我们只关注创建系统内存地址映射这部分代码实现，也就是解析paging_init中的map_mem函数。\r\n\r\n\r\n\t同样的，我们选择的是4.4.6的内核代码，体系结构相关的代码来自ARM64。\r\n"
+summary: "经过 内存初始化代码分析（一） 和 内存初始化代码分析（二） 的过渡，我们终于来到了内存初始化的核心部分：paging_init。当然本文不能全部解析完该函数（那需要的篇幅太长了），我们只关注创建系统内存地址映射这部分代码实现，也就是解析paging_init中的map_mem函数。 同样的，我们选择的是4.4.6的内核代码，体系结构相关的代码来自ARM64。"
 author: "linuxer"
 category: "内存管理"
 category_alias: "memory_management"

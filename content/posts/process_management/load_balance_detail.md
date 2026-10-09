@@ -4,7 +4,7 @@ date: 2021-11-22T20:49:39+08:00
 url: "/process_management/load_balance_detail.html"
 gid: "493"
 emlog_type: "blog"
-summary: "\r\n\t我们描述CFS任务负载均衡的系列文章一共三篇，第一篇是框架部分，第二篇描述了task placement和active upmigration两个典型的负载均衡场景。本文是第三篇，主要是分析各种负载均衡的触发和具体的均衡逻辑过程。\r\n\r\n\r\n\t本文出现的内核代码来自Linux5.10.61，为了减少篇幅，我们尽量删除不相关代码，如果有兴趣，读者可以配合代码阅读本文。\r\n"
+summary: "我们描述CFS任务负载均衡的系列文章一共三篇，第一篇是框架部分，第二篇描述了task placement和active upmigration两个典型的负载均衡场景。本文是第三篇，主要是分析各种负载均衡的触发和具体的均衡逻辑过程。 本文出现的内核代码来自Linux5.10.61，为了减少篇幅，我们尽量删除不相关代码，如果有兴趣，读者可以配合代码阅读本文。"
 author: "OPPO内核团队"
 category: "进程管理"
 category_alias: "process_management"

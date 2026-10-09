@@ -4,7 +4,7 @@ date: 2014-09-22T18:33:36+08:00
 url: "/irq_subsystem/request_threaded_irq.html"
 gid: "91"
 emlog_type: "blog"
-summary: "本文主要的议题是作为一个普通的驱动工程师，在撰写自己负责的驱动的时候，如何向Linux \r\nKernel中的中断子系统注册中断处理函数？为了理解注册中断的接口，必须了解一些中断线程化（threaded interrupt \r\nhandler）的基础知识，这些在第二章描述。第三章主要描述了驱动申请 interrupt line接口API \r\nrequest_threaded_irq的规格。第四章是进"
+summary: "本文主要的议题是作为一个普通的驱动工程师，在撰写自己负责的驱动的时候，如何向Linux Kernel中的中断子系统注册中断处理函数？为了理解注册中断的接口，必须了解一些中断线程化（threaded interrupt handler）的基础知识，这些在第二章描述。第三章主要描述了驱动申请 interrupt line接口API request_threaded_irq的规格。第四章是进入reque"
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

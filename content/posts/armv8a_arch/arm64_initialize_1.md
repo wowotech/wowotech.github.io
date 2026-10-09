@@ -4,7 +4,7 @@ date: 2015-10-10T15:06:00+08:00
 url: "/armv8a_arch/arm64_initialize_1.html"
 gid: "215"
 emlog_type: "blog"
-summary: "\r\n\tkernel的整个启动过程涉及的内容很多，不可能每一个细节都描述清楚，因此我打算针对部分和ARM64相关的启动步骤进行学习、\r\n整理，并方便后续查阅。本文实际上描述在系统启动最开始的时候，bootloader和kernel的交互以及kernel如何保存bootloader\r\n传递的参数并进行校验，此外，还有一些最基础的硬件初始化的内容。\r\n\r\n\r\n\t本文中的source来自4.1.10内核，"
+summary: "kernel的整个启动过程涉及的内容很多，不可能每一个细节都描述清楚，因此我打算针对部分和ARM64相关的启动步骤进行学习、 整理，并方便后续查阅。本文实际上描述在系统启动最开始的时候，bootloader和kernel的交互以及kernel如何保存bootloader 传递的参数并进行校验，此外，还有一些最基础的硬件初始化的内容。 本文中的source来自4.1.10内核，这是一个long te"
 author: "linuxer"
 category: "ARMv8A Arch"
 category_alias: "armv8a_arch"

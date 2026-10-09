@@ -4,7 +4,7 @@ date: 2015-06-19T22:27:34+08:00
 url: "/pm_subsystem/cpufreq_driver.html"
 gid: "196"
 emlog_type: "blog"
-summary: "\r\n\t本文从平台驱动工程师的角度，介绍怎么编写cpufreq驱动。\r\n\r\n\r\n\t注1：本文基于linux-3.18-rc4内核，其它版本内核可能会稍有不同。\r\n"
+summary: "本文从平台驱动工程师的角度，介绍怎么编写cpufreq驱动。 注1：本文基于 linux-3.18-rc4 内核，其它版本内核可能会稍有不同。"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

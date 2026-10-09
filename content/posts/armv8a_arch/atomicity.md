@@ -4,7 +4,7 @@ date: 2016-05-13T19:18:37+08:00
 url: "/armv8a_arch/atomicity.html"
 gid: "295"
 emlog_type: "blog"
-summary: "本文主要解析ARMv8手册中的Atomicity这个概念。首先给出为何定义这样的概念，定义这个概念的作用为何？然后介绍Atomicity相关的概\r\n念，很多时候我们引用了手册的原文，但是由于这些原文象天书一样难懂（可读性比较差），因此，我们使用程序员可理解的一些语言来描述这些概念。最后给出\r\nARMv8上，各种内存操作指令，针对各种memory type，其Atomicity的特性为何。"
+summary: "本文主要解析ARMv8手册中的Atomicity这个概念。首先给出为何定义这样的概念，定义这个概念的作用为何？然后介绍Atomicity相关的概 念，很多时候我们引用了手册的原文，但是由于这些原文象天书一样难懂（可读性比较差），因此，我们使用程序员可理解的一些语言来描述这些概念。最后给出 ARMv8上，各种内存操作指令，针对各种memory type，其Atomicity的特性为何。"
 author: "linuxer"
 category: "ARMv8A Arch"
 category_alias: "armv8a_arch"

@@ -4,7 +4,7 @@ date: 2016-05-19T22:38:06+08:00
 url: "/u-boot/boot_flow_1.html"
 gid: "300"
 emlog_type: "blog"
-summary: "\r\n\t \r\n\r\n\r\n\t本文将结合u-boot的“board—&gt;machine—&gt;arch—&gt;cpu”框架，介绍u-boot中平台相关部分的启动流程。并通过对启动流程的简单分析，掌握u-boot移植的基本方法。\r\n\r\n\r\n\t注1：本文所使用的u-boot版本，是2016/4/23从u-boot官网（git://git.denx.de/u-boot.git）导入的一个快照，具体可参考"
+summary: "本文将结合u-boot的“board—>machine—>arch—>cpu”框架，介绍u-boot中平台相关部分的启动流程。并通过对启动流程的简单分析，掌握u-boot移植的基本方法。 注1：本文所使用的u-boot版本，是2016/4/23从u-boot官网（git://git.denx.de/u-boot.git）导入的一个快照，具体可参考“ https://github.com/wowot"
 author: "wowo"
 category: "u-boot分析"
 category_alias: "u-boot"

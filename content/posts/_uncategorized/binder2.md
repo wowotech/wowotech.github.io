@@ -4,7 +4,7 @@ date: 2020-02-18T21:19:51+08:00
 url: "/binder2.html"
 gid: "476"
 emlog_type: "blog"
-summary: "\r\n\t&nbsp;Binder从入门到放弃包括了上下篇，上篇是框架部分，下篇通过几个典型的binder通信过程来呈现其实现细节，即本文。\r\n"
+summary: "Binder从入门到放弃包括了上下篇，上篇是框架部分，下篇通过几个典型的binder通信过程来呈现其实现细节，即本文。"
 author: "OPPO内核团队"
 tags: ["binder"]
 views: 14649

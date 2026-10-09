@@ -4,7 +4,7 @@ date: 2014-07-04T14:34:40+08:00
 url: "/irq_subsystem/gic-irq-chip-driver.html"
 gid: "57"
 emlog_type: "blog"
-summary: "\r\n\tGIC（Generic Interrupt \r\nController）是ARM公司提供的一个通用的中断控制器。GIC通过AMBA（Advanced Microcontroller Bus \r\nArchitecture）这样的片上总线连接到一个或者多个ARM processor上。本文主要分析了linux \r\nkernel中GIC中断控制器的驱动代码。\r\n\r\n\r\n\t具体的分析方法是按照sour"
+summary: "GIC（Generic Interrupt Controller）是ARM公司提供的一个通用的中断控制器。GIC通过AMBA（Advanced Microcontroller Bus Architecture）这样的片上总线连接到一个或者多个ARM processor上。本文主要分析了linux kernel中GIC中断控制器的驱动代码。 具体的分析方法是按照source code为索引，逐段分析"
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

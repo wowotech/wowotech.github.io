@@ -4,7 +4,7 @@ date: 2014-05-13T19:24:07+08:00
 url: "/pm_subsystem/generic_pm_architecture.html"
 gid: "40"
 emlog_type: "blog"
-summary: "\r\n\t这里的Generic PM，是蜗蜗自己起的名字，指Linux系统中那些常规的电源管理手段，包括关机（Power off）、待机（Standby or \r\nHibernate）、重启（Reboot）等。这些手段是在嵌入式Linux普及之前的PC或者服务器时代使用的。在那个计算机科学的蛮荒时代，人类在摩尔定律的刺激下，孜孜追求的是计算机的计算能力、处理性能，因此并不特别关心Power消耗。\r\n\r"
+summary: "这里的Generic PM，是蜗蜗自己起的名字，指Linux系统中那些常规的电源管理手段，包括关机（Power off）、待机（Standby or Hibernate）、重启（Reboot）等。这些手段是在嵌入式Linux普及之前的PC或者服务器时代使用的。在那个计算机科学的蛮荒时代，人类在摩尔定律的刺激下，孜孜追求的是计算机的计算能力、处理性能，因此并不特别关心Power消耗。 在这种背景下发"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

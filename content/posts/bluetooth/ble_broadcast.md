@@ -4,7 +4,7 @@ date: 2016-05-27T16:15:22+08:00
 url: "/bluetooth/ble_broadcast.html"
 gid: "303"
 emlog_type: "blog"
-summary: "\r\n\t大家都知道，相比传统蓝牙，蓝牙低功耗（BLE）最大的突破就是加大了对广播通信（Advertising）的支持和利用。关于广播通信，通过“玩转BLE(1)_Eddystone \r\nbeacon”和“玩转BLE(2)_使用bluepy扫描BLE的广播数据”两篇文章的介绍，我们已经有了一个整体的认识。本文将依此为基础，从技术的角度，分析和理解BLE协议中有关广播通信的定义和实现。\r\n\r\n\r\n\t注1"
+summary: "大家都知道，相比传统蓝牙，蓝牙低功耗（BLE）最大的突破就是加大了对广播通信（Advertising）的支持和利用。关于广播通信，通过“ 玩转BLE(1)_Eddystone beacon ”和“ 玩转BLE(2)_使用bluepy扫描BLE的广播数据 ”两篇文章的介绍，我们已经有了一个整体的认识。本文将依此为基础，从技术的角度，分析和理解BLE协议中有关广播通信的定义和实现。 注1：之前的蓝牙协"
 author: "wowo"
 category: "蓝牙"
 category_alias: "bluetooth"

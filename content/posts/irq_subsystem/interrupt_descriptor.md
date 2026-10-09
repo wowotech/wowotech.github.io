@@ -4,7 +4,7 @@ date: 2014-08-26T17:03:06+08:00
 url: "/irq_subsystem/interrupt_descriptor.html"
 gid: "82"
 emlog_type: "blog"
-summary: "本文主要围绕IRQ number和中断描述符（interrupt \r\ndescriptor）这两个概念描述通用中断处理过程。第二章主要描述基本概念，包括什么是IRQ \r\nnumber，什么是中断描述符等。第三章描述中断描述符数据结构的各个成员。第四章描述了初始化中断描述符相关的接口API。第五章描述中断描述符相关\r\n的接口API。"
+summary: "本文主要围绕IRQ number和中断描述符（interrupt descriptor）这两个概念描述通用中断处理过程。第二章主要描述基本概念，包括什么是IRQ number，什么是中断描述符等。第三章描述中断描述符数据结构的各个成员。第四章描述了初始化中断描述符相关的接口API。第五章描述中断描述符相关 的接口API。"
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

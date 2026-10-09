@@ -4,7 +4,7 @@ date: 2015-01-05T19:03:50+08:00
 url: "/timer_subsystem/posix-clock.html"
 gid: "137"
 emlog_type: "blog"
-summary: "clock是timer的基础，任何一个timer都需要运作在一个指定的clock上来。内核中维护了若干的clock，本文第二章描述了clock的\r\n基本概念和一些静态定义的posix clock。根据计时的特点，clock分成两种：一种是真实世界的时间概念，另外一个是仅仅计算CPU执行时间 \r\n，这两种clock分别在第三和第四章描述。从clock的生命周期来看，可以分成静态和动态的posix \r"
+summary: "clock是timer的基础，任何一个timer都需要运作在一个指定的clock上来。内核中维护了若干的clock，本文第二章描述了clock的 基本概念和一些静态定义的posix clock。根据计时的特点，clock分成两种：一种是真实世界的时间概念，另外一个是仅仅计算CPU执行时间 ，这两种clock分别在第三和第四章描述。从clock的生命周期来看，可以分成静态和动态的posix cloc"
 author: "linuxer"
 category: "时间子系统"
 category_alias: "timer_subsystem"

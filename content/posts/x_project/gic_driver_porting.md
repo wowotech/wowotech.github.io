@@ -4,7 +4,7 @@ date: 2016-10-31T22:23:41+08:00
 url: "/x_project/gic_driver_porting.html"
 gid: "347"
 emlog_type: "blog"
-summary: "\r\n\t“X Project”完成“X-012-KERNEL-serial \r\nearly console的移植”之后，终止在如下的kernel panic中：\r\n\r\n\r\n\t\r\n\t\tNR_IRQS:64 nr_irqs:64 0 \r\nKernel panic - not syncing: No interrupt \r\ncontroller found. \r\n---[ end Kernel panic"
+summary: "“ X Project ”完成“ X-012-KERNEL-serial early console的移植 ”之后，终止在如下的kernel panic中： NR_IRQS:64 nr_irqs:64 0 Kernel panic - not syncing: No interrupt controller found. ---[ end Kernel panic - not syncing: N"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

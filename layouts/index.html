@@ -1,6 +1,7 @@
 {{ define "main" }}
 {{ $posts := sort (where site.RegularPages "Type" "posts") "Date" "desc" }}
-{{ $pager := .Paginate $posts 20 }}
+{{/* 原站首页每页 10 篇（emlog 的 index_lognum） */}}
+  {{ $pager := .Paginate $posts 10 }}
 
 <section class="intro">
   <h1>{{ site.Title }}</h1>
@@ -12,18 +13,24 @@
   </p>
 </section>
 
-<ul class="post-list">
+<div class="post-excerpts">
 {{ range $pager.Pages }}
-  <li>
-    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-    <span class="muted small">
-      {{ .Date.Format "2006-01-02" }}
-      {{ with .Params.category }}· {{ . }}{{ end }}
-      {{ if gt (int .Params.comment_count) 0 }}· {{ .Params.comment_count }} 评论{{ end }}
-    </span>
-  </li>
+  <article class="post-card">
+    <h2 class="card-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+    <p class="card-meta">
+      {{ with .Params.author }}作者：{{ . }} · {{ end }}发布于 {{ .Date.Format "2006-01-02 15:04" }}
+      {{ with .Params.category }} · {{ . }}{{ end }}
+    </p>
+    {{ with .Params.summary }}<p class="card-excerpt">{{ . }}</p>{{ end }}
+    <p class="card-foot">
+      <a href="{{ .RelPermalink }}">阅读全文 »</a>
+      {{ with .Params.tags }} · 标签 {{ range . }}<span class="tag">{{ . }}</span>{{ end }}{{ end }}
+      {{ if gt (int .Params.comment_count) 0 }} · 评论 {{ .Params.comment_count }}{{ end }}
+      {{ if gt (int .Params.views) 0 }} · 浏览 {{ .Params.views }}{{ end }}
+    </p>
+  </article>
 {{ end }}
-</ul>
+</div>
 
 <nav class="pager">
   {{ with $pager.Prev }}<a href="{{ .URL }}">← 更新的文章</a>{{ end }}

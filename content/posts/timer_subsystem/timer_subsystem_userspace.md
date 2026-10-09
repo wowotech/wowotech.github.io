@@ -4,7 +4,7 @@ date: 2014-12-24T15:48:59+08:00
 url: "/timer_subsystem/timer_subsystem_userspace.html"
 gid: "130"
 emlog_type: "blog"
-summary: "\r\n\t从应用程序的角度看，内核需要提供的和时间相关的服务有三种：\r\n\r\n\r\n\t1、和系统时间相关的服务。例如，在向数据库写入一条记录的时候，需要记录操作时间（何年何月何日何时）。\r\n\r\n\r\n\t2、让进程睡眠一段时间\r\n\r\n\r\n\t3、和timer相关的服务。在一段指定的时间过去后，kernel要alert用户进程\r\n\r\n\r\n\t本文主要描述和时间子系统相关的用户空间接口函数知识。\r\n"
+summary: "从应用程序的角度看，内核需要提供的和时间相关的服务有三种： 1、和系统时间相关的服务。例如，在向数据库写入一条记录的时候，需要记录操作时间（何年何月何日何时）。 2、让进程睡眠一段时间 3、和timer相关的服务。在一段指定的时间过去后，kernel要alert用户进程 本文主要描述和时间子系统相关的用户空间接口函数知识。"
 author: "linuxer"
 category: "时间子系统"
 category_alias: "timer_subsystem"

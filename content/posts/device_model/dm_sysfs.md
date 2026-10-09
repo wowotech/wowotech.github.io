@@ -4,7 +4,7 @@ date: 2014-03-14T18:31:35+08:00
 url: "/device_model/dm_sysfs.html"
 gid: "18"
 emlog_type: "blog"
-summary: "\r\n\tsysfs是一个基于RAM的文件系统，它和Kobject一起，可以将Kernel的数据结构导出到用户空间，以文件目录结构的形式，提供对这些数据结构（以及数据结构的属性）的访问支持。\r\n\r\n\r\n\tsysfs具备文件系统的所有属性，而本文主要侧重其设备模型的特性,因此不会涉及过多的文件系统实现细节，而只介绍sysfs在Linux设备模型中的作用和使用方法。具体包括：\r\n\r\n\r\n\t\r\n\t\tsysf"
+summary: "sysfs是一个基于RAM的文件系统，它和Kobject一起，可以将Kernel的数据结构导出到用户空间，以文件目录结构的形式，提供对这些数据结构（以及数据结构的属性）的访问支持。 sysfs具备文件系统的所有属性，而本文主要侧重其设备模型的特性,因此不会涉及过多的文件系统实现细节，而只介绍sysfs在Linux设备模型中的作用和使用方法。具体包括： sysfs和Kobject的关系 attrib"
 author: "wowo"
 category: "统一设备模型"
 category_alias: "device_model"

@@ -4,7 +4,7 @@ date: 2015-10-11T15:45:37+08:00
 url: "/comm/pwm_overview.html"
 gid: "217"
 emlog_type: "blog"
-summary: "\r\n\tPWM是Pulse Width \r\nModulation（脉冲宽度调制）的缩写，是利用微处理器的数字输出来对模拟电路进行控制的一种非常有效的技术，其本质是一种对模拟信号电平进行数字编码的方法。在嵌入式设备中，PWM多用于控制马达、LED、振动器等模拟器件。\r\n\r\n\r\n\tPWM framework是kernel为了方便PWM \r\ndriver开发、PWM使用而抽象出来的一套通用API，之所以要"
+summary: "PWM是Pulse Width Modulation（脉冲宽度调制）的缩写，是利用微处理器的数字输出来对模拟电路进行控制的一种非常有效的技术，其本质是一种对模拟信号电平进行数字编码的方法。在嵌入式设备中，PWM多用于控制马达、LED、振动器等模拟器件。 PWM framework是kernel为了方便PWM driver开发、PWM使用而抽象出来的一套通用API，之所以要分析该framework，"
 author: "wowo"
 category: "通信类协议"
 category_alias: "comm"

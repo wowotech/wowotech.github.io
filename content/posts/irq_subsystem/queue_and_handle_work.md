@@ -4,7 +4,7 @@ date: 2015-08-17T19:41:51+08:00
 url: "/irq_subsystem/queue_and_handle_work.html"
 gid: "207"
 emlog_type: "blog"
-summary: "\r\n\t本文主要讲述下面两部分的内容：\r\n\r\n\r\n\t1、将work挂入workqueue的处理过程\r\n\r\n\r\n\t2、如何处理挂入workqueue的work\r\n"
+summary: "本文主要讲述下面两部分的内容： 1、将work挂入workqueue的处理过程 2、如何处理挂入workqueue的work"
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

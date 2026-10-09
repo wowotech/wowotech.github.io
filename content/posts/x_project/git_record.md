@@ -4,7 +4,7 @@ date: 2016-04-26T22:27:01+08:00
 url: "/x_project/git_record.html"
 gid: "290"
 emlog_type: "blog"
-summary: "\r\n\tgit是一个高效、实用的版本管理工具，但并不是一个容易掌握的工具，刚接触的时候，总有一种云里雾里的感觉。因此本文将结合“X \r\nProject”的开发过程，记录git的操作记录，从实战的角度，理解并学习git。\r\n\r\n\r\n\t注1：有关“X Project”的介绍和讨论，可参考“/forum/”。 \r\n"
+summary: "git是一个高效、实用的版本管理工具，但并不是一个容易掌握的工具，刚接触的时候，总有一种云里雾里的感觉。因此本文将结合“X Project”的开发过程，记录git的操作记录，从实战的角度，理解并学习git。 注1：有关“X Project”的介绍和讨论，可参考“ /forum/ ”。"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

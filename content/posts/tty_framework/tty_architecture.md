@@ -4,7 +4,7 @@ date: 2016-09-27T22:42:56+08:00
 url: "/tty_framework/tty_architecture.html"
 gid: "338"
 emlog_type: "blog"
-summary: "\r\n\t由“Linux TTY \r\nframework(1)_基本概念”的介绍可知，在Linux \r\nkernel中，TTY就是各类终端（Terminal）的简称。为了简化终端的使用，以及终端驱动程序的编写，Linux kernel抽象出了TTY \r\nframework：对上，向应用程序提供使用终端的统一接口；对下，提供编写终端驱动程序（如serial driver）的统一框架。\r\n\r\n\r\n\t本文是"
+summary: "由“ Linux TTY framework(1)_基本概念 ”的介绍可知，在Linux kernel中，TTY就是各类终端（Terminal）的简称。为了简化终端的使用，以及终端驱动程序的编写，Linux kernel抽象出了TTY framework：对上，向应用程序提供使用终端的统一接口；对下，提供编写终端驱动程序（如serial driver）的统一框架。 本文是Linux TTY fra"
 author: "wowo"
 category: "TTY子系统"
 category_alias: "tty_framework"

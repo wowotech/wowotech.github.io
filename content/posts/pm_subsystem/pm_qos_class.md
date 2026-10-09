@@ -4,7 +4,7 @@ date: 2015-02-10T23:09:56+08:00
 url: "/pm_subsystem/pm_qos_class.html"
 gid: "144"
 emlog_type: "blog"
-summary: "回顾上一篇文章（Linux PM QoS framework(1)_概述和软件架构），PM QoS framework抽象出4个系统级别的QoS constraint（统称为PM QoS class），分别是cpu&amp;dma latency、network latency、network throughput和memory bandwidth。并提供一系列的接口，动态的搜集、整理系统对这些c"
+summary: "回顾上一篇文章（ Linux PM QoS framework(1)_概述和软件架构 ），PM QoS framework抽象出4个系统级别的QoS constraint（统称为PM QoS class），分别是cpu&dma latency、network latency、network throughput和memory bandwidth。并提供一系列的接口，动态的搜集、整理系统对这些con"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

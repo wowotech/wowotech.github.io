@@ -4,7 +4,7 @@ date: 2016-06-18T09:56:02+08:00
 url: "/x_project/bubblegum_uboot_serial.html"
 gid: "312"
 emlog_type: "blog"
-summary: "\r\n\t话说现在的u-boot长得和linux kernel越来越像，设备模型（driver model）、device \r\ntree、各种framework（gpio、pinctrl、clock、i2c、regulator、等等），各种概念，均和linux \r\nkernel保持一致。这对工程师（特别是linux驱动工程师）来说，是一个利好，因为熟悉了linux \r\nkernel相关子系统之后，去搞"
+summary: "话说现在的u-boot长得和linux kernel越来越像，设备模型（driver model）、device tree、各种framework（gpio、pinctrl、clock、i2c、regulator、等等），各种概念，均和linux kernel保持一致。这对工程师（特别是linux驱动工程师）来说，是一个利好，因为熟悉了linux kernel相关子系统之后，去搞u-boot基本上"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

@@ -4,7 +4,7 @@ date: 2016-08-12T18:50:53+08:00
 url: "/memory_management/arm64-memory-addressing.html"
 gid: "324"
 emlog_type: "blog"
-summary: "本文主要分析linux-4.4.6/arch/arm64/include/asm目录下的若干和地址翻译相关的头文件（例如page.h、\r\npgtable.h、pgtable-hwdef.h、pgtable-prot.h等文件）中的各种宏定义以及相关的ARM64硬件知识。硬肯ARM \r\nARM文档有时候太费劲，结合linux源代码会让学习变得简单一些。"
+summary: "本文主要分析linux-4.4.6/arch/arm64/include/asm目录下的若干和地址翻译相关的头文件（例如page.h、 pgtable.h、pgtable-hwdef.h、pgtable-prot.h等文件）中的各种宏定义以及相关的ARM64硬件知识。硬肯ARM ARM文档有时候太费劲，结合linux源代码会让学习变得简单一些。"
 author: "linuxer"
 category: "内存管理"
 category_alias: "memory_management"

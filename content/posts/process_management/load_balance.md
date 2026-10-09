@@ -4,7 +4,7 @@ date: 2021-11-05T06:39:22+08:00
 url: "/process_management/load_balance.html"
 gid: "487"
 emlog_type: "blog"
-summary: "\r\n\t我们描述负载均衡的系列文章一共三篇，第一篇是框架部分，即本文，主要描述了负载均衡相关的原理、场景和框架。后面的两篇是对均衡代码的情景分析，通过对tick balance、new idle balance和task placement等几个典型的负载均衡来呈现其实现细节，稍后发布，敬请期待。\r\n\r\n\r\n\t本文出现的内核代码来自Linux5.10.61，如果有兴趣，读者可以配合代码阅读本文。\r\n"
+summary: "我们描述负载均衡的系列文章一共三篇，第一篇是框架部分，即本文，主要描述了负载均衡相关的原理、场景和框架。后面的两篇是对均衡代码的情景分析，通过对tick balance、new idle balance和task placement等几个典型的负载均衡来呈现其实现细节，稍后发布，敬请期待。 本文出现的内核代码来自Linux5.10.61，如果有兴趣，读者可以配合代码阅读本文。"
 author: "OPPO内核团队"
 category: "进程管理"
 category_alias: "process_management"

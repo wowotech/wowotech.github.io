@@ -4,7 +4,7 @@ date: 2017-03-30T22:01:37+08:00
 url: "/linux_kenrel/dma_engine_overview.html"
 gid: "389"
 emlog_type: "blog"
-summary: "\r\n\t前面文章介绍“Linux MMC \r\nframework”的时候，涉及到了MMC数据传输，进而不可避免地遭遇了DMA(Direct Memory \r\nAccess)。因而，择日不如撞日，就开几篇文章介绍Linux的DMA Engine framework吧。\r\n\r\n\r\n\t本文是DMA Engine framework分析文章的第一篇，主要介绍DMA \r\ncontroller的概念、术语（从硬"
+summary: "前面文章介绍“ Linux MMC framework ”的时候，涉及到了MMC数据传输，进而不可避免地遭遇了DMA(Direct Memory Access)。因而，择日不如撞日，就开几篇文章介绍Linux的DMA Engine framework吧。 本文是DMA Engine framework分析文章的第一篇，主要介绍DMA controller的概念、术语（从硬件的角度，大部分翻译自ke"
 author: "wowo"
 category: "Linux内核分析"
 category_alias: "linux_kenrel"

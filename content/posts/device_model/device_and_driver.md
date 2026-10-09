@@ -4,7 +4,7 @@ date: 2014-04-02T19:28:51+08:00
 url: "/device_model/device_and_driver.html"
 gid: "25"
 emlog_type: "blog"
-summary: "\r\n\tdevice和device driver是Linux驱动开发的基本概念。Linux kernel的思路很简单：驱动开发，就是要开发指定的软件（driver）以驱动指定的设备，所以kernel就为设备和驱动它的driver定义了两个数据结构，分别是device和device_driver。因此本文将会围绕这两个数据结构，介绍Linux设备模型的核心逻辑，包括：\r\n\r\n\r\n\t设备及设备驱动在ke"
+summary: "device和device driver是Linux驱动开发的基本概念。Linux kernel的思路很简单：驱动开发，就是要开发指定的软件（driver）以驱动指定的设备，所以kernel就为设备和驱动它的driver定义了两个数据结构，分别是device和device_driver。因此本文将会围绕这两个数据结构，介绍Linux设备模型的核心逻辑，包括： 设备及设备驱动在kernel中的抽象、"
 author: "wowo"
 category: "统一设备模型"
 category_alias: "device_model"

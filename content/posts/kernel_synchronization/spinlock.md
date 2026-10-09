@@ -4,7 +4,7 @@ date: 2015-04-22T12:22:24+08:00
 url: "/kernel_synchronization/spinlock.html"
 gid: "165"
 emlog_type: "blog"
-summary: "\r\n\t\r\n\r\n\r\n\t在linux \r\nkernel的实现中，经常会遇到这样的场景：共享数据被中断上下文和进程上下文访问，该如何保护呢？如果只有进程上下文的访问，那么可以考虑使用\r\nsemaphore或者mutex的锁机制，但是现在中断上下文也参和进来，那些可以导致睡眠的lock就不能使用了，这时候，可以考虑使用spin \r\nlock。本文主要介绍了linux kernel中的spin lock的原"
+summary: "在linux kernel的实现中，经常会遇到这样的场景：共享数据被中断上下文和进程上下文访问，该如何保护呢？如果只有进程上下文的访问，那么可以考虑使用 semaphore或者mutex的锁机制，但是现在中断上下文也参和进来，那些可以导致睡眠的lock就不能使用了，这时候，可以考虑使用spin lock。本文主要介绍了linux kernel中的spin lock的原理以及代码实现。由于spin "
 author: "linuxer"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

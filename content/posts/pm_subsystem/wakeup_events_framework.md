@@ -4,7 +4,7 @@ date: 2014-09-09T22:43:55+08:00
 url: "/pm_subsystem/wakeup_events_framework.html"
 gid: "86"
 emlog_type: "blog"
-summary: "\r\n\t本文继续“Linux电源管理(6)_Generic PM之Suspend功能”中有关suspend同步以及PM wakeup的话题。这个话题，是近几年Linux kernel最具争议的话题之一，在国外Linux开发论坛，经常可以看到围绕该话题的辩论。辩论的时间跨度和空间跨度可以持续很长，且无法达成一致。\r\n\r\n\r\n\twakeup events framework是这个话题的一个临时性的解决方"
+summary: "本文继续“ Linux电源管理(6)_Generic PM之Suspend功能 ”中有关suspend同步以及PM wakeup的话题。这个话题，是近几年Linux kernel最具争议的话题之一，在国外Linux开发论坛，经常可以看到围绕该话题的辩论。辩论的时间跨度和空间跨度可以持续很长，且无法达成一致。 wakeup events framework是这个话题的一个临时性的解决方案，包括wak"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

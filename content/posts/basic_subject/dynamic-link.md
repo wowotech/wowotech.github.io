@@ -4,7 +4,7 @@ date: 2015-03-10T18:15:32+08:00
 url: "/basic_subject/dynamic-link.html"
 gid: "152"
 emlog_type: "blog"
-summary: "\r\n\t本文以类似hello world这样的简单程序为例，描述了动态连接的概念。第二章描述了整个动态链接的大概过程，随后的两章解析了程序访问动态库中的数据和调用动态库中函数的过程。\r\n\r\n\r\n\t注意：阅读本文之前需要先了解relocatable object file、静态链接以及动态库和PIC这些内容。\r\n"
+summary: "本文以类似hello world这样的简单程序为例，描述了动态连接的概念。第二章描述了整个动态链接的大概过程，随后的两章解析了程序访问动态库中的数据和调用动态库中函数的过程。 注意：阅读本文之前需要先了解 relocatable object file 、 静态链接 以及 动态库和PIC 这些内容。"
 author: "linuxer"
 category: "基础学科"
 category_alias: "basic_subject"

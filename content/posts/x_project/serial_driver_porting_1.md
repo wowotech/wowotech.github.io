@@ -4,7 +4,7 @@ date: 2016-11-10T22:12:03+08:00
 url: "/x_project/serial_driver_porting_1.html"
 gid: "353"
 emlog_type: "blog"
-summary: "\r\n\t在过去的一段时间里，蜗窝上发表了一系列的关于内核各个子系统的分析文章，设备模型、device tree、中断子系统、clock \r\nframework、电源管理、GPIO、pinctrl等等，这些文章重理论、轻实践。随着“X \r\nProject”的进行，我们渐渐有机会把这些缺失的实践慢慢补回来。\r\n\r\n\r\n\t串口驱动是进入Linux \r\nkernel之后最先遭遇的一个驱动，虽然不是很复杂，但"
+summary: "在过去的一段时间里，蜗窝上发表了一系列的关于内核各个子系统的分析文章，设备模型、device tree、中断子系统、clock framework、电源管理、GPIO、pinctrl等等，这些文章重理论、轻实践。随着“ X Project ”的进行，我们渐渐有机会把这些缺失的实践慢慢补回来。 串口驱动是进入Linux kernel之后最先遭遇的一个驱动，虽然不是很复杂，但要素齐全，使用到了kern"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

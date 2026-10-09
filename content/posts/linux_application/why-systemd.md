@@ -4,7 +4,7 @@ date: 2016-03-17T18:27:07+08:00
 url: "/linux_application/why-systemd.html"
 gid: "272"
 emlog_type: "blog"
-summary: "\r\n\t当我把我的电脑升级到Debian 8的时候，赫然发现旧的SysV \r\ninit的东西似乎是消失了，取而代之的是systemd。当然，它不是个新东西，只不过一方面多年来我只是关注内核，很少理会用户空间的东西，此外，公\r\n司的操作系统始终封存在linux2.6.23上，各种rootfs的software \r\npackage也从未升级，因此我已经和世界脱轨了。不过没有关系，活到老学到老，本文主要解"
+summary: "当我把我的电脑升级到Debian 8的时候，赫然发现旧的SysV init的东西似乎是消失了，取而代之的是systemd。当然，它不是个新东西，只不过一方面多年来我只是关注内核，很少理会用户空间的东西，此外，公 司的操作系统始终封存在linux2.6.23上，各种rootfs的software package也从未升级，因此我已经和世界脱轨了。不过没有关系，活到老学到老，本文主要解决一个问题：多年"
 author: "linuxer"
 category: "Linux应用技巧"
 category_alias: "linux_application"

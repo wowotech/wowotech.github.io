@@ -4,7 +4,7 @@ date: 2017-03-20T19:08:14+08:00
 url: "/process_management/schedule-in-interrupt.html"
 gid: "387"
 emlog_type: "blog"
-summary: "每一个Linux驱动工程师都知道这样一个准则：在中断上下文中不能睡眠。但是为什么interrupt \r\ncontext中不能调用导致睡眠的kernel \r\nAPI呢？如果驱动这么做会导致什么样的后果呢？这就是本文探讨的主题。为了理解这个主题，我们设计了一些非常简单的驱动程序和用户空间的程序，实际做实验观察实验效果，最后给出了结果和分析。"
+summary: "每一个Linux驱动工程师都知道这样一个准则：在中断上下文中不能睡眠。但是为什么interrupt context中不能调用导致睡眠的kernel API呢？如果驱动这么做会导致什么样的后果呢？这就是本文探讨的主题。为了理解这个主题，我们设计了一些非常简单的驱动程序和用户空间的程序，实际做实验观察实验效果，最后给出了结果和分析。"
 author: "linuxer"
 category: "进程管理"
 category_alias: "process_management"

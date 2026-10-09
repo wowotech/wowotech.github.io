@@ -4,7 +4,7 @@ date: 2014-12-01T19:03:34+08:00
 url: "/timer_subsystem/clocksource.html"
 gid: "114"
 emlog_type: "blog"
-summary: "和洋葱一样，软件也是有层次的，内核往往需要对形形色色的某类型的驱动进行抽象，屏蔽掉其具体的特质，获取该类驱动共同的逻辑，而又根据这些逻辑撰写该类\r\n驱动的抽象层。嵌入式系统总是会提供timer的硬件block，软件需要对timer硬件提供的功能进行抽象：linux \r\nkernel将timer类型的硬件抽象成两个组件，一是free \r\nrunning的counter，另外一个是指定的counter"
+summary: "和洋葱一样，软件也是有层次的，内核往往需要对形形色色的某类型的驱动进行抽象，屏蔽掉其具体的特质，获取该类驱动共同的逻辑，而又根据这些逻辑撰写该类 驱动的抽象层。嵌入式系统总是会提供timer的硬件block，软件需要对timer硬件提供的功能进行抽象：linux kernel将timer类型的硬件抽象成两个组件，一是free running的counter，另外一个是指定的counter值上产生中"
 author: "linuxer"
 category: "时间子系统"
 category_alias: "timer_subsystem"

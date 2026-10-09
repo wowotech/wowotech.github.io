@@ -4,7 +4,7 @@ date: 2017-03-08T21:33:47+08:00
 url: "/comm/mmc_host_driver.html"
 gid: "383"
 emlog_type: "blog"
-summary: "本文是Linux MMC framework的第二篇，将从驱动工程师的角度，介绍MMC host controller \r\ndriver有关的知识，学习并掌握如何在MMC \r\nframework的框架下，编写MMC控制器的驱动程序。同时，通过本篇文章，我们会进一步的理解MMC、SD、SDIO等有关的基础知识。"
+summary: "本文是Linux MMC framework的第二篇，将从驱动工程师的角度，介绍MMC host controller driver有关的知识，学习并掌握如何在MMC framework的框架下，编写MMC控制器的驱动程序。同时，通过本篇文章，我们会进一步的理解MMC、SD、SDIO等有关的基础知识。"
 author: "wowo"
 category: "通信类协议"
 category_alias: "comm"

@@ -4,7 +4,7 @@ date: 2014-04-28T10:24:20+08:00
 url: "/device_model/platform_device.html"
 gid: "37"
 emlog_type: "blog"
-summary: "\r\n\t在Linux设备模型的抽象中，存在着一类称作“Platform Device”的设备，内核是这样描述它们的（Documentation/driver-model/platform.txt）：\r\n\r\n\r\n\t\r\n\t\tPlatform devices are devices that typically appear as autonomous entities in the system. Th"
+summary: "在Linux设备模型的抽象中，存在着一类称作“Platform Device”的设备，内核是这样描述它们的（Documentation/driver-model/platform.txt）： Platform devices are devices that typically appear as autonomous entities in the system. This includes l"
 author: "wowo"
 category: "统一设备模型"
 category_alias: "device_model"

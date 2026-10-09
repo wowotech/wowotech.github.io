@@ -4,7 +4,7 @@ date: 2016-12-05T22:50:08+08:00
 url: "/x_project/simple_busybox.html"
 gid: "361"
 emlog_type: "blog"
-summary: "\r\n\t在前一篇文章[1]中，我们编写并成功运行了一个简单的init程序。于是，“【任务4】启动Linux \r\nkernel到命令行”就成了一个水到渠成的事情。当然，只有一个简单的程序还不够，我们要来点实在的，一个真正的根文件系统。\r\n\r\n\r\n\tLinux系统中制作根文件系统的方法有很多种，基于一个个package一点点编译、利用buildroot、利用busybox、等等，本文将以嵌入式系统中普遍"
+summary: "在前一篇文章 [1] 中，我们编写并成功运行了一个简单的init程序。于是，“ 【任务4】启动Linux kernel到命令行 ”就成了一个水到渠成的事情。当然，只有一个简单的程序还不够，我们要来点实在的，一个真正的根文件系统。 Linux系统中制作根文件系统的方法有很多种，基于一个个package一点点编译、利用buildroot、利用busybox、等等，本文将以嵌入式系统中普遍使用的busy"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

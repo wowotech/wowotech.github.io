@@ -4,7 +4,7 @@ date: 2014-08-14T19:12:49+08:00
 url: "/irq_subsystem/interrupt_subsystem_architecture.html"
 gid: "76"
 emlog_type: "blog"
-summary: "\r\n\t一个合格的linux驱动工程师需要对kernel中的中断子系统有深刻的理解，只有这样，在写具体driver的时候才能：\r\n\r\n\r\n\t1、正确的使用linux kernel提供的的API，例如最著名的request_threaded_irq（request_irq）接口\r\n\r\n\r\n\t2、正确使用同步机制保护驱动代码中的临界区\r\n\r\n\r\n\t3、正确的使用kernel提供的softirq、task"
+summary: "一个合格的linux驱动工程师需要对kernel中的中断子系统有深刻的理解，只有这样，在写具体driver的时候才能： 1、正确的使用linux kernel提供的的API，例如最著名的request_threaded_irq（request_irq）接口 2、正确使用同步机制保护驱动代码中的临界区 3、正确的使用kernel提供的softirq、tasklet、workqueue等机制来完成具体"
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

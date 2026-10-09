@@ -4,7 +4,7 @@ date: 2014-11-24T22:31:28+08:00
 url: "/pm_subsystem/clock_framework_core.html"
 gid: "113"
 emlog_type: "blog"
-summary: "\r\n\t前面两篇clock framework的分析文章，分别从clock consumer和clock provider的角度，介绍了Linux kernel怎么管理系统的clock资源，以及device driver怎么使用clock资源。本文将深入到clock framework的内部，分析相关的实现逻辑。\r\n\r\n\r\n\t注：本文使用的kernel版本为linux-3.10.29。虽然最新版本的"
+summary: "前面两篇clock framework的分析文章，分别从 clock consumer 和 clock provider 的角度，介绍了Linux kernel怎么管理系统的clock资源，以及device driver怎么使用clock资源。本文将深入到clock framework的内部，分析相关的实现逻辑。 注：本文使用的kernel版本为linux-3.10.29。虽然最新版本的kerne"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

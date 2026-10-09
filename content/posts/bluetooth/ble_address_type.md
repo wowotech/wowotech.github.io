@@ -4,7 +4,7 @@ date: 2016-06-07T11:40:03+08:00
 url: "/bluetooth/ble_address_type.html"
 gid: "305"
 emlog_type: "blog"
-summary: "也许关注BLE的同学都注意到了，BLE设备有多种类型的设备地址，如Public Device Address、Random Device \r\nAddress、Static Device Address、Private Device \r\nAddress等等。如果不了解内情，大家肯定会被它们绕晕。不过存在即合理，这样看似奇怪的设计，实际上反映了BLE的设计思路以及所针对的应用场景。让我们通过本文一窥究"
+summary: "也许关注BLE的同学都注意到了，BLE设备有多种类型的设备地址，如Public Device Address、Random Device Address、Static Device Address、Private Device Address等等。如果不了解内情，大家肯定会被它们绕晕。不过存在即合理，这样看似奇怪的设计，实际上反映了BLE的设计思路以及所针对的应用场景。让我们通过本文一窥究竟。"
 author: "wowo"
 category: "蓝牙"
 category_alias: "bluetooth"

@@ -4,7 +4,7 @@ date: 2016-12-25T21:52:05+08:00
 url: "/basic_tech/mmc_sd_sdio_intro.html"
 gid: "365"
 emlog_type: "blog"
-summary: "\r\n\t熟悉Linux kernel的人都知道，kernel使用MMC \r\nsubsystem统一管理MMC、SD、SDIO等设备，为什么呢？到底什么是MMC？SD和SDIO又是什么？为什么可以用MMC统称呢？\r\n\r\n\r\n\t在分析Linux kernel的MMC subsystem之前，有必要先介绍一些概念，以便对MMC/SD/SDIO有一个大致的了解，这就是本文的目的。\r\n"
+summary: "熟悉Linux kernel的人都知道，kernel使用MMC subsystem统一管理MMC、SD、SDIO等设备，为什么呢？到底什么是MMC？SD和SDIO又是什么？为什么可以用MMC统称呢？ 在分析Linux kernel的MMC subsystem之前，有必要先介绍一些概念，以便对MMC/SD/SDIO有一个大致的了解，这就是本文的目的。"
 author: "wowo"
 category: "基础技术"
 category_alias: "basic_tech"

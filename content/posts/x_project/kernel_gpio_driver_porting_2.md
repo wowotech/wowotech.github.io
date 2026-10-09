@@ -4,7 +4,7 @@ date: 2017-09-27T22:27:43+08:00
 url: "/x_project/kernel_gpio_driver_porting_2.html"
 gid: "412"
 emlog_type: "blog"
-summary: "\r\n\t我们在[1][2]中提到过，鉴于gpio的特殊性，pinctrl subsystem特意留了一个后门（gpio range），gpio driver可以通过这个后门直接向pinctrl subsystem申请将某个pin用作gpio功能。本文将根据一个简单的示例，介绍这个后门的使用方法，以加深对相关机制的理解。\r\n\r\n\r\n\t注1：本文的测试方法和[3]中的一致，即：通过gpiolib sys"
+summary: "我们在[1][2]中提到过，鉴于gpio的特殊性，pinctrl subsystem特意留了一个后门（gpio range），gpio driver可以通过这个后门直接向pinctrl subsystem申请将某个pin用作gpio功能。本文将根据一个简单的示例，介绍这个后门的使用方法，以加深对相关机制的理解。 注1：本文的测试方法和[3]中的一致，即：通过gpiolib sysfs api控制L"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

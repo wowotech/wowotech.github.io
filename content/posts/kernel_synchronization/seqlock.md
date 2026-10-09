@@ -4,7 +4,7 @@ date: 2015-09-09T11:55:00+08:00
 url: "/kernel_synchronization/seqlock.html"
 gid: "209"
 emlog_type: "blog"
-summary: "普通的spin lock对待reader和writer是一视同仁，RW spin \r\nlock给reader赋予了更高的优先级，那么有没有让writer优先的锁的机制呢？答案就是seqlock。本文主要描述linux kernel\r\n4.0中的seqlock的机制，首先是seqlock的工作原理，如果想浅尝辄止，那么了解了概念性的东东就OK了，也就是第二章了，当然，我还是推荐\r\n普通的驱动工程师了"
+summary: "普通的spin lock对待reader和writer是一视同仁，RW spin lock给reader赋予了更高的优先级，那么有没有让writer优先的锁的机制呢？答案就是seqlock。本文主要描述linux kernel 4.0中的seqlock的机制，首先是seqlock的工作原理，如果想浅尝辄止，那么了解了概念性的东东就OK了，也就是第二章了，当然，我还是推荐 普通的驱动工程师了解seq"
 author: "linuxer"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

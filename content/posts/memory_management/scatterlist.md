@@ -4,7 +4,7 @@ date: 2017-10-13T22:20:34+08:00
 url: "/memory_management/scatterlist.html"
 gid: "413"
 emlog_type: "blog"
-summary: "\r\n\t我们在那些需要和用户空间交互大量数据的子系统（例如MMC[1]、Video、Audio等）中，经常看到scatterlist的影子。对我们这些“非英语母语”的人来说，初见这个词汇，脑袋瞬间就蒙圈了。scatter可翻译成“散开、分散”，list是“列表”的意思，因而scatterlist可翻译为“散列表”。“散列表”又是什么？太抽象了！\r\n\r\n\r\n\t之所以抽象，是因为这个词省略了主语----"
+summary: "我们在那些需要和用户空间交互大量数据的子系统（例如MMC [1] 、Video、Audio等）中，经常看到scatterlist的影子。对我们这些“非英语母语”的人来说，初见这个词汇，脑袋瞬间就蒙圈了。scatter可翻译成“散开、分散”，list是“列表”的意思，因而scatterlist可翻译为“散列表”。“散列表”又是什么？太抽象了！ 之所以抽象，是因为这个词省略了主语----物理内存（Ph"
 author: "wowo"
 category: "内存管理"
 category_alias: "memory_management"

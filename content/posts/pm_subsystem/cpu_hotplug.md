@@ -4,7 +4,7 @@ date: 2015-09-19T21:39:12+08:00
 url: "/pm_subsystem/cpu_hotplug.html"
 gid: "210"
 emlog_type: "blog"
-summary: "\r\n\t由“Linux CPU core的电源管理(1)_概述”的描述可知，kernel cpu control位于“.\\kernel\\cpu.c”中，是一个承上启下的模块，负责屏蔽arch-dependent的实现细节，向上层软件提供控制CPU core的统一API（主要包括cpu_up/cpu_down等接口的实现）。本文将基于这些API，从上到下，分析CPU core从启动到关闭的整个过程（主"
+summary: "由“ Linux CPU core的电源管理(1)_概述 ”的描述可知，kernel cpu control位于“.\\kernel\\cpu.c”中，是一个承上启下的模块，负责屏蔽arch-dependent的实现细节，向上层软件提供控制CPU core的统一API（主要包括cpu_up/cpu_down等接口的实现）。本文将基于这些API，从上到下，分析CPU core从启动到关闭的整个过程（主要"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

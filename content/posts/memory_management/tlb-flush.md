@@ -4,7 +4,7 @@ date: 2016-09-23T19:57:20+08:00
 url: "/memory_management/tlb-flush.html"
 gid: "337"
 emlog_type: "blog"
-summary: "Linux VM \r\nsubsystem在很多场合都需要对TLB进行flush操作，本文希望能够把这个知识点相关的方方面面描述清楚。第二章描述了一些TLB的基本概念，第三章描述了ARM64中TLB的具体硬件实现，第四章描述了linux中和TLB\r\n flush相关的软件接口。内核版本依然是4.4.6版本。"
+summary: "Linux VM subsystem在很多场合都需要对TLB进行flush操作，本文希望能够把这个知识点相关的方方面面描述清楚。第二章描述了一些TLB的基本概念，第三章描述了ARM64中TLB的具体硬件实现，第四章描述了linux中和TLB flush相关的软件接口。内核版本依然是4.4.6版本。"
 author: "linuxer"
 category: "内存管理"
 category_alias: "memory_management"

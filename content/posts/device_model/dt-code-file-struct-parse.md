@@ -4,7 +4,7 @@ date: 2017-09-24T11:08:53+08:00
 url: "/device_model/dt-code-file-struct-parse.html"
 gid: "411"
 emlog_type: "blog"
-summary: "\n\t通过linuxer发表的三篇设备树的文章，我想你应该对设备已经有一个非常充分的认识了。本篇文章即作为一篇Device Tree的总结性文章，同时也作为linuxer文章的补充。本篇文章曾发表在Linuxer公众号，链接为： \n\n\n\thttp://mp.weixin.qq.com/s/OX-aXd5MYlE_YoZ3p32qWA \n"
+summary: "通过linuxer发表的三篇设备树的文章，我想你应该对设备已经有一个非常充分的认识了。本篇文章即作为一篇Device Tree的总结性文章，同时也作为linuxer文章的 补充。 本篇文章曾发表在Linuxer公众号，链接为 ： http://mp.weixin.qq.com/s/OX-aXd5MYlE_YoZ3p32qWA"
 author: "smcdef"
 category: "统一设备模型"
 category_alias: "device_model"

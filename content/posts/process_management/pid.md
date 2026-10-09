@@ -4,7 +4,7 @@ date: 2017-02-23T19:10:26+08:00
 url: "/process_management/pid.html"
 gid: "378"
 emlog_type: "blog"
-summary: "\r\n\t其实两年前，本站已经有了一篇关于进程标识的文档，不过非常的简陋，而且代码是来自2.6内核。随着linux container、pid namespace等概念的引入，进程标识方面已经有了天翻地覆的变化，因此我们需要对这部分的内容进行重新整理。\r\n\r\n\r\n\t本文主要分成四个部分来描述进程标识这个主题：在初步介绍了一些入门的各种IDs基础知识后，在第三章我们描述了pid、pid\r\n number"
+summary: "其实两年前，本站已经有了一篇关于 进程标识 的文档，不过非常的简陋，而且代码是来自2.6内核。随着linux container、pid namespace等概念的引入，进程标识方面已经有了天翻地覆的变化，因此我们需要对这部分的内容进行重新整理。 本文主要分成四个部分来描述进程标识这个主题：在初步介绍了一些入门的各种IDs基础知识后，在第三章我们描述了pid、pid number、pid name"
 author: "linuxer"
 category: "进程管理"
 category_alias: "process_management"

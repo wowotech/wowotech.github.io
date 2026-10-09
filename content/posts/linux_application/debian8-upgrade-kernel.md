@@ -4,7 +4,7 @@ date: 2017-02-27T19:28:35+08:00
 url: "/linux_application/debian8-upgrade-kernel.html"
 gid: "379"
 emlog_type: "blog"
-summary: "\r\n\t一直以来，我都是在使用一台ThinkPad T450 ＋ Debian 8的机器来研究内核，Debian 8上缺省的内核版本是3.16，为什么不把内核升级到4.4.6版本上呢？反正现在蜗窝主要分析的也是这个版本的内核？\r\n\r\n\r\n\t本文主要记录了整个升级过程，方便后续重复使用，哈哈，也许哪天要升级到8.8版本的内核呢，到时候可以把这份文档调出来轻松升级。\r\n"
+summary: "一直以来，我都是在使用一台ThinkPad T450 ＋ Debian 8的机器来研究内核，Debian 8上缺省的内核版本是3.16，为什么不把内核升级到4.4.6版本上呢？反正现在蜗窝主要分析的也是这个版本的内核？ 本文主要记录了整个升级过程，方便后续重复使用，哈哈，也许哪天要升级到8.8版本的内核呢，到时候可以把这份文档调出来轻松升级。"
 author: "linuxer"
 category: "Linux应用技巧"
 category_alias: "linux_application"

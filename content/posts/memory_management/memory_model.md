@@ -4,7 +4,7 @@ date: 2016-08-31T12:01:30+08:00
 url: "/memory_management/memory_model.html"
 gid: "331"
 emlog_type: "blog"
-summary: "\r\n\t在linux内核中支持3中内存模型，分别是flat memory model，Discontiguous memory \r\nmodel和sparse memory model。所谓memory model，其实就是从cpu的角度看，其物理内存的分布情况，在linux \r\nkernel中，使用什么的方式来管理这些物理内存。另外，需要说明的是：本文主要focus在share \r\nmemory的系"
+summary: "在linux内核中支持3中内存模型，分别是flat memory model，Discontiguous memory model和sparse memory model。所谓memory model，其实就是从cpu的角度看，其物理内存的分布情况，在linux kernel中，使用什么的方式来管理这些物理内存。另外，需要说明的是：本文主要focus在share memory的系统，也就是说所有的"
 author: "linuxer"
 category: "内存管理"
 category_alias: "memory_management"

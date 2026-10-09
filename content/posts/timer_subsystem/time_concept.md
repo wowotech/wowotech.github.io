@@ -4,7 +4,7 @@ date: 2014-12-23T12:22:18+08:00
 url: "/timer_subsystem/time_concept.html"
 gid: "129"
 emlog_type: "blog"
-summary: "本文使用Q &amp; A的方式来和大家以前探讨一下时间的基本概念"
+summary: "本文使用Q & A的方式来和大家以前探讨一下时间的基本概念"
 author: "linuxer"
 category: "时间子系统"
 category_alias: "timer_subsystem"

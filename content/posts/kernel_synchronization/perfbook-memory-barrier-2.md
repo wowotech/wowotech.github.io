@@ -4,7 +4,7 @@ date: 2016-01-11T19:26:48+08:00
 url: "/kernel_synchronization/perfbook-memory-barrier-2.html"
 gid: "255"
 emlog_type: "blog"
-summary: "\r\n\t终于完成了perfbook中所有关于memory \r\nbarrier的内容了，站在当前的时间点上，回头看看翻译perfbook之前的我，那时候是多么的幼稚， 对memory \r\nbarrier理解多么肤浅。当然，也许随着时间的流逝，5年之后才回头看看今天的我，也会发现：即便是通读了perfbook的memory \r\nbarrier的内容，其实仍然肤浅，仍然没有理解其精髓。究其原因，一方面，学"
+summary: "终于完成了perfbook中所有关于memory barrier的内容了，站在当前的时间点上，回头看看翻译perfbook之前的我，那时候是多么的幼稚， 对memory barrier理解多么肤浅。当然，也许随着时间的流逝，5年之后才回头看看今天的我，也会发现：即便是通读了perfbook的memory barrier的内容，其实仍然肤浅，仍然没有理解其精髓。究其原因，一方面，学习的过程总是螺旋式"
 author: "linuxer"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

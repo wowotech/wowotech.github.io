@@ -4,7 +4,7 @@ date: 2017-01-09T19:28:14+08:00
 url: "/basic_tech/flash_memory_intro.html"
 gid: "367"
 emlog_type: "blog"
-summary: "\n\teMMC 是 Flash Memory 的一类，在详细介绍 eMMC 之前，先简单介绍一下 Flash Memory。\n\n\n\tFlash Memory 是一种非易失性的存储器。在嵌入式系统中通常用于存放系统、应用和数据等。在 PC 系统中，则主要用在固态硬盘以及主板 BIOS 中。另外，绝大部分的 U 盘、SDCard 等移动存储设备也都是使用 Flash Memory 作为存储介质。\n"
+summary: "eMMC 是 Flash Memory 的一类，在详细介绍 eMMC 之前，先简单介绍一下 Flash Memory。 Flash Memory 是一种非易失性的存储器。在嵌入式系统中通常用于存放系统、应用和数据等。在 PC 系统中，则主要用在固态硬盘以及主板 BIOS 中。另外，绝大部分的 U 盘、SDCard 等移动存储设备也都是使用 Flash Memory 作为存储介质。"
 author: "codingbelief"
 category: "基础技术"
 category_alias: "basic_tech"

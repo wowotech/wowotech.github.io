@@ -4,7 +4,7 @@ date: 2017-07-23T22:21:15+08:00
 url: "/x_project/libusb_on_windows.html"
 gid: "403"
 emlog_type: "blog"
-summary: "\n\t话说我们“X Project”的第一个任务就是通过USB将主机上的Image文件下载到开发板的Ram中执行（参考[1]中有关的内容），为此我们在host中porting了一个简单的应用程序（称作DFU[2]），负责和开发板ROM中的代码交流，下载并执行Image文件。为了方便，该应用程序使用libusb[3]进行USB有关的操作。\n\n\n\tlibusb不止使用起来简单，还有一个极大的优点，就是“"
+summary: "话说我们“ X Project ”的第一个任务就是通过USB将主机上的Image文件下载到开发板的Ram中执行（参考[1]中有关的内容），为此我们在host中porting了一个简单的应用程序（称作DFU [2] ），负责和开发板ROM中的代码交流，下载并执行Image文件。为了方便，该应用程序使用libusb [3] 进行USB有关的操作。 libusb不止使用起来简单，还有一个极大的优点，就是"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

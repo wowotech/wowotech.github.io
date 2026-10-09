@@ -4,7 +4,7 @@ date: 2015-01-22T18:12:26+08:00
 url: "/timer_subsystem/posix-timer.html"
 gid: "141"
 emlog_type: "blog"
-summary: "\r\n\t在用户空间接口函数文档中，\r\n我们描述了和POSIX timer相关的操作，主要包括创建一个timer、设定timer、获取timer的状态、获取timer \r\noverrun的信息、删除timer。本文将沿着这些用户空间的接口定义来看看内核态的实现。虽然POSIX \r\ntimer可以基于各种不同的clock创建，本文主要描述real time clock相关的timer。\r\n\r\n\r\n\t本文"
+summary: "在 用户空间接口函数文档 中， 我们描述了和POSIX timer相关的操作，主要包括创建一个timer、设定timer、获取timer的状态、获取timer overrun的信息、删除timer。本文将沿着这些用户空间的接口定义来看看内核态的实现。虽然POSIX timer可以基于各种不同的clock创建，本文主要描述real time clock相关的timer。 本文第二章描述了POSIX "
 author: "linuxer"
 category: "时间子系统"
 category_alias: "timer_subsystem"

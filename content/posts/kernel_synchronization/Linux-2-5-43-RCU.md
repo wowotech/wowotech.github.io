@@ -4,7 +4,7 @@ date: 2016-01-19T12:13:03+08:00
 url: "/kernel_synchronization/Linux-2-5-43-RCU.html"
 gid: "258"
 emlog_type: "blog"
-summary: "\r\n\tRCU的工作原理虽然简单，但是实现产品级别的RCU同步机制并不是一个简单的事情，看看目前kernel中庞大的RCU数据结构，这让我望而却\r\n步。蜗窝科技在撰写其他文档的时候，往往喜欢使用最新的内核，本文和其他文章不一样，本文选择了第一个引入RCU的内核版本，即2.5.43。\r\n\r\n\r\n\t本文主要介绍了linux2.5.43版本上的RCU实现。\r\n"
+summary: "RCU的工作原理虽然简单，但是实现产品级别的RCU同步机制并不是一个简单的事情，看看目前kernel中庞大的RCU数据结构，这让我望而却 步。蜗窝科技在撰写其他文档的时候，往往喜欢使用最新的内核，本文和其他文章不一样，本文选择了第一个引入RCU的内核版本，即2.5.43。 本文主要介绍了linux2.5.43版本上的RCU实现。"
 author: "linuxer"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

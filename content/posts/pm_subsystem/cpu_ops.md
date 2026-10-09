@@ -4,7 +4,7 @@ date: 2015-07-17T22:15:06+08:00
 url: "/pm_subsystem/cpu_ops.html"
 gid: "200"
 emlog_type: "blog"
-summary: "\r\n\t由“ARMv8-a架构简介”中有关的介绍可知，ARMv8（包括ARMv7的一些扩展）引入了Virtualization、Security等概念。在这些概念之下，传统的CPU boot、shutdown、reset、suspend/resume等操作，不再那么简单和单纯。因此，ARM将这些底层操作抽象为一些operations，在以统一的方式向上层软件提供API的同时，可以根据不同的场景，有不"
+summary: "由“ ARMv8-a架构简介 ”中有关的介绍可知，ARMv8（包括ARMv7的一些扩展）引入了Virtualization、Security等概念。在这些概念之下，传统的CPU boot、shutdown、reset、suspend/resume等操作，不再那么简单和单纯。因此，ARM将这些底层操作抽象为一些operations，在以统一的方式向上层软件提供API的同时，可以根据不同的场景，有不同"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

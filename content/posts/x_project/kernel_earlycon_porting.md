@@ -4,7 +4,7 @@ date: 2016-10-02T22:50:51+08:00
 url: "/x_project/kernel_earlycon_porting.html"
 gid: "339"
 emlog_type: "blog"
-summary: "\r\n\t对Linux kernel工程师来说，最依赖的工具非printk莫属（不多解释，大家都懂）。因此，在Linux \r\nkernel移植的初期阶段，如果能够尽快地实现printk功能，将会为后续的工作带来极大的帮助。\r\n\r\n\r\n\t在众多可用作printk输出的终端里面（串口、屏幕、USB、网络、等等），串口终端（也即串口驱动）无疑是实现起来最简单一种，因此也是嵌入式linux开发过程中（特别是早"
+summary: "对Linux kernel工程师来说，最依赖的工具非printk莫属（不多解释，大家都懂）。因此，在Linux kernel移植的初期阶段，如果能够尽快地实现printk功能，将会为后续的工作带来极大的帮助。 在众多可用作printk输出的终端里面（串口、屏幕、USB、网络、等等），串口终端（也即串口驱动）无疑是实现起来最简单一种，因此也是嵌入式linux开发过程中（特别是早期阶段）最普遍使用的。"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

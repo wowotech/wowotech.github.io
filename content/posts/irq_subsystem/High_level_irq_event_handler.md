@@ -4,7 +4,7 @@ date: 2014-08-28T20:00:50+08:00
 url: "/irq_subsystem/High_level_irq_event_handler.html"
 gid: "83"
 emlog_type: "blog"
-summary: "\r\n\t当外设触发一次中断后，一个大概的处理过程是：\r\n\r\n\r\n\t1、具体CPU architecture相关的模块会进行现场保护，然后调用machine driver对应的中断处理handler\r\n\r\n\r\n\t2、machine driver对应的中断处理handler中会根据硬件的信息获取HW interrupt ID，并且通过irq domain模块翻译成IRQ number\r\n\r\n\r\n\t3、\r"
+summary: "当外设触发一次中断后，一个大概的处理过程是： 1、具体CPU architecture相关的模块会进行现场保护，然后调用machine driver对应的中断处理handler 2、machine driver对应的中断处理handler中会根据硬件的信息获取HW interrupt ID，并且通过irq domain模块翻译成IRQ number 3、 调用该IRQ number对应的high "
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

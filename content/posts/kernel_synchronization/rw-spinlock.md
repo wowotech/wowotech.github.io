@@ -4,7 +4,7 @@ date: 2015-05-22T18:38:22+08:00
 url: "/kernel_synchronization/rw-spinlock.html"
 gid: "188"
 emlog_type: "blog"
-summary: "\r\n\t在有了强大的spin lock之后，为何还会有rw spin lock呢？无他，仅仅是为了增加内核的并发，从而增加性能而已。spin \r\nlock严格的限制只有一个thread可以进入临界区，但是实际中，有些对共享资源的访问可以严格区分读和写的，这时候，其实多个读的thread进入\r\n临界区是OK的，使用spin lock则限制一个读thread进入，从而导致性能的下降。\r\n\r\n\r\n\t本文主"
+summary: "在有了强大的spin lock之后，为何还会有rw spin lock呢？无他，仅仅是为了增加内核的并发，从而增加性能而已。spin lock严格的限制只有一个thread可以进入临界区，但是实际中，有些对共享资源的访问可以严格区分读和写的，这时候，其实多个读的thread进入 临界区是OK的，使用spin lock则限制一个读thread进入，从而导致性能的下降。 本文主要描述RW spin l"
 author: "linuxer"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

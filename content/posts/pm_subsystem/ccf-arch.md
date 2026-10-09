@@ -4,7 +4,7 @@ date: 2016-04-21T19:23:38+08:00
 url: "/pm_subsystem/ccf-arch.html"
 gid: "286"
 emlog_type: "blog"
-summary: "\r\n\t之前，wowo同学已经发表了关于CCF（Common Clock Framework）的三份文档，相信大家对CCF有一定的了解了，本文就是在阅读那三份文档的基础上，针对Linux 4.4.6内核的内核代码实现，记录自己对CCF的理解，并对CCF进行系统结构层面的归纳和整理。\r\n\r\n\r\n\t本文内容包括三个部分，第二章给出了整个CCF相关的block diagram图，随后在第三章对各个模块进行"
+summary: "之前，wowo同学已经发表了关于CCF（ Common Clock Framework ）的三份文档，相信大家对CCF有一定的了解了，本文就是在阅读那三份文档的基础上，针对Linux 4.4.6内核的内核代码实现，记录自己对CCF的理解，并对CCF进行系统结构层面的归纳和整理。 本文内容包括三个部分，第二章给出了整个CCF相关的block diagram图，随后在第三章对各个模块进行功能层面的描述"
 author: "linuxer"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

@@ -4,7 +4,7 @@ date: 2015-03-23T19:03:53+08:00
 url: "/pull-up-resistor.html"
 gid: "157"
 emlog_type: "blog"
-summary: "heziq网友在《linux kernel的中断子系统之（四）：High level irq event handler》文档中提出了若干个问题，由于在回复中无法图形表达，因此单独出一份文档来回答，希望可以有所帮助。当然，由于他提出的问题和硬件电路设计有关，这里我只是表达我自己的观点（毕竟出身是软件工程师），如果有误，请不吝指出。"
+summary: "heziq网友在《 linux kernel的中断子系统之（四）：High level irq event handler 》文档中提出了若干个问题，由于在回复中无法图形表达，因此单独出一份文档来回答，希望可以有所帮助。当然，由于他提出的问题和硬件电路设计有关，这里我只是表达我自己的观点（毕竟出身是软件工程师），如果有误，请不吝指出。"
 author: "linuxer"
 tags: ["上拉电阻", "下拉电阻"]
 views: 15403

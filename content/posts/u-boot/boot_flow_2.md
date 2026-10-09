@@ -4,7 +4,7 @@ date: 2016-06-07T22:06:38+08:00
 url: "/u-boot/boot_flow_2.html"
 gid: "306"
 emlog_type: "blog"
-summary: "\r\n\t书接上文（u-boot启动流程分析(1)_平台相关部分），本文介绍u-boot启动流程中和具体版型（board）有关的部分，也即board_init_f/board_init_r所代表的、board有关初始化过程。该过程将持续u-boot的整个生命周期，直到main_loop（即传说中的命令行）。\r\n\r\n\r\n\t注1：由于u-boot后初始化过程，基本上涉及到了所有的软件模块，因此本文不能一一"
+summary: "书接上文（ u-boot启动流程分析(1)_平台相关部分 ），本文介绍u-boot启动流程中和具体版型（board）有关的部分，也即 board_init_f / board_init_r 所代表的、board有关初始化过程。该过程将持续u-boot的整个生命周期，直到main_loop（即传说中的命令行）。 注1：由于u-boot后初始化过程，基本上涉及到了所有的软件模块，因此本文不能一一分析，"
 author: "wowo"
 category: "u-boot分析"
 category_alias: "u-boot"

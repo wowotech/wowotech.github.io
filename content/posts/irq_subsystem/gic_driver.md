@@ -4,7 +4,7 @@ date: 2014-09-04T16:59:06+08:00
 url: "/irq_subsystem/gic_driver.html"
 gid: "84"
 emlog_type: "blog"
-summary: "\r\n\t\r\n\r\n\r\n\tGIC（Generic Interrupt Controller）是ARM公司提供的一个通用的中断控制器，其architecture \r\nspecification目前有四个版本，V1～V4(V2最多支持8个ARM core，V3/V4支持更多的ARM \r\ncore，主要用于ARM64服务器系统结构）。目前在ARM官方网站只能下载到Version 2的GIC architect"
+summary: "GIC（Generic Interrupt Controller）是ARM公司提供的一个通用的中断控制器，其architecture specification目前有四个版本，V1～V4(V2最多支持8个ARM core，V3/V4支持更多的ARM core，主要用于ARM64服务器系统结构）。目前在ARM官方网站只能下载到Version 2的GIC architecture specificat"
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

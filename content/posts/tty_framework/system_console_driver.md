@@ -4,7 +4,7 @@ date: 2016-10-29T22:43:44+08:00
 url: "/tty_framework/system_console_driver.html"
 gid: "346"
 emlog_type: "blog"
-summary: "\r\n\t由[1]中的介绍可知，Linux kernel的console框架，主要提供“控制台终端”的功能，用于：\r\n\r\n\r\n\t\r\n\t\t1）kernel日志信息（printk）的输出。\r\n\t\r\n\t\r\n\t\t2）实现基础的、基于控制台的人机交互。\r\n\t\r\n\r\n\r\n\t本文将从console driver开发者的视角，介绍：console有关的机制；编写一个console驱动需要哪些步骤；从用户的角度怎么使用"
+summary: "由[1]中的介绍可知，Linux kernel的console框架，主要提供“控制台终端”的功能，用于： 1）kernel日志信息（printk）的输出。 2）实现基础的、基于控制台的人机交互。 本文将从console driver开发者的视角，介绍：console有关的机制；编写一个console驱动需要哪些步骤；从用户的角度怎么使用；等等。"
 author: "wowo"
 category: "TTY子系统"
 category_alias: "tty_framework"

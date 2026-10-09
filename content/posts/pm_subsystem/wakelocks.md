@@ -4,7 +4,7 @@ date: 2014-09-14T23:17:28+08:00
 url: "/pm_subsystem/wakelocks.html"
 gid: "89"
 emlog_type: "blog"
-summary: "\r\n\twakelocks是一个有故事的功能。\r\n\r\n\r\n\twakelocks最初出现在Android为linux kernel打的一个补丁集上，该补丁集实现了一个名称为“wakelocks”的系统调用，该系统调用允许调用者阻止系统进入低功耗模式（如idle、suspend等）。同时，该补丁集更改了Linux kernel原生的电源管理执行过程（kernel/power/main.c中的state_"
+summary: "wakelocks是一个有故事的功能。 wakelocks最初出现在Android为linux kernel打的一个补丁集上，该补丁集实现了一个名称为“wakelocks”的系统调用，该系统调用允许调用者阻止系统进入低功耗模式（如idle、suspend等）。同时，该补丁集更改了Linux kernel原生的电源管理执行过程（kernel/power/main.c中的state_show和stat"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

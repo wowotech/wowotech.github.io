@@ -4,7 +4,7 @@ date: 2014-04-28T15:40:44+08:00
 url: "/process_management/process-creation-2.html"
 gid: "38"
 emlog_type: "blog"
-summary: "\r\n\t本文是Process Creation（一）的延续，主要内容包括：\r\n\r\n\r\n\t1、进程描述符中Realtime Mutex相关数据结构的初始化\r\n\r\n\r\n\t2、子进程如何复制父进程的credentials\r\n\r\n\r\n\t3、per-task delay accounting的处理\r\n\r\n\r\n\t4、子进程如何复制父进程的flag\r\n"
+summary: "本文是 Process Creation（一） 的延续，主要内容包括： 1、进程描述符中Realtime Mutex相关数据结构的初始化 2、子进程如何复制父进程的credentials 3、per-task delay accounting的处理 4、子进程如何复制父进程的flag"
 author: "linuxer"
 category: "进程管理"
 category_alias: "process_management"

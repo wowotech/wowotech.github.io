@@ -4,7 +4,7 @@ date: 2016-12-03T11:08:08+08:00
 url: "/x_project/simple_initramfs.html"
 gid: "360"
 emlog_type: "blog"
-summary: "\n\t我们在“X-015-KERNEL-ARM \ngeneric timer driver的移植”中移植完ARM generic \ntimer之后，Linux的启动已经走完了内核空间的旅程，即将冲破kernel走向用户空间，有“诗”为证：\n\n\n\t\n\t\t[&nbsp;&nbsp;&nbsp; 0.142156] ---[ end Kernel panic - not syncing: No worki"
+summary: "我们在“ X-015-KERNEL-ARM generic timer driver的移植 ”中移植完ARM generic timer之后，Linux的启动已经走完了内核空间的旅程，即将冲破kernel走向用户空间，有“诗”为证： [ 0.142156] ---[ end Kernel panic - not syncing: No working init found. Try passing"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

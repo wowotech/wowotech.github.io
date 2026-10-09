@@ -4,7 +4,7 @@ date: 2015-11-10T22:04:33+08:00
 url: "/pm_subsystem/arm_big_little_driver.html"
 gid: "232"
 emlog_type: "blog"
-summary: "\r\n\t也许大家会觉得奇怪：为什么Linux kernel把对ARM big·Lttile的支持放到了cpufreq的框架中？\r\n\r\n\r\n\t众所周知，ARM的big·Little架构，也称作HMP（具体可参考“Linux CPU \r\ncore的电源管理(2)_cpu topology”中相关的介绍），通过在一个chip中封装两种不同类型的ARM \r\ncore的方式，达到性能和功耗的平衡。这两类ARM"
+summary: "也许大家会觉得奇怪：为什么Linux kernel把对ARM big·Lttile的支持放到了cpufreq的框架中？ 众所周知，ARM的big·Little架构，也称作HMP（具体可参考“ Linux CPU core的电源管理(2)_cpu topology ”中相关的介绍），通过在一个chip中封装两种不同类型的ARM core的方式，达到性能和功耗的平衡。这两类ARM Core，以clus"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

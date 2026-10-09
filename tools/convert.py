@@ -203,8 +203,14 @@ def convert_posts(data: dict, out: Path, rw: Rewriter, report: list[str]):
               # 用 emlog_type 存原值：若写成 type，会覆盖 Hugo 由目录推断的段落类型，
               # 首页 /posts/ 的筛选就会全部落空
               f"emlog_type: {yaml_str(p['type'])}"]
+        # 首页摘要：优先用作者写的 excerpt，没有就用正文开头（与原站行为一致）
+        summary = ""
         if p.get("excerpt"):
-            fm.append(f"summary: {yaml_str(re.sub(r'<[^>]+>', '', p['excerpt'])[:200])}")
+            summary = re.sub(r"\s+", " ", html.unescape(
+                re.sub(r"<[^>]+>", " ", p["excerpt"]))).strip()
+        if not summary:
+            summary = site_data.plain_text(body)
+        fm.append(f"summary: {yaml_str(summary[:200])}")
         if name:
             fm.append(f"author: {yaml_str(name)}")
         if sort:

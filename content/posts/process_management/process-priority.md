@@ -4,7 +4,7 @@ date: 2017-03-14T18:46:06+08:00
 url: "/process_management/process-priority.html"
 gid: "386"
 emlog_type: "blog"
-summary: "本文主要描述的是进程优先级这个概念。从用户空间来看，进程优先级就是nice value和scheduling \r\npriority，对应到内核，有静态优先级、realtime优先级、归一化优先级和动态优先级等概念，我们希望能在第二章将这些相关的概念描述清楚。为了加深理解，在第三章我们给出了几个典型数据流过程的分析。"
+summary: "本文主要描述的是进程优先级这个概念。从用户空间来看，进程优先级就是nice value和scheduling priority，对应到内核，有静态优先级、realtime优先级、归一化优先级和动态优先级等概念，我们希望能在第二章将这些相关的概念描述清楚。为了加深理解，在第三章我们给出了几个典型数据流过程的分析。"
 author: "linuxer"
 category: "进程管理"
 category_alias: "process_management"

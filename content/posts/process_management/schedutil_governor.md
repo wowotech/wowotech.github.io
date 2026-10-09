@@ -4,7 +4,7 @@ date: 2022-04-26T06:29:07+08:00
 url: "/process_management/schedutil_governor.html"
 gid: "503"
 emlog_type: "blog"
-summary: "\r\n\t这是一篇分析schedutil governor（后文称之sugov）代码逻辑的文章。通过详细的代码级别的分析，希望能够帮助读者理解sugov的代码精妙之处。本文主要分四个章节：第一章简单重复了sugov相关的软件结构和基本算法，让读者对整个sugov在系统所处的位置和基本的逻辑控制有所了解。第二章对sugov使用的数据结构给出了详细的解释。第三章对sugov和cpufreq core的基本"
+summary: "这是一篇分析schedutil governor（后文称之sugov）代码逻辑的文章。通过详细的代码级别的分析，希望能够帮助读者理解sugov的代码精妙之处。本文主要分四个章节：第一章简单重复了sugov相关的软件结构和基本算法，让读者对整个sugov在系统所处的位置和基本的逻辑控制有所了解。第二章对sugov使用的数据结构给出了详细的解释。第三章对sugov和cpufreq core的基本数据流"
 author: "OPPO内核团队"
 category: "进程管理"
 category_alias: "process_management"

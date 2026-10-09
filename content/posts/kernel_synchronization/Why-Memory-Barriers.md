@@ -4,7 +4,7 @@ date: 2015-12-10T19:11:02+08:00
 url: "/kernel_synchronization/Why-Memory-Barriers.html"
 gid: "244"
 emlog_type: "blog"
-summary: "\r\n\t本文是对perfbook的附录C Why Memory Barrier的翻译，希望通过对大师原文的翻译可以弥补之前译者发布的关于memory barrier的一篇很拙劣的文章的遗憾。\r\n\r\n\r\n\t本文的翻译不是一一对应的翻译，主要是领会精神，用自己的语言表述，最优先保证的是中文表述的流畅而不是和原文保持一致（希望可以做到）。由于水平有限，欢迎指正。\r\n"
+summary: "本文是对perfbook的附录C Why Memory Barrier的翻译，希望通过对大师原文的翻译可以弥补之前译者发布的关于memory barrier的一篇很拙劣的文章的遗憾。 本文的翻译不是一一对应的翻译，主要是领会精神，用自己的语言表述，最优先保证的是中文表述的流畅而不是和原文保持一致（希望可以做到）。由于水平有限，欢迎指正。"
 author: "linuxer"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

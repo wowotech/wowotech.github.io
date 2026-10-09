@@ -4,7 +4,7 @@ date: 2017-01-02T22:26:22+08:00
 url: "/x_project/u_boot_merge_denx.html"
 gid: "366"
 emlog_type: "blog"
-summary: "\n\t本文将以“X \nProject”的开发过程为例，介绍“合并远端分支的更新”的方法。事情的起因如下：\n\n\n\t\n\t\t“X \nProject”是一个学习嵌入式Linux开发全过程的小项目，项目开始的时候，u-boot、linux \nkernel等代码，都是直接从官方仓库的当前状态获取的(具体可参考[2]）。以u-boot为例，“X \nProject”的u-boot[3]是2016年4月23日从u-b"
+summary: "本文将以“ X Project ”的开发过程为例，介绍“合并远端分支的更新”的方法。事情的起因如下： “ X Project ”是一个学习嵌入式Linux开发全过程的小项目，项目开始的时候，u-boot、linux kernel等代码，都是直接从官方仓库的当前状态获取的(具体可参考[2]）。以u-boot为例，“ X Project ”的u-boot [3] 是2016年4月23日从u-boot的"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

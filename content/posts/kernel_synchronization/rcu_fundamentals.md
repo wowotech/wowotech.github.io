@@ -4,7 +4,7 @@ date: 2015-12-03T12:57:38+08:00
 url: "/kernel_synchronization/rcu_fundamentals.html"
 gid: "240"
 emlog_type: "blog"
-summary: "关于RCU的文档包括两份，一份讲基本的原理（也就是本文了），一份讲linux \r\nkernel中的实现。第二章描述了为何有RCU这种同步机制，特别是在cpu \r\ncore数目不断递增的今天，一个性能更好的同步机制是如何解决问题的，当然，再好的工具都有其适用场景，本章也给出了RCU的一些应用限制。第三章的第\r\n一小节描述了RCU的设计概念，其实RCU的设计概念比较简单，比较容易理解，比较困难的是产品"
+summary: "关于RCU的文档包括两份，一份讲基本的原理（也就是本文了），一份讲linux kernel中的实现。第二章描述了为何有RCU这种同步机制，特别是在cpu core数目不断递增的今天，一个性能更好的同步机制是如何解决问题的，当然，再好的工具都有其适用场景，本章也给出了RCU的一些应用限制。第三章的第 一小节描述了RCU的设计概念，其实RCU的设计概念比较简单，比较容易理解，比较困难的是产品级别的RC"
 author: "linuxer"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

@@ -4,7 +4,7 @@ date: 2016-11-01T19:39:29+08:00
 url: "/linux_application/kernel_debug_enable.html"
 gid: "348"
 emlog_type: "blog"
-summary: "\r\n\tkernel的source code中有很多使用pr_debug/dev_dbg输出的日志信息（例如device \r\ntree解析的代码，drivers/of/fdt.c）。默认情况下，kernel不会将这些日志输出到控制台上，除非：\r\n\r\n\r\n\t\r\n\t\t1）开启了DEBUG宏，并且\r\n\t\r\n\t\r\n\t\t2）kernel printk的默认日志级别大于7\r\n\t\r\n\r\n\r\n\t看似简单，不过我相信"
+summary: "kernel的source code中有很多使用pr_debug/dev_dbg输出的日志信息（例如device tree解析的代码，drivers/of/fdt.c）。默认情况下，kernel不会将这些日志输出到控制台上，除非： 1）开启了DEBUG宏，并且 2）kernel printk的默认日志级别大于7 看似简单，不过我相信每个人都问过这样的问题（不管是问自己还是问别人，特别是在调试ker"
 author: "wowo"
 category: "Linux应用技巧"
 category_alias: "linux_application"

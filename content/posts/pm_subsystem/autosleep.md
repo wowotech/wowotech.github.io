@@ -4,7 +4,7 @@ date: 2014-09-18T23:42:27+08:00
 url: "/pm_subsystem/autosleep.html"
 gid: "90"
 emlog_type: "blog"
-summary: "\r\n\tAutosleep也是从Android wakelocks补丁集中演化而来的（Linux电源管理(9)_wakelocks），用于取代Android wakelocks中的自动休眠功能。它基于wakeup source实现，从代码逻辑上讲，autosleep是一个简单的功能，但背后却埋藏着一个值得深思的话题：\r\n\r\n\r\n\t计算机的休眠（通常是STR、Standby、Hibernate等sus"
+summary: "Autosleep也是从Android wakelocks补丁集中演化而来的（ Linux电源管理(9)_wakelocks ），用于取代Android wakelocks中的自动休眠功能。它基于wakeup source实现，从代码逻辑上讲，autosleep是一个简单的功能，但背后却埋藏着一个值得深思的话题： 计算机的休眠（通常是STR、Standby、Hibernate等suspend操作）"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

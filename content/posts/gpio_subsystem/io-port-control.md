@@ -4,7 +4,7 @@ date: 2014-07-21T14:40:58+08:00
 url: "/gpio_subsystem/io-port-control.html"
 gid: "67"
 emlog_type: "blog"
-summary: "\r\n\t作为一个工作多年的系统工程师，免不了做两件事情：培训新员工和给新员工分配任务。对于那些刚刚从学校出来的学生，一般在开始的时候总是分配一些非\r\n常简单的任务，例如GPIO driver、LED driver。往往CPU datasheet的关于GPIO或者IO \r\nports的章节都是比较简单的，非常适合刚入行的工程师。虽然GPIO子系统相关的硬件比较简单，没有复杂的协议，不过，对于软件抽象而"
+summary: "作为一个工作多年的系统工程师，免不了做两件事情：培训新员工和给新员工分配任务。对于那些刚刚从学校出来的学生，一般在开始的时候总是分配一些非 常简单的任务，例如GPIO driver、LED driver。往往CPU datasheet的关于GPIO或者IO ports的章节都是比较简单的，非常适合刚入行的工程师。虽然GPIO子系统相关的硬件比较简单，没有复杂的协议，不过，对于软件抽象而言，其分层次"
 author: "linuxer"
 category: "GPIO子系统"
 category_alias: "gpio_subsystem"

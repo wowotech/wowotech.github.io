@@ -4,7 +4,7 @@ date: 2015-07-30T20:58:12+08:00
 url: "/pm_subsystem/cpufreq_core.html"
 gid: "202"
 emlog_type: "blog"
-summary: "\r\n\t前文（Linux cpufreq framework(2)_cpufreq driver）从平台驱动工程师的角度，简单的介绍了编写一个cpufreq driver的大概步骤。但要更深入理解、更灵活的使用，必须理解其内部的实现逻辑。\r\n\r\n\r\n\t因此，本文将从cpufreq framework core的角度，对cpufreq framework的内部实现做一个简单的分析。\r\n"
+summary: "前文（ Linux cpufreq framework(2)_cpufreq driver ）从平台驱动工程师的角度，简单的介绍了编写一个cpufreq driver的大概步骤。但要更深入理解、更灵活的使用，必须理解其内部的实现逻辑。 因此，本文将从cpufreq framework core的角度，对cpufreq framework的内部实现做一个简单的分析。"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

@@ -4,7 +4,7 @@ date: 2015-07-07T22:31:00+08:00
 url: "/armv8a_arch/armv8-a_overview.html"
 gid: "198"
 emlog_type: "blog"
-summary: "\r\n\tARMv8（当前只有A系列，即ARMv8-A）架构，是ARM公司为满足新需求而重新设计的一个架构，是近20年来，ARM架构变动最大的一次。它引入的Execution State、Exception Level、Security State等新特性，已经和我们对旧的ARM架构的认知，有很大差距了。\r\n\r\n\r\n\t因此，本文从ARMv8-A产生的背景开始，对它进行一个简单的介绍，使大家从整体上，对"
+summary: "ARMv8（当前只有A系列，即ARMv8-A）架构，是ARM公司为满足新需求而重新设计的一个架构，是近20年来，ARM架构变动最大的一次。它引入的Execution State、Exception Level、Security State等新特性，已经和我们对旧的ARM架构的认知，有很大差距了。 因此，本文从ARMv8-A产生的背景开始，对它进行一个简单的介绍，使大家从整体上，对ARMv8有一个简"
 author: "wowo"
 category: "ARMv8A Arch"
 category_alias: "armv8a_arch"

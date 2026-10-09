@@ -4,7 +4,7 @@ date: 2015-10-21T19:32:14+08:00
 url: "/armv8a_arch/__cpu_setup.html"
 gid: "220"
 emlog_type: "blog"
-summary: "\r\n\t上一节主要描述了为了打开MMU而进行的Translation table的建立，本文延续之前的话题，主要是进行CPU的初始化（注：该初始化仅仅为是为了turn on MMU）。\r\n\r\n\r\n\t本文主要分析ARM64初始化过程中的__cpu_setup函数，代码位于arch/arm64/mm/proc.S中。主要的内容包括：\r\n\r\n\r\n\t1、cache和TLB的处理\r\n\r\n\r\n\t2、Memory"
+summary: "上一节主要描述了为了打开MMU而进行的Translation table的建立，本文延续之前的话题，主要是进行CPU的初始化（注：该初始化仅仅为是为了turn on MMU）。 本文主要分析ARM64初始化过程中的__cpu_setup函数，代码位于arch/arm64/mm/proc.S中。主要的内容包括： 1、cache和TLB的处理 2、Memory attributes lookup ta"
 author: "linuxer"
 category: "ARMv8A Arch"
 category_alias: "armv8a_arch"

@@ -4,7 +4,7 @@ date: 2017-05-02T22:47:41+08:00
 url: "/linux_kenrel/dma_engine_api.html"
 gid: "391"
 emlog_type: "blog"
-summary: "\r\n\t从我们的直观感受来说，DMA并不是一个复杂的东西，要做的事情也很单纯直白。因此Linux \r\nkernel对它的抽象和实现，也应该简洁、易懂才是。不过现实却不甚乐观（个人感觉），Linux kernel dmaengine \r\nframework的实现，真有点晦涩的感觉。为什么会这样呢？\r\n\r\n\r\n\t如果一个软件模块比较复杂、晦涩，要么是设计者的功力不够，要么是需求使然。当然，我们不敢对Li"
+summary: "从我们的直观感受来说，DMA并不是一个复杂的东西，要做的事情也很单纯直白。因此Linux kernel对它的抽象和实现，也应该简洁、易懂才是。不过现实却不甚乐观（个人感觉），Linux kernel dmaengine framework的实现，真有点晦涩的感觉。为什么会这样呢？ 如果一个软件模块比较复杂、晦涩，要么是设计者的功力不够，要么是需求使然。当然，我们不敢对Linux kernel的那些"
 author: "wowo"
 category: "Linux内核分析"
 category_alias: "linux_kenrel"

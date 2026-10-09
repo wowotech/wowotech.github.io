@@ -4,7 +4,7 @@ date: 2016-09-18T22:55:42+08:00
 url: "/tty_framework/tty_concept.html"
 gid: "335"
 emlog_type: "blog"
-summary: "\n\t由于串口的缘故，TTY是Linux系统中最普遍的一类设备，稍微了解Linux系统的同学，对它都不陌生。尽管如此，相信很少有人能回到这样的问题：TTY到底是什么东西？我们常常挂在嘴边的终端（terminal）、控制台（console）等概念，到底是什么意思？\n\n\n\t本文是Linux TTY framework分析文章的第一篇，将带着上述疑问，介绍TTY有关的基本概念，为后续的TTY软件框架的分析"
+summary: "由于串口的缘故，TTY是Linux系统中最普遍的一类设备，稍微了解Linux系统的同学，对它都不陌生。尽管如此，相信很少有人能回到这样的问题：TTY到底是什么东西？我们常常挂在嘴边的终端（terminal）、控制台（console）等概念，到底是什么意思？ 本文是Linux TTY framework分析文章的第一篇，将带着上述疑问，介绍TTY有关的基本概念，为后续的TTY软件框架的分析，以及Li"
 author: "wowo"
 category: "TTY子系统"
 category_alias: "tty_framework"

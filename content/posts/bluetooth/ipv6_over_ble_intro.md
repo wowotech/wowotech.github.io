@@ -4,7 +4,7 @@ date: 2016-04-09T16:44:31+08:00
 url: "/bluetooth/ipv6_over_ble_intro.html"
 gid: "278"
 emlog_type: "blog"
-summary: "\r\n\t蓝牙是个奇葩的家伙：它总是以后来者的身份出现，很喜欢打仗，而且还不落下风（有点像某讯的风格）。90年代末期和Wi-Fi的无线标准之争如此，当前和802.15.4系（ZigBee、RF4CE、Thread等）的IoT之争，也如此。\r\n\r\n\r\n\t\r\n\t\t90年代末期，蓝牙刚出道的时候，就曾叫嚣着把Wi-Fi（802.11）从地球上抹去。反过来，1999年Wi-Fi \r\n802.11b标准发布后，"
+summary: "蓝牙是个奇葩的家伙：它总是以后来者的身份出现，很喜欢打仗，而且还不落下风（有点像某讯的风格）。90年代末期和Wi-Fi的无线标准之争如此，当前和802.15.4系（ZigBee、RF4CE、Thread等）的IoT之争，也如此。 90年代末期，蓝牙刚出道的时候，就曾叫嚣着把Wi-Fi（802.11）从地球上抹去。反过来，1999年Wi-Fi 802.11b标准发布后，也宣称会把蓝牙干掉。最终，二者"
 author: "wowo"
 category: "蓝牙"
 category_alias: "bluetooth"

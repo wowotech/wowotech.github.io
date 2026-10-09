@@ -4,7 +4,7 @@ date: 2016-02-04T18:38:06+08:00
 url: "/kernel_synchronization/linux2-6-23-RCU.html"
 gid: "262"
 emlog_type: "blog"
-summary: "由于曾经在Linux2.6.23上工作了多年，我对这个版本还是非常有感情的（抛开感情因素，本来应该选择longterm的2.6.32版本来分析\r\n的，^_^），本文主要就是描述Linux2.6.23内核版本中对RCU有哪些修正。所谓修正主要包括两个部分，一部分是bug \r\nfixed，一部分是新增的特性。"
+summary: "由于曾经在Linux2.6.23上工作了多年，我对这个版本还是非常有感情的（抛开感情因素，本来应该选择longterm的2.6.32版本来分析 的，^_^），本文主要就是描述Linux2.6.23内核版本中对RCU有哪些修正。所谓修正主要包括两个部分，一部分是bug fixed，一部分是新增的特性。"
 author: "linuxer"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

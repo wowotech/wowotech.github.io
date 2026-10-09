@@ -4,7 +4,7 @@ date: 2016-05-25T18:22:53+08:00
 url: "/armv8a_arch/Observability.html"
 gid: "302"
 emlog_type: "blog"
-summary: "在ARMv8关于memory \r\norder描述章节中，大量使用了observer、observed、completion等术语，本文主要是澄清这些术语，为后续描述memory \r\norder和memory \r\nbarrier相关指令打下基础。另外，在几个星期前，和codingbelief同学讨论DMB指令的时候，他提出了一个尖锐的问题：什么是PE \r\nobserves memory access"
+summary: "在ARMv8关于memory order描述章节中，大量使用了observer、observed、completion等术语，本文主要是澄清这些术语，为后续描述memory order和memory barrier相关指令打下基础。另外，在几个星期前，和codingbelief同学讨论DMB指令的时候，他提出了一个尖锐的问题：什么是PE observes memory access，是指 cpu "
 author: "linuxer"
 category: "ARMv8A Arch"
 category_alias: "armv8a_arch"

@@ -4,7 +4,7 @@ date: 2017-06-27T22:30:11+08:00
 url: "/gpio_subsystem/pinctrl-driver-summary.html"
 gid: "397"
 emlog_type: "blog"
-summary: "本站之前的三篇文章[1][2][3]介绍了pin controller（对应的pin controller subsystem）、gpio controller（对应的GPIO subsystem）有关的基本概念，包括pin multiplexing、pin configuration等等。本文将基于这些文章，单纯地从pin controller driver的角度（屏蔽掉pinctrl core"
+summary: "本站之前的三篇文章 [1][2][3] 介绍了pin controller（对应的pin controller subsystem）、gpio controller（对应的GPIO subsystem）有关的基本概念，包括pin multiplexing、pin configuration等等。本文将基于这些文章，单纯地从pin controller driver的角度（屏蔽掉pinctrl co"
 author: "wowo"
 category: "GPIO子系统"
 category_alias: "gpio_subsystem"

@@ -4,7 +4,7 @@ date: 2014-12-09T19:56:16+08:00
 url: "/timer_subsystem/clock-event.html"
 gid: "118"
 emlog_type: "blog"
-summary: "\r\n\tclockevent模块的代码位于linux/kernel/time/clockevents.c，是用来管理系统中的能够触发中断的timer硬件资源的一个模块，该模块的功能分成四个部分：\r\n\r\n\r\n\t1）向上层的其它driver（我们称之clock event user）提供操作clock event的通用API。\r\n\r\n\r\n\t2）\r\n实现clock event控制的通用逻辑，这部分和硬件无"
+summary: "clockevent模块的代码位于linux/kernel/time/clockevents.c，是用来管理系统中的能够触发中断的timer硬件资源的一个模块，该模块的功能分成四个部分： 1）向上层的其它driver（我们称之clock event user）提供操作clock event的通用API。 2） 实现clock event控制的通用逻辑，这部分和硬件无关，我们也称之clock eve"
 author: "linuxer"
 category: "时间子系统"
 category_alias: "timer_subsystem"

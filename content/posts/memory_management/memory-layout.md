@@ -4,7 +4,7 @@ date: 2016-11-18T18:25:20+08:00
 url: "/memory_management/memory-layout.html"
 gid: "355"
 emlog_type: "blog"
-summary: "同样的，本文是内存初始化文章的一份补充文档，希望能够通过这样的一份文档，细致的展示在初始化阶段，Linux 4.4.6内核如何从device tree中提取信息，完成内存布局的任务。具体的cpu体系结构选择的是ARM64。"
+summary: "同样的，本文是 内存初始化 文章的一份补充文档，希望能够通过这样的一份文档，细致的展示在初始化阶段，Linux 4.4.6内核如何从device tree中提取信息，完成内存布局的任务。具体的cpu体系结构选择的是ARM64。"
 author: "linuxer"
 category: "内存管理"
 category_alias: "memory_management"

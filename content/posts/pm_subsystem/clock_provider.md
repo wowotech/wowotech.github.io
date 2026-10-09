@@ -4,7 +4,7 @@ date: 2014-10-23T23:49:18+08:00
 url: "/pm_subsystem/clock_provider.html"
 gid: "102"
 emlog_type: "blog"
-summary: "\r\n\t本文接上篇文章，从clock driver的角度，分析怎么借助common clock framework管理系统的时钟资源。换句话说，就是怎么编写一个clock driver。\r\n\r\n\r\n\t由于kernel称clock driver为clock provider（相应的，clock的使用者为clock consumer），因此本文遵循这个规则，统一以clock provider命名。\r\n"
+summary: "本文接 上篇文章 ，从clock driver的角度，分析怎么借助common clock framework管理系统的时钟资源。换句话说，就是怎么编写一个clock driver。 由于kernel称clock driver为clock provider（相应的，clock的使用者为clock consumer），因此本文遵循这个规则，统一以clock provider命名。"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

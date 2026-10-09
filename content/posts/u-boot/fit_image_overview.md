@@ -4,7 +4,7 @@ date: 2016-09-02T21:49:08+08:00
 url: "/u-boot/fit_image_overview.html"
 gid: "332"
 emlog_type: "blog"
-summary: "\r\n\tLinux kernel在ARM架构中引入device tree（全称是flattened device \r\ntree，后续将会以FDT代称）的时候[1]，其实怀揣了一个Unify \r\nKernel的梦想----同一个Image，可以支持多个不同的平台。随着新的ARM64架构将FDT列为必选项，并将和体系结构有关的代码剥离之后，这个梦想已经接近实现：\r\n\r\n\r\n\t\r\n\t\t在编译linux \r"
+summary: "Linux kernel在ARM架构中引入device tree（全称是flattened device tree，后续将会以FDT代称）的时候 [1] ，其实怀揣了一个Unify Kernel的梦想----同一个Image，可以支持多个不同的平台。随着新的ARM64架构将FDT列为必选项，并将和体系结构有关的代码剥离之后，这个梦想已经接近实现： 在编译linux kernel的时候，不必特意的指"
 author: "wowo"
 category: "u-boot分析"
 category_alias: "u-boot"

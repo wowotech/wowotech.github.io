@@ -4,7 +4,7 @@ date: 2015-06-04T21:54:14+08:00
 url: "/pm_subsystem/pm_opp.html"
 gid: "192"
 emlog_type: "blog"
-summary: "\r\n\t本文是分析cpufreq framework之前的一篇前置文章，用于介绍Linux电源管理中的Operating Performance Point (OPP)接口。\r\n\t\r\n\t\tOPP是一个单纯的软件library，用于归纳、管理各个硬件模块的、可工作的｛频率｝/ ｛电压｝组合。它不涉及任何硬件，也没有复杂的逻辑，再加上Kernel document（Documentation/power"
+summary: "本文是分析cpufreq framework之前的一篇前置文章，用于介绍Linux电源管理中的Operating Performance Point (OPP)接口。 OPP是一个单纯的软件library，用于归纳、管理各个硬件模块的、可工作的｛频率｝/ ｛电压｝组合。它不涉及任何硬件，也没有复杂的逻辑，再加上Kernel document（Documentation/power/opp.txt "
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

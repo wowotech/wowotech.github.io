@@ -4,7 +4,7 @@ date: 2016-05-19T15:17:18+08:00
 url: "/bluetooth/bluepy_scan.html"
 gid: "298"
 emlog_type: "blog"
-summary: "\r\n\t在linux平台下，bluez是一个很不错的软件，提供了很多基于命令行的测试工具，如hciconfig、hcitool、hcidump、bluetoothctl等。利用这些工具，我们可以方便的测试、demo各种蓝牙功能。例如，在“玩转BLE(1)_Eddystone \r\nbeacon”中，我们利用hcitool命令，演示了将手机变成一个Beacon设备的神奇效果。\r\n\r\n\r\n\tBeacon的"
+summary: "在linux平台下，bluez是一个很不错的软件，提供了很多基于命令行的测试工具，如hciconfig、hcitool、hcidump、bluetoothctl等。利用这些工具，我们可以方便的测试、demo各种蓝牙功能。例如，在“ 玩转BLE(1)_Eddystone beacon ”中，我们利用hcitool命令，演示了将手机变成一个Beacon设备的神奇效果。 Beacon的演示，从本质上看，"
 author: "wowo"
 category: "蓝牙"
 category_alias: "bluetooth"

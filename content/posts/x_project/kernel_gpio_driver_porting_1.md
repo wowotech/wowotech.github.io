@@ -4,7 +4,7 @@ date: 2017-09-13T22:18:00+08:00
 url: "/x_project/kernel_gpio_driver_porting_1.html"
 gid: "410"
 emlog_type: "blog"
-summary: "\r\n\t本文将基于本站GPIO subsystem[1]相关的文章，结合”X Project”的开发过程，实现一个简单的gpio driver，并利用gpiolib提供的sysfs api进行简单的测试，进而加深对gpio相关概念的理解。\r\n\r\n\r\n\t注1：本文后续的描述，kernel基于本站“X Project”所使用的kernel版本，硬件基于 ”X Project”所使用的“Bubbugum-"
+summary: "本文将基于本站GPIO subsystem [1] 相关的文章，结合” X Project ”的开发过程，实现一个简单的gpio driver，并利用gpiolib提供的sysfs api进行简单的测试，进而加深对gpio相关概念的理解。 注1：本文后续的描述，kernel基于本站“ X Project ”所使用的kernel版本，硬件基于 ” X Project ”所使用的“Bubbugum-9"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

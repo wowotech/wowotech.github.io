@@ -4,7 +4,7 @@ date: 2016-07-01T17:17:41+08:00
 url: "/bluetooth/ble_connection.html"
 gid: "317"
 emlog_type: "blog"
-summary: "\r\n\t了解蓝牙的人都知道，在经典蓝牙中，保持连接（Connection）是一个相当消耗资源（power和带宽）的过程。特别是当没有数据传输的时候，所消耗的资源完全被浪费了。因而，对很多蓝牙设备来说（特别是功耗敏感的设备），希望在无数可传的时候，能够断开连接。但是，由于跳频（hopping）以及物理通道（Physical \r\nChannel）划分的缘故，经典蓝牙连接建立的速度实在难以忍受（要好几秒）"
+summary: "了解蓝牙的人都知道，在经典蓝牙中，保持连接（Connection）是一个相当消耗资源（power和带宽）的过程。特别是当没有数据传输的时候，所消耗的资源完全被浪费了。因而，对很多蓝牙设备来说（特别是功耗敏感的设备），希望在无数可传的时候，能够断开连接。但是，由于跳频（hopping）以及物理通道（Physical Channel）划分的缘故，经典蓝牙连接建立的速度实在难以忍受（要好几秒）。对那些突"
 author: "wowo"
 category: "蓝牙"
 category_alias: "bluetooth"

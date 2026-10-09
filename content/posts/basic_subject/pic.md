@@ -4,7 +4,7 @@ date: 2015-03-06T09:39:38+08:00
 url: "/basic_subject/pic.html"
 gid: "150"
 emlog_type: "blog"
-summary: "\r\n\t本文主要描述了动态库以及和动态库有紧密联系的位置无关代码的相关资讯。首先介绍了动态库和位置无关代码的源由，了解这些背景知识有助于理解和学习\r\n动态库。随后，我们通过加-fPIC和不加这个编译选项分别编译出两个relocatable object \r\nfile，看看编译器是如何生成位置无关代码的。最后，我们自己动手编写一个简单的动态库，并解析了一些symbol \r\nVisibility、动态符"
+summary: "本文主要描述了动态库以及和动态库有紧密联系的位置无关代码的相关资讯。首先介绍了动态库和位置无关代码的源由，了解这些背景知识有助于理解和学习 动态库。随后，我们通过加-fPIC和不加这个编译选项分别编译出两个relocatable object file，看看编译器是如何生成位置无关代码的。最后，我们自己动手编写一个简单的动态库，并解析了一些symbol Visibility、动态符号表等一些相关基"
 author: "linuxer"
 category: "基础学科"
 category_alias: "basic_subject"

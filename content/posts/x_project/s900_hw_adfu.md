@@ -4,7 +4,7 @@ date: 2016-05-12T22:01:18+08:00
 url: "/x_project/s900_hw_adfu.html"
 gid: "294"
 emlog_type: "blog"
-summary: "\r\n\t本文将以S900芯片[1]为例，介绍和“【任务1】启动过程-Boot from \r\nUSB”有关的硬件行为。其它人可以借鉴该文档，描述自己所使用平台的硬件特性，以完成该任务。\r\n\r\n\r\n\t为了方便操作，这里以“填空题”的形式，给出我们关心的key point，只要我们能够把这些填空题完成，就可以放心的去coding了。题目如下：\r\n\r\n\r\n\t\r\n\t\t1）CPU上电后，从哪种设备（&nbsp;"
+summary: "本文将以S900芯片 [1] 为例，介绍和“ 【任务1】启动过程-Boot from USB ” 有关的硬件行为。其它人可以借鉴该文档，描述自己所使用平台的硬件特性，以完成该任务。 为了方便操作，这里以“填空题”的形式，给出我们关心的key point，只要我们能够把这些填空题完成，就可以放心的去coding了。题目如下： 1）CPU上电后，从 哪种设备（ ）的 哪个地址（ ） 开始执行。 2）用"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

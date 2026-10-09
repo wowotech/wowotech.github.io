@@ -4,7 +4,7 @@ date: 2017-03-01T22:48:38+08:00
 url: "/basic_tech/emmc_bus_protocol.html"
 gid: "380"
 emlog_type: "blog"
-summary: "本文将详细介绍 eMMC 总线协议，包括接口的定义、不同速率模式选择、数据读写过程的交互、数据的校验，基于 Command &amp; Response 的通信模型等内容。"
+summary: "本文将详细介绍 eMMC 总线协议，包括接口的定义、不同速率模式选择、数据读写过程的交互、数据的校验，基于 Command & Response 的通信模型等内容。"
 author: "codingbelief"
 category: "基础技术"
 category_alias: "basic_tech"

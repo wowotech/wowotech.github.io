@@ -4,7 +4,7 @@ date: 2014-09-12T23:35:25+08:00
 url: "/pm_subsystem/wakeup_count.html"
 gid: "88"
 emlog_type: "blog"
-summary: "Wakeup count是Wakeup events framework的组成部分，用于解决“system suspend和system wakeup events之间的同步问题”。本文将结合“Linux电源管理(6)_Generic PM之Suspend功能”和“Linux电源管理(7)_Wakeup events framework”两篇文章，分析wakeup count的功能、实现逻辑、背后"
+summary: "Wakeup count是 Wakeup events framework 的组成部分，用于解决“system suspend和system wakeup events之间的同步问题”。本文将结合“ Linux电源管理(6)_Generic PM之Suspend功能 ”和“ Linux电源管理(7)_Wakeup events framework ”两篇文章，分析wakeup count的功能、实"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

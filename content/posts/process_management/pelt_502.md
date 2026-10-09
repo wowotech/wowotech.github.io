@@ -4,7 +4,7 @@ date: 2022-04-07T07:09:28+08:00
 url: "/process_management/pelt.html"
 gid: "502"
 emlog_type: "blog"
-summary: "\r\n\tLinux是一个通用操作系统的内核，她的目标是星辰大海，上到网络服务器，下至嵌入式设备都能运行良好。做一款好的linux进程调度器是一项非常具有挑战性的任务，因为设计约束太多了：\r\n\r\n\r\n\t---它必须是公平的\r\n\r\n\r\n\t---快速响应\r\n\r\n\r\n\t---系统的throughput要高\r\n\r\n\r\n\t---功耗要小\r\n\r\n\r\n\t3.8版本之前的内核CFS调度器在计算CPU load的时候采"
+summary: "Linux是一个通用操作系统的内核，她的目标是星辰大海，上到网络服务器，下至嵌入式设备都能运行良好。做一款好的linux进程调度器是一项非常具有挑战性的任务，因为设计约束太多了： ---它必须是公平的 ---快速响应 ---系统的throughput要高 ---功耗要小 3.8版本之前的内核CFS调度器在计算CPU load的时候采用的是跟踪每个运行队列上的负载（per-rq load track"
 author: "OPPO内核团队"
 category: "进程管理"
 category_alias: "process_management"

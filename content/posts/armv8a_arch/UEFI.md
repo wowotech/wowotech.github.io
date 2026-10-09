@@ -4,7 +4,7 @@ date: 2015-10-30T19:27:58+08:00
 url: "/armv8a_arch/UEFI.html"
 gid: "227"
 emlog_type: "blog"
-summary: "在准备大刀阔斧进入start_kernel之际，我又重新review了一下head.S文件，看看是否有一些遗漏的知识点，很不幸，看到了\r\nCONFIG_EFI这个配置项。当然，在一年前阅读kernel代码的时候就了解过相关的内容，但是，做为一个嵌入式工程师总是或多或少对其有些排斥，\r\n因此习惯性的忽略掉CONFIG_EFI相关的代码，逃避总不是办法，在本文中，我们一起来探讨ARM64平台上UEFI"
+summary: "在准备大刀阔斧进入start_kernel之际，我又重新review了一下head.S文件，看看是否有一些遗漏的知识点，很不幸，看到了 CONFIG_EFI这个配置项。当然，在一年前阅读kernel代码的时候就了解过相关的内容，但是，做为一个嵌入式工程师总是或多或少对其有些排斥， 因此习惯性的忽略掉CONFIG_EFI相关的代码，逃避总不是办法，在本文中，我们一起来探讨ARM64平台上UEFI相关"
 author: "linuxer"
 category: "ARMv8A Arch"
 category_alias: "armv8a_arch"

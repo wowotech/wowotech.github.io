@@ -4,7 +4,7 @@ date: 2014-06-18T11:41:24+08:00
 url: "/soft/vim_in_powershell.html"
 gid: "55"
 emlog_type: "blog"
-summary: "\r\n\t闲来无事，买了一个Win8系统的小平板，带键盘，准备打造成专门用来写博客的工具（本文就是用它写的第一篇）。捣鼓一圈之后，首先要解决的是用什么看代码。在PC时代，习惯了Linux命令行的方式，一般都是Windows系统+VMWare虚拟机+Linux系统+Vim+SecureCRT，但是这个庞大配置，显然不适合小平板。于是蜗蜗就打起PowerShell的主意了。\r\n\r\n\r\n\t蜗蜗想要的无非就是"
+summary: "闲来无事，买了一个Win8系统的小平板，带键盘，准备打造成专门用来写博客的工具（本文就是用它写的第一篇）。捣鼓一圈之后，首先要解决的是用什么看代码。在PC时代，习惯了Linux命令行的方式，一般都是Windows系统+VMWare虚拟机+Linux系统+Vim+SecureCRT，但是这个庞大配置，显然不适合小平板。于是蜗蜗就打起PowerShell的主意了。 蜗蜗想要的无非就是一个命令行的环境，"
 author: "wowo"
 category: "软件开发"
 category_alias: "soft"

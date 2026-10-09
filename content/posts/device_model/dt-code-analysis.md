@@ -4,7 +4,7 @@ date: 2014-06-06T16:03:48+08:00
 url: "/device_model/dt-code-analysis.html"
 gid: "48"
 emlog_type: "blog"
-summary: "\r\n\tDevice Tree总共有三篇，分别是：\r\n\r\n\r\n\t1、为何要引入Device Tree，这个机制是用来解决什么问题的？（请参考引入Device Tree的原因）\r\n\r\n\r\n\t2、Device Tree的基础概念（请参考DT基础概念）\r\n\r\n\r\n\t3、ARM linux中和Device Tree相关的代码分析（这是本文的主题）\r\n\r\n\r\n\t本文主要内容是：以Device Tree相关的数"
+summary: "Device Tree总共有三篇，分别是： 1、为何要引入Device Tree，这个机制是用来解决什么问题的？（请参考 引入Device Tree的原因 ） 2、Device Tree的基础概念（请参考 DT基础概念 ） 3、ARM linux中和Device Tree相关的代码分析（这是本文的主题） 本文主要内容是：以Device Tree相关的数据流分析为索引，对ARM linux kern"
 author: "linuxer"
 category: "统一设备模型"
 category_alias: "device_model"

@@ -4,7 +4,7 @@ date: 2016-07-21T22:47:48+08:00
 url: "/x_project/bubblegum_uboot_ddr.html"
 gid: "319"
 emlog_type: "blog"
-summary: "\r\n\t到目前为止，“X \r\nProject”在Bubblegum-96平台上的代码，都是运行在SRAM中。由于SRAM的size很小（最多也就96KB），如果要做更多的事情，就必须把DDR跑起来。不过，关于Bubblegum-96平台的DDR \r\ndriver，我和codingbelief同学折腾了很久，试图找出一个最佳的方法，给大家呈现出DDR \r\ndriver的开发方法和开发步骤。最终，受限于"
+summary: "到目前为止，“ X Project ”在Bubblegum-96平台上的代码，都是运行在SRAM中。由于SRAM的size很小（最多也就96KB），如果要做更多的事情，就必须把DDR跑起来。不过，关于Bubblegum-96平台的DDR driver，我和 codingbelief 同学折腾了很久，试图找出一个最佳的方法，给大家呈现出DDR driver的开发方法和开发步骤。最终，受限于“资源”的"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

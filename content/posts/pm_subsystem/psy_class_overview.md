@@ -4,7 +4,7 @@ date: 2015-03-13T22:14:23+08:00
 url: "/pm_subsystem/psy_class_overview.html"
 gid: "155"
 emlog_type: "blog"
-summary: "\r\n\tpower supply class为编写供电设备（power supply，后面简称PSY）的驱动提供了统一的框架，功能包括：\r\n\r\n\r\n\t1）抽象PSY设备的共性，向用户空间提供统一的API。\r\n\r\n\r\n\t2）为底层PSY驱动的编写，提供简单、统一的方式。同时封装并实现公共逻辑，驱动工程师只需把精力集中在和硬件相关的部分即可。\r\n\r\n\r\n\t本文将从设计思路、软件架构、API说明以及怎么编"
+summary: "power supply class为编写供电设备（power supply，后面简称PSY）的驱动提供了统一的框架，功能包括： 1）抽象PSY设备的共性，向用户空间提供统一的API。 2）为底层PSY驱动的编写，提供简单、统一的方式。同时封装并实现公共逻辑，驱动工程师只需把精力集中在和硬件相关的部分即可。 本文将从设计思路、软件架构、API说明以及怎么编写power supply driver四"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

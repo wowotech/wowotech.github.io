@@ -4,7 +4,7 @@ date: 2017-11-09T22:37:32+08:00
 url: "/memory_management/concept.html"
 gid: "414"
 emlog_type: "blog"
-summary: "\r\n\t内存（memory）在Linux系统中是一种牵涉面极广的资源，上至应用程序、下至kernel和driver，无不为之魂牵梦绕。加上它天然的稀缺性，导致内存管理（Memory Management，简称MM）是linux kernel中非常重要又非常复杂的一个子系统。\r\n\r\n\r\n\t重要性就不多说了，Kernel自有分寸。关于复杂性（鉴于Linux kernel优秀的抽象能力），应该不会被普通人"
+summary: "内存（memory）在Linux系统中是一种牵涉面极广的资源，上至应用程序、下至kernel和driver，无不为之魂牵梦绕。加上它天然的稀缺性，导致内存管理（Memory Management，简称MM）是linux kernel中非常重要又非常复杂的一个子系统。 重要性就不多说了，Kernel自有分寸。关于复杂性（鉴于Linux kernel优秀的抽象能力），应该不会被普通人（Linux系统的"
 author: "wowo"
 category: "内存管理"
 category_alias: "memory_management"

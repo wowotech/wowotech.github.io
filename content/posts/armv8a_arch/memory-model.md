@@ -4,7 +4,7 @@ date: 2016-05-18T12:09:13+08:00
 url: "/armv8a_arch/memory-model.html"
 gid: "296"
 emlog_type: "blog"
-summary: "\r\n\t从阅读ARMv8手册的第一天起，我就饱受memory order、memory \r\nbarrier、coherent、consistency等概念的残害，各种痛苦，各种迷茫，各种试图放弃，各种欲罢不能……，现在，终于收拾心情，再\r\n次出发，希望这次能把近期关于ARMv8上的memory model相关的知识点整理出来，让自己更清楚一些，也顺便希望能够和大家一起探讨。\r\n\r\n\r\n\t本文主要关注"
+summary: "从阅读ARMv8手册的第一天起，我就饱受memory order、memory barrier、coherent、consistency等概念的残害，各种痛苦，各种迷茫，各种试图放弃，各种欲罢不能……，现在，终于收拾心情，再 次出发，希望这次能把近期关于ARMv8上的memory model相关的知识点整理出来，让自己更清楚一些，也顺便希望能够和大家一起探讨。 本文主要关注shared-memor"
 author: "linuxer"
 category: "ARMv8A Arch"
 category_alias: "armv8a_arch"

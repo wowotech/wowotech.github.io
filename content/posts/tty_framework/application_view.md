@@ -4,7 +4,7 @@ date: 2016-10-14T22:13:33+08:00
 url: "/tty_framework/application_view.html"
 gid: "342"
 emlog_type: "blog"
-summary: "\r\n\t可以毫不夸张的说，我们在使用Linux系统的过程中，每时每刻都在和TTY打交道，显示输出、键盘输入、用户登录、shell终端、等等。\r\n\r\n\r\n\t与此同时，作为软件工程师的我们，也会或多或少的困惑：这些习以为常的行为，怎么和kernel中的这些冷冰冰的代码联系起来的？\r\n\r\n\r\n\t因此，在Linux TTY \r\nframework分析工作正式开始之前，让我们带着上面的疑问，以这些熟悉的应用场"
+summary: "可以毫不夸张的说，我们在使用Linux系统的过程中，每时每刻都在和TTY打交道，显示输出、键盘输入、用户登录、shell终端、等等。 与此同时，作为软件工程师的我们，也会或多或少的困惑：这些习以为常的行为，怎么和kernel中的这些冷冰冰的代码联系起来的？ 因此，在Linux TTY framework分析工作正式开始之前，让我们带着上面的疑问，以这些熟悉的应用场景为视角，进一步理解TTY有关的概"
 author: "wowo"
 category: "TTY子系统"
 category_alias: "tty_framework"

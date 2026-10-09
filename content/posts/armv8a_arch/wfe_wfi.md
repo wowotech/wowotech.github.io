@@ -4,7 +4,7 @@ date: 2014-12-10T22:43:43+08:00
 url: "/armv8a_arch/wfe_wfi.html"
 gid: "120"
 emlog_type: "blog"
-summary: "\r\n\t蜗蜗很早以前就知道有WFI和WFE这两个指令存在，但一直似懂非懂。最近准备研究CPU idle framework，由于WFI是让CPU进入idle状态的一种方法，就下决心把它们弄清楚。\r\n\r\n\r\n\tWFI(Wait for interrupt)和WFE(Wait for event)是两个让ARM核进入low-power standby模式的指令，由ARM architecture定义，由"
+summary: "蜗蜗很早以前就知道有WFI和WFE这两个指令存在，但一直似懂非懂。最近准备研究CPU idle framework，由于WFI是让CPU进入idle状态的一种方法，就下决心把它们弄清楚。 WFI(Wait for interrupt)和WFE(Wait for event)是两个让ARM核进入low-power standby模式的指令，由ARM architecture定义，由ARM core实"
 author: "wowo"
 category: "ARMv8A Arch"
 category_alias: "armv8a_arch"

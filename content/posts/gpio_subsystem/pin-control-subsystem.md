@@ -4,7 +4,7 @@ date: 2014-07-26T18:24:15+08:00
 url: "/gpio_subsystem/pin-control-subsystem.html"
 gid: "69"
 emlog_type: "blog"
-summary: "\r\n\t在linux2.6内核上工作的嵌入式软件工程师在pin control上都会遇到这样的状况：\r\n\r\n\r\n\t（1）启动一个新的项目后，需要根\r\n据硬件平台的设定进行pin \r\ncontrol相关的编码。例如：在bootloader中建立一个大的table，描述各个引脚的配置和缺省状态。此外，由于SOC的引脚是可以复用\r\n的，因此在各个具体的driver中，也可能会对引脚进行的配置。这些工作都是"
+summary: "在linux2.6内核上工作的嵌入式软件工程师在pin control上都会遇到这样的状况： （1）启动一个新的项目后，需要根 据硬件平台的设定进行pin control相关的编码。例如：在bootloader中建立一个大的table，描述各个引脚的配置和缺省状态。此外，由于SOC的引脚是可以复用 的，因此在各个具体的driver中，也可能会对引脚进行的配置。这些工作都是比较繁琐的工作，需要极大的"
 author: "linuxer"
 category: "GPIO子系统"
 category_alias: "gpio_subsystem"

@@ -4,7 +4,7 @@ date: 2016-05-29T18:00:10+08:00
 url: "/x_project/bubblegum_uboot_porting.html"
 gid: "304"
 emlog_type: "blog"
-summary: "本文是X Project “【任务1】启动过程-Boot from \r\nUSB”的一部分，将以“Bubblegum \r\n96boards”为例，介绍将u-boot移植到一个新的平台上的步骤和方法，并以此为契机，分析、理解u-boot的编译过程。"
+summary: "本文是X Project “ 【任务1】启动过程-Boot from USB ”的一部分，将以“Bubblegum 96boards”为例，介绍将u-boot移植到一个新的平台上的步骤和方法，并以此为契机，分析、理解u-boot的编译过程。"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

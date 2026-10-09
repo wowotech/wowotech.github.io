@@ -4,7 +4,7 @@ date: 2015-03-20T21:42:00+08:00
 url: "/pm_subsystem/regulator_framework_overview.html"
 gid: "156"
 emlog_type: "blog"
-summary: "\r\n\tRegulator，中文名翻译为“稳定器”，在电子工程中，是voltage regulator（稳压器）或者current regulator（稳流器）的简称，指可以自动维持恒定电压（或电流）的装置。\r\n\r\n\r\n\tvoltage regulator最早应用于功放电路中，主要用于滤除电源纹波（100或者120Hz）和噪声，以及避免“输出电压随负载的变化而变化”的情况。后来，随着IC级别的reg"
+summary: "Regulator，中文名翻译为“稳定器”，在电子工程中，是voltage regulator（稳压器）或者current regulator（稳流器）的简称，指可以自动维持恒定电压（或电流）的装置。 voltage regulator最早应用于功放电路中，主要用于滤除电源纹波（100或者120Hz）和噪声，以及避免“输出电压随负载的变化而变化”的情况。后来，随着IC级别的regulator的出现"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

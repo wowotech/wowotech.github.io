@@ -4,7 +4,7 @@ date: 2015-03-12T13:00:22+08:00
 url: "/basic_subject/stack-frame.html"
 gid: "154"
 emlog_type: "blog"
-summary: "\r\n\t本文以一个简单的例子来描述ARM linux下的stack frame。\r\n\r\n\r\n\t本文也是对tigger网友问题的回复。\r\n"
+summary: "本文以一个简单的例子来描述ARM linux下的stack frame。 本文也是对tigger网友问题的回复。"
 author: "linuxer"
 category: "基础学科"
 category_alias: "basic_subject"

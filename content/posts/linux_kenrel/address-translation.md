@@ -4,7 +4,7 @@ date: 2015-10-27T09:00:58+08:00
 url: "/linux_kenrel/address-translation.html"
 gid: "222"
 emlog_type: "blog"
-summary: "stm32f4discovery 是很好的 os 練習平台, 不過沒有 mmu 是我覺得可惜的部份, 而 raspberrypi 2 正好可以補足這部份, 然而 rpi2 我目前還不知道怎麼使用 jtag, 在除錯上會比較麻煩, 得用冥想的。\n\n沒想到第二個 bare-metal rpi2 程式就要搞 mmu 了, 感覺很硬斗, 我自己覺得還好, 畢竟我已經累積了不少經驗/知識。這就是累積的力量。"
+summary: "stm32f4discovery 是很好的 os 練習平台, 不過沒有 mmu 是我覺得可惜的部份, 而 raspberrypi 2 正好可以補足這部份, 然而 rpi2 我目前還不知道怎麼使用 jtag, 在除錯上會比較麻煩, 得用冥想的。 沒想到第二個 bare-metal rpi2 程式就要搞 mmu 了, 感覺很硬斗, 我自己覺得還好, 畢竟我已經累積了不少 經驗/知識 。這就是累積的力量"
 author: "descent"
 category: "Linux内核分析"
 category_alias: "linux_kenrel"

@@ -4,7 +4,7 @@ date: 2014-10-24T11:53:54+08:00
 url: "/irq_subsystem/soft-irq.html"
 gid: "104"
 emlog_type: "blog"
-summary: "\r\n\t对于中断处理而言，linux将其分成了两个部分，一个叫做中断handler（top \r\nhalf），是全程关闭中断的，另外一部分是deferable task（bottom \r\nhalf），属于不那么紧急需要处理的事情。在执行bottom half的时候，是开中断的。有多种bottom \r\nhalf的机制，例如：softirq、tasklet、workqueue或是直接创建一个kernel "
+summary: "对于中断处理而言，linux将其分成了两个部分，一个叫做中断handler（top half），是全程关闭中断的，另外一部分是deferable task（bottom half），属于不那么紧急需要处理的事情。在执行bottom half的时候，是开中断的。有多种bottom half的机制，例如：softirq、tasklet、workqueue或是直接创建一个kernel thread来执行"
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

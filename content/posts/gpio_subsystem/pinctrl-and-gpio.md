@@ -4,7 +4,7 @@ date: 2017-08-10T22:17:49+08:00
 url: "/gpio_subsystem/pinctrl-and-gpio.html"
 gid: "405"
 emlog_type: "blog"
-summary: "\r\n\t按理说，kernel中gpio subsystem和pinctrl subsystem的关系应该非常清楚：\r\n\r\n\r\n\t\r\n\t\tpinctrl subsystem管理系统的所有管脚，GPIO是这些管脚的用途之一，因此gpio subsystem应该是pinctrl subsystem的client（也可叫做backend、consumer），基于pinctrl subsystem提供的功能，"
+summary: "按理说，kernel中gpio subsystem和pinctrl subsystem的关系应该非常清楚： pinctrl subsystem管理系统的所有管脚，GPIO是这些管脚的用途之一，因此gpio subsystem应该是pinctrl subsystem的client（也可叫做backend、consumer），基于pinctrl subsystem提供的功能，处理GPIO有关的逻辑。 "
 author: "wowo"
 category: "GPIO子系统"
 category_alias: "gpio_subsystem"

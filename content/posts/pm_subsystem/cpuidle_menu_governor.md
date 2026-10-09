@@ -4,7 +4,7 @@ date: 2015-01-18T23:14:50+08:00
 url: "/pm_subsystem/cpuidle_menu_governor.html"
 gid: "139"
 emlog_type: "blog"
-summary: "\r\n\t本文以menu governor为例，进一步理解cpuidle framework中governor的概念，并学习governor的实现方法。\r\n\r\n\r\n\t在当前的kernel中，有2个governor，分别为ladder和menu（蜗蜗试图理解和查找，为什么会叫这两个名字，暂时还没有答案）。ladder在periodic timer tick system中使用，menu在tickless"
+summary: "本文以menu governor为例，进一步理解cpuidle framework中governor的概念，并学习governor的实现方法。 在当前的kernel中，有2个governor，分别为ladder和menu（蜗蜗试图理解和查找，为什么会叫这两个名字，暂时还没有答案）。ladder在periodic timer tick system中使用，menu在tickless system中使"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

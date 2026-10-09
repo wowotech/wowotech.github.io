@@ -4,7 +4,7 @@ date: 2015-12-27T22:02:31+08:00
 url: "/graphic_subsystem/dri_overview.html"
 gid: "249"
 emlog_type: "blog"
-summary: "\r\n\t上篇文章（Linux \r\ngraphic subsytem(1)_概述）介绍了linux图形子系统基本的软件框架，以及GUI、Windowing \r\nsystem、3D渲染等基本概念。文中提到了linux DRI（Direct Render \r\nInfrastructure）框架，但限于篇幅，没有过多介绍。\r\n\r\n\r\n\t蜗蜗觉得，DRI在当前（或者说将来）的linux图形子系统中，有着举足轻"
+summary: "上篇文章（ Linux graphic subsytem(1)_概述 ）介绍了linux图形子系统基本的软件框架，以及GUI、Windowing system、3D渲染等基本概念。文中提到了linux DRI（Direct Render Infrastructure）框架，但限于篇幅，没有过多介绍。 蜗蜗觉得，DRI在当前（或者说将来）的linux图形子系统中，有着举足轻重的地位，甚至可以说是新的"
 author: "wowo"
 category: "图形子系统"
 category_alias: "graphic_subsystem"

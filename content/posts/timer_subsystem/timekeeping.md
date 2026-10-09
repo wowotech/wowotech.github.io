@@ -4,7 +4,7 @@ date: 2014-12-29T18:03:35+08:00
 url: "/timer_subsystem/timekeeping.html"
 gid: "132"
 emlog_type: "blog"
-summary: "\r\n\ttimekeeping模块是一个提供时间服务的基础模块。Linux内核提供各种time line，real time \r\nclock，monotonic clock、monotonic raw \r\nclock等，timekeeping模块就是负责跟踪、维护这些timeline的，并且向其他模块（timer相关模块、用户空间的时间服务等）提供\r\n服务，而timekeeping模块维护timel"
+summary: "timekeeping模块是一个提供时间服务的基础模块。Linux内核提供各种time line，real time clock，monotonic clock、monotonic raw clock等，timekeeping模块就是负责跟踪、维护这些timeline的，并且向其他模块（timer相关模块、用户空间的时间服务等）提供 服务，而timekeeping模块维护timeline的基础是基"
 author: "linuxer"
 category: "时间子系统"
 category_alias: "timer_subsystem"

@@ -4,7 +4,7 @@ date: 2016-12-12T22:04:41+08:00
 url: "/comm/serial_overview.html"
 gid: "363"
 emlog_type: "blog"
-summary: "\r\n\t串口设备（serial or uart，后面不再区分）是TTY设备的一种，Linux kernel为了方便串口驱动的开发，在TTY \r\nframework的基础上，封装了一层串口框架（serial \r\nframework）。该框架尽可能的屏蔽了TTY有关的技术细节（比较难懂），驱动工程师在编写串口驱动的时候，只需要把精力放在串口以及串口控制器本身即可。\r\n\r\n\r\n\t本文将通过对serial "
+summary: "串口设备（serial or uart，后面不再区分）是TTY设备的一种，Linux kernel为了方便串口驱动的开发，在TTY framework的基础上，封装了一层串口框架（serial framework）。该框架尽可能的屏蔽了TTY有关的技术细节（比较难懂），驱动工程师在编写串口驱动的时候，只需要把精力放在串口以及串口控制器本身即可。 本文将通过对serial framework的简单分"
 author: "wowo"
 category: "通信类协议"
 category_alias: "comm"

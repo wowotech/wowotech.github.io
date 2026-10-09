@@ -4,7 +4,7 @@ date: 2015-07-31T12:29:13+08:00
 url: "/irq_subsystem/cmwq-intro.html"
 gid: "203"
 emlog_type: "blog"
-summary: "\r\n\t一种新的机制出现的原因往往是为了解决实际的问题，虽然linux \r\nkernel中已经提供了workqueue的机制，那么为何还要引入cmwq呢？也就是说：旧的workqueue机制存在什么样的问题？在新的\r\ncmwq又是如何解决这些问题的呢？它接口是如何呈现的呢（驱动工程师最关心这个了）？如何兼容旧的驱动呢？本文希望可以解开这些谜题。\r\n\r\n\r\n\t本文的代码来自linux kernel 4"
+summary: "一种新的机制出现的原因往往是为了解决实际的问题，虽然linux kernel中已经提供了workqueue的机制，那么为何还要引入cmwq呢？也就是说：旧的workqueue机制存在什么样的问题？在新的 cmwq又是如何解决这些问题的呢？它接口是如何呈现的呢（驱动工程师最关心这个了）？如何兼容旧的驱动呢？本文希望可以解开这些谜题。 本文的代码来自linux kernel 4.0。"
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

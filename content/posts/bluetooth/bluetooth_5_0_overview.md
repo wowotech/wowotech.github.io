@@ -4,7 +4,7 @@ date: 2016-12-08T11:05:39+08:00
 url: "/bluetooth/bluetooth_5_0_overview.html"
 gid: "362"
 emlog_type: "blog"
-summary: "\r\n\t2016年12月6日，蓝牙SIG发布了5.0版本的核心规范，该规范从距离、速度等多个方面，对BLE进行了增强，蓝牙官网的总结如下[1]：\r\n\r\n\r\n\t\r\n\t\tWith the launch of Bluetooth 5, Bluetooth® technology continues to \r\nevolve to meet the needs of the industry as the g"
+summary: "2016年12月6日，蓝牙SIG发布了5.0版本的核心规范，该规范从距离、速度等多个方面，对BLE进行了增强，蓝牙官网的总结如下 [1] ： With the launch of Bluetooth 5, Bluetooth® technology continues to evolve to meet the needs of the industry as the global wireles"
 author: "wowo"
 category: "蓝牙"
 category_alias: "bluetooth"

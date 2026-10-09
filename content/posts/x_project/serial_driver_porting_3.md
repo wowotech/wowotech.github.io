@@ -4,7 +4,7 @@ date: 2016-11-18T22:25:12+08:00
 url: "/x_project/serial_driver_porting_3.html"
 gid: "356"
 emlog_type: "blog"
-summary: "\r\n\t本文是“X \r\nProject”串口驱动开发的第三篇，在第二篇“uart \r\ndriver框架[1]”的基础上，实现console驱动，并借助这个过程，理解如下知识：\r\n\r\n\r\n\t\r\n\t\t1）从DTS \r\nregs字段中获取设备的I/O基址，并map出来供driver访问。这是device tree最基本的使用场景。 \r\n\t\r\n\t\r\n\t\t2）从DTS aliases中获取串口的索引号。这是d"
+summary: "本文是“ X Project ”串口驱动开发的第三篇，在第二篇“ uart driver框架 [1] ”的基础上，实现console驱动，并借助这个过程，理解如下知识： 1）从DTS regs字段中获取设备的I/O基址，并map出来供driver访问。这是device tree最基本的使用场景。 2）从DTS aliases中获取串口的索引号。这是device tree aliases功能的一个应"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

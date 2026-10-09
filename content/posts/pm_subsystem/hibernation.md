@@ -4,7 +4,7 @@ date: 2014-12-22T11:51:14+08:00
 url: "/pm_subsystem/hibernation.html"
 gid: "127"
 emlog_type: "blog"
-summary: "\r\n\t本文简要分析了Linux一种Hibernation实现机制——Swap Suspend的是实现方法。本文会尽量从机制出发，不会深入代码分析，如果您感兴趣，可以参照附件给出的流程图，阅读内核代码，相信您也可以找到其中乐趣。 \r\n\r\n\r\n\tA. Swap Suspend的原因 \r\n\r\n\r\n\tB. 如何实现STF \r\n\r\n\r\n\tC. Swap Suspend的关键 \r\n"
+summary: "本文简要分析了Linux一种Hibernation实现机制——Swap Suspend的是实现方法。本文会尽量从机制出发，不会深入代码分析，如果您感兴趣，可以参照附件给出的流程图，阅读内核代码，相信您也可以找到其中乐趣。 A. Swap Suspend的原因 B. 如何实现STF C. Swap Suspend的关键"
 author: "Physh"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

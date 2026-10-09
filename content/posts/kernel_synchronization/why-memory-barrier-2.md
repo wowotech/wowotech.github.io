@@ -4,7 +4,7 @@ date: 2016-01-05T18:09:04+08:00
 url: "/kernel_synchronization/why-memory-barrier-2.html"
 gid: "252"
 emlog_type: "blog"
-summary: "在上一篇why memory barriers文\r\n档中，由于各种原因，有几个章节没有翻译。其实所谓的各种原因总结出一句话就是还没有明白那些章节所要表达的内容。当然，对于一个真正的热爱钻研的\r\nlinuxer，不理解的那些章节始终都是一块心病。终于，在一个月黑风高的夜晚，我发了一封邮件给perfbook的作者Paul，请其指点一二。果然\r\n是水平越高越平易近人，很快，大神回复了，给出了一些他的意见"
+summary: "在上一篇 why memory barriers 文 档中，由于各种原因，有几个章节没有翻译。其实所谓的各种原因总结出一句话就是还没有明白那些章节所要表达的内容。当然，对于一个真正的热爱钻研的 linuxer，不理解的那些章节始终都是一块心病。终于，在一个月黑风高的夜晚，我发了一封邮件给perfbook的作者Paul，请其指点一二。果然 是水平越高越平易近人，很快，大神回复了，给出了一些他的意见，"
 author: "linuxer"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

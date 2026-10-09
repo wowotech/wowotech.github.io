@@ -4,7 +4,7 @@ date: 2016-11-16T22:09:48+08:00
 url: "/x_project/serial_driver_porting_2.html"
 gid: "354"
 emlog_type: "blog"
-summary: "\r\n\t本文是“X \r\nProject”串口驱动开发的第二篇，将以“bubblegum-96”开发板为例，介绍在linux serial \r\nframework的框架下，编写串口driver以及console driver的方法和步骤（暂不涉及实现细节）。\r\n\r\n\r\n\t注1：有关串口、TTY、console等概念，可参考本站“TTY子系统[1]”的文章。Linux serial \r\nframewor"
+summary: "本文是“ X Project ”串口驱动开发的第二篇，将以“bubblegum-96”开发板为例，介绍在linux serial framework的框架下，编写串口driver以及console driver的方法和步骤（暂不涉及实现细节）。 注1：有关串口、TTY、console等概念，可参考本站“TTY子系统 [1] ”的文章。Linux serial framework的分析，会在后续的文"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

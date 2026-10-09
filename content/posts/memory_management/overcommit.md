@@ -4,7 +4,7 @@ date: 2015-09-23T18:54:26+08:00
 url: "/memory_management/overcommit.html"
 gid: "212"
 emlog_type: "blog"
-summary: "\r\n\t终于可以进入Linux \r\nkernel内存管理的世界了，但是从哪里入手是一个问题，当面对一个复杂系统的时候，有时候不知道怎么开始。遵守“一切以人为本”的原则，我最终选择先\r\n从从userspace的视角来看内核的内存管理。最开始的系列文章选择了vm运行参数这个主题。执行ls \r\n/proc/sys/vm的命令，你可以看到所有的vm运行参数，本文选择了overcommit相关参数来介绍。\r\n"
+summary: "终于可以进入Linux kernel内存管理的世界了，但是从哪里入手是一个问题，当面对一个复杂系统的时候，有时候不知道怎么开始。遵守“一切以人为本”的原则，我最终选择先 从从userspace的视角来看内核的内存管理。最开始的系列文章选择了vm运行参数这个主题。执行ls /proc/sys/vm的命令，你可以看到所有的vm运行参数，本文选择了overcommit相关参数来介绍。 本文的代码来自4."
 author: "linuxer"
 category: "内存管理"
 category_alias: "memory_management"

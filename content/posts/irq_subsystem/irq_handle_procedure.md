@@ -4,7 +4,7 @@ date: 2018-01-01T17:03:28+08:00
 url: "/irq_subsystem/irq_handle_procedure.html"
 gid: "418"
 emlog_type: "blog"
-summary: "\n\t1) 设备唤醒cpu之后是立即跳转中断向量表指定的位置吗？如果不是，那么是什么时候才会跳转呢？\n\n\n\t2) 已经跳转到中断服务函数开始执行代码，后续就会调用你注册的中断handle 代码吗？如果不是，那中断服务函数做什么准备呢？而你注册的中断handle又会在什么时候才开始执行呢？\n3) 假如register_thread_irq方式注册的threaded irq中调用msleep(1000)"
+summary: "1) 设备唤醒cpu之后是立即跳转中断向量表指定的位置吗？如果不是，那么是什么时候才会跳转呢？ 2) 已经跳转到中断服务函数开始执行代码，后续就会调用你注册的中断handle 代码吗？如果不是，那中断服务函数做什么准备呢？而你注册的中断handle又会在什么时候才开始执行呢？ 3) 假如register_thread_irq方式注册的threaded irq中调用msleep(1000)，睡眠1秒"
 author: "smcdef"
 category: "中断子系统"
 category_alias: "irq_subsystem"

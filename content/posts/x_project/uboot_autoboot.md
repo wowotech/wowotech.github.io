@@ -4,7 +4,7 @@ date: 2016-10-05T21:51:57+08:00
 url: "/x_project/uboot_autoboot.html"
 gid: "340"
 emlog_type: "blog"
-summary: "\r\n\t通过“X-012-KERNEL-serial \r\nearly console的移植”，早期的串口控制台已经ready，kernel的printk可以正确输出，“X \r\nProject”由此进入“文明”时代。基于此，后续的开发工作将会focus在linux kernel上，而u-boot，可以蜕化为其原始目标：boot \r\nkernel。\r\n\r\n\r\n\t在之前的测试和调试过程中，都是先进入u-b"
+summary: "通过“ X-012-KERNEL-serial early console的移植 ”，早期的串口控制台已经ready，kernel的printk可以正确输出，“ X Project ”由此进入“文明”时代。基于此，后续的开发工作将会focus在linux kernel上，而u-boot，可以蜕化为其原始目标：boot kernel。 在之前的测试和调试过程中，都是先进入u-boot的命令行，手动输"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

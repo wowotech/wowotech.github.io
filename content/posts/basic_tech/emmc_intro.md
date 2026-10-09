@@ -4,7 +4,7 @@ date: 2017-01-12T20:28:40+08:00
 url: "/basic_tech/emmc_intro.html"
 gid: "369"
 emlog_type: "blog"
-summary: "eMMC 是 embedded MultiMediaCard 的简称。MultiMediaCard，即 MMC， 是一种闪存卡（Flash Memory Card）标准，它定义了 MMC 的架构以及访问　Flash Memory 的接口和协议。而 eMMC 则是对 MMC 的一个拓展，以满足更高标准的性能、成本、体积、稳定、易用等的需求。"
+summary: "eMMC 是 embedded MultiMediaCard 的简称。MultiMediaCard，即 MMC， 是一种闪存卡（Flash Memory Card）标准，它定义了 MMC 的架构以及访问 Flash Memory 的接口和协议。而 eMMC 则是对 MMC 的一个拓展，以满足更高标准的性能、成本、体积、稳定、易用等的需求。"
 author: "codingbelief"
 category: "基础技术"
 category_alias: "basic_tech"

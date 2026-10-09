@@ -4,7 +4,7 @@ date: 2016-04-23T20:20:50+08:00
 url: "/x_project/develop_env.html"
 gid: "289"
 emlog_type: "blog"
-summary: "\r\n\t本文是“X Project”的第一篇文章，介绍怎么从零开始搭建“X \r\nProject”的开发环境（同样适用于其它的嵌入式Linux开发）。通过该过程，可以使读者对嵌入式Linux开发的基本流程有一个简单的了解，以达到“知其然、知其所以然”的目的。\r\n\r\n\r\n\t注1：有关“X Project”的介绍和讨论，可参考“/forum/"
+summary: "本文是“X Project”的第一篇文章，介绍怎么从零开始搭建“X Project”的开发环境（同样适用于其它的嵌入式Linux开发）。通过该过程，可以使读者对嵌入式Linux开发的基本流程有一个简单的了解，以达到“知其然、知其所以然”的目的。 注1：有关“X Project”的介绍和讨论，可参考“ /forum/ "
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

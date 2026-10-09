@@ -4,7 +4,7 @@ date: 2014-10-20T23:06:59+08:00
 url: "/pm_subsystem/clk_overview.html"
 gid: "97"
 emlog_type: "blog"
-summary: "\r\n\tcommon clock framework是用来管理系统clock资源的子系统，根据职能，可分为三个部分：\r\n\r\n\r\n\t1）向其它driver提供操作clocks的通用API。\r\n\r\n\r\n\t2）实现clock控制的通用逻辑，这部分和硬件无关。\r\n\r\n\r\n\t3）将和硬件相关的clock控制逻辑封装成操作函数集，交由底层的platform开发者实现，由通用逻辑调用。\r\n\r\n\r\n\t因此，蜗蜗会将"
+summary: "common clock framework是用来管理系统clock资源的子系统，根据职能，可分为三个部分： 1）向其它driver提供操作clocks的通用API。 2）实现clock控制的通用逻辑，这部分和硬件无关。 3）将和硬件相关的clock控制逻辑封装成操作函数集，交由底层的platform开发者实现，由通用逻辑调用。 因此，蜗蜗会将clock framework的分析文章分为3篇： 第"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

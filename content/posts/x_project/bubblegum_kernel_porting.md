@@ -4,7 +4,7 @@ date: 2016-08-19T22:38:39+08:00
 url: "/x_project/bubblegum_kernel_porting.html"
 gid: "326"
 emlog_type: "blog"
-summary: "\r\n\t本文将以“X \r\nProject”的“【任务3】Linux \r\nkernel的配置、编译、加载与启动”为契机，介绍将Linux kernel移植到一个新的平台上的基本步骤，包括kernel以及device \r\ntree的配置、编译、二进制文件的生成等。\r\n\r\n\r\n\t注1：本文的硬件基于ARM64架构，kernel基于“X \r\nProject”初始的“Linux 4.6-rc5”版本\r\n"
+summary: "本文将以“ X Project ”的“ 【任务3】Linux kernel的配置、编译、加载与启动 ”为契机，介绍将Linux kernel移植到一个新的平台上的基本步骤，包括kernel以及device tree的配置、编译、二进制文件的生成等。 注1：本文的硬件基于ARM64架构，kernel基于“ X Project ”初始的“ Linux 4.6-rc5 ”版本"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

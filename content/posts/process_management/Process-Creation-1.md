@@ -4,7 +4,7 @@ date: 2014-04-23T08:39:39+08:00
 url: "/process_management/Process-Creation-1.html"
 gid: "35"
 emlog_type: "blog"
-summary: "\r\n\t\r\n\r\n\r\n\t为什么要写一个关于进程如何创建的文档？其实用do_fork作为关键字进行索引，你会发现网上的相关文档数以万计。作为一个内核工程师，对进程以及进程相关的内容当然是非常感兴趣，但是网上的资料并不能令我非常满意（也许是我没有检索到好的文章），一个简单的例子如下：\r\n\r\n\r\n\t\r\n\t\tstatic void copy_flags(unsigned long clone_flags, s"
+summary: "为什么要写一个关于进程如何创建的文档？其实用do_fork作为关键字进行索引，你会发现网上的相关文档数以万计。作为一个内核工程师，对进程以及进程相关的内容当然是非常感兴趣，但是网上的资料并不能令我非常满意（也许是我没有检索到好的文章），一个简单的例子如下： static void copy_flags(unsigned long clone_flags, struct task_struct *p"
 author: "linuxer"
 category: "进程管理"
 category_alias: "process_management"

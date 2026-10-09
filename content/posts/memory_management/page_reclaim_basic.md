@@ -4,7 +4,7 @@ date: 2017-08-25T19:01:35+08:00
 url: "/memory_management/page_reclaim_basic.html"
 gid: "407"
 emlog_type: "blog"
-summary: "本文主要介绍了一些page \r\nreclaim机制中的基本概念。这份文档其实也可以看成阅读ULK第17章第一小节的一个读书笔记。虽然ULK已经读了很多遍，不过每一遍还是觉得有收获。Linux内核虽然不断在演进，但是页面回收的基本概念是不变的，所以ULK仍然值得内核发烧友仔细品味。"
+summary: "本文主要介绍了一些page reclaim机制中的基本概念。这份文档其实也可以看成阅读ULK第17章第一小节的一个读书笔记。虽然ULK已经读了很多遍，不过每一遍还是觉得有收获。Linux内核虽然不断在演进，但是页面回收的基本概念是不变的，所以ULK仍然值得内核发烧友仔细品味。"
 author: "linuxer"
 category: "内存管理"
 category_alias: "memory_management"

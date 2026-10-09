@@ -4,7 +4,7 @@ date: 2014-05-29T15:55:36+08:00
 url: "/pm_subsystem/pm_interface.html"
 gid: "46"
 emlog_type: "blog"
-summary: "\r\n\tLinux电源管理中，相当多的部分是在处理Hibernate、Suspend、Runtime PM等功能。而这些功能都基于一套相似的逻辑，即“Power \r\nmanagement \r\ninterface”。该Interface的代码实现于“include/linux/pm.h”、“drivers/base/power/main.c”等文件中。主要功能是：对下，定义Device \r\nPM相关的"
+summary: "Linux电源管理中，相当多的部分是在处理Hibernate、Suspend、Runtime PM等功能。而这些功能都基于一套相似的逻辑，即“Power management interface”。该Interface的代码实现于“include/linux/pm.h”、“drivers/base/power/main.c”等文件中。主要功能是：对下，定义Device PM相关的回调函数，让各个D"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

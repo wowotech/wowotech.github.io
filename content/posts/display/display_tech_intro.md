@@ -4,7 +4,7 @@ date: 2015-11-30T22:19:53+08:00
 url: "/display/display_tech_intro.html"
 gid: "239"
 emlog_type: "blog"
-summary: "\r\n\t从1907年证实CRT（Cathode Ray \r\nTube）技术可用于电视显示至今，电子显示技术经历了近100年的发展。100年的时间，说长不长，说短也不短；显示技术的发展，说快不快，说慢也不慢。\r\n\r\n\r\n\tCRT技术是最原始的显示技术，但它的生命周期一直持续到2000年后，随着LCD（Liquid Crystal \r\nDisplay）的普及才逐渐退出历史舞台，跨度近90年，这是“不快”"
+summary: "从1907年证实CRT（Cathode Ray Tube）技术可用于电视显示至今，电子显示技术经历了近100年的发展。100年的时间，说长不长，说短也不短；显示技术的发展，说快不快，说慢也不慢。 CRT技术是最原始的显示技术，但它的生命周期一直持续到2000年后，随着LCD（Liquid Crystal Display）的普及才逐渐退出历史舞台，跨度近90年，这是“不快”的由来。 而最近10年，各"
 author: "wowo"
 category: "显示"
 category_alias: "display"

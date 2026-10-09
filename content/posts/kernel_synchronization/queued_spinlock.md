@@ -4,7 +4,7 @@ date: 2022-06-29T06:33:40+08:00
 url: "/kernel_synchronization/queued_spinlock.html"
 gid: "505"
 emlog_type: "blog"
-summary: "\r\n\t本站之前已经有了一篇关于spinlock的文档，在之前的文章中有对自旋锁进行简单的介绍，同时给出了API汇整和应用场景。不过该文章中的自旋锁描述是基于比较老的内核版本，那时候的自旋锁还是ticket base锁，而目前最新内核中的自旋锁已经进化成queued spinlock，因此需要一篇新的自旋锁文档来跟上时代。此外，本文将不再描述基本的API和应用场景，主要的篇幅将集中在具体的自旋锁实现"
+summary: "本站之前已经有了一篇关于 spinlock 的文档，在之前的文章中有对自旋锁进行简单的介绍，同时给出了API汇整和应用场景。不过该文章中的自旋锁描述是基于比较老的内核版本，那时候的自旋锁还是ticket base锁，而目前最新内核中的自旋锁已经进化成queued spinlock，因此需要一篇新的自旋锁文档来跟上时代。此外，本文将不再描述基本的API和应用场景，主要的篇幅将集中在具体的自旋锁实现上"
 author: "OPPO内核团队"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

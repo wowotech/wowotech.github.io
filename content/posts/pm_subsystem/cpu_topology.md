@@ -4,7 +4,7 @@ date: 2015-05-30T21:58:55+08:00
 url: "/pm_subsystem/cpu_topology.html"
 gid: "191"
 emlog_type: "blog"
-summary: "\r\n\t在“Linux CPU core的电源管理(1)_概述”中，我们多次提到SMP、CPU core等概念，虽然硬着头皮写下去了，但是蜗蜗对这些概念总有些似懂非懂的感觉。它们和CPU的进化过程息息相关，最终会体现在CPU topology（拓扑结构）上。因此本文将以CPU topology为主线，介绍CPU有关（主要以ARM CPU为例）的知识。\r\n\r\n\r\n\t另外，CPU topology除了描"
+summary: "在“ Linux CPU core的电源管理(1)_概述 ”中，我们多次提到SMP、CPU core等概念，虽然硬着头皮写下去了，但是蜗蜗对这些概念总有些似懂非懂的感觉。它们和CPU的进化过程息息相关，最终会体现在CPU topology（拓扑结构）上。因此本文将以CPU topology为主线，介绍CPU有关（主要以ARM CPU为例）的知识。 另外，CPU topology除了描述CPU的组成"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

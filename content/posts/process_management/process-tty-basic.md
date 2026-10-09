@@ -4,7 +4,7 @@ date: 2016-10-28T18:56:20+08:00
 url: "/process_management/process-tty-basic.html"
 gid: "345"
 emlog_type: "blog"
-summary: "对于任何一种OS，终端部分的内容总是令人非常的痛苦和沮丧，GNU/linux也是如此。究其原因主要有两个，一是终端驱动和终端相关的系统软件承载了太多的内容：各种虚拟终端、\r\n伪终端、串口通信、modem、printer等。其次可能是终端和信号处理、进程关系等耦合在一起加大了理解终端驱动的难度。本文的目标是希望能够理清这些内容。"
+summary: "对于任何一种OS，终端部分的内容总是令人非常的痛苦和沮丧，GNU/linux也是如此。究其原因主要有两个，一是终端驱动和终端相关的系统软件承载了太多的内容：各种虚拟终端、 伪终端、串口通信、modem、printer等。其次可能是终端和信号处理、进程关系等耦合在一起加大了理解终端驱动的难度。本文的目标是希望能够理清这些内容。"
 author: "linuxer"
 category: "进程管理"
 category_alias: "process_management"

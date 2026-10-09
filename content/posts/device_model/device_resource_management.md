@@ -4,7 +4,7 @@ date: 2014-09-24T23:28:19+08:00
 url: "/device_model/device_resource_management.html"
 gid: "92"
 emlog_type: "blog"
-summary: "\r\n\t蜗蜗建议，每一个Linux驱动工程师，都能瞄一眼本文。\r\n\r\n\r\n\t之所以用“瞄”，因此它很简单，几乎不需要花费心思就能理解。之所有这建议，是因为它非常实用，可以解答一些困惑，可以使我们的代码变得简单、简洁。先看一个例子：\r\n"
+summary: "蜗蜗建议，每一个Linux驱动工程师，都能瞄一眼本文。 之所以用“瞄”，因此它很简单，几乎不需要花费心思就能理解。之所有这建议，是因为它非常实用，可以解答一些困惑，可以使我们的代码变得简单、简洁。先看一个例子："
 author: "wowo"
 category: "统一设备模型"
 category_alias: "device_model"

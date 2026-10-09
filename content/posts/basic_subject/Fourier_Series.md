@@ -4,7 +4,7 @@ date: 2014-08-07T20:09:51+08:00
 url: "/basic_subject/Fourier_Series.html"
 gid: "71"
 emlog_type: "blog"
-summary: "\r\n\t如果你仔细观察，工作和生活中充满了周期现象：旁边linux driver工程师在调试audio driver的时候播放的1kHz的正弦信号，周末去公园游玩，游船推开水面的波纹，硬件工程师调试硬件电路的时候，示波器显示出来的晶振方波信号……\r\n\r\n\r\n\t所谓周期现象具体包括时间上的周期现象和空间上的周期现象。1kHz的audio当然是时间上的周期信号，而水面的波形就是空间上的周期现象。对于空间"
+summary: "如果你仔细观察，工作和生活中充满了周期现象：旁边linux driver工程师在调试audio driver的时候播放的1kHz的正弦信号，周末去公园游玩，游船推开水面的波纹，硬件工程师调试硬件电路的时候，示波器显示出来的晶振方波信号…… 所谓周期现象具体包括时间上的周期现象和空间上的周期现象。1kHz的audio当然是时间上的周期信号，而水面的波形就是空间上的周期现象。对于空间上的周期现象，实际"
 author: "linuxer"
 category: "基础学科"
 category_alias: "basic_subject"

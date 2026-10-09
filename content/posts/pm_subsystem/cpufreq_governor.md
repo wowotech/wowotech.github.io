@@ -4,7 +4,7 @@ date: 2015-08-23T21:15:39+08:00
 url: "/pm_subsystem/cpufreq_governor.html"
 gid: "208"
 emlog_type: "blog"
-summary: "由“linux cpufreq framework(3)_cpufreq core”的描述可知，cpufreq policy负责设定cpu调频的一个大致范围，而cpu的具体运行频率，则需要由相应的cufreq governor决定（可自行调节频率的CPU除外，后面会再详细介绍）。那到底什么是cpufreq governor？它的运行机制是什么？这就是本文要描述的内容。"
+summary: "由“ linux cpufreq framework(3)_cpufreq core ”的描述可知，cpufreq policy负责设定cpu调频的一个大致范围，而cpu的具体运行频率，则需要由相应的cufreq governor决定（可自行调节频率的CPU除外，后面会再详细介绍）。那到底什么是cpufreq governor？它的运行机制是什么？这就是本文要描述的内容。"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

@@ -4,7 +4,7 @@ date: 2015-07-15T18:47:28+08:00
 url: "/irq_subsystem/workqueue.html"
 gid: "199"
 emlog_type: "blog"
-summary: "workqueue是一个驱动工程师常用的工具，在旧的内核中（指2.6.36之前的内核版本）workqueue代码比较简单（大概800行），在2.6.36内核版本中引入了CMWQ（Concurrency Managed Workqueue），workqueue.c\r\n的代码膨胀到5000多行，为了深入的理解CMWQ，单单一份文档很难将其描述的清楚，因此CMWQ作为一个主题将会产生一系列的文档，本文是"
+summary: "workqueue是一个驱动工程师常用的工具，在旧的内核中（指2.6.36之前的内核版本）workqueue代码比较简单（大概800行），在2.6.36内核版本中引入了CMWQ（Concurrency Managed Workqueue），workqueue.c 的代码膨胀到5000多行，为了深入的理解CMWQ，单单一份文档很难将其描述的清楚，因此CMWQ作为一个主题将会产生一系列的文档，本文是这"
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

@@ -4,7 +4,7 @@ date: 2016-06-29T22:14:31+08:00
 url: "/x_project/bubblegum_uboot_device_tree.html"
 gid: "316"
 emlog_type: "blog"
-summary: "\n\t我们在“X-004-UBOOT-串口驱动移植(Bubblegum-96平台)”中，简单介绍了u-boot中serial \ndriver的移植过程。由于serial driver是u-boot移植中的第一个driver，为了方便debug，并没有引入device \ntree。在serial driver ready之后，基本的console功能已经okay，基于此，我们可以着手增加device "
+summary: "我们在“ X-004-UBOOT-串口驱动移植(Bubblegum-96平台) ”中，简单介绍了u-boot中serial driver的移植过程。由于serial driver是u-boot移植中的第一个driver，为了方便debug，并没有引入device tree。在serial driver ready之后，基本的console功能已经okay，基于此，我们可以着手增加device tr"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

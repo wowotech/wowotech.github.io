@@ -4,7 +4,7 @@ date: 2014-06-10T16:16:12+08:00
 url: "/linux_application/vim_skill.html"
 gid: "50"
 emlog_type: "blog"
-summary: "\n\t平时读代码、写程序都是在vim（Vi Improved）下进行，总结了一些自己比较喜欢的技巧，贴出来和大家分享一下。\n\n\n\t注：这些技巧只是蜗蜗比较喜欢，写在这里的主要目的是备份（以后换系统了，直接贴进去就可以了）。而每个人的习惯都不一样，因此仅供大家参考。\n"
+summary: "平时读代码、写程序都是在vim（Vi Improved）下进行，总结了一些自己比较喜欢的技巧，贴出来和大家分享一下。 注：这些技巧只是蜗蜗比较喜欢，写在这里的主要目的是备份（以后换系统了，直接贴进去就可以了）。而每个人的习惯都不一样，因此仅供大家参考。"
 author: "wowo"
 category: "Linux应用技巧"
 category_alias: "linux_application"

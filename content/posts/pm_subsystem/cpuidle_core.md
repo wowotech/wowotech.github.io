@@ -4,7 +4,7 @@ date: 2014-12-30T22:38:33+08:00
 url: "/pm_subsystem/cpuidle_core.html"
 gid: "133"
 emlog_type: "blog"
-summary: "\r\n\tcpuidle core是cpuidle framework的核心模块，负责抽象出cpuidle device、cpuidle driver和cpuidle governor三个实体，并提供如下功能（可参考“Linux cpuidle framework(1)_概述和软件架构”中的软件架构）：\r\n\r\n\r\n\t1）向底层的cpuidle driver模块提供cpudile device和cpui"
+summary: "cpuidle core是cpuidle framework的核心模块，负责抽象出cpuidle device、cpuidle driver和cpuidle governor三个实体，并提供如下功能（可参考“ Linux cpuidle framework(1)_概述和软件架构 ”中的软件架构）： 1）向底层的cpuidle driver模块提供cpudile device和cpuidle dri"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

@@ -4,7 +4,7 @@ date: 2015-11-02T10:24:54+08:00
 url: "/memory_management/memory-fragment.html"
 gid: "228"
 emlog_type: "blog"
-summary: "Linux kernel组织管理物理内存的方式是buddy\r\nsystem（伙伴系统），而物理内存碎片正式buddy system的弱点之一，为了预防以及解决碎片问题，kernel采取了一些实用技术，这里将对这些技术进行总结归纳。"
+summary: "Linux kernel 组织管理物理内存的方式是 buddy system （伙伴系统），而物理内存碎片正式 buddy system 的弱点之一，为了预防以及解决碎片问题， kernel 采取了一些实用技术，这里将对这些技术进行总结归纳。"
 author: "itrocker"
 category: "内存管理"
 category_alias: "memory_management"

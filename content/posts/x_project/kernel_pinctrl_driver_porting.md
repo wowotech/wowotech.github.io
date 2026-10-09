@@ -4,7 +4,7 @@ date: 2017-07-14T21:58:51+08:00
 url: "/x_project/kernel_pinctrl_driver_porting.html"
 gid: "401"
 emlog_type: "blog"
-summary: "\r\n\t本文是“linux内核中的GPIO系统之（4）：pinctrl驱动的理解和总结”的一个实例，结合”X Project”的开发过程，介绍pinctrl driver的移植步骤，进而加深对pinctrl framework的理解。\r\n\r\n\r\n\t注1：本文后续的描述，kernel基于本站“X Project”所使用的kernel版本[4]，硬件基于 ”X Project”所使用的“Bubbugum"
+summary: "本文是“ linux内核中的GPIO系统之（4）：pinctrl驱动的理解和总结 ”的一个实例，结合” X Project ”的开发过程，介绍pinctrl driver的移植步骤，进而加深对pinctrl framework的理解。 注1：本文后续的描述，kernel基于本站“ X Project ”所使用的kernel版本 [4] ，硬件 基于 ” X Project ”所使用的“Bubbug"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

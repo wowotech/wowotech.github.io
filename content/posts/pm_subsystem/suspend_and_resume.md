@@ -4,7 +4,7 @@ date: 2014-08-22T21:40:34+08:00
 url: "/pm_subsystem/suspend_and_resume.html"
 gid: "81"
 emlog_type: "blog"
-summary: "\r\n\tLinux内核提供了三种Suspend: Freeze、Standby和STR(Suspend to RAM)，在用户空间向”/sys/power/state”文件分别写入”freeze”、”standby”和”mem”，即可触发它们。\r\n\r\n\r\n\t内核中，Suspend及Resume过程涉及到PM Core、Device PM、各个设备的驱动、Platform dependent PM、C"
+summary: "Linux内核提供了三种Suspend: Freeze、Standby和STR(Suspend to RAM)，在用户空间向”/sys/power/state”文件分别写入”freeze”、”standby”和”mem”，即可触发它们。 内核中，Suspend及Resume过程涉及到PM Core、Device PM、各个设备的驱动、Platform dependent PM、CPU contro"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

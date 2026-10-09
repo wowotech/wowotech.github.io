@@ -4,7 +4,7 @@ date: 2016-11-02T22:31:07+08:00
 url: "/x_project/generic_timer_porting.html"
 gid: "349"
 emlog_type: "blog"
-summary: "\r\n\t本文将基于“Linux时间子系统之（十七）：ARM \r\ngeneric timer驱动代码分析[1]”，以bubblegum-96平台为例，介绍ARM generic \r\ntimer的移植步骤。\r\n\r\n\r\n\t另外，我们在[2]中完成了ARM \r\nGIC驱动的移植，但还没有测试是否可用。刚好借助timer驱动，测试GIC是否可以正常工作，顺便理解Interrupt的使用方法。\r\n"
+summary: "本文将基于“ Linux时间子系统之（十七）：ARM generic timer驱动代码分析 [1] ”，以bubblegum-96平台为例，介绍ARM generic timer的移植步骤。 另外，我们在[2]中完成了ARM GIC驱动的移植，但还没有测试是否可用。刚好借助timer驱动，测试GIC是否可以正常工作，顺便理解Interrupt的使用方法。"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

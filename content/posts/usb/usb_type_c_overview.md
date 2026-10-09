@@ -4,7 +4,7 @@ date: 2017-12-18T16:18:25+08:00
 url: "/usb/usb_type_c_overview.html"
 gid: "417"
 emlog_type: "blog"
-summary: "\r\n\t从1996年1月USB1.0正式发布至今（2017年9月 USB3.2发布），USB已经走过了21个年头。在这21年的时间了，USB标准化组织（USB Implementers Forum，USB-IF）折腾出来了各式各样、五花八门的接口形态：Type A、Type A SuperSpeed、Type B、Type B SuperSpeed、Mini-A、Mini-B、Micro-A、Mic"
+summary: "从1996年1月USB1.0正式发布至今（2017年9月 USB3.2发布），USB已经走过了21个年头。在这21年的时间了，USB标准化组织（ USB Implementers Forum，USB-IF）折腾出来了各式各样、五花八门的接口形态：Type A、Type A SuperSpeed、Type B、Type B SuperSpeed、Mini-A、Mini-B、Micro-A、Micro"
 author: "wowo"
 category: "USB"
 category_alias: "usb"

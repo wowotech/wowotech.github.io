@@ -4,7 +4,7 @@ date: 2015-05-21T19:26:10+08:00
 url: "/timer_subsystem/tick-broadcast-framework.html"
 gid: "187"
 emlog_type: "blog"
-summary: "\r\n\t在内核中，有cpuidle \r\nframework可以控制cpu的节电：当没有进程调度到该cpu上执行的时候，swapper进程粉墨登场，将该cpu会被推入到idle状态。当然\r\nCPU的idle状态有深有浅，当CPU睡的比较深入的时候，有可能会关闭本地的timer硬件。这样就会引入一个很有意思的问题：local \r\ntimer将无法唤醒CPU，该cpu上的所有的software timer"
+summary: "在内核中，有cpuidle framework可以控制cpu的节电：当没有进程调度到该cpu上执行的时候，swapper进程粉墨登场，将该cpu会被推入到idle状态。当然 CPU的idle状态有深有浅，当CPU睡的比较深入的时候，有可能会关闭本地的timer硬件。这样就会引入一个很有意思的问题：local timer将无法唤醒CPU，该cpu上的所有的software timer将无法唤醒cpu"
 author: "linuxer"
 category: "时间子系统"
 category_alias: "timer_subsystem"

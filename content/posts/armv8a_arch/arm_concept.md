@@ -4,7 +4,7 @@ date: 2014-12-09T22:54:05+08:00
 url: "/armv8a_arch/arm_concept.html"
 gid: "119"
 emlog_type: "blog"
-summary: "本文简单梳理一下ARM有关的概念，包括ARM architecture、ARM core、ARM&nbsp;CPU（或MCU）以及ARM Soc。我们这些以ARM平台为主的嵌入式工程师，几乎每天都会和这些概念打交道，也似乎非常理解它们。但仔细想想，却有些说不清道不明的感觉，因而有必要整理一下思路，也就顺手记录下来了。"
+summary: "本文简单梳理一下ARM有关的概念，包括ARM architecture、ARM core、ARM CPU（或MCU）以及ARM Soc。我们这些以ARM平台为主的嵌入式工程师，几乎每天都会和这些概念打交道，也似乎非常理解它们。但仔细想想，却有些说不清道不明的感觉，因而有必要整理一下思路，也就顺手记录下来了。"
 author: "wowo"
 category: "ARMv8A Arch"
 category_alias: "armv8a_arch"

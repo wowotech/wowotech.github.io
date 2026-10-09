@@ -4,7 +4,7 @@ date: 2014-05-30T16:47:13+08:00
 url: "/device_model/dt_basic_concept.html"
 gid: "47"
 emlog_type: "blog"
-summary: "\r\n\t一些背景知识（例如：为何要引入Device Tree，这个机制是用来解决什么问题的）请参考引入Device Tree的原因，本文主要是介绍Device Tree的基础概念。\r\n\r\n\r\n\t简\r\n单的说，如果要使用Device Tree，首先用户要了解自己的硬件配置和系统运行参数，并把这些信息组织成Device Tree source \r\nfile。通过DTC（Device Tree Compi"
+summary: "一些背景知识（例如：为何要引入Device Tree，这个机制是用来解决什么问题的）请参考 引入Device Tree的原因 ，本文主要是介绍Device Tree的基础概念。 简 单的说，如果要使用Device Tree，首先用户要了解自己的硬件配置和系统运行参数，并把这些信息组织成Device Tree source file。通过DTC（Device Tree Compiler），可以将这些"
 author: "linuxer"
 category: "统一设备模型"
 category_alias: "device_model"

@@ -218,3 +218,13 @@ a:hover { text-decoration: underline; }
 .comment-stream .chead .csrc { margin-left: auto; text-align: right; }
 .comment-stream .cbody { margin: 0; font-size: 0.97rem; line-height: 1.7; }
 .comment-stream[hidden] { display: none; }
+
+/* ---------- 首页摘要卡片（还原原站首页的文章形态） ---------- */
+.post-excerpts .post-card { padding: 1.15rem 0 1.2rem; border-bottom: 1px solid var(--rule); }
+.post-card .card-title { font-size: 1.22rem; line-height: 1.45; margin: 0 0 0.25rem; }
+.post-card .card-title a { color: var(--fg); }
+.post-card .card-title a:hover { color: var(--accent); }
+.post-card .card-meta { margin: 0 0 0.45rem; font-size: 0.85rem; color: var(--fg-muted); }
+.post-card .card-excerpt { margin: 0 0 0.5rem; font-size: 0.96rem; color: var(--fg); line-height: 1.75; }
+.post-card .card-foot { margin: 0; font-size: 0.85rem; color: var(--fg-muted); }
+.post-card .card-foot .tag { display: inline-block; margin: 0 0.15rem; padding: 0 0.35rem; border: 1px solid var(--rule); border-radius: 3px; }

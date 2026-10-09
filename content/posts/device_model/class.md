@@ -4,7 +4,7 @@ date: 2014-04-23T15:17:26+08:00
 url: "/device_model/class.html"
 gid: "36"
 emlog_type: "blog"
-summary: "\r\n\t在设备模型中，Bus、Device、Device driver等等，都比较好理解，因为它们对应了实实在在的东西，所有的逻辑都是围绕着这些实体展开的。而本文所要描述的Class就有些不同了，因为它是虚拟出来的，只是为了抽象设备的共性。\r\n\r\n\r\n\t举个例子，一些年龄相仿、需要获取的知识相似的人，聚在一起学习，就构成了一个班级（Class）。这个班级可以有自己的名称（如295），但如果离开构成它"
+summary: "在设备模型中，Bus、Device、Device driver等等，都比较好理解，因为它们对应了实实在在的东西，所有的逻辑都是围绕着这些实体展开的。而本文所要描述的Class就有些不同了，因为它是虚拟出来的，只是为了抽象设备的共性。 举个例子，一些年龄相仿、需要获取的知识相似的人，聚在一起学习，就构成了一个班级（Class）。这个班级可以有自己的名称（如295），但如果离开构成它的学生（devic"
 author: "wowo"
 category: "统一设备模型"
 category_alias: "device_model"

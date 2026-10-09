@@ -4,7 +4,7 @@ date: 2014-04-15T19:21:43+08:00
 url: "/device_model/bus.html"
 gid: "29"
 emlog_type: "blog"
-summary: "\n\t在Linux设备模型中，Bus（总线）是一类特殊的设备，它是连接处理器和其它设备之间的通道（channel）。为了方便设备模型的实现，内核规定，系统中的每个设备都要连接在一个Bus上，这个Bus可以是一个内部Bus、虚拟Bus或者Platform Bus。\n\n\n\t内核通过struct bus_type结构，抽象Bus，它是在include/linux/device.h中定义的。本文会围绕该结构"
+summary: "在Linux设备模型中，Bus（总线）是一类特殊的设备，它是连接处理器和其它设备之间的通道（channel）。为了方便设备模型的实现，内核规定，系统中的每个设备都要连接在一个Bus上，这个Bus可以是一个内部Bus、虚拟Bus或者Platform Bus。 内核通过struct bus_type结构，抽象Bus，它是在include/linux/device.h中定义的。本文会围绕该结构，描述Li"
 author: "wowo"
 category: "统一设备模型"
 category_alias: "device_model"

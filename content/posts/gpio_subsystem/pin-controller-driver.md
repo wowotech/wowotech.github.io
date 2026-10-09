@@ -4,7 +4,7 @@ date: 2014-07-22T20:37:33+08:00
 url: "/gpio_subsystem/pin-controller-driver.html"
 gid: "68"
 emlog_type: "blog"
-summary: "\r\n\t对于一个嵌入式软件工程师，我们的软件模块经常和硬件打交道，pin control subsystem也不例外，它驱动的硬件叫做pin \r\ncontroller（一般ARM soc的datasheet会把pin controller的内容放入GPIO \r\ncontroller的章节中），主要功能包括：\r\n\r\n\r\n\t（1）pin multiplexing。基于ARM \r\ncore的嵌入式处理器一"
+summary: "对于一个嵌入式软件工程师，我们的软件模块经常和硬件打交道，pin control subsystem也不例外，它驱动的硬件叫做pin controller（一般ARM soc的datasheet会把pin controller的内容放入GPIO controller的章节中），主要功能包括： （1）pin multiplexing。基于ARM core的嵌入式处理器一般会提供丰富的功能，例如cam"
 author: "linuxer"
 category: "GPIO子系统"
 category_alias: "gpio_subsystem"

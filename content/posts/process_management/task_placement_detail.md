@@ -4,7 +4,7 @@ date: 2021-12-31T07:00:42+08:00
 url: "/process_management/task_placement_detail.html"
 gid: "494"
 emlog_type: "blog"
-summary: "\r\n\t我们描述CFS任务负载均衡的系列文章一共三篇，第一篇是框架部分，第二篇描述了task placement的逻辑过程，第三篇是负载均衡的情景分析，包括tick balance、nohz idle balance和new idle balance。之前已经有一篇关于task placement的文档发表在本站，为了更精细的讲解代码逻辑，我们这次增加了代码分析部分。本文作为第二篇任务放置的附篇，深"
+summary: "我们描述CFS任务负载均衡的系列文章一共三篇，第一篇是框架部分，第二篇描述了task placement的逻辑过程，第三篇是负载均衡的情景分析，包括tick balance、nohz idle balance和new idle balance。之前已经有一篇关于task placement的文档发表在本站，为了更精细的讲解代码逻辑，我们这次增加了代码分析部分。本文作为第二篇任务放置的附篇，深入讲解"
 author: "OPPO内核团队"
 category: "进程管理"
 category_alias: "process_management"

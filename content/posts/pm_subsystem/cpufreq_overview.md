@@ -4,7 +4,7 @@ date: 2015-06-13T22:20:37+08:00
 url: "/pm_subsystem/cpufreq_overview.html"
 gid: "194"
 emlog_type: "blog"
-summary: "\r\n\tlinux kernel主要通过三类机制实现SMP系统CPU core的电源管理功能：\r\n\r\n\r\n\t\r\n\t\t1）cpu hotplug。根据应用场景，enable/disable CPU core，具体可参考“Linux CPU core的电源管理(4)_cpu control”。\r\n\t\r\n\t\r\n\t\t2） cpuidle framework。在没有进程调度的时候，让CPU core进入idl"
+summary: "linux kernel主要通过三类机制实现SMP系统CPU core的电源管理功能： 1）cpu hotplug。根据应用场景，enable/disable CPU core，具体可参考“Linux CPU core的电源管理(4)_cpu control”。 2） cpuidle framework。在没有进程调度的时候，让CPU core进入idle状态，具体可参考“ cpuidle fra"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

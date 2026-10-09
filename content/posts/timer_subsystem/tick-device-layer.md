@@ -4,7 +4,7 @@ date: 2015-03-26T18:50:55+08:00
 url: "/timer_subsystem/tick-device-layer.html"
 gid: "158"
 emlog_type: "blog"
-summary: "\r\n\t时间子系统中的tick device layer主要涉及kernel/time/tick-*相关的文件，本文的主要内容就是从high level层次（不纠缠在具体的每行代码）描述tick device layer的运作逻辑。\r\n\r\n\r\n\t如\r\n果说每个.c文件是一个模块的话，我们可以首先简单描述tick device layer的各个模块。tick-common.c描述了tick \r\ndev"
+summary: "时间子系统中的tick device layer主要涉及kernel/time/tick-*相关的文件，本文的主要内容就是从high level层次（不纠缠在具体的每行代码）描述tick device layer的运作逻辑。 如 果说每个.c文件是一个模块的话，我们可以首先简单描述tick device layer的各个模块。tick-common.c描述了tick device的一些通用操作，此"
 author: "linuxer"
 category: "时间子系统"
 category_alias: "timer_subsystem"

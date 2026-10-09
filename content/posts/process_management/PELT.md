@@ -4,7 +4,7 @@ date: 2018-08-18T10:27:17+08:00
 url: "/process_management/PELT.html"
 gid: "446"
 emlog_type: "blog"
-summary: "\r\n\t本文分三个部分描述了3.8内核引入的PELT（per-entity load tracking）机制。第一章主要描述了PELT比per-runqueue load tracking的好处在哪里，这也是引入PELT的原因。第二章描述了具体PELT的算法，有兴趣的同学可以自行根据代码进行分析。第三章主要给出几个PELT的应用场景，在这些场景中，其他的内核子系统可以通过PELT进行更精准的控制。\r"
+summary: "本文分三个部分描述了3.8内核引入的PELT（per-entity load tracking）机制。第一章主要描述了PELT比per-runqueue load tracking的好处在哪里，这也是引入PELT的原因。第二章描述了具体PELT的算法，有兴趣的同学可以自行根据代码进行分析。第三章主要给出几个PELT的应用场景，在这些场景中，其他的内核子系统可以通过PELT进行更精准的控制。 本文是"
 author: "linuxer"
 category: "进程管理"
 category_alias: "process_management"

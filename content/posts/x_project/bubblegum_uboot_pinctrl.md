@@ -4,7 +4,7 @@ date: 2016-07-09T21:47:14+08:00
 url: "/x_project/bubblegum_uboot_pinctrl.html"
 gid: "318"
 emlog_type: "blog"
-summary: "\r\n\twowo觉得，在linux kernel新引入的众多子系统中，pinctrl \r\nsubsystem是一个特别晦涩难懂的子系统，它所解决的问题，和它所引入的困扰，不相上下。在平时工作的过程中，年轻工程师问的最多的，就是在驱动中要怎么使用pinctrl？这样配置pinctrl到底是什么意思？等等。\r\n\r\n\r\n\t对一个子系统来说，如果不能让它的使用者（consumer）很容易的理解和掌握，就宣告"
+summary: "wowo觉得，在linux kernel新引入的众多子系统中，pinctrl subsystem是一个特别晦涩难懂的子系统，它所解决的问题，和它所引入的困扰，不相上下。在平时工作的过程中，年轻工程师问的最多的，就是在驱动中要怎么使用pinctrl？这样配置pinctrl到底是什么意思？等等。 对一个子系统来说，如果不能让它的使用者（consumer）很容易的理解和掌握，就宣告了它的失败。更不用说让"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

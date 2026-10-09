@@ -4,7 +4,7 @@ date: 2016-09-09T22:18:12+08:00
 url: "/x_project/bubblegum_uboot_bootm.html"
 gid: "334"
 emlog_type: "blog"
-summary: "\r\n\t我们在“X-010-UBOOT-使用booti命令启动kernel(Bubblegum-96平台)”中介绍了使用u-boot \r\nbooti指令加载并运行ARM64 Image格式kernel的方法。与此同时，我们在“u-boot FIT \r\nimage介绍”介绍了一种新的uImage（u-boot Image）格式----FIT uImage。本文将基于这两篇文章，介绍FIT \r\nuIma"
+summary: "我们在“ X-010-UBOOT-使用booti命令启动kernel(Bubblegum-96平台) ”中介绍了使用u-boot booti指令加载并运行ARM64 Image格式kernel的方法。与此同时，我们在“ u-boot FIT image介绍 ”介绍了一种新的uImage（u-boot Image）格式----FIT uImage。本文将基于这两篇文章，介绍FIT uImage的编译"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

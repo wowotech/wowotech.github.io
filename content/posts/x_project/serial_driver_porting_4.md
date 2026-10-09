@@ -4,7 +4,7 @@ date: 2016-11-29T21:55:06+08:00
 url: "/x_project/serial_driver_porting_4.html"
 gid: "359"
 emlog_type: "blog"
-summary: "\r\n\t本文是“X \r\nProject”串口驱动开发的第四篇，在第二篇“uart \r\ndriver框架[1]”的基础上，实现基本的、可收发数据的uart驱动，并借助这个过程，学习如下知识：\r\n\r\n\r\n\t\r\n\t\t中断的申请和使用；\r\n\t\r\n\t\r\n\t\t利用中断发送和接收数据；\r\n\t\r\n\t\r\n\t\tuart_ops中常用函数（.startup, .start_tx, etc.）的使用。\r\n\t\r\n"
+summary: "本文是“ X Project ”串口驱动开发的第四篇，在第二篇“ uart driver框架 [1] ”的基础上，实现基本的、可收发数据的uart驱动，并借助这个过程，学习如下知识： 中断的申请和使用； 利用中断发送和接收数据； uart_ops中常用函数（.startup, .start_tx, etc.）的使用。"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

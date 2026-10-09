@@ -4,7 +4,7 @@ date: 2014-05-19T15:44:43+08:00
 url: "/pm_subsystem/reboot.html"
 gid: "43"
 emlog_type: "blog"
-summary: "\r\n\t在使用计算机的过程中，关机和重启是最先学会的两个操作。同样，这两个操作在Linux中也存在，称作shutdown和restart。这就是本文要描述的对象。\r\n\r\n\r\n\t在Linux Kernel中，主流的shutdown和restart都是通过“reboot”系统调用（具体可参考kernel/sys.c）来实现的，这也是本文使用“Generic PM之Reboot过程”作为标题的原因。另外，"
+summary: "在使用计算机的过程中，关机和重启是最先学会的两个操作。同样，这两个操作在Linux中也存在，称作shutdown和restart。这就是本文要描述的对象。 在Linux Kernel中，主流的shutdown和restart都是通过“reboot”系统调用（具体可参考kernel/sys.c）来实现的，这也是本文使用“Generic PM之Reboot过程”作为标题的原因。另外，除了我们常用的sh"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

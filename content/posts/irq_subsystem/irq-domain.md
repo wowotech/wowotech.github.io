@@ -4,7 +4,7 @@ date: 2014-08-19T18:46:30+08:00
 url: "/irq_subsystem/irq-domain.html"
 gid: "78"
 emlog_type: "blog"
-summary: "\r\n\t在linux kernel中，我们使用下面两个ID来标识一个来自外设的中断：\r\n\r\n\r\n\t1、IRQ number。CPU需要为每一个外设中断编号，我们称之IRQ Number。这个IRQ number是一个虚拟的interrupt ID，和硬件无关，仅仅是被CPU用来标识一个外设中断。\r\n\r\n\r\n\t2、\r\nHW interrupt ID。对于interrupt controller而言，它"
+summary: "在linux kernel中，我们使用下面两个ID来标识一个来自外设的中断： 1、IRQ number。CPU需要为每一个外设中断编号，我们称之IRQ Number。这个IRQ number是一个虚拟的interrupt ID，和硬件无关，仅仅是被CPU用来标识一个外设中断。 2、 HW interrupt ID。对于interrupt controller而言，它收集了多个外设的interrup"
 author: "linuxer"
 category: "中断子系统"
 category_alias: "irq_subsystem"

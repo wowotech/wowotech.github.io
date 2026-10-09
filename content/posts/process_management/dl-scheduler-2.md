@@ -4,7 +4,7 @@ date: 2018-02-22T18:23:28+08:00
 url: "/process_management/dl-scheduler-2.html"
 gid: "425"
 emlog_type: "blog"
-summary: "Linux内核的DL调度器是一个全局EDF调度器，它主要针对有deadline限制的sporadic任务。注意：这些术语已经在本系列文章的第一部分中说明了，这里不再赘述。在这本文中，我们将一起来看看Linux DL调度器的细节以及如何使用它。另外，本文对应的英文原文是https://lwn.net/Articles/743946/，感谢lwn和Daniel Bristot de Oliveira的"
+summary: "Linux内核的DL调度器是一个全局EDF调度器，它主要针对有deadline限制的sporadic任务。注意：这些术语已经在本系列文章的 第一部分 中说明了，这里不再赘述。在这本文中，我们将一起来看看Linux DL调度器的细节以及如何使用它。另外，本文对应的英文原文是https://lwn.net/Articles/743946/，感谢lwn和Daniel Bristot de Oliveir"
 author: "linuxer"
 category: "进程管理"
 category_alias: "process_management"

@@ -4,7 +4,7 @@ date: 2016-08-10T23:20:08+08:00
 url: "/linux_kenrel/kernel_config_overview.html"
 gid: "323"
 emlog_type: "blog"
-summary: "\r\n\t对刚接触Linux kernel的同学来说，遇到的第一个问题就是：我该从哪里入手？、\r\n\r\n\r\n\t话说Linux \r\nkernel的打开方式是多种多样的：从简单的设备驱动入手；从源代码的目录结构入手；从kernel的启动过程入手；从大的功能模块入手；等等。不管怎样，每条都是正途（条条大路通罗马嘛）。\r\n\r\n\r\n\t而本文（以及随后的系列文章），将从Linux kernel的配置项入手，从整体上"
+summary: "对刚接触Linux kernel的同学来说，遇到的第一个问题就是：我该从哪里入手？、 话说Linux kernel的打开方式是多种多样的：从简单的设备驱动入手；从源代码的目录结构入手；从kernel的启动过程入手；从大的功能模块入手；等等。不管怎样，每条都是正途（条条大路通罗马嘛）。 而本文（以及随后的系列文章），将从Linux kernel的配置项入手，从整体上认识Linux kernel。之所"
 author: "wowo"
 category: "Linux内核分析"
 category_alias: "linux_kenrel"

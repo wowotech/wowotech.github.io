@@ -4,7 +4,7 @@ date: 2016-07-27T21:41:16+08:00
 url: "/x_project/bubblegum_uboot_cmdline.html"
 gid: "320"
 emlog_type: "blog"
-summary: "经过前面文章的铺垫，u-boot command \r\nline的支持已经成了一个顺理成章的事情了。因此，本文没有太多技术细节，仅仅记录支持命令行的实现过程，权当“X Project” “【任务2】启动到u-boot command \r\nline”的一个完结。"
+summary: "经过前面文章的铺垫，u-boot command line的支持已经成了一个顺理成章的事情了。因此，本文没有太多技术细节，仅仅记录支持命令行的实现过程，权当“ X Project ” “ 【任务2】启动到u-boot command line ”的一个完结。"
 author: "wowo"
 category: "X Project"
 category_alias: "x_project"

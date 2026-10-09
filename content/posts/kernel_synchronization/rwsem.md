@@ -4,7 +4,7 @@ date: 2023-05-29T20:57:49+08:00
 url: "/kernel_synchronization/rwsem.html"
 gid: "515"
 emlog_type: "blog"
-summary: "\r\n\t除了mutex，在linux内核中，还有一个经常用到的睡眠锁就是rw semaphore（后文简称为rwsem），它到底和mutex有什么不同呢？为何会有rw semaphore？无他，仅仅是为了增加内核的并发，从而增加性能而已。Mutex严格的限制只有一个thread可以进入临界区，但是实际应用中，有些场景对共享资源的访问可以严格区分读和写的，并且是读多写少，这时候，其实多个读的threa"
+summary: "除了mutex，在linux内核中，还有一个经常用到的睡眠锁就是rw semaphore（后文简称为rwsem），它到底和mutex有什么不同呢？为何会有rw semaphore？无他，仅仅是为了增加内核的并发，从而增加性能而已。Mutex严格的限制只有一个thread可以进入临界区，但是实际应用中，有些场景对共享资源的访问可以严格区分读和写的，并且是读多写少，这时候，其实多个读的thread同时"
 author: "OPPO内核团队"
 category: "内核同步机制"
 category_alias: "kernel_synchronization"

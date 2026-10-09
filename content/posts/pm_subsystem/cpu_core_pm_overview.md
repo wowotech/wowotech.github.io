@@ -4,7 +4,7 @@ date: 2015-04-30T21:20:49+08:00
 url: "/pm_subsystem/cpu_core_pm_overview.html"
 gid: "181"
 emlog_type: "blog"
-summary: "\r\n\t在SMP（Symmetric Multi-Processing）流行起来之前的很长一段时间，Linux kernel的电源管理工作主要集中在外部设备上，和CPU core相关的，顶多就是CPU idle。但随着SMP的普及，一个系统中可用的CPU core越来越多，这些core的频率越来越高，处理能力越来越强，功耗也越来越大。因此，CPU core有关的电源管理，在系统设计中就成为必不可少的"
+summary: "在SMP（Symmetric Multi-Processing）流行起来之前的很长一段时间，Linux kernel的电源管理工作主要集中在外部设备上，和CPU core相关的，顶多就是 CPU idle 。但随着SMP的普及，一个系统中可用的CPU core越来越多，这些core的频率越来越高，处理能力越来越强，功耗也越来越大。因此，CPU core有关的电源管理，在系统设计中就成为必不可少的一"
 author: "wowo"
 category: "电源管理子系统"
 category_alias: "pm_subsystem"

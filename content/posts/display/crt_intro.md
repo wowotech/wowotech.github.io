@@ -4,7 +4,7 @@ date: 2016-01-30T22:18:21+08:00
 url: "/display/crt_intro.html"
 gid: "261"
 emlog_type: "blog"
-summary: "\r\n\tCRT（Cathode Rays Tube，阴极射线管）是最原始的电子显示技术，在上世纪被广泛运用于模拟电视（Analog \r\ntelevision）系统中。本文将以模拟电视系统为背景，介绍CRT显示技术的原理、特性以及一些关键术语。\r\n\r\n\r\n\t众所周知，CRT显示已经逐步被数字显示取代，已有退出历史舞台之势，本文之所以介绍它，原因有三：\r\n\r\n\r\n\t\r\n\t\t1）模拟电视是我们这一代人童年"
+summary: "CRT（Cathode Rays Tube，阴极射线管）是最原始的电子显示技术，在上世纪被广泛运用于模拟电视（Analog television）系统中。本文将以模拟电视系统为背景，介绍CRT显示技术的原理、特性以及一些关键术语。 众所周知，CRT显示已经逐步被数字显示取代，已有退出历史舞台之势，本文之所以介绍它，原因有三： 1）模拟电视是我们这一代人童年的记忆，美好又神秘。现在回头去看，发觉其中"
 author: "wowo"
 category: "显示"
 category_alias: "display"

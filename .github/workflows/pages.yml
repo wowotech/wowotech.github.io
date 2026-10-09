@@ -4,9 +4,14 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    # 每天 11:17 北京时间，拉取 giscus 最新评论刷新侧栏
+    # 注意：仓库 60 天无 push 等活动后 GitHub 会自动停用定时任务，届时手动 workflow_dispatch 一次即可恢复
+    - cron: '17 3 * * *'
 
 permissions:
   contents: read
+  discussions: read
   pages: write
   id-token: write
 
@@ -23,6 +28,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # 用 GITHUB_TOKEN 走认证（匿名请求从共享 runner IP 出去常被 403）；
+      # 脚本内部兜底：任何失败保留现有数据并以 0 退出，不会弄坏发布
+      - name: 拉取 giscus 最新评论
+        run: python3 tools/fetch_latest_activity.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # 直接下载官方二进制，不依赖第三方 action，减少长期维护面
       - name: 安装 Hugo

@@ -228,3 +228,7 @@ a:hover { text-decoration: underline; }
 .post-card .card-excerpt { margin: 0 0 0.5rem; font-size: 0.96rem; color: var(--fg); line-height: 1.75; }
 .post-card .card-foot { margin: 0; font-size: 0.85rem; color: var(--fg-muted); }
 .post-card .card-foot .tag { display: inline-block; margin: 0 0.15rem; padding: 0 0.35rem; border: 1px solid var(--rule); border-radius: 3px; }
+
+/* ---------- 原站 header 横幅图 ---------- */
+.site-banner { display: block; max-width: 960px; margin: 0 auto 1.8rem; padding: 0 1.25rem; }
+.site-banner img { width: 100%; height: auto; display: block; border-radius: 2px; }

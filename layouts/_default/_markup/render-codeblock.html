@@ -1,0 +1,7 @@
+{{/* 全站代码块均未标注语言（emlog 导出历史遗留），默认按 C 高亮；
+     源码里明确标注了语言的仍按标注处理。 */}}
+{{ $lang := .Type }}
+{{ if not $lang }}{{ $lang = "c" }}{{ end }}
+<div class="highlight">
+  {{ highlight .Inner $lang (dict "lineNos" false "tabIndex" 0) }}
+</div>

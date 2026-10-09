@@ -7,5 +7,7 @@
 <link rel="icon" href="/favicon.ico">
 {{ $css := resources.Get "css/style.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+{{ $chroma := resources.Get "css/chroma.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $chroma.RelPermalink }}">
 <link rel="alternate" type="application/rss+xml" title="{{ site.Title }}" href="/index.xml">
 {{ with .Params.gid }}<meta name="wowotech-gid" content="{{ . }}">{{ end }}

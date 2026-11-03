@@ -629,46 +629,46 @@
  },
  "latest_comments": [
   {
+   "url": "/tech_discuss/farewell.html",
+   "author": "wowotech",
+   "date": "2026-11-03T01:57:49Z",
+   "text": "还能在这里看到小伙伴的新留言，很开心 周围很多人都说，当下是程序员最好的时代，大家一起加油共创",
+   "title": "tech_discuss/farewell"
+  },
+  {
+   "url": "/tech_discuss/farewell.html",
+   "author": "GoldbacheLee",
+   "date": "2026-10-27T08:51:12Z",
+   "text": "虽然没见过，但是您的文章像老师一样，总是能解答我的困惑，谢谢您这么长时间以来的陪伴",
+   "title": "tech_discuss/farewell"
+  },
+  {
+   "url": "/tech_discuss/farewell.html",
+   "author": "codeself",
+   "date": "2026-10-27T03:17:14Z",
+   "text": "真好",
+   "title": "tech_discuss/farewell"
+  },
+  {
+   "url": "/tech_discuss/farewell.html",
+   "author": "touchinglie",
+   "date": "2026-10-23T17:01:20Z",
+   "text": "今天搜索到蜗窝的Linux图形子系统，在为数不多的非技术性概述中找到无废话的说明教程，感谢",
+   "title": "tech_discuss/farewell"
+  },
+  {
+   "url": "/tech_discuss/farewell.html",
+   "author": "encounter-thee",
+   "date": "2026-10-23T06:52:51Z",
+   "text": "19年入职O，在深圳入职，有次组织聚餐得见郭大侠一面，至今难忘，当时年轻，也不在内核领域领域工作，不知郭大侠是多么大佬级的任务。…",
+   "title": "tech_discuss/farewell"
+  },
+  {
    "url": "/pm_subsystem/wakeup_events_framework.html#c9194",
    "author": "22",
    "date": "2026-09-16T17:39:13+08:00",
    "text": "@X1hq：你可以看下安卓的autosleep的实现，部分上层程序持wake_lock，然后以熄灭屏幕为检查点判断wake_lo…",
    "title": "Linux电源管理(7)_Wakeup events framework"
-  },
-  {
-   "url": "/irq_subsystem/soft-irq.html#c9193",
-   "author": "deng",
-   "date": "2026-09-02T10:55:19+08:00",
-   "text": "@owen：ksoftirqd真正执行do_softirq的时候应该不会，抢占入口判断当前如果是中断上下文就不会执行切换",
-   "title": "linux kernel的中断子系统之（八）：softirq"
-  },
-  {
-   "url": "/irq_subsystem/soft-irq.html#c9192",
-   "author": "deng",
-   "date": "2026-09-02T10:47:17+08:00",
-   "text": "@lingkep：如果硬中断打断的是软中断的执行，虽然硬中断退出了，但是仍然处在软中断上下文，文章可能是想表达这个吧",
-   "title": "linux kernel的中断子系统之（八）：softirq"
-  },
-  {
-   "url": "/message_board.html#c9191",
-   "author": "chaicai",
-   "date": "2026-06-29T16:34:45+08:00",
-   "text": "站内搜索不支持了么？",
-   "title": "留言板"
-  },
-  {
-   "url": "/irq_subsystem/alloc_workqueue.html#c9190",
-   "author": "玖伍贰柒",
-   "date": "2026-04-27T09:04:13+08:00",
-   "text": "@坚强的小孩：3，虽然上面分析workqueue肯定会得到调用，但是关于是per workqueue和unbound workq…",
-   "title": "Concurrency Managed Workqueue之（三）：创建workqueue代码分析"
-  },
-  {
-   "url": "/irq_subsystem/alloc_workqueue.html#c9189",
-   "author": "玖伍贰柒",
-   "date": "2026-04-27T09:02:29+08:00",
-   "text": "@每天一小步：你好，讨论的这块代码的调用路径是这样的：\r\nalloc_and_link_pwqs\r\n\tapply_workque…",
-   "title": "Concurrency Managed Workqueue之（三）：创建workqueue代码分析"
   }
  ]
 }

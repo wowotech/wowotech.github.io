@@ -47,20 +47,17 @@ def strip_markdown(text):
     return re.sub(r"\s+", " ", text).strip()
 
 
-def latest_user_comment(number):
-    # 评论按创建时间升序返回，最新一条在末尾；分页取全，最多 5 页兜底
+def user_comments(number):
+    # 评论按创建时间升序返回；分页取全，最多 5 页兜底
     comments = []
     for page in range(1, 6):
         batch = api_get("%s/discussions/%d/comments?per_page=100&page=%d" % (API, number, page))
         comments.extend(batch)
         if len(batch) < 100:
             break
-    for c in reversed(comments):
-        u = c.get("user") or {}
-        login = str(u.get("login") or "")
-        if u.get("type") != "Bot" and not login.endswith("[bot]"):
-            return c
-    return None
+    return [c for c in comments
+            if (c.get("user") or {}).get("type") != "Bot"
+            and not str((c.get("user") or {}).get("login") or "").endswith("[bot]")]
 
 
 def build_title_map():
@@ -80,11 +77,9 @@ def collect():
     title_map = build_title_map()
     discussions = api_get(API + "/discussions?per_page=100&sort=updated&direction=desc")
 
+    # 与原站一致：侧栏是全站最新评论流水，不按文章去重
     fresh = []
     for d in discussions:
-        c = latest_user_comment(d["number"])
-        if c is None:
-            continue
         url = title_map.get(d["title"])
         if not url:
             m = re.search(r"https?://[^\s\)\]]+", d.get("body") or "")
@@ -92,16 +87,17 @@ def collect():
                 url = urllib.parse.urlparse(m.group(0)).path or None
         if not url:
             continue
-        text = strip_markdown(c.get("body", ""))
-        if len(text) > 160:
-            text = text[:160] + "…"
-        fresh.append({
-            "url": url,
-            "author": c["user"]["login"],
-            "date": c["created_at"],
-            "text": text,
-            "title": d["title"],
-        })
+        for c in user_comments(d["number"]):
+            text = strip_markdown(c.get("body", ""))
+            if len(text) > 160:
+                text = text[:160] + "…"
+            fresh.append({
+                "url": url,
+                "author": c["user"]["login"],
+                "date": c["created_at"],
+                "text": text,
+                "title": d["title"],
+            })
     fresh.sort(key=lambda e: parse_date(e["date"]), reverse=True)
     return fresh
 
